@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <th:block th:replace="/layout-parts/config-user :: configFragment"></th:block>
+
+  <title>Title</title>
+
+
+
+</head>
+
+<!-- Header 영역 -->
+  <header th:replace="/layout-parts/header-user :: header"></header>
+
+  <body layout:fragment="content" style="min-height: 100vh;">
+
+  </body>
+
+
+<!-- Footer 영역 -->
+
+  <footer th:replace="/layout-parts/footer-user :: footer"></footer>
+
+</html>
