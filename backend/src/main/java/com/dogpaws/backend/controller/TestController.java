@@ -19,12 +19,6 @@ public class TestController {
         return "success";
     }
 
-    @GetMapping("/test3")
-    public String putTest() {
-        System.out.println("테스트@@@@@@@@@@@@@@@@@@@@@@@ @");
-        return "success";
-    }
-
     @DeleteMapping("/test4")
     public String deleteTest(@RequestParam String id) {
         System.out.println("테스트@@@@@@@@@@@@@@@@@@@@@@@ " + id);
