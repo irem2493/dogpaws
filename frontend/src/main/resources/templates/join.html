@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <link rel="stylesheet" href="/css/join.css" />
+    <title>Title</title>
+</head>
+<body layout:fragment="content" style="min-height: 100vh">
+<div class="container">
+<div class="join-container">
+    <div class="container_box">
+        <div class="header">회원가입</div>
+
+        <div class="form-container">
+
+            <div class="sidebar">
+                <img src="/images/dog.png" alt="강아지 이미지">
+                <ul>
+                    <li>회원가입</li>
+                    <li>강아지 프로필 등록(1개 필수 등록)</li>
+                    <li>매칭 선택(친구/교배 중 택 1)</li>
+                    <li>교배 매칭 시, 선택 서류</li>
+                </ul>
+            </div>
+
+            <div class="form-fields">
+                <label for="username"><span class="required">*</span> 아이디</label>
+                <div class="input-with-button">
+                    <input type="text" id="username" placeholder="아이디를 입력하세요">
+                    <button class="">중복 확인</button>
+                </div>
+                <label for="password"><span class="required">*</span> 패스워드</label>
+                <input type="password" id="password" placeholder="패스워드를 입력하세요">
+                <label for="confirm-password"><span class="required">*</span> 패스워드 확인</label>
+                <input type="password" id="confirm-password" placeholder="패스워드를 재입력하세요">
+                <label for="nickname">닉네임</label>
+                <input type="text" id="nickname" placeholder="닉네임을 입력해주세요">
+
+                <div class="form-row">
+                    <div class="form-group1">
+                        <label for="age"><span class="required">*</span> 연령대</label>
+                        <select id="age">
+                            <option>20대 (20 - 29)</option>
+                            <option>30대 (30 - 39)</option>
+                            <option>40대 (40 - 49)</option>
+                            <option>50대 (50 - 59)</option>
+                            <option>60대 (60 - 69)</option>
+                            <option>70대 (70 - 79)</option>
+                            <option>80대 (80 - 89)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group2">
+                        <div class="gender-container">
+                            <label><span class="required">*</span> 성별</label>
+                            <label><input type="radio" name="gender" value="male"> 남자</label>
+                            <label><input type="radio" name="gender" value="female"> 여자</label>
+                        </div>
+                    </div>
+                </div>
+                <label for="email"><span class="required">*</span> 이메일</label>
+                <input type="email" id="email" placeholder="이메일을 입력하세요">
+
+                <label for="address"><span class="required">*</span> 주소검색</label>
+                <div class="input-with-button">
+                    <input type="text" id="address" placeholder="주소를 입력하세요">
+                    <button>우편번호 찾기</button>
+                </div>
+                <input type="text" placeholder="상세주소 입력">
+                <input type="text" placeholder="추가 주소 입력">
+                <div class="button-container">
+                    <button>다음</button>
+                </div>
+                <div class="social-login">
+                    <span>또는</span><br>
+                    <img src="/images/Naver_small.png" alt="네이버 로그인">
+                    <img src="/images/Kakao_small.png" alt="카카오 로그인">
+                    <img src="/images/Google_small.png" alt="구글 로그인">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>
