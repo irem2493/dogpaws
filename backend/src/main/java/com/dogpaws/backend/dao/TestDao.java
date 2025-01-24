@@ -1,4 +1,4 @@
-package com.dogpaws.backend.repository.dao;
+package com.dogpaws.backend.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 

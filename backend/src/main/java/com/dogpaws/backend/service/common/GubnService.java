@@ -1,7 +1,7 @@
 package com.dogpaws.backend.service.common;
 
-import org.green.backend.dto.common.GubnDto;
-import org.green.backend.repository.dao.common.GubnDao;
+import com.dogpaws.backend.dao.common.GubnDao;
+import com.dogpaws.backend.dto.common.GubnDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

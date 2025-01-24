@@ -1,7 +1,7 @@
 package com.dogpaws.backend.service.common;
 
+import com.dogpaws.backend.dao.common.LikeDao;
 import lombok.RequiredArgsConstructor;
-import org.green.backend.repository.dao.common.LikeDao;
 import org.springframework.stereotype.Service;
 
 @Service
