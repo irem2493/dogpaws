@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<header th:fragment="header" class="header-container">
+<!-- 전체 박스 -->
+<div class="header-container-web">
+    <!-- 로고 -->
+    <div class="header-logo" style="display: flex; justify-content: space-between;">
+        <div style="display: flex; gap: 50px; justify-content: center; align-items: center;">
+            <div> <a href="/"> <img src="/img/로고.png" alt="로고이미지" /> </a></div>
+            <div class="header-search">
+                <input type="text" placeholder="검색어를 입력해주세요">
+                <i class="bi bi-search"></i>
+            </div>
+        </div>
+        
+        <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+            <!-- 기본 종 모양 -->
+            <div id="header-bell-block" style="display: none;">
+                <i class="bi bi-bell" style="font-size: 24px;"></i>
+            </div>
+
+            <!-- 알림 종 모양 -->
+            <div id="header-redbell-block" style="position: relative; display: inline-block; margin-left: 20px;" onclick="bellClick()">
+                <i class="bi bi-bell-fill" style="font-size: 24px;"></i>
+                <span class="header-redbell"></span>
+            </div>
+            <div>
+                <img src="/img/증명사진.jpg"
+                    width="50px"
+                    height="50px"
+                    style="border-radius: 50%; width: 50px !important; height: 50px !important;"
+                    onerror="this.src='/img/증명사진.jpg';"
+                    alt="사용자 프로필 이미지">
+            </div>
+            <div class="header-username" onclick="toggleDropdown()" style="cursor: pointer;">
+                <span>강아지고양이</span><span> 님</span>
+            </div>
+        
+        </div>
+    </div>
+    <div class="header-menu">
+        <p id="fmatching" onclick="handleClick(event)">친구 매칭</p>
+        <p id="pmatching" onclick="handleClick(event)">교배 매칭</p>
+        <p id="chat" onclick="handleClick(event)">채팅하기</p>
+        <p id="map" onclick="handleClick(event)">근처 강아지 보기</p>
+        <p id="store" onclick="handleClick(event)">스토어</p>
+        <p id="board" onclick="handleClick(event)">커뮤니티</p>
+    </div>
+
+    <!-- 회색 줄 -->
+    <div class="header-divider"></div>
+</div>
+   
+
+
+<!-- 전체 박스 -->
+<div class="header-container-mobile" style="padding: 10px;">
+    <!-- 로고 -->
+    <div class="header-logo-mobile" style="display: flex; justify-content: space-between; align-items: center;">
+        <div> <a href="/"> <img src="/img/로고.png" alt="로고이미지" width="130px" /> </a></div>
+        
+        <div style="display: flex; gap: 10px; justify-content: center; align-items: center;">
+        <!-- 기본 종 모양 -->
+            <div id="header-bell-block">
+                <i class="bi bi-bell" style="font-size: 24px;"></i>
+            </div>
+
+            <div >
+                <img src="/img/증명사진.jpg"
+                    width="50px"
+                    height="50px"
+                    style="border-radius: 50%; width: 50px !important; height: 50px !important;"
+                    onerror="this.src='/img/증명사진.jpg';"
+                    alt="사용자 프로필 이미지">
+            </div>
+            <div class="header-username">
+                목록
+            </div>
+        </div>  
+    </div>
+  
+    <div class="header-search-mobile">
+        <input type="text" placeholder="검색어를 입력해주세요">
+        <i class="bi bi-search"></i>
+    </div>
+
+    <div class="header-menu-mobile" style="display: flex; gap: 13px;">
+        <p id="fmatching" onclick="handleClick(event)">친구매칭</p>
+        <p id="pmatching" onclick="handleClick(event)">교배매칭</p>
+        <p id="chat" onclick="handleClick(event)">채팅</p>
+        <p id="map" onclick="handleClick(event)" >지도</p>
+        <p id="store" onclick="handleClick(event)">스토어</p>
+        <p id="board" onclick="handleClick(event)">커뮤니티</p>
+    </div>
+
+    <!-- 회색 줄 -->
+    <div class="header-divider-mobile"></div>
+</div>
+   
+<script>
+    //TODO 시간관계상 여기서 처리
+    function clearStorage() {
+        sessionStorage.clear();
+        localStorage.clear();
+        location.href = '/logout'
+    }
+</script>
+</header>
+</html>
