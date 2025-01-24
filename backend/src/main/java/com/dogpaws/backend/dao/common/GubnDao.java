@@ -1,8 +1,8 @@
-package com.dogpaws.backend.repository.dao.common;
+package com.dogpaws.backend.dao.common;
 
+import com.dogpaws.backend.dto.common.GubnDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.green.backend.dto.common.GubnDto;
 
 import java.util.List;
 
