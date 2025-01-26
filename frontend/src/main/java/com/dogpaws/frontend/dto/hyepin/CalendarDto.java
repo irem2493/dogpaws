@@ -1,4 +1,4 @@
-package com.dogpaws.backend.dto.hyepin;
+package com.dogpaws.frontend.dto.hyepin;
 
 import lombok.Data;
 
