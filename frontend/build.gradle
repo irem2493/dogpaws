@@ -24,6 +24,9 @@ repositories {
 }
 
 dependencies {
+	//webfluex 디팬더시
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 	//공통 헤더/푸터 사용시 필요
 	// https://mvnrepository.com/artifact/nz.net.ultraq.thymeleaf/thymeleaf-layout-dialect
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0'
