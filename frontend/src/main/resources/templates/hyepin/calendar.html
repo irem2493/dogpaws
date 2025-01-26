@@ -8,6 +8,9 @@
     .calendar-form {
       display: none;
     }
+    .fc-event {
+      color: black !important;
+    }
   </style>
 </head>
 <body layout:fragment="content" style="min-height: 100vh">
@@ -84,7 +87,7 @@
         dayMaxEventRows: true,
         views: {
           timeGrid: {
-            dayMaxEventRows: 3
+            dayMaxEventRows: 5
           }
         },
 
@@ -100,7 +103,7 @@
             id: 2,
             title: '파우즈 운동회2!',
             start: "2025-01-24T10:00",  // KST로 변환된 시간
-            end: "2025-01-24T12:00",
+            end: "2025-01-29T12:00",
             //사용자 정의
             extendedProps: {
               allDay: true,
@@ -113,7 +116,7 @@
             id: 3,
             title: '파우즈 운동회3!',
             start: '2025-01-24T16:30',
-            end: '2025-01-24T18:00',
+            end: '2025-01-29T18:00',
             //사용자 정의
             extendedProps: {
               allDay: false,
@@ -125,6 +128,58 @@
           {
             id: 4,
             title: '파우즈 운동회4!',
+            start: '2025-01-28T16:30',
+            end: '2025-01-30T18:00',
+            //사용자 정의
+            extendedProps: {
+              allDay: false,
+              type: 'P',
+              address: '한강',
+              description: '왈왈오라오랑라오라ㅘㅇ왕라'
+            }
+          },
+          {
+            id: 5,
+            title: '파우즈 운동회5!',
+            start: '2025-01-24T16:30',
+            end: '2025-01-24T18:00',
+            //사용자 정의
+            extendedProps: {
+              allDay: false,
+              type: 'P',
+              address: '한강',
+              description: '왈왈오라오랑라오라ㅘㅇ왕라'
+            }
+          },
+          {
+            id: 6,
+            title: '파우즈 운동회6',
+            start: '2025-01-24T16:30',
+            end: '2025-01-24T18:00',
+            //사용자 정의
+            extendedProps: {
+              allDay: false,
+              type: 'P',
+              address: '한강',
+              description: '왈왈오라오랑라오라ㅘㅇ왕라'
+            }
+          },
+          {
+            id: 7,
+            title: '파우즈 운동회7!',
+            start: '2025-01-24T16:30',
+            end: '2025-01-24T18:00',
+            //사용자 정의
+            extendedProps: {
+              allDay: false,
+              type: 'P',
+              address: '한강',
+              description: '왈왈오라오랑라오라ㅘㅇ왕라'
+            }
+          },
+          {
+            id: 8,
+            title: '파우즈 운동회8!',
             start: '2025-01-24T16:30',
             end: '2025-01-24T18:00',
             //사용자 정의
@@ -172,14 +227,12 @@
           const type = info.event.extendedProps.type;
           if (type === 'P') {
             info.el.style.backgroundColor = '#FFDDC1'; // 연주황
-            info.el.style.color = 'black';
           } else if (type === 'M') {
             info.el.style.backgroundColor = '#FFD1DC'; // 연핑크
-            info.el.style.color = 'black';
           } else if (type === 'W') {
             info.el.style.backgroundColor = '#CCFFCC'; // 연한 연두
-            info.el.style.color = 'black';
           }
+          info.el.style.color = 'black';
         }
       });
 
