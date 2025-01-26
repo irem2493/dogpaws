@@ -18,10 +18,24 @@ public class CalendarController {
     private final CalendarService calendarService;
 
     @PostMapping
-    public ApiResponse<String> createEducation(@ModelAttribute CalendarDto calendarDto) throws IOException {
-        log.info("여기는 백 컨트롤러 calendarRegist / calendarDto 값: {}", calendarDto);
+    public ApiResponse<String> registCalendar(@ModelAttribute CalendarDto calendarDto) throws IOException {
+        log.info("여기는 백 컨트롤러 registCalendar / calendarDto 값: {}", calendarDto);
 
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "일정 저장 성공");
+    }
+
+    @PutMapping
+    public ApiResponse<String> updateCalendar(@ModelAttribute CalendarDto calendarDto) throws IOException {
+        log.info("여기는 백 컨트롤러 updateCalendar / calendarDto 값: {}", calendarDto);
+
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "일정 수정 성공");
+    }
+
+    @DeleteMapping
+    public ApiResponse<String> deleteCalendar(@ModelAttribute CalendarDto calendarDto) throws IOException {
+        log.info("여기는 백 컨트롤러 deleteCalendar / calendarDto 값: {}", calendarDto);
+
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "일정 삭제 성공");
     }
     
 }
