@@ -1,6 +1,6 @@
 package com.dogpaws.backend.service.common;
 
-import com.dogpaws.backend.dao.common.LikeDao;
+import com.dogpaws.backend.repository.dao.common.LikeDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

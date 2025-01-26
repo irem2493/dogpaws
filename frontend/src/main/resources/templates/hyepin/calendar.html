@@ -4,16 +4,42 @@
       layout:decorate="~{layout/layout}">
 <head>
   <title>Title</title>
-
+  <style>
+    .calendar-form {
+      display: none;
+    }
+  </style>
 </head>
 <body layout:fragment="content" style="min-height: 100vh">
 <div class="container">
   <!-- 여기서부터 작성하시면 됩니다. !-->
+
+  <!-- FullCalendar -->
   <div id="calendar"></div>
 
-  <!-- FullCalendar 초기화 -->
+  <!-- 일정 추가 폼 모달 -->
+  <div id="calendarForm" class="calendar-form">
+    <form id="addCalendarForm">
+      <label for="calendarTitle">Title:</label><br>
+      <input type="text" id="calendarTitle" required><br><br>
+
+      <label for="calendarStartDate">Start Date:</label><br>
+      <input type="datetime-local" id="calendarStartDate" required><br><br>
+
+      <label for="calendarEndDate">End Date:</label><br>
+      <input type="datetime-local" id="calendarEndDate" required><br><br>
+
+      <button type="submit">Add Event</button>
+      <button type="button" onclick="cancelForm()">Cancel</button>
+    </form>
+  </div>
+
+
+
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    let currentEventId = null;  // 수정할 이벤트의 ID를 저장할 변수
+
+    document.addEventListener('DOMContentLoaded', function() {
       var calendarEl = document.getElementById('calendar');
 
       if (!calendarEl) {
@@ -22,15 +48,90 @@
       }
 
       var calendar = new FullCalendar.Calendar(calendarEl, {
+
+
+        dayMaxEventRows: true, // for all non-TimeGrid views
+        views: {
+          timeGrid: {
+            dayMaxEventRows: 3
+          }
+        },
+
         initialView: 'dayGridMonth', // 기본 월간 달력
+        headerToolbar: {
+          start: '', // 왼쪽: 
+          center: 'title',      // 중앙: 제목
+          end: 'today prev,next' // 오른쪽: 오늘 버튼, 이전/다음 버튼
+        },
         events: [
-          { title: 'Event 1', start: '2025-01-24' },
-          { title: 'Event 2', start: '2025-01-25' }
-        ]
+          { title: '파우즈 운동회!', start: '2025-01-24', end:'2025-01-24', id: 1 },
+          { title: '파우즈 운동회2!', start: '2025-01-24', end:'2025-01-24', id: 2},
+          { title: '파우즈 운동회3!', start: '2025-01-24', end:'2025-01-28', id: 3},
+          { title: '파우즈 운동회3!', start: '2025-01-24', end:'2025-01-28T23:59:59', id: 4},
+          { title: '파우즈 운동회3!', start: '2025-01-24', end:'2025-01-28T23:59:59', id: 4},
+          { title: '파우즈 운동회3!', start: '2025-01-24', end:'2025-01-28T23:59:59', id: 4},
+          { title: '파우즈 운동회3!', start: '2025-01-24', end:'2025-01-28T23:59:59', id: 4},
+          { title: '파우즈 운동회3!', start: '2025-01-24', end:'2025-01-28T23:59:59', id: 4}
+        ],
+        dateClick: function(info) {
+          showCalendarForm(info.dateStr);
+        },
+        eventClick: function(info) {
+          editEventForm(info.event);
+        }
       });
 
       calendar.render();
     });
+
+
+    // 일정 추가 폼을 보이게 하는 함수
+    function showCalendarForm(selectedDate) {
+      currentEventId = null;// 일정 추가 시에는 ID가 없다
+      document.getElementById('calendarTitle').value = "";  // 기본 시작일 설정
+      document.getElementById('calendarStartDate').value = selectedDate + "T00:00";  // 기본 시작일 설정
+      document.getElementById('calendarForm').style.display = 'block';
+      document.getElementById('calendarEndDate').value = selectedDate + "T23:59";    // 기본 종료일 설정
+    }
+
+    // 일정 수정 폼을 띄우는 함수
+    function editEventForm(event) {
+      currentEventId = event.id;  // 수정할 이벤트 ID 저장
+      document.getElementById('calendarForm').style.display = 'block';
+      document.getElementById('calendarTitle').value = event.title;
+      document.getElementById('calendarStartDate').value = event.startStr;
+      document.getElementById('calendarEndDate').value = event.endStr || event.startStr;  // 종료일이 없으면 시작일로 설정
+    }
+
+    // 일정 추가 폼 제출 시 서버로 데이터 전송
+    document.getElementById('addCalendarForm').addEventListener('submit', function(e) {
+      e.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
+
+      const formData = new FormData(document.getElementById('addCalendarForm'));
+
+      // Axios로 데이터 전송 (여기서는 샘플 API 사용)
+      axios.post('https://jsonplaceholder.typicode.com/posts', formData)
+              .then(response => {
+                alert('Event added successfully!');
+                console.log(response.data);  // 서버 응답 확인
+                resetForm();  // 폼 초기화
+              })
+              .catch(error => {
+                console.error('There was an error adding the event!', error);
+                alert('Failed to add event!');
+              });
+    });
+
+    // 폼 초기화
+    function resetForm() {
+      document.getElementById('addCalendarForm').reset();
+      document.getElementById('calendarForm').style.display = 'none';
+    }
+
+    // 일정 추가 폼 취소
+    function cancelForm() {
+      resetForm();
+    }
   </script>
 </div>
 </body>
