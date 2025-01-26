@@ -31,7 +31,6 @@
  *       .then(data => console.log(data))
  *       .catch(error => console.error(error));
  *
- *  TODO: 모든 기능 테스트 해보지 않아서 추후 변경될 여지 있음.(현재는 get 방식만 테스트 해봄 )
  */
 const api = {
     client: axios.create({
