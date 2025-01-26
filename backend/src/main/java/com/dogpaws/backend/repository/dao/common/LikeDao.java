@@ -1,4 +1,4 @@
-package com.dogpaws.backend.dao.common;
+package com.dogpaws.backend.repository.dao.common;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

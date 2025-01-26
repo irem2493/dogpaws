@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dogpaws.backend.repository.dao.common.LikeDao">
+
+    <select id="checkLike" resultType="int">
+        SELECT COUNT(1)
+        FROM tbl_likes
+        WHERE username = #{username}
+        AND like_code = #{likeCode}
+        AND like_id = #{likeId};
+    </select>
+
+    <insert id="insertLike">
+        INSERT INTO tbl_likes (username, like_code, like_id)
+        VALUES (#{username}, #{likeCode}, #{likeId});
+    </insert>
+
+    <delete id="deleteLike">
+        DELETE FROM tbl_likes
+        WHERE username = #{username}
+        AND like_code = #{likeCode}
+        AND like_id = #{likeId};
+    </delete>
+
+</mapper>
