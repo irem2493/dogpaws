@@ -20,17 +20,39 @@
   <!-- 일정 추가 폼 모달 -->
   <div id="calendarForm" class="calendar-form">
     <form id="addCalendarForm">
-      <label for="calendarTitle">Title:</label><br>
-      <input type="text" id="calendarTitle" required><br><br>
+      <button type="button" onclick="cancelForm()">X</button>
+      <div>
+        <label for="calendarType">일정 구분</label>
+        <!-- 이거 구분 테이블에서 가져와야함. 일단 픽스로  -->
+        <select id="calendarType" name="calendarType">
+          <option value="W">산책</option>
+          <option value="P">놀이</option>
+          <option value="M">교재</option>
+        </select>
+      </div>
 
-      <label for="calendarStartDate">Start Date:</label><br>
-      <input type="datetime-local" id="calendarStartDate" required><br><br>
+      <div>
+        <label for="calendarTitle">제목</label><br>
+        <input type="text" name="calendarTitle" id="calendarTitle" required><br><br>
+      </div>
 
-      <label for="calendarEndDate">End Date:</label><br>
-      <input type="datetime-local" id="calendarEndDate" required><br><br>
+      <div>
+        <div>날짜</div>
+        <input type="datetime-local" name="calendarStartDate" id="calendarStartDate" required><br><br>
+        <input type="datetime-local" name="calendarEndDate" id="calendarEndDate" required><br><br>
+      </div>
 
-      <button type="submit">Add Event</button>
-      <button type="button" onclick="cancelForm()">Cancel</button>
+      <div>
+        <div>장소</div>
+      </div>
+
+      <div>
+        <label for="calendarDescription">일정 상세</label><br>
+        <textarea name="calendarDescription" id="calendarDescription"></textarea><br><br>
+      </div>
+
+
+      <button type="submit">저장 </button>
     </form>
   </div>
 
@@ -49,8 +71,8 @@
 
       var calendar = new FullCalendar.Calendar(calendarEl, {
 
-
-        dayMaxEventRows: true, // for all non-TimeGrid views
+        //+more 표시
+        dayMaxEventRows: true,
         views: {
           timeGrid: {
             dayMaxEventRows: 3
@@ -63,21 +85,64 @@
           center: 'title',      // 중앙: 제목
           end: 'today prev,next' // 오른쪽: 오늘 버튼, 이전/다음 버튼
         },
+
         events: [
-          { title: '파우즈 운동회!', start: '2025-01-24', end:'2025-01-24', id: 1 },
-          { title: '파우즈 운동회2!', start: '2025-01-24', end:'2025-01-24', id: 2},
-          { title: '파우즈 운동회3!', start: '2025-01-24', end:'2025-01-28', id: 3},
-          { title: '파우즈 운동회3!', start: '2025-01-24', end:'2025-01-28T23:59:59', id: 4},
-          { title: '파우즈 운동회3!', start: '2025-01-24', end:'2025-01-28T23:59:59', id: 4},
-          { title: '파우즈 운동회3!', start: '2025-01-24', end:'2025-01-28T23:59:59', id: 4},
-          { title: '파우즈 운동회3!', start: '2025-01-24', end:'2025-01-28T23:59:59', id: 4},
-          { title: '파우즈 운동회3!', start: '2025-01-24', end:'2025-01-28T23:59:59', id: 4}
+          {
+            id: 2,
+            title: '파우즈 운동회2!',
+            start: "2025-01-24T10:00",  // KST로 변환된 시간
+            end: "2025-01-24T12:00",
+            //사용자 정의
+            extendedProps: {
+              allDay: true,
+              type: 'P',
+              description: '운동회 준비 및 진행'
+            }
+          },
+          {
+            id: 3,
+            title: '파우즈 운동회3!',
+            start: '2025-01-24T16:30',
+            end: '2025-01-24T18:00',
+            //사용자 정의
+            extendedProps: {
+              allDay: false,
+              type: 'W',
+              description: '멍멍뭉뭉뭉'
+            }
+          }
         ],
+
+        //날짜 클릭했을 때 호출됨
         dateClick: function(info) {
           showCalendarForm(info.dateStr);
         },
+
+        //등록된 날짜 클릭했을 때, 정보 보기
         eventClick: function(info) {
           editEventForm(info.event);
+        },
+
+        // 타이틀 옆에 아이콘 이미지 추가
+        eventContent: function(info) {
+          switch(info.event.extendedProps.type) {
+            case 'W':
+              icon = '<img src="/img/walk-icon.png" alt="산책 아이콘" style="width: 20px; height: 20px; margin-right: 5px;">';
+              break;
+            case 'P':
+              icon = '<img src="/img/play-icon.png" alt="놀이 아이콘" style="width: 20px; height: 20px; margin-right: 5px;">';
+              break;
+            case 'M':
+              icon = '<img src="/img/breeding-icon.png" alt="교배 아이콘" style="width: 20px; height: 20px; margin-right: 5px;">';
+              break;
+            default:
+              icon = '<img src="/img/default-icon.png" alt="기본 아이콘" style="width: 20px; height: 20px; margin-right: 5px;">';
+              break;
+          }
+          var title = info.event.title;
+
+          // 제목과 아이콘을 결합하여 렌더링
+          return { html: icon + title };
         }
       });
 
@@ -85,41 +150,64 @@
     });
 
 
-    // 일정 추가 폼을 보이게 하는 함수
+    // 일정 추가 폼 띄우기
     function showCalendarForm(selectedDate) {
-      currentEventId = null;// 일정 추가 시에는 ID가 없다
+      currentEventId = null;
+      document.getElementById('calendarForm').style.display = 'block';
+
       document.getElementById('calendarTitle').value = "";  // 기본 시작일 설정
       document.getElementById('calendarStartDate').value = selectedDate + "T00:00";  // 기본 시작일 설정
-      document.getElementById('calendarForm').style.display = 'block';
       document.getElementById('calendarEndDate').value = selectedDate + "T23:59";    // 기본 종료일 설정
     }
 
-    // 일정 수정 폼을 띄우는 함수
+    // 일정 수정 폼 띄우기
     function editEventForm(event) {
       currentEventId = event.id;  // 수정할 이벤트 ID 저장
       document.getElementById('calendarForm').style.display = 'block';
-      document.getElementById('calendarTitle').value = event.title;
-      document.getElementById('calendarStartDate').value = event.startStr;
-      document.getElementById('calendarEndDate').value = event.endStr || event.startStr;  // 종료일이 없으면 시작일로 설정
+
+      document.getElementById('calendarTitle').value = event.title;  // 제목
+
+      // 서버에서 받은 시간
+      const startDate = new Date(event.start);
+      const endDate = event.end ? new Date(event.end) : startDate;
+
+      // 클라이언트에서 시간을 로컬 타임존에 맞게 변환
+      const startDateLocal = startDate.toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(" ", "T").slice(0, 16);
+      const endDateLocal = endDate.toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(" ", "T").slice(0, 16);
+
+      document.getElementById('calendarStartDate').value = startDateLocal; // 시작일 (ISO 형식)
+      document.getElementById('calendarEndDate').value = endDateLocal;
+      document.getElementById('calendarType').value = event.extendedProps?.type || '산책'; // 일정 구분
+      document.getElementById('calendarDescription').value = event.extendedProps?.description || ''; // 상세 설명
     }
 
-    // 일정 추가 폼 제출 시 서버로 데이터 전송
+    // 일정 추가 폼 저장
     document.getElementById('addCalendarForm').addEventListener('submit', function(e) {
       e.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
 
       const formData = new FormData(document.getElementById('addCalendarForm'));
 
-      // Axios로 데이터 전송 (여기서는 샘플 API 사용)
-      axios.post('https://jsonplaceholder.typicode.com/posts', formData)
-              .then(response => {
-                alert('Event added successfully!');
-                console.log(response.data);  // 서버 응답 확인
-                resetForm();  // 폼 초기화
-              })
-              .catch(error => {
-                console.error('There was an error adding the event!', error);
-                alert('Failed to add event!');
-              });
+
+      formData.forEach((value, key) => {
+        console.log(key, value); // 전송되는 데이터 확인
+      });
+
+      //폼데이터 보내기
+      api.post('/api/calendar', formData, {
+      })
+          .then(res => {
+            if (res.body.body == '일정 저장 성공') {  // res.body.body 로 받아야합니다..
+              alert("등록 성공");
+              resetForm();  // 폼 초기화
+            } else {
+              alert("등록 실패");
+            }
+          })
+          .catch(error => {
+            console.error("오류:", error);
+            alert("등록 오류");
+          });
+
     });
 
     // 폼 초기화
