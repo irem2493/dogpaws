@@ -358,7 +358,9 @@ img[alt="weight-icon"] {
     border: 1px solid var(--store_border_color);
     background: var(--store_color);
     color: #D97000;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-size: 0.85rem;
     margin: 0;
     padding: 0;
