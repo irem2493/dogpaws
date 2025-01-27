@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <header th:fragment="header" class="header-container">
+<link rel="stylesheet" th:href="@{/css/common/common.css}" />
+
 <!-- 전체 박스 -->
 <div class="header-container-web">
     <!-- 로고 -->
@@ -97,7 +99,8 @@
     <!-- 회색 줄 -->
     <div class="header-divider-mobile"></div>
 </div>
-   
+
+<script src="/js/common/modal.js"></script>
 <script>
     //TODO 시간관계상 여기서 처리
     function clearStorage() {
