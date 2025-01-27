@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Data
 public class CalendarDto {
 
-    private int calendarId; // 일정 ID (기본키)
+    private Integer calendarId; // 일정 ID (기본키)
     private String username; // 사용자 ID (tbl_users와 연결된 외래키)
     private int dogId;   // 강아지 ID (tbl_dogs와 연결된 외래키)
     private String dogName;   // 강아지 ID (tbl_dogs와 연결된 외래키)
@@ -20,5 +20,6 @@ public class CalendarDto {
     private LocalDateTime createdAt;   // 일정 생성일 (현재 시간으로 기본 설정)
     private LocalDateTime updatedAt;  // 일정 수정일 (현재 시간으로 기본 설정)
     private Integer roomId; // 채팅방 번호 (NULL 가능)
+    private String scheduleType; // P: 개인, S: 공유받은
 
 }

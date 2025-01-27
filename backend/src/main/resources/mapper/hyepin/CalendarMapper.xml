@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dogpaws.backend.repository.dao.hyepin.CalendarDao">
+
+    <select id="getCalendarByUsername" resultType="com.dogpaws.backend.dto.hyepin.CalendarDto">
+        SELECT
+            c.calendar_id,
+            c.username,
+            c.dog_id,
+            c.calendar_title,
+            c.address,
+            c.calendar_type,
+            c.calendar_start_date,
+            c.calendar_end_date,
+            c.calendar_description,
+            c.shared_yn,
+            'my' AS schedule_type
+        FROM tbl_calendar c
+        WHERE c.username = #{username}
+
+        UNION ALL
+
+        SELECT
+            s.calendar_id,
+            s.username,
+            s.dog_id,
+            c.calendar_title,
+            c.address,
+            c.calendar_type,
+            c.calendar_start_date,
+            c.calendar_end_date,
+            c.calendar_description,
+            c.shared_yn,
+            'oth' AS schedule_type
+        FROM tbl_calendar_shared s
+        JOIN tbl_calendar c ON s.calendar_id = c.calendar_id
+        WHERE s.username = #{username}
+    </select>
+
+
+
+</mapper>
