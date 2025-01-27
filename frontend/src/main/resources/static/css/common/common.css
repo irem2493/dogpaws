@@ -350,6 +350,10 @@ img[alt="weight-icon"] {
     display: block;
 }
 
+.select-box.readonly { pointer-events: none; opacity: 0.8; color: black; } /* 읽기 전용 스타일 */
+.select-box.readonly .select-box-selected { cursor: not-allowed; }
+.select-box.readonly .select-box-options { display: none; } /* 드롭다운 숨김 */
+
 .btn-status{
     width: 75px;
     height: 25px;
@@ -358,7 +362,9 @@ img[alt="weight-icon"] {
     border: 1px solid var(--store_border_color);
     background: var(--store_color);
     color: #D97000;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-size: 0.85rem;
     margin: 0;
     padding: 0;
@@ -396,7 +402,7 @@ img[alt="weight-icon"] {
 
 /* 모달 */
 
-.modal{
+.pawsModal{
     width: 600px;
     height: 650px;
     flex-shrink: 0;
@@ -409,15 +415,15 @@ img[alt="weight-icon"] {
     z-index: 1001;
 }
 
-.modal-title{
+.pawsModal-title{
     padding: 35px 0 0 0;
     color: var(--black);
     text-align: center;
     font-size: 28px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
-.modal-close {
+.pawsModal-close {
     position: absolute;
     top: 30px;
     right: 30px;
@@ -429,19 +435,16 @@ img[alt="weight-icon"] {
     padding: 0;
 }
 
-.modal-content {
-    padding: 30px;
+.pawsModal-content {
+    margin: 0px 10px 10px 20px;
     flex: 1;
+    word-break: break-word; /* 긴 단어를 줄바꿈 처리 */
+    overflow: auto;
 }
 
-/* 타이틀이 없는 경우의 컨텐츠 패딩 */
-.modal:not(:has(.modal-title)) .modal-content,
-.modal:not(:has(.modal-title)) .modal-content-center {
-    padding-top: 25px;  /* 타이틀이 없을 때 상단 여백 추가 */
-}
-
-.modal-content-center {
+.pawsModal-content-center {
     flex: 1;
+    margin-top: 10px;
     padding: 0 30px;
     display: flex;
     justify-content: center;
@@ -449,9 +452,11 @@ img[alt="weight-icon"] {
     text-align: center;
     font-size: 1.1rem;
     color: var(--black);
+    word-break: break-word; /* 긴 단어를 줄바꿈 처리 */
+    overflow: auto;
 }
 
-.modal-footer {
+.pawsModal-footer {
     margin-top: auto;
     padding-bottom: 30px;
     text-align: center;
@@ -460,7 +465,7 @@ img[alt="weight-icon"] {
     gap: 20px;
 }
 
-.modal-confirm {
+.pawsModal-confirm {
     width: 90px;
     height: 40px;
     border-radius: 10px;
@@ -470,7 +475,7 @@ img[alt="weight-icon"] {
     cursor: pointer;
 }
 
-.modal-cancel {
+.pawsModal-cancel {
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -557,7 +562,7 @@ textarea.input-a {
 }
 
 /* 모달 오버레이 */
-.modal-overlay {
+.pawsModal-overlay {
     position: fixed;
     top: 0;
     left: 0;
