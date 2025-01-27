@@ -4,7 +4,7 @@ function openModal(modalId, isEmptyBg = false) {
     if (modal) {
         // 오버레이 생성 및 추가
         const overlay = document.createElement('div');
-        overlay.className = 'modal-overlay';
+        overlay.className = 'pawsModal-overlay';
 
         // 오버레이 배경색 없는걸 원할경우
         if (isEmptyBg) {
@@ -26,9 +26,9 @@ function openModal(modalId, isEmptyBg = false) {
 
 // 모달 닫기
 function closeModal(button) {
-    const modal = button.closest('.modal');
+    const modal = button.closest('.pawsModal');
     const overlay = modal.parentElement;
-    if (modal && overlay.classList.contains('modal-overlay')) {
+    if (modal && overlay.classList.contains('pawsModal-overlay')) {
         // 모달을 원래 위치로 되돌림
         document.body.appendChild(modal);
         // 오버레이 제거
@@ -40,9 +40,9 @@ function closeModal(button) {
 // ESC 키로 모달 닫기
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        const overlay = document.querySelector('.modal-overlay');
+        const overlay = document.querySelector('.pawsModal-overlay');
         if (overlay) {
-            const modal = overlay.querySelector('.modal');
+            const modal = overlay.querySelector('.pawsModal');
             if (modal) {
                 document.body.appendChild(modal);
                 overlay.remove();

@@ -398,7 +398,7 @@ img[alt="weight-icon"] {
 
 /* 모달 */
 
-.modal{
+.pawsModal{
     width: 600px;
     height: 650px;
     flex-shrink: 0;
@@ -411,7 +411,7 @@ img[alt="weight-icon"] {
     z-index: 1001;
 }
 
-.modal-title{
+.pawsModal-title{
     padding: 35px 0 0 0;
     color: var(--black);
     text-align: center;
@@ -419,7 +419,7 @@ img[alt="weight-icon"] {
     margin-bottom: 20px;
 }
 
-.modal-close {
+.pawsModal-close {
     position: absolute;
     top: 30px;
     right: 30px;
@@ -431,14 +431,14 @@ img[alt="weight-icon"] {
     padding: 0;
 }
 
-.modal-content {
+.pawsModal-content {
     margin: 0px 10px 10px 20px;
     flex: 1;
     word-break: break-word; /* 긴 단어를 줄바꿈 처리 */
     overflow: auto;
 }
 
-.modal-content-center {
+.pawsModal-content-center {
     flex: 1;
     margin-top: 10px;
     padding: 0 30px;
@@ -452,7 +452,7 @@ img[alt="weight-icon"] {
     overflow: auto;
 }
 
-.modal-footer {
+.pawsModal-footer {
     margin-top: auto;
     padding-bottom: 30px;
     text-align: center;
@@ -461,7 +461,7 @@ img[alt="weight-icon"] {
     gap: 20px;
 }
 
-.modal-confirm {
+.pawsModal-confirm {
     width: 90px;
     height: 40px;
     border-radius: 10px;
@@ -471,7 +471,7 @@ img[alt="weight-icon"] {
     cursor: pointer;
 }
 
-.modal-cancel {
+.pawsModal-cancel {
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -558,7 +558,7 @@ textarea.input-a {
 }
 
 /* 모달 오버레이 */
-.modal-overlay {
+.pawsModal-overlay {
     position: fixed;
     top: 0;
     left: 0;
