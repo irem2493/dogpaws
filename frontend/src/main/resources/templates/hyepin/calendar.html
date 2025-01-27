@@ -13,63 +13,94 @@
   <!-- FullCalendar -->
   <div id="calendar"></div>
 
+
   <!-- 일정 추가 폼 모달 -->
-  <div id="calendarForm" class="calendar-form">
+  <div class="modal" id="calendarForm" style="display: none;">
     <form id="addCalendarForm">
-      <button type="button" onclick="cancelForm()">X</button>
-      <div id="calendarRegist">일정 등록</div>
-      <div id="calendarDetail" style="gap: 10px; display: none;">
-        <div>일정 상세</div>
-        <div style="cursor: pointer;" onclick="calendarModify()"> <i class="bi bi-pencil"></i></div>
+      <button class="modal-close" onclick="cancelForm(this)"></button>
+      <div id="calendarRegist"> <h2 class="modal-title">일정 등록</h2></div>
+      <div id="calendarDetail" style="gap: 10px; display: none; justify-content: center;">
+        <div><h2 class="modal-title">일정 상세</h2> </div>
+        <div  class="modal-title" style="cursor: pointer;" onclick="calendarModify()"> <i class="bi bi-pencil"></i></div>
       </div>
       <input type="hidden" name="calendarId" value="">
+
       <div>
         <label for="calendarType">일정 구분</label>
         <!-- 이거 구분 테이블에서 가져와야함. 일단 픽스로  -->
-        <select id="calendarType" name="calendarType">
-          <option value="W">산책</option>
-          <option value="P">놀이</option>
-          <option value="M">교배 </option>
-        </select>
+        <div class="select-box select-box1">
+          <div class="select-box-selected">산책</div>
+          <div class="select-box-options">
+            <div class="select-box-option" data-value="W">산책</div>
+            <div class="select-box-option" data-value="P">놀이</div>
+            <div class="select-box-option" data-value="M">교배</div>
+          </div>
+          <!-- 숨겨진 input 추가 -->
+          <input type="hidden" id="calendarType" name="calendarType" value="W">
+        </div>
       </div>
 
       <div>
         <label for="dogId">반려견 선택</label>
-        <!-- 이거 유저 name으로 강아지 값 가져와야함. 일단 픽스로 th:value="dogId" / th:value="dogName" -->
-        <select id="dogId" name="dogId">
-          <option value="1">뭉이</option>
-          <option value="2">최윤서</option>
-          <option value="3">융더</option>
-        </select>
+        <div class="select-box select-box2">
+          <div class="select-box-selected">뭉이</div>
+          <div class="select-box-options">
+            <div class="select-box-option" data-value="1">뭉이</div>
+            <div class="select-box-option" data-value="2">최윤서</div>
+            <div class="select-box-option" data-value="3">융더</div>
+          </div>
+          <!-- 숨겨진 input 추가 -->
+          <input type="hidden" id="dogId" name="dogId" value="1">
+        </div>
       </div>
 
       <div>
         <label for="calendarTitle">제목</label><br>
-        <input type="text" name="calendarTitle" id="calendarTitle" required><br><br>
+        <input class="input-a" type="text" name="calendarTitle" id="calendarTitle" required><br><br>
       </div>
 
       <div>
         <div>날짜</div>
-        <input type="datetime-local" name="calendarStartDate" id="calendarStartDate" required><br><br>
-        <input type="datetime-local" name="calendarEndDate" id="calendarEndDate" required><br><br>
+        <input  class="input-a" type="datetime-local" name="calendarStartDate" id="calendarStartDate" required><br><br>
+        <input  class="input-a" type="datetime-local" name="calendarEndDate" id="calendarEndDate" required><br><br>
       </div>
 
       <div>
         <div>장소</div>
-        <input type="text" name="address" id="address">
+        <input  class="input-a" type="text" name="address" id="address">
       </div>
 
       <div>
         <label for="calendarDescription">일정 상세</label><br>
-        <textarea name="calendarDescription" id="calendarDescription"></textarea><br><br>
+        <textarea class="input-a" name="calendarDescription" id="calendarDescription"></textarea><br><br>
       </div>
 
-      <input type="button" id="submit" onclick="calendarSubmit()" value="저장">
-      <input type="button" id="delete" onclick="calendarDelete()" value="삭제" style="display: none;">
-      <input type="button" id="update" onclick="calendarUpdate()" value="수정" style="display: none;">
-      <input type="button" id="share" onclick="calendarShare()" value="공유">
+      <div class="modal-footer">
+        <button class="modal-confirm" id="submit" onclick="calendarSubmit()">저장</button>
+        <button class="modal-confirm" id="delete" onclick="calendarDelete()" style="display: none;">삭제</button>
+        <button class="modal-confirm" id="update" onclick="calendarUpdate()" style="display: none;">수정</button>
+        <button class="modal-cancel" id="share" onclick="calendarShare()">공유</button>
+      </div>
+
     </form>
   </div>
+
+
+
+  <div class="modal" id="basicModal" style="display: none;">
+    <h2 class="modal-title">기본 모달</h2>
+    <button class="modal-close" onclick="closeModal(this)"></button>
+    <div class="modal-content">
+      <p>이것은 기본적인 모달 창입니다.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-confirm" onclick="closeModal(this)">확인</button>
+      <button class="modal-cancel" onclick="closeModal(this)">취소</button>
+    </div>
+  </div>
+
+  <button class="btn-orange" onclick="openModal('basicModal')">기본 모달 열기</button>
+
 
 </div>
 
