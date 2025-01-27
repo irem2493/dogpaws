@@ -89,16 +89,16 @@ document.addEventListener('DOMContentLoaded', function() {
         eventContent: function(info) {
             switch(info.event.extendedProps.type) {
                 case 'W':
-                    icon = '<img src="/img/walk-icon.png" alt="산책 아이콘" style="width: 20px; height: 20px; margin-right: 5px;">';
+                    icon = '<img src="/img/icon/dog-filter/foot.svg" alt="산책 아이콘" style="width: 20px; height: 20px; margin-right: 5px;">';
                     break;
                 case 'P':
-                    icon = '<img src="/img/play-icon.png" alt="놀이 아이콘" style="width: 20px; height: 20px; margin-right: 5px;">';
+                    icon = '<img src="/img/icon/dog-filter/dribbble-ball.svg" alt="놀이 아이콘" style="width: 20px; height: 20px; margin-right: 5px;">';
                     break;
                 case 'M':
-                    icon = '<img src="/img/breeding-icon.png" alt="교배 아이콘" style="width: 20px; height: 20px; margin-right: 5px;">';
+                    icon = '<img src="/img/icon/dog-filter/dog.svg" alt="교배 아이콘" style="width: 20px; height: 20px; margin-right: 5px;">';
                     break;
                 default:
-                    icon = '<img src="/img/default-icon.png" alt="기본 아이콘" style="width: 20px; height: 20px; margin-right: 5px;">';
+                    icon = '<img src="/img/icon/dog-filter/dog.svg" alt="기본 아이콘" style="width: 20px; height: 20px; margin-right: 5px;">';
                     break;
             }
             var title = info.event.title;
@@ -122,10 +122,55 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar.render();
 });
 
+// 첫 번째 셀렉트 박스
+const selectBox1 = document.querySelector('.select-box1');
+const selected1 = selectBox1.querySelector('.select-box-selected');
+const options1 = selectBox1.querySelector('.select-box-options');
+const hiddenInput1 = selectBox1.querySelector('input[type="hidden"]');
+
+selectBox1.addEventListener('click', (e) => {
+    selectBox1.classList.toggle('active');
+});
+
+options1.addEventListener('click', (e) => {
+    if (e.target.classList.contains('select-box-option')) {
+        selected1.textContent = e.target.textContent;
+        hiddenInput1.value = e.target.getAttribute('data-value');
+    }
+});
+
+document.addEventListener('click', (e) => {
+    if (!selectBox1.contains(e.target)) {
+        selectBox1.classList.remove('active');
+    }
+});
+
+// 두 번째 셀렉트 박스
+const selectBox2 = document.querySelector('.select-box2');
+const selected2 = selectBox2.querySelector('.select-box-selected');
+const options2 = selectBox2.querySelector('.select-box-options');
+const hiddenInput2 = selectBox2.querySelector('input[type="hidden"]');
+
+selectBox2.addEventListener('click', (e) => {
+    selectBox2.classList.toggle('active');
+});
+
+options2.addEventListener('click', (e) => {
+    if (e.target.classList.contains('select-box-option')) {
+        selected2.textContent = e.target.textContent;
+        hiddenInput2.value = e.target.getAttribute('data-value');
+    }
+});
+
+document.addEventListener('click', (e) => {
+    if (!selectBox2.contains(e.target)) {
+        selectBox2.classList.remove('active');
+    }
+});
+
 //폼 전역변수 선언
 let calendarTitleField = document.getElementById('calendarTitle');
 let calendarTypeField = document.getElementById('calendarType');
-let dogIdField = document.getElementById('dogId');
 let calendarStartDateField = document.getElementById('calendarStartDate');
 let calendarEndDateField = document.getElementById('calendarEndDate');
 let addressField = document.getElementById('address');
@@ -137,8 +182,9 @@ const deleteBtn = document.getElementById("delete");
 
 // 일정 추가 폼 띄우기
 function showCalendarForm(selectedDate) {
+    openModal('calendarForm');
+
     currentEventId = null;
-    document.getElementById('calendarForm').style.display = 'block';
     submitBtn.style.display = "block";
     updateBtn.style.display = "none";
     shareBtn.style.display = "none";
@@ -154,16 +200,18 @@ function showCalendarForm(selectedDate) {
     calendarTitleField.removeAttribute('readonly');
     calendarStartDateField.removeAttribute('readonly');
     calendarEndDateField.removeAttribute('readonly');
-    calendarTypeField.removeAttribute('disabled');
-    dogIdField.removeAttribute('disabled');
     addressField.removeAttribute('readonly');
     calendarDescriptionField.removeAttribute('readonly');
+
+    document.querySelectorAll('.select-box').forEach(selectBox => {
+        selectBox.classList.remove('readonly'); // 읽기 전용 클래스 제거
+    });
 }
 
 // 일정 상세 폼 띄우기
 function editEventForm(event) {
     currentEventId = event.id;  // 수정할 이벤트 ID 저장
-    document.getElementById('calendarForm').style.display = 'block';
+    openModal('calendarForm');
 
     shareBtn.style.display = "block";
     deleteBtn.style.display = "block";
@@ -184,20 +232,15 @@ function editEventForm(event) {
     const startDateLocal = startDate.toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(" ", "T").slice(0, 16);
     const endDateLocal = endDate.toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(" ", "T").slice(0, 16);
 
-
     // 시작일과 종료일 설정 및 읽기 전용
     calendarStartDateField.value = startDateLocal;
     calendarStartDateField.setAttribute('readonly', true);
     calendarEndDateField.value = endDateLocal;
     calendarEndDateField.setAttribute('readonly', true);
 
-    // 일정 구분
-    calendarTypeField.value = event.extendedProps?.type || 'W';
-    calendarTypeField.setAttribute('disabled', true); // 읽기 전용 설정
-
-    // 반려견 선택
-    dogIdField.value = event.extendedProps?.dogId || '';
-    dogIdField.setAttribute('disabled', true); // 읽기 전용 설정
+    document.querySelectorAll('.select-box').forEach(selectBox => {
+        selectBox.classList.add('readonly'); // 읽기 전용 클래스 추가
+    });
 
     // 주소
     addressField.value = event.extendedProps?.address || '';
@@ -219,10 +262,13 @@ function calendarModify(){
     calendarTitleField.removeAttribute('readonly');
     calendarStartDateField.removeAttribute('readonly');
     calendarEndDateField.removeAttribute('readonly');
-    calendarTypeField.removeAttribute('disabled');
-    dogIdField.removeAttribute('disabled');
     addressField.removeAttribute('readonly');
     calendarDescriptionField.removeAttribute('readonly');
+
+    document.querySelectorAll('.select-box').forEach(selectBox => {
+        selectBox.classList.remove('readonly'); // 읽기 전용 클래스 제거
+    });
+
 }
 
 // 폼 초기화
@@ -232,9 +278,12 @@ function resetForm() {
 }
 
 // 일정 추가 폼 취소
-function cancelForm() {
+function cancelForm(button) {
     resetForm();
+    const modal = button.closest('.modal');
+    closeModal(modal);
 }
+
 
 //일정 등록
 function calendarSubmit() {
