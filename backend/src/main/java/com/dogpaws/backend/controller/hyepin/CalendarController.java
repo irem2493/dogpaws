@@ -31,7 +31,7 @@ public class CalendarController {
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "일정 수정 성공");
     }
 
-    @DeleteMapping
+    @PostMapping("/delete")
     public ApiResponse<String> deleteCalendar(@ModelAttribute CalendarDto calendarDto) throws IOException {
         log.info("여기는 백 컨트롤러 deleteCalendar / calendarDto 값: {}", calendarDto);
 

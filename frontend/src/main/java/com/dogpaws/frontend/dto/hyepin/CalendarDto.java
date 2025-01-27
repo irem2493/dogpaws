@@ -10,6 +10,7 @@ public class CalendarDto {
     private int calendarId; // 일정 ID (기본키)
     private String username; // 사용자 ID (tbl_users와 연결된 외래키)
     private int dogId;   // 강아지 ID (tbl_dogs와 연결된 외래키)
+    private String dogName;   // 강아지 ID (tbl_dogs와 연결된 외래키)
     private String calendarTitle;  // 일정 제목
     private String address;  // 장소 (NULL 가능)
     private char calendarType; // 일정 종류 (산책: W, 놀이: P, 교배: M)
