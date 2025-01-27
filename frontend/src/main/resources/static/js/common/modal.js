@@ -1,10 +1,18 @@
 // 모달 열기
-function openModal(modalId) {
+function openModal(modalId, isEmptyBg = false) {
     const modal = document.getElementById(modalId);
     if (modal) {
         // 오버레이 생성 및 추가
         const overlay = document.createElement('div');
         overlay.className = 'modal-overlay';
+
+        // 오버레이 배경색 없는걸 원할경우
+        if (isEmptyBg) {
+            overlay.style.backgroundColor = 'transparent';
+        } else {
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        }
+
         document.body.appendChild(overlay);
 
         // 모달을 오버레이 안으로 이동
