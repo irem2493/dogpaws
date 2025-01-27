@@ -15,4 +15,7 @@ public class dogMbtiController {
 
     @GetMapping("/dbti-question")
     public String dogMbtiQuestion() {return "yoonseo/dbti_question";}
+
+    @GetMapping("/dbti-final")
+    public String dbtiFinal() {return "yoonseo/dbti_final";}
 }
