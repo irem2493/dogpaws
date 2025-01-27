@@ -350,6 +350,10 @@ img[alt="weight-icon"] {
     display: block;
 }
 
+.select-box.readonly { pointer-events: none; opacity: 0.8; color: black; } /* 읽기 전용 스타일 */
+.select-box.readonly .select-box-selected { cursor: not-allowed; }
+.select-box.readonly .select-box-options { display: none; } /* 드롭다운 숨김 */
+
 .btn-status{
     width: 75px;
     height: 25px;
