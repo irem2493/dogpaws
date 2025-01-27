@@ -1,0 +1,708 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Noto+Sans:wght@400;700&display=swap');
+
+:root {
+    --primary-color: #FFA03A;
+    --primary-color-dark: #EF7E06;
+    --white: #FFF;
+    --black: #000;
+    --store_border_color: #D97000;
+    --store_color: #FBFAF9;
+}
+body {
+    font-family: 'Noto Sans KR', 'Noto Sans', sans-serif;
+    font-size: 16px;
+    margin:0;
+    padding:0;
+}
+
+button, input, textarea {
+    font-family: 'Noto Sans KR', 'Noto Sans', sans-serif;
+    font-size: 1rem;
+    color: var(--black);
+    margin: 0;
+    /* padding: 0; */
+}
+
+.btn-orange {
+    display: inline-flex;
+    min-width: 300px;
+    width: fit-content;
+    height: 60px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: var(--primary-color);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--white);
+    text-align: center;
+    padding: 0;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    box-sizing: border-box;
+    text-decoration: none;
+    border: none;
+}
+
+.btn-goto {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 300px;
+    width: fit-content;
+    height: 54px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: 2px solid var(--primary-color);
+    background: var(--white);
+    overflow: hidden;
+    position: relative;
+    font-size: 24px;
+    color: var(--black);
+    text-align: center;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    box-sizing: border-box;
+    padding: 0 80px 0 30px;
+}
+
+.btn-goto::after {
+    content: "";
+    width: 60px;
+    height: 54px;
+    flex-shrink: 0;
+    background: var(--primary-color) url('/img/icon/button/right_arrow.svg') no-repeat center center;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.pw-title {
+    width: 735px;
+    height: 70px;
+    border-bottom: 2px solid var(--primary-color);
+    text-align: center;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dog-filter {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.9rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    height: 24px;
+    margin:0;
+}
+
+.dog-filter img {
+    width: 1.2rem;
+    margin-right: 5px;
+    height: auto;
+    object-fit: contain;
+}
+
+.dog-filter-calendar {
+    display: inline-flex;
+    align-items: center;
+    color: #5D5D5D;
+    font-size: 1.1rem;
+    margin:0;
+}
+
+.dog-filter-calendar img {
+    width: 1.3rem;
+    margin-right: 7px;
+    height: auto;
+    object-fit: contain;
+}
+
+img[alt="weight-icon"] {
+    width: 24px;
+    height: auto;
+    object-fit: contain;
+}
+
+.btn-a {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 85px;
+    width: fit-content;
+    height: 35px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: 1px solid #E5E5E5;
+    background: var(--white);
+    box-sizing: border-box;
+    font-size: 0.8rem;
+    color: var(--black);
+    margin: 0;
+    padding: 0 15px;
+}
+
+.btn-b {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 90px;
+    width: fit-content;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: 1px solid #E17400;
+    background: rgba(217, 217, 217, 0.00);
+    margin: 0;
+    color: #E17400;
+    font-size: 16px;
+    font-weight: 400;
+    padding: 0 15px;
+}
+
+.btn-confirm {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 85px;
+    height: 35px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: none;
+    background: var(--primary-color);
+    box-sizing: border-box;
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.btn-delete{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 85px;
+    height: 35px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: none;
+    color: var(--white);
+    background: #F20F38;
+    box-sizing: border-box;
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+/* 빨간색 버전 */
+.red {
+    --checkbox-color: #FF4B63;  /* 빨간색 체크박스용 변수 */
+}
+
+/* 기본 체크박스 */
+.checkbox-basic {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    background: url('/img/icon/button/uncheck-box.svg') no-repeat center center;
+    border: none;
+    margin: 0;
+}
+
+.checkbox-basic:checked {
+    background: url('/img/icon/button/check-box.svg') no-repeat center center;
+}
+
+/* 빨간색 버전은 배경 이미지만 변경 */
+.checkbox-basic.red {
+    background: url('/img/icon/button/uncheck-box-red.svg') no-repeat center center;
+}
+
+.checkbox-basic.red:checked {
+    background: url('/img/icon/button/check-box-red.svg') no-repeat center center;
+}
+
+/* 라운드 체크박스도 동일하게 적용 */
+.checkbox-round.red {
+    background: url('/img/icon/button/round-radio-unchecked-red.svg') no-repeat center;
+}
+
+.checkbox-round.red:checked {
+    background: url('/img/icon/button/round-radio-checked-red.svg') no-repeat center;
+}
+
+/* 라운드 체크박스 스타일 */
+.checkbox-round {
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    background: url('/img/icon/button/round-radio-unchecked.svg') no-repeat center;
+    border: none;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* 체크된 라운드 체크박스 */
+.checkbox-round:checked {
+    background: url('/img/icon/button/round-radio-checked.svg') no-repeat center;
+}
+
+.title-s{
+    color: var(--black);
+    padding: 5px 10px;
+    width: fit-content;
+    text-align: center;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: normal;
+    border-bottom: 8px solid var(--primary-color-dark);
+}
+
+
+.btn-m-down {
+    width: 750px;
+    height: 55px;
+    flex-shrink: 0;
+    border-radius: 14px;
+    background: linear-gradient(271deg, #FE904B 7.64%, #FB724C 90.68%);
+    border: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.btn-m-down::after {
+    content: '';
+    width: 82px;
+    height: 37px;
+    background: url('/img/icon/button/down-white-arrow.svg') no-repeat center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.select-box {
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: 1px solid #E2BD85;
+    background: rgba(217, 217, 217, 0.00);
+    padding: 0 40px 0 15px;
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.select-box::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: url('/img/icon/button/down-sign.svg') no-repeat center;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.select-box-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--white);
+    border: 1px solid #E2BD85;
+    border-radius: 10px;
+    margin-top: 5px;
+    display: none;
+    z-index: 1000;
+}
+
+.select-box-option {
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.select-box-option:hover {
+    background: rgba(255, 160, 58, 0.1);
+}
+
+.select-box.active::after {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.select-box.active .select-box-options {
+    display: block;
+}
+
+.btn-status{
+    width: 75px;
+    height: 25px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    border: 1px solid var(--store_border_color);
+    background: var(--store_color);
+    color: #D97000;
+    text-align: center;
+    font-size: 0.85rem;
+    margin: 0;
+    padding: 0;
+}
+
+.btn-status-big{
+    width: 230px;
+    height: 50px;
+    flex-shrink: 0;
+    border-radius: 11.141px;
+    border: 1px solid #E17400;
+    background: var(--store_color);
+    color: #E17400;
+    text-align: center;
+    -webkit-text-stroke-width: 1;
+    -webkit-text-stroke-color: #E17400;
+    font-size: 17.594px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.btn-orange-dark{
+    color: #FFF;
+    text-align: center;
+    font-size: 1.2rem;
+    width: 390px;
+    height: 50px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: #EF7E06;
+    border: none;
+}
+
+
+/* 모달 */
+
+.modal{
+    width: 600px;
+    height: 650px;
+    flex-shrink: 0;
+    border-radius: 16px;
+    border: 1px solid var(--store_border_color);
+    background: #FFF;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    z-index: 1001;
+}
+
+.modal-title{
+    padding: 35px 0 0 0;
+    color: var(--black);
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+.modal-close {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    width: 21px;
+    height: 21px;
+    background: url('/img/icon/modal/modal-delete.svg') no-repeat center;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.modal-content {
+    padding: 30px;
+    flex: 1;
+}
+
+/* 타이틀이 없는 경우의 컨텐츠 패딩 */
+.modal:not(:has(.modal-title)) .modal-content,
+.modal:not(:has(.modal-title)) .modal-content-center {
+    padding-top: 25px;  /* 타이틀이 없을 때 상단 여백 추가 */
+}
+
+.modal-content-center {
+    flex: 1;
+    padding: 0 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--black);
+}
+
+.modal-footer {
+    margin-top: auto;
+    padding-bottom: 30px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.modal-confirm {
+    width: 90px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--primary-color-dark);
+    border: none;
+    color: var(--white);
+    cursor: pointer;
+}
+
+.modal-cancel {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 90px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: 1px solid #E17400;
+    background: rgba(217, 217, 217, 0.00);
+    margin: 0;
+    color: #E17400;
+    font-size: 16px;
+    font-weight: 400;
+    padding: 0 15px;
+    cursor: pointer;
+}
+
+.input-a {
+    width: fit-content;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: 1px solid #bebebe;
+    padding: 0 15px;
+    box-sizing: border-box;
+    font-size: 0.8rem;
+    font-weight: 400;
+    line-height: normal;
+    display: inline-block;
+}
+
+/* textarea 버전 */
+textarea.input-a {
+    height: auto;
+    padding: 15px;
+    resize: none;
+    line-height: 1.4;
+    vertical-align: top;
+}
+
+/* 플레이스홀더 스타일 */
+.input-a::placeholder {
+    color: #E2E2E2;
+}
+
+/* 포커스 시 아웃라인 제거 */
+.input-a:focus {
+    border: 1px solid var(--primary-color);
+    outline: none;
+}
+
+/* 기본 라디오 버튼 */
+.radio-basic {
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    background: url('/img/icon/button/round-radio-unchecked.svg') no-repeat center;
+    border: none;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* 체크된 라디오 버튼 */
+.radio-basic:checked {
+    background: url('/img/icon/button/round-radio-checked.svg') no-repeat center;
+}
+
+/* 동그라미 체크 스타일의 라디오 버튼 */
+.radio-round {
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    background: url('/img/icon/button/round-radio-unchecked.svg') no-repeat center;
+    border: none;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* 체크된 동그라미 스타일 라디오 버튼 */
+.radio-round:checked {
+    background: url('/img/icon/button/round-radio-round-checked.svg') no-repeat center;
+}
+
+/* 모달 오버레이 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);  /* 반투명 검은색 */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.btn-c{
+    min-width: 60px;
+    width: fit-content;
+    height: 35px;
+    flex-shrink: 0;
+    border-radius: 20px;
+    border: 1px solid #929292;
+    background: var(--white);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 55px 0 20px;
+    font-size: 0.9rem;
+    color: #5D5D5D;
+}
+
+.btn-c::before {
+    content: '';
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 24px;
+    background: url('/img/icon/button/line.svg') no-repeat center;
+}
+
+.btn-c::after {
+    content: '';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 17px;
+    background: url('/img/icon/button/cancel.svg') no-repeat center;
+}
+
+.btn-d{
+    min-width: 60px;
+    width: fit-content;
+    height:38px;
+    flex-shrink: 0;
+    border-radius: 20px;
+    border: 1px solid #000000;
+    background: var(--white);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 15px;
+    font-size: 1.1rem;
+    color: #000000;
+}
+
+
+
+/*사이드바*/
+
+.sidebar {
+    width: 260px;
+    min-height: 100vh;
+    background-color: #FFFAF4;
+    border-right: 1px solid #ddd;
+    padding: 30px;
+}
+
+.sidebar-container {
+    width: 200px;
+    height: 100%;
+    margin: 0 auto;
+
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 40px;
+    height: auto;
+}
+
+.sidebar-header p {
+    font-size: 18px;
+    margin: 0;
+    margin-left: 10px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #A2854A;
+    margin: 20px 0;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu li {
+
+    margin-bottom: 15px;
+}
+
+.sidebar-menu li a {
+
+    color: var(--black);
+    text-decoration: none;
+    font-size: 16px;
+    display: block;
+    padding: 8px 10px;
+    border-radius: 20px;
+}
+
+
+.sidebar-menu li a.active {
+    background-color: #ffd591;
+    color: #000;
+    width: fit-content;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-menu ul {
+    list-style: none;
+    padding-left: 20px;
+}
+
+.sidebar-menu ul li a:hover {
+    color: #555;
+}

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>모달 테스트</title>
+    <link rel="stylesheet" href="/css/common/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .demo-area {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .code-container {
+            display: flex;
+            align-items: flex-start;
+            margin: 20px 0;
+            gap: 20px;
+        }
+        .preview {
+            min-width: 300px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="title-s">모달 컴포넌트 데모</h1>
+
+    <div class="demo-area">
+        <!-- 기본 모달 -->
+        <div class="modal" id="basicModal" style="display: none;">
+            <h2 class="modal-title">기본 모달</h2>
+            <button class="modal-close" onclick="closeModal(this)"></button>
+            <div class="modal-content">
+                <p>이것은 기본적인 모달 창입니다.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-confirm" onclick="closeModal(this)">확인</button>
+                <button class="modal-cancel" onclick="closeModal(this)">취소</button>
+            </div>
+        </div>
+
+        <div class="code-container">
+            <div class="preview">
+                <button class="btn-orange" onclick="openModal('basicModal')">기본 모달 열기</button>
+            </div>
+            <pre><code class="language-html">&lt;div class="modal" id="basicModal" style="display: none;"&gt;
+    &lt;h2 class="modal-title"&gt;기본 모달&lt;/h2&gt;
+    &lt;button class="modal-close" onclick="closeModal(this)"&gt;&lt;/button&gt;
+    &lt;div class="modal-content"&gt;
+        &lt;p&gt;이것은 기본적인 모달 창입니다.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="modal-footer"&gt;
+        &lt;button class="modal-confirm" onclick="closeModal(this)"&gt;확인&lt;/button&gt;
+        &lt;button class="modal-cancel" onclick="closeModal(this)"&gt;취소&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;button class="btn-orange" onclick="openModal('basicModal')"&gt;기본 모달 열기&lt;/button&gt;</code></pre>
+        </div>
+
+        <!-- 중앙 정렬 컨텐츠 모달 -->
+        <div class="modal" id="centerModal" style="display: none;">
+            <button class="modal-close" onclick="closeModal(this)"></button>
+            <div class="modal-content-center">
+                중앙 정렬된 컨텐츠 + 제목없음
+            </div>
+            <div class="modal-footer">
+                <button class="modal-confirm" onclick="closeModal(this)">확인</button>
+                <button class="modal-cancel" onclick="closeModal(this)">취소</button>
+            </div>
+        </div>
+
+        <div class="code-container">
+            <div class="preview">
+                <button class="btn-orange" onclick="openModal('centerModal')">중앙 정렬 모달 열기</button>
+            </div>
+            <pre><code class="language-html">&lt;div class="modal" id="centerModal" style="display: none;"&gt;
+    &lt;button class="modal-close" onclick="closeModal(this)"&gt;&lt;/button&gt;
+    &lt;div class="modal-content-center"&gt;
+        중앙 정렬된 컨텐츠 + 제목없음
+    &lt;/div&gt;
+    &lt;div class="modal-footer"&gt;
+        &lt;button class="modal-confirm" onclick="closeModal(this)"&gt;확인&lt;/button&gt;
+        &lt;button class="modal-cancel" onclick="closeModal(this)"&gt;취소&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;button class="btn-orange" onclick="openModal('centerModal')"&gt;중앙 정렬 모달 열기&lt;/button&gt;</code></pre>
+        </div>
+
+        <!-- 버튼 로직 예시 모달 -->
+        <div class="modal" id="logicModal" style="display: none;">
+            <h2 class="modal-title">버튼 로직 예시</h2>
+            <button class="modal-close" onclick="closeModal(this)"></button>
+            <div class="modal-content">
+                <p>확인 또는 취소 버튼을 누르면 각각의 메시지가 출력됩니다.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-confirm" onclick="handleLogicConfirm(this)">확인</button>
+                <button class="modal-cancel" onclick="handleLogicCancel(this)">취소</button>
+            </div>
+        </div>
+
+        <div class="code-container">
+            <div class="preview">
+                <button class="btn-orange" onclick="openModal('logicModal')">버튼 로직 테스트</button>
+            </div>
+            <pre><code class="language-html">&lt;div class="modal" id="logicModal" style="display: none;"&gt;
+    &lt;h2 class="modal-title"&gt;버튼 로직 예시&lt;/h2&gt;
+    &lt;button class="modal-close" onclick="closeModal(this)"&gt;&lt;/button&gt;
+    &lt;div class="modal-content"&gt;
+        &lt;p&gt;확인 또는 취소 버튼을 누르면 각각의 메시지가 출력됩니다.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="modal-footer"&gt;
+        &lt;button class="modal-confirm" onclick="handleLogicConfirm(this)"&gt;확인&lt;/button&gt;
+        &lt;button class="modal-cancel" onclick="handleLogicCancel(this)"&gt;취소&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;button class="btn-orange" onclick="openModal('logicModal')"&gt;버튼 로직 테스트&lt;/button&gt;
+
+&lt;script&gt;
+    function handleLogicConfirm(button) {
+        console.log('확인 버튼 클릭');
+        alert('확인 버튼 클릭');
+        closeModal(button);
+    }
+
+    function handleLogicCancel(button) {
+        console.log('취소 버튼 클릭');
+        alert('취소 버튼 클릭');
+        closeModal(button);
+    }
+&lt;/script&gt;</code></pre>
+        </div>
+
+    </div>
+</div>
+
+<script src="/js/common/modal.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-markup.min.js"></script>
+<script>
+    function handleLogicConfirm(button) {
+        console.log('확인 버튼 클릭');
+        alert('확인 버튼 클릭');
+        closeModal(button);
+    }
+
+    function handleLogicCancel(button) {
+        console.log('취소 버튼 클릭');
+        alert('취소 버튼 클릭');
+        closeModal(button);
+    }
+</script>
+</body>
+</html>
