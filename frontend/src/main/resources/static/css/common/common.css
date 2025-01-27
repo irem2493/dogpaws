@@ -416,7 +416,7 @@ img[alt="weight-icon"] {
     color: var(--black);
     text-align: center;
     font-size: 28px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .modal-close {
@@ -432,18 +432,15 @@ img[alt="weight-icon"] {
 }
 
 .modal-content {
-    padding: 30px;
+    margin: 0px 10px 10px 20px;
     flex: 1;
-}
-
-/* 타이틀이 없는 경우의 컨텐츠 패딩 */
-.modal:not(:has(.modal-title)) .modal-content,
-.modal:not(:has(.modal-title)) .modal-content-center {
-    padding-top: 25px;  /* 타이틀이 없을 때 상단 여백 추가 */
+    word-break: break-word; /* 긴 단어를 줄바꿈 처리 */
+    overflow: auto;
 }
 
 .modal-content-center {
     flex: 1;
+    margin-top: 10px;
     padding: 0 30px;
     display: flex;
     justify-content: center;
@@ -451,6 +448,8 @@ img[alt="weight-icon"] {
     text-align: center;
     font-size: 1.1rem;
     color: var(--black);
+    word-break: break-word; /* 긴 단어를 줄바꿈 처리 */
+    overflow: auto;
 }
 
 .modal-footer {
