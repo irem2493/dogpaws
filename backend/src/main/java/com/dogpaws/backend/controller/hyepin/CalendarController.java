@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/calendar")
@@ -36,6 +37,13 @@ public class CalendarController {
         log.info("여기는 백 컨트롤러 deleteCalendar / calendarDto 값: {}", calendarDto);
 
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "일정 삭제 성공");
+    }
+
+    @GetMapping
+    public ApiResponse<List<CalendarDto>> getCalendar() throws IOException {
+        List<CalendarDto> calendarList = calendarService.getCalendarByUsername("안혜빈");
+
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, calendarList);
     }
     
 }
