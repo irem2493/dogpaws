@@ -1,4 +1,5 @@
 let currentEventId = null;  // 수정할 이벤트의 ID를 저장할 변수
+ // 서버에서 전달된 데이터 확인
 
 document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
@@ -25,50 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
             end: 'today prev,next' // 오른쪽: 오늘 버튼, 이전/다음 버튼
         },
 
-        events: [
-            {
-                id: 2,
-                title: '파우즈 운동회2!',
-                start: "2025-01-24T10:00",  // KST로 변환된 시간
-                end: "2025-01-29T12:00",
-                //사용자 정의
-                extendedProps: {
-                    dogId: "1",
-                    allDay: true,
-                    type: 'M',
-                    address: '혜빈이집',
-                    description: '운동회 준비 및 진행'
-                }
-            },
-            {
-                id: 3,
-                title: '파우즈 운동회3!',
-                start: '2025-01-24T16:30',
-                end: '2025-01-29T18:00',
-                //사용자 정의
-                extendedProps: {
-                    dogId: "2",
-                    allDay: false,
-                    type: 'W',
-                    address: '우리집',
-                    description: '멍멍뭉뭉뭉'
-                }
-            },
-            {
-                id: 4,
-                title: '파우즈 운동회4!',
-                start: '2025-01-28T16:30',
-                end: '2025-01-30T18:00',
-                //사용자 정의
-                extendedProps: {
-                    dogId: "3",
-                    allDay: false,
-                    type: 'P',
-                    address: '한강',
-                    description: '왈왈오라오랑라오라ㅘㅇ왕라'
-                }
-            }
-        ],
+        events: calendarList,
 
         //날짜 클릭했을 때 호출됨
         dateClick: function(info) {
@@ -82,7 +40,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (calendarIdInput) {
                 calendarIdInput.value = eventId; // ID 값을 input에 설정
             };
-            editEventForm(info.event);
+            if (info.event.extendedProps.scheduleType === 'my') {
+                editEventForm(info.event);
+            } else {
+            }
         },
 
         // 타이틀 옆에 아이콘 이미지 추가
