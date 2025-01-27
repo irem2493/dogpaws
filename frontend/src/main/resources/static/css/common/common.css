@@ -270,10 +270,10 @@ img[alt="weight-icon"] {
 
 
 .btn-m-down {
-    width: 750px;
-    height: 55px;
+    width: 470px;
+    height: 38px;
     flex-shrink: 0;
-    border-radius: 14px;
+    border-radius: 10px;
     background: linear-gradient(271deg, #FE904B 7.64%, #FB724C 90.68%);
     border: none;
     display: inline-flex;
@@ -284,14 +284,17 @@ img[alt="weight-icon"] {
 
 .btn-m-down::after {
     content: '';
-    width: 82px;
-    height: 37px;
-    background: url('/img/icon/button/down-white-arrow.svg') no-repeat center;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    width: auto;
+    height: 50%;
+    aspect-ratio: 82/37;
+    background: url('/img/icon/button/down-white-arrow.svg') no-repeat center;
+    background-size: contain;
 }
+
 
 .select-box {
     height: 42px;
