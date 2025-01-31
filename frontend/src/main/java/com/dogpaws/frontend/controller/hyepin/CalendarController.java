@@ -18,13 +18,7 @@ public class CalendarController {
 
     @GetMapping
     public String calendarForm(Model model) {
-        
-        Map<String, String> params = Map.of("username", "안혜빈");
-        var userResponse = apiService.fetchData("/api/calendar",  params, true);
-        var calendarList =  userResponse.getBody();
 
-        model.addAttribute("calendarList", calendarList);
-        System.out.println(calendarList);
         return "hyepin/calendar";
     }
 
