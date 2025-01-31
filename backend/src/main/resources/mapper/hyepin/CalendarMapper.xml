@@ -8,6 +8,8 @@
         SELECT
             c.calendar_id,
             c.username,
+            NULL AS share_username,
+            NULL AS shared_id,
             c.dog_id,
             c.calendar_title,
             c.address,
@@ -25,6 +27,8 @@
         SELECT
             s.calendar_id,
             s.username,
+            u.nickname AS share_username,
+            s.shared_id AS shared_id,
             s.dog_id,
             c.calendar_title,
             c.address,
@@ -36,9 +40,51 @@
             'oth' AS schedule_type
         FROM tbl_calendar_shared s
         JOIN tbl_calendar c ON s.calendar_id = c.calendar_id
-        WHERE s.username = #{username}
+        JOIN tbl_users u ON c.username = u.username
+        WHERE s.username = #{username};
     </select>
 
+    <insert id="insertCalendar">
+        INSERT INTO tbl_calendar
+            (username, dog_id, calendar_title, address, calendar_type,
+            calendar_start_date, calendar_end_date, calendar_description)
+        VALUES
+            (#{username}, #{dogId}, #{calendarTitle}, #{address}, #{calendarType},
+            #{calendarStartDate}, #{calendarEndDate}, #{calendarDescription})
+    </insert>
 
+    <update id="updateCalendar">
+        UPDATE tbl_calendar
+        SET username = #{username}, dog_id = #{dogId}, calendar_title = #{calendarTitle},
+            address = #{address}, calendar_type = #{calendarType},
+            calendar_start_date = #{calendarStartDate}, calendar_end_date = #{calendarEndDate},
+            calendar_description = #{calendarDescription}
+        WHERE calendar_id = #{calendarId}
+    </update>
+
+    <delete id="deleteCalendar">
+        DELETE
+        FROM tbl_calendar
+        WHERE calendar_id = #{calendarId}
+    </delete>
+
+    <insert id="insertShareCalendar">
+        INSERT INTO tbl_calendar_shared
+        (calendar_id, username, room_id, dog_id)
+        VALUES
+        (#{calendarId}, #{username}, #{roomId}, #{dogId})
+    </insert>
+
+    <update id="updateShareCalendar">
+        UPDATE tbl_calendar_shared
+        SET calendar_id = #{calendarId}, username = #{username}, room_id = #{roomId}, dog_id = #{dogId}
+        WHERE shared_id = #{sharedId}
+    </update>
+
+    <delete id="deleteShareCalendar">
+        DELETE
+        FROM tbl_calendar_shared
+        WHERE shared_id = #{sharedId}
+    </delete>
 
 </mapper>

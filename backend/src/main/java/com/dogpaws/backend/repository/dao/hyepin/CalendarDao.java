@@ -10,4 +10,9 @@ import java.util.List;
 public interface CalendarDao {
 
     public List<CalendarDto> getCalendarByUsername(@Param("username") String username);
+    public int insertCalendar(CalendarDto calendarDto);
+    public int updateCalendar(CalendarDto calendarDto);
+    public int deleteCalendar(CalendarDto calendarDto);
+    public int updateShareCalendar(CalendarDto calendarDto);
+    public int deleteShareCalendar(CalendarDto calendarDto);
 }
