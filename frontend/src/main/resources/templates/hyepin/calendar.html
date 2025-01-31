@@ -10,48 +10,39 @@
 <div class="container">
   <!-- 여기서부터 작성하시면 됩니다. !-->
 
+  <input type="hidden" name="username" id="username" value="안혜빈">
+
   <!-- FullCalendar -->
   <div id="calendar"></div>
 
-
   <!-- 일정 추가 폼 모달 -->
-  <div class="modal" id="calendarForm" style="display: none;">
+  <div class="pawsModal" id="calendarForm" style="display: none;">
     <form id="addCalendarForm">
-      <button class="modal-close" onclick="cancelForm(this)"></button>
-      <div id="calendarRegist"> <h2 class="modal-title">일정 등록</h2></div>
+      <button class="pawsModal-close" onclick="cancelForm(this)"></button>
+      <div id="calendarRegist"> <h2 class="pawsModal-title">일정 등록</h2></div>
       <div id="calendarDetail" style="gap: 10px; display: none; justify-content: center;">
-        <div><h2 class="modal-title">일정 상세</h2> </div>
-        <div  class="modal-title" style="cursor: pointer;" onclick="calendarModify()"> <i class="bi bi-pencil"></i></div>
+        <div><h2 class="pawsModal-title">일정 상세</h2> </div>
+        <div  class="pawsModal-title" style="cursor: pointer;" onclick="calendarModify()"> <i class="bi bi-pencil"></i></div>
       </div>
       <input type="hidden" name="calendarId" value="">
 
       <div>
         <label for="calendarType">일정 구분</label>
         <!-- 이거 구분 테이블에서 가져와야함. 일단 픽스로  -->
-        <div class="select-box select-box1">
-          <div class="select-box-selected">산책</div>
-          <div class="select-box-options">
-            <div class="select-box-option" data-value="W">산책</div>
-            <div class="select-box-option" data-value="P">놀이</div>
-            <div class="select-box-option" data-value="M">교배</div>
-          </div>
-          <!-- 숨겨진 input 추가 -->
-          <input type="hidden" id="calendarType" name="calendarType" value="W">
-        </div>
+        <select class="select-a" id="calendarType" name="calendarType">
+          <option value="W">산책</option>
+          <option value="P">놀이</option>
+          <option value="M">교배</option>
+        </select>
       </div>
 
       <div>
         <label for="dogId">반려견 선택</label>
-        <div class="select-box select-box2">
-          <div class="select-box-selected">뭉이</div>
-          <div class="select-box-options">
-            <div class="select-box-option" data-value="1">뭉이</div>
-            <div class="select-box-option" data-value="2">최윤서</div>
-            <div class="select-box-option" data-value="3">융더</div>
-          </div>
-          <!-- 숨겨진 input 추가 -->
-          <input type="hidden" id="dogId" name="dogId" value="1">
-        </div>
+        <select class="select-a" id="dogId" name="dogId">
+          <option value="1">뭉이</option>
+          <option value="2">최윤서</option>
+          <option value="3">융더</option>
+        </select>
       </div>
 
       <div>
@@ -75,32 +66,15 @@
         <textarea class="input-a" name="calendarDescription" id="calendarDescription"></textarea><br><br>
       </div>
 
-      <div class="modal-footer">
-        <button class="modal-confirm" id="submit" onclick="calendarSubmit()">저장</button>
-        <button class="modal-confirm" id="delete" onclick="calendarDelete()" style="display: none;">삭제</button>
-        <button class="modal-confirm" id="update" onclick="calendarUpdate()" style="display: none;">수정</button>
-        <button class="modal-cancel" id="share" onclick="calendarShare()">공유</button>
+      <div class="pawsModal-footer">
+        <button class="pawsModal-confirm" id="submit" onclick="calendarSubmit()">저장</button>
+        <button class="pawsModal-confirm" id="delete" onclick="calendarDelete()" style="display: none;">삭제</button>
+        <button class="pawsModal-confirm" id="update" onclick="calendarUpdate()" style="display: none;">수정</button>
+        <button class="pawsModal-cancel" id="share" onclick="calendarShare()">공유</button>
       </div>
 
     </form>
   </div>
-
-
-
-  <div class="modal" id="basicModal" style="display: none;">
-    <h2 class="modal-title">기본 모달</h2>
-    <button class="modal-close" onclick="closeModal(this)"></button>
-    <div class="modal-content">
-      <p>이것은 기본적인 모달 창입니다.</p>
-    </div>
-    <div class="modal-footer">
-      <button class="modal-confirm" onclick="closeModal(this)">확인</button>
-      <button class="modal-cancel" onclick="closeModal(this)">취소</button>
-    </div>
-  </div>
-
-  <button class="btn-orange" onclick="openModal('basicModal')">기본 모달 열기</button>
-
 
 </div>
 

@@ -40,8 +40,8 @@ public class CalendarController {
     }
 
     @GetMapping
-    public ApiResponse<List<CalendarDto>> getCalendar() throws IOException {
-        List<CalendarDto> calendarList = calendarService.getCalendarByUsername("안혜빈");
+    public ApiResponse<List<CalendarDto>> getCalendar(@RequestParam String username) throws IOException {
+        List<CalendarDto> calendarList = calendarService.getCalendarByUsername(username);
 
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, calendarList);
     }

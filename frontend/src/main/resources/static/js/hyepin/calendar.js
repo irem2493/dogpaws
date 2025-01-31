@@ -1,6 +1,52 @@
 let currentEventId = null;  // 수정할 이벤트의 ID를 저장할 변수
  // 서버에서 전달된 데이터 확인
 
+/* 캘린더 리스트 불러오기 */
+let calendarList = [];
+let username = document.getElementById("username").value;
+window.onload = getCalendarList;
+function getCalendarList() {
+    api.get('/api/calendar?username='+username)
+        .then(data => {
+            calendarList = data.body;  // body 속성의 배열을 할당
+            console.log('calendarList loaded:', calendarList);  // 배열 확인
+
+            // 여기서 제이슨으로 배열 변환
+            const events = calendarList.map(event => {
+                // 날짜 형식을 'YYYY-MM-DD HH:mm:ss' -> 'YYYY-MM-DDTHH:mm:ss'로 변환
+                const startDateStr = event.calendar_start_date.replace(" ", "T");
+                const endDateStr = event.calendar_end_date.replace(" ", "T");
+
+                const startDate = new Date(startDateStr);
+                const endDate = new Date(endDateStr);
+
+                if (isNaN(startDate) || isNaN(endDate)) {
+                    console.error("날짜 변환 오류:", event.calendar_start_date, event.calendar_end_date);
+                    return; // 잘못된 날짜가 있는 경우 그 이벤트는 처리하지 않음
+                }
+
+                return {
+                    title: `${event.calendar_type} 일정`,  // 타입 기반 제목
+                    start: startDate.toISOString(), // ISO 형식으로 변환
+                    end: endDate.toISOString(),     // 종료 시간도 ISO 형식으로 변환
+                    extendedProps: {
+                        allDay: false, // 필요 시 수정
+                        type: event.calendar_type,
+                        address: event.address,
+                        description: event.calendar_description
+                    }
+                };
+            }).filter(event => event);  // 잘못된 이벤트는 필터링
+
+            console.log('캘린더 이벤트 변환 완료:', events);  // 변환된 JSON 확인
+
+        })
+        .catch(error => {
+            console.error(error);
+            alert("오류가 발생했습니다.");
+        });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
 
@@ -83,55 +129,10 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar.render();
 });
 
-// 첫 번째 셀렉트 박스
-const selectBox1 = document.querySelector('.select-box1');
-const selected1 = selectBox1.querySelector('.select-box-selected');
-const options1 = selectBox1.querySelector('.select-box-options');
-const hiddenInput1 = selectBox1.querySelector('input[type="hidden"]');
-
-selectBox1.addEventListener('click', (e) => {
-    selectBox1.classList.toggle('active');
-});
-
-options1.addEventListener('click', (e) => {
-    if (e.target.classList.contains('select-box-option')) {
-        selected1.textContent = e.target.textContent;
-        hiddenInput1.value = e.target.getAttribute('data-value');
-    }
-});
-
-document.addEventListener('click', (e) => {
-    if (!selectBox1.contains(e.target)) {
-        selectBox1.classList.remove('active');
-    }
-});
-
-// 두 번째 셀렉트 박스
-const selectBox2 = document.querySelector('.select-box2');
-const selected2 = selectBox2.querySelector('.select-box-selected');
-const options2 = selectBox2.querySelector('.select-box-options');
-const hiddenInput2 = selectBox2.querySelector('input[type="hidden"]');
-
-selectBox2.addEventListener('click', (e) => {
-    selectBox2.classList.toggle('active');
-});
-
-options2.addEventListener('click', (e) => {
-    if (e.target.classList.contains('select-box-option')) {
-        selected2.textContent = e.target.textContent;
-        hiddenInput2.value = e.target.getAttribute('data-value');
-    }
-});
-
-document.addEventListener('click', (e) => {
-    if (!selectBox2.contains(e.target)) {
-        selectBox2.classList.remove('active');
-    }
-});
-
 //폼 전역변수 선언
 let calendarTitleField = document.getElementById('calendarTitle');
 let calendarTypeField = document.getElementById('calendarType');
+let dogIdField = document.getElementById('dogId');
 let calendarStartDateField = document.getElementById('calendarStartDate');
 let calendarEndDateField = document.getElementById('calendarEndDate');
 let addressField = document.getElementById('address');
@@ -157,16 +158,17 @@ function showCalendarForm(selectedDate) {
     addressField.value = ""; // 주소 초기화
     calendarDescriptionField.value = ""; // 일정상세 초기화
     calendarTypeField.value = "W";
+    dogIdField.value = "1";
 
     calendarTitleField.removeAttribute('readonly');
     calendarStartDateField.removeAttribute('readonly');
     calendarEndDateField.removeAttribute('readonly');
     addressField.removeAttribute('readonly');
     calendarDescriptionField.removeAttribute('readonly');
+    calendarTypeField.removeAttribute('disabled');
+    dogIdField.removeAttribute('disabled');
 
-    document.querySelectorAll('.select-box').forEach(selectBox => {
-        selectBox.classList.remove('readonly'); // 읽기 전용 클래스 제거
-    });
+
 }
 
 // 일정 상세 폼 띄우기
@@ -199,9 +201,8 @@ function editEventForm(event) {
     calendarEndDateField.value = endDateLocal;
     calendarEndDateField.setAttribute('readonly', true);
 
-    document.querySelectorAll('.select-box').forEach(selectBox => {
-        selectBox.classList.add('readonly'); // 읽기 전용 클래스 추가
-    });
+    calendarTypeField.setAttribute('disabled', true);
+    dogIdField.setAttribute('disabled', true);
 
     // 주소
     addressField.value = event.extendedProps?.address || '';
@@ -226,9 +227,8 @@ function calendarModify(){
     addressField.removeAttribute('readonly');
     calendarDescriptionField.removeAttribute('readonly');
 
-    document.querySelectorAll('.select-box').forEach(selectBox => {
-        selectBox.classList.remove('readonly'); // 읽기 전용 클래스 제거
-    });
+    calendarTypeField.setAttribute('disabled', true);
+    dogIdField.setAttribute('disabled', true);
 
 }
 
