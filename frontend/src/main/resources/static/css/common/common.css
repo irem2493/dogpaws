@@ -15,7 +15,7 @@ body {
     padding:0;
 }
 
-button, input, textarea {
+button, input, textarea, select {
     font-family: 'Noto Sans KR', 'Noto Sans', sans-serif;
     font-size: 1rem;
     color: var(--black);
@@ -713,4 +713,30 @@ hr {
 
 .sidebar-menu ul li a:hover {
     color: #555;
+}
+
+/* 셀렉트박스 기본 스타일 */
+.select-a {
+    height: 42px;
+    border-radius: 10px;
+    border: 1px solid #E2BD85;
+    background: rgba(217, 217, 217, 0.00);
+    padding: 0 40px 0 15px;
+    font-size: 1rem;
+    color: var(--black);
+    appearance: none;
+    background-image: url('/img/icon/button/down-sign.svg');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    cursor: pointer;
+}
+
+.select-a:focus {
+    outline: none;
+}
+
+.select-a option {
+    padding: 10px 15px;
+    background: var(--white);
+    color: var(--black);
 }
