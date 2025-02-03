@@ -154,6 +154,7 @@ function idCheck() {
                 username.display = true;
                 checkButton.disabled = true;
                 checkButton.textContent = "확인 완료";
+                checkButton.classList.add("disabled");  // 버튼 비활성화 클래스 추가
                 isDuplicateChecked = true;
             }
         })
