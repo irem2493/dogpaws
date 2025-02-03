@@ -1,6 +1,7 @@
 package com.dogpaws.backend.service.hyepin;
 
 import com.dogpaws.backend.dto.hyepin.CalendarDto;
+import com.dogpaws.backend.dto.hyepin.ShareDto;
 import com.dogpaws.backend.repository.dao.hyepin.CalendarDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +59,20 @@ public class CalendarService {
             result = calendarDao.deleteShareCalendar(calendarDto);
         }
         System.out.println("Dao. result = " + result);
+        return result;
+    }
+
+    //캘린더 공유 등록
+    public int shareCalendar(ShareDto shareDto) {
+        //채팅방으로 연결 -> 채팅방에 일정이 공유됨.
+        //상대방 알림 테이블에 등록(알림유형 - C / 구분코드 - SH(calendar_code)
+        return 0;
+    }
+
+    //공유받은 캘린더 등록
+    public int insertSharedCalendar(ShareDto shareDto) {
+        int result = calendarDao.insertSharedCalendar(shareDto);
+        System.out.println("Dao. result" + result);
         return result;
     }
 
