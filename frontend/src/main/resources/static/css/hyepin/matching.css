@@ -1,0 +1,86 @@
+.custom-hr {
+    border: 1px solid #B0B0B0;
+    margin: 0;
+}
+
+.matching-filter {
+    margin: 20px;
+    padding: 20px;
+    border: #bebebe solid 1px;
+    border-radius: 10px;
+}
+
+.matching-item{
+    margin-bottom: 30px;
+}
+
+.pw-title {
+    width: 100%; /* 너비를 100%로 설정 */
+    text-align: center; /* 텍스트가 중앙에 오도록 설정 (옵션) */
+}
+
+.search-box {
+    position: relative; /* input의 부모 요소로 상대 위치 설정 */
+    width: 100%;
+}
+
+.input-a {
+    width: 100%; /* 입력창의 너비 100%로 설정 */
+    padding-right: 35px; /* 아이콘과 겹치지 않도록 오른쪽 여백 추가 */
+    box-sizing: border-box; /* padding을 포함하여 전체 너비가 100% 되도록 설정 */
+}
+
+.search-icon {
+    position: absolute; /* 절대 위치로 설정 */
+    top: 50%; /* 수직 중앙 정렬 */
+    right: 10px; /* 오른쪽 끝에 위치 */
+    transform: translateY(-50%); /* 정확히 중앙으로 위치시키기 위해 변환 */
+    cursor: pointer;
+}
+
+.dropdown {
+    padding: 10px;
+    max-height: 150px; /* 5개 옵션이 최대 2rem 높이로 표시될 때 */
+    overflow-y: auto;
+    border: #bebebe solid 1px;
+    border-radius: 10px;
+}
+
+/* 드롭다운의 스크롤바를 숨기기 위해 */
+.dropdown::-webkit-scrollbar {
+    display: none; /* 웹킷 기반 브라우저에서 스크롤바 숨김 */
+}
+
+.dropdown {
+    -ms-overflow-style: none;  /* IE 10+에서 스크롤바 숨김 */
+    scrollbar-width: none;  /* Firefox에서 스크롤바 숨김 */
+}
+
+
+.selected-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.selected-option {
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+    border: 1px solid #B0B0B0;
+    border-radius: 20px;
+    padding: 8px 16px;
+}
+
+.remove-option {
+    margin-left: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.day label{
+margin-right: 10px; /* 오른쪽에 15px 마진 */
+    margin-bottom: 10px; /* 아래쪽에 10px 마진 */
+    display: inline-block; /* 라벨을 인라인 블록으로 만들어서 마진 효과 적용 */
+}
