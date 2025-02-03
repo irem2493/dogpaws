@@ -1,0 +1,83 @@
+/* 전체 컨테이너 */
+.join-container .matching-container {
+    width: 100%;
+    max-width: 450px;
+    margin: auto;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+    padding: 20px;
+}
+
+/* 교배 매칭 체크박스 */
+.join-container .matching-header {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.join-container .matching-header input {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+}
+
+/* 안내 문구 */
+.join-container .matching-info {
+    font-size: 14px;
+    color: #666;
+    text-align: left;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.join-container .info-icon {
+    font-size: 16px;
+    color: #ff9500;
+    margin-right: 5px;
+}
+
+/* 강아지 이미지 */
+.join-container .matching-image {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.join-container .matching-image img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+/* 설명 */
+.join-container .matching-description {
+    font-size: 15px;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* 버튼 그룹 */
+.join-container .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.join-container button {
+    width: 120px;
+    padding: 10px;
+    border: none;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.join-container #step3Form{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}

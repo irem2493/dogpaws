@@ -8,4 +8,5 @@ import java.util.List;
 
 @Mapper
 public interface GubnDao {
+    public List<GubnDto> getGubnList(@Param("groupCode") String groupCode);
 }
