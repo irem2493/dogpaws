@@ -87,4 +87,11 @@
         WHERE shared_id = #{sharedId}
     </delete>
 
+    <insert id="insertSharedCalendar">
+        INSERT INTO tbl_calendar_shared
+        (calendar_id, username, room_id, dog_id)
+        VALUES
+        (#{calendarId}, #{username}, #{roomId}, #{dogId})
+    </insert>
+
 </mapper>

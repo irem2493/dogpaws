@@ -24,7 +24,7 @@
       <input type="hidden" id="sharedYn" value="">
       <input type="hidden" id="sharedId" value="">
       <button class="pawsModal-close" onclick="closeModal(this)"></button>
-      <button class="pawsModal-close" onclick="closeModal(this)"></button>
+
       <div id="calendarRegist"> <h2 class="pawsModal-title">일정 등록</h2></div>
       <div id="calendarDetail" style="gap: 10px; display: none; justify-content: center;">
         <div><h2 class="pawsModal-title">일정 상세</h2> </div>
@@ -72,7 +72,7 @@
         <div>
           <div>장소</div>
 
-          <input type="text" id="sample5_address" name="address" class="input-a" placeholder="주소">
+          <input type="text" id="sample5_address" name="address" class="input-a" placeholder="주소" readonly>
           <input type="button" onclick="sample5_execDaumPostcode()"  class="btn-confirm" value="주소 검색"><br>
           <div id="map" style="width:300px;height:300px;margin-top:10px;display:none"></div>
 
@@ -87,13 +87,42 @@
           <button class="pawsModal-confirm" id="submit" onclick="calendarSubmit()">저장</button>
           <button class="pawsModal-confirm" id="delete" onclick="calendarDelete()" style="display: none;">삭제</button>
           <button class="pawsModal-confirm" id="update" onclick="calendarUpdate()" style="display: none;">수정</button>
-          <button class="pawsModal-cancel" id="share" onclick="calendarShare()">공유</button>
+          <button class="pawsModal-cancel" id="share" onclick="closeModal(this); openShareForm();">공유</button>
         </div>
       </div>
     </form>
   </div>
 
+  <div class="pawsModal" id="shareForm" style="display: none;">
+    <h2 class="pawsModal-title">일정 공유</h2>
+    <button class="pawsModal-close" onclick="closeModal(this)"></button>
+    <div class="pawsModal-content">
+      <div style="display: flex; gap: 20px;">
+        <div class="pw-title">일반</div>
+        <div class="pw-title">그룹</div>
+      </div>
+    </div>
+    <div class="pawsModal-footer">
+      <button class="pawsModal-confirm" onclick="calendarShare()">공유하기</button>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
 </div>
+
+
+
+
+
+
 
 <script src="/js/hyepin/calendar.js"></script>
 <script>
