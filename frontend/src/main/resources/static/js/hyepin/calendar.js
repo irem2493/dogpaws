@@ -399,6 +399,7 @@ function calendarShare(){
     formData.append("roomId", roomId);
 
 
+
     //폼데이터 보내기
     api.post('/api/calendar/share', formData, {
     })
