@@ -11,7 +11,7 @@
 <div class="container">
 <div class="join-container">
     <div class="container_box">
-        <div class="header">회원가입</div>
+        <div class="header">사용자 정보 등록</div>
 
         <div class="form-container">
 
@@ -22,7 +22,7 @@
                         <div class="circle-container">
                             <div class="inner-circle completed"></div>
                         </div>
-                        <div class="text">회원가입</div>
+                        <div class="text">사용자 정보 등록</div>
                     </div>
                     <div class="step">
                         <div class="circle"></div>
@@ -30,11 +30,7 @@
                     </div>
                     <div class="step">
                         <div class="circle"></div>
-                        <div class="text">매칭 선택(친구/ 교배 중 택 1)</div>
-                    </div>
-                    <div class="step">
-                        <div class="circle"></div>
-                        <div class="text">교배 매칭 시, 선택 서류</div>
+                        <div class="text">교배 매칭 선택</div>
                     </div>
                 </div>
                 <div style="margin-top: 200px"></div>
@@ -49,11 +45,12 @@
                     <div class="input-with-button">
                         <input type="text" id="username" name="username" placeholder="아이디를 입력하세요">
                         <button type="button" onclick="idCheck()">중복 확인</button>
+
                     </div>
                     <label for="password"><span class="required">*</span> 패스워드</label>
                     <input type="password" id="password" name="password" placeholder="패스워드를 입력하세요">
-                    <label for="confirm-password"><span class="required">*</span> 패스워드 확인</label>
-                    <input type="password" id="confirm-password" name="confirm-password" placeholder="패스워드를 재입력하세요">
+                    <label for="confirmPassword"><span class="required">*</span> 패스워드 확인</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="패스워드를 재입력하세요">
                     <label for="nickname"><span class="required">*</span>닉네임</label>
                     <input type="text" id="nickname" name="nickname" placeholder="닉네임을 입력해주세요">
 
@@ -74,7 +71,7 @@
 
                         <div class="form-group2">
 
-                            <label><span class="required">*</span> 성별</label>
+                            <label>성별</label>
                             <div class="gender-container">
 
                                 <!-- ✅ hidden input 추가 -->
@@ -109,12 +106,12 @@
                     <input type="text" id="address" name="address" placeholder="주소 입력">
                     <input type="text" id="detailAddress" name="detailAddress" placeholder="상세 주소 입력">
 
-                    <div class="social-login">
+                    <!--<div class="social-login">
                         <div class="line-text">또는</div>
                         <img src="/img/Naver_small.png" alt="네이버 로그인">
                         <img src="/img/Kakao_small.png" alt="카카오 로그인">
                         <img src="/img/Google_small.png" alt="구글 로그인">
-                    </div>
+                    </div>-->
                 </form>
                 <div class="button-container">
                     <button id="nextButton" onclick="saveStep1()">다음</button>

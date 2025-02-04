@@ -274,3 +274,10 @@
     color: #a0a0a0;           /* 글자 색상도 회색 */
     border: 1px solid #d0d0d0;
 }
+
+.join-container .gender-select button:focus {
+    outline: 2px solid #ff9500;  /* 테두리 강조 */
+    background-color: #ffe0b3;   /* 배경색 변경 */
+    color: black;                /* 텍스트 색상 변경 */
+    border-radius: 5px;          /* 둥근 테두리 */
+}

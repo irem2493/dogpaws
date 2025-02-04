@@ -81,3 +81,105 @@
     flex-direction: column;
     gap: 15px;
 }
+
+/* 전체 컨테이너 */
+.join-container .document-container {
+    width: 100%;
+    max-width: 450px;
+    margin: auto;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+    padding: 20px;
+}
+
+/* 제목 */
+.join-container h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* 설명 문구 */
+.join-container .document-info {
+    font-size: 14px;
+    color: #666;
+    text-align: left;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.join-container .info-icon {
+    font-size: 16px;
+    color: #ff9500;
+    margin-right: 5px;
+}
+
+/* 파일 업로드 컨테이너 */
+.join-container .file-upload {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.join-container .file-upload label {
+    font-size: 15px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* 파일 입력 그룹 */
+.join-container .file-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 파일명 입력 필드 */
+.join-container .file-name {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    font-size: 14px;
+    color: #555;
+    background-color: #f9f9f9;
+    cursor: default;
+}
+
+/* 파일 찾기 버튼 */
+.join-container .file-button {
+    background-color: #ff9500;
+    color: black;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.join-container .file-button:hover {
+    background-color: #e08600;
+}
+
+/* 버튼 그룹 */
+.join-container .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.join-container input[type="submit"] {
+    background-color: #ff9500;
+    color: black;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Hover 효과 추가 */
+.join-container input[type="submit"]:hover {
+    background-color: #e08600;
+}

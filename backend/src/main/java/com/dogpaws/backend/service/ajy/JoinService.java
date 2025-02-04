@@ -3,6 +3,8 @@ package com.dogpaws.backend.service.ajy;
 import com.dogpaws.backend.dto.ajy.DogRequestDto;
 import com.dogpaws.backend.dto.ajy.JoinSessionDto;
 import com.dogpaws.backend.dto.ajy.UserRequestDto;
+import com.dogpaws.backend.dto.common.FileDto;
+import com.dogpaws.backend.entity.File;
 import com.dogpaws.backend.entity.ajy.Dog;
 import com.dogpaws.backend.entity.ajy.DogPersonal;
 import com.dogpaws.backend.entity.ajy.DogPlay;
@@ -11,26 +13,35 @@ import com.dogpaws.backend.repository.jpa.ajy.DogPersonalRepository;
 import com.dogpaws.backend.repository.jpa.ajy.DogPlayRepository;
 import com.dogpaws.backend.repository.jpa.ajy.DogRepository;
 import com.dogpaws.backend.repository.jpa.ajy.UserRepository;
+import com.dogpaws.backend.service.common.FileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static com.fasterxml.jackson.databind.type.LogicalType.Map;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class JoinService {
 
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
+    @Value("${front.file-dir}")
+    private String fileDir;
+
     private final UserRepository userRepository;
     private final DogRepository dogRepository;
     private final DogPersonalRepository dogPersonalRepository;
     private final DogPlayRepository dogPlayRepository;
+    private final FileService fileService;
 
-    public String  duplicateCheck(String username) {
+    public String duplicateCheck(String username) {
         return userRepository.findByUsername(username) != null ? "중복됨" : "사용 가능";
     }
 
@@ -41,22 +52,34 @@ public class JoinService {
         return fileName.substring(fileName.lastIndexOf("."));
     }
 
+
     @Transactional
-    public void join(JoinSessionDto sessionData) {
+    public void join(JoinSessionDto sessionData) throws IOException {
         UserRequestDto userRequestDto = sessionData.getStep1Data();
         DogRequestDto dogRequestDto = sessionData.getStep2Data();
+        List<MultipartFile> files = sessionData.getStep3Data();
 
         User user = createUser(userRequestDto);
+
+        String username = user.getUsername();
+
         userRepository.save(user);
 
         Dog dog = createDog(dogRequestDto);
         dogRepository.save(dog);
+
+        System.out.println(dogRequestDto.getActivityImages());
+        System.out.println(files);
 
         Optional<Dog> dogId = dogRepository.findTopByOrderByDogIdDesc();
         if (dogId.isPresent()) {
             Integer maxDogId = dogId.get().getDogId();
             createDogPersonal(maxDogId, dogRequestDto.getSelectedPersonalities());
             createDogPlay(maxDogId, dogRequestDto.getSelectedPlays());
+
+            getActiveDogImage(maxDogId,username, dogRequestDto.getActivityImages());
+
+            getMatching(maxDogId, username, files);
         }
     }
 
@@ -77,6 +100,13 @@ public class JoinService {
     }
 
     private Dog createDog(DogRequestDto dogRequestDto) {
+        if (dogRequestDto.getWalkTimeYn().equals("N")) {
+            // 포맷 설정
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String formattedTime = LocalDateTime.now().format(formatter);
+            dogRequestDto.setWalkStartTime(formattedTime);  // 포맷된 문자열로 저장
+        }
+
         return Dog.builder()
                 .username(dogRequestDto.getUsername())
                 .dogName(dogRequestDto.getDogName())
@@ -125,7 +155,7 @@ public class JoinService {
 
         List<String> playCodes = Arrays.asList(selectPlays.split(","));
 
-        for(String playCode : playCodes) {
+        for (String playCode : playCodes) {
             if (!playCode.trim().isEmpty()) {  // 빈 값 방지
                 dogPlayRepository.save(DogPlay.builder()
                         .dogId(dogId)
@@ -134,4 +164,31 @@ public class JoinService {
             }
         }
     }
+
+    private void getActiveDogImage(Integer dogId, String username, List<MultipartFile> filesList) throws IOException {
+        if(filesList != null && !filesList.isEmpty()) {
+            for(MultipartFile file : filesList) {
+                System.out.println("파일 비었는가: " + file.isEmpty());  // 파일 상태 확인
+                if(!file.isEmpty()){
+                    System.out.println(file);
+                    fileService.saveFile(file, "DP", dogId.toString(), username);
+                }
+
+            }
+        }
+    }
+
+    private void getMatching(Integer dogId, String username, List<MultipartFile> filesList) throws IOException {
+        if(filesList != null && !filesList.isEmpty()) {
+            for (MultipartFile file : filesList) {
+                System.out.println("파일 비었는가: " + file.isEmpty());  // 파일 상태 확인
+                if (!file.isEmpty()) {
+                    System.out.println(file);
+                    fileService.saveFile(file, "MF", dogId.toString(), username);
+                }
+
+            }
+        }
+    }
+
 }
