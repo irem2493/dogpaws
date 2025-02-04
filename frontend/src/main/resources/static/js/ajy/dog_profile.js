@@ -90,11 +90,18 @@ document.addEventListener("DOMContentLoaded", function() {
                         reader.readAsDataURL(file);
                     }
                 });
+
+
+            }
+            if(dog.activity_image_file_name){
+                //displayUploadedImages(dog.activity_image_metadata, dog.activity_image_file_name);
+                document.getElementById('activityImageFileName').value = dog.activity_image_file_name || '';
             }
         })
         .catch(error => {
             console.error('세션 데이터 로드 오류:', error);
         });
+
 
 
 
@@ -400,11 +407,25 @@ function selectOption2(checkbox) {
     }
 }
 
-document.getElementById('addPhotoButton').addEventListener('click', function() {
-    document.getElementById('fileInput_active').click(); // 파일 선택 창 열기
+// 검색 기능
+document.getElementById('searchInput2').addEventListener('input', function () {
+    const searchValue = this.value.toLowerCase();
+    const options = document.querySelectorAll('.dropdown .option');
+    options.forEach(option => {
+        const label = option.querySelector('label').textContent.toLowerCase();
+        if (label.includes(searchValue)) {
+            option.style.display = 'flex';
+        } else {
+            option.style.display = 'none';
+        }
+    });
 });
 
-document.getElementById('fileInput_active').addEventListener('change', function(event) {
+document.getElementById('addPhotoButton').addEventListener('click', function() {
+    document.getElementById('activityImages').click(); // 파일 선택 창 열기
+});
+
+document.getElementById('activityImages').addEventListener('change', function(event) {
     const files = event.target.files;
     const photoPreview = document.getElementById('photoPreview');
 
@@ -418,7 +439,7 @@ document.getElementById('fileInput_active').addEventListener('change', function(
 
     // 파일명을 인풋 박스에 표시
     const fileNames = Array.from(files).map(file => file.name).join(', ');
-    fileNameInput.value = fileNames;
+    activityImageFileName.value = fileNames;
 
     // 파일을 미리보기로 추가
     Array.from(files).forEach(file => {
@@ -428,6 +449,7 @@ document.getElementById('fileInput_active').addEventListener('change', function(
             img.src = e.target.result;
             const photoBox = document.createElement('div');
             photoBox.classList.add('photo-box');
+            photoBox.setAttribute('data-file-name', file.name);  // 파일명을 저장
 
             // 사진 미리보기 삭제 버튼
             const deleteBtn = document.createElement('span');
@@ -435,6 +457,11 @@ document.getElementById('fileInput_active').addEventListener('change', function(
             deleteBtn.textContent = '✖';
             deleteBtn.onclick = function() {
                 photoBox.remove();
+
+                // 파일명 업데이트
+                /*const remainingFiles = Array.from(photoPreview.children)
+                    .map(child => child.getAttribute('data-file-name'));
+                activityImageFileName.value = remainingFiles.join(', ');*/
             };
 
             photoBox.appendChild(img);
@@ -477,6 +504,37 @@ function saveStep2() {
 
     // FormData 객체 생성
     const formData = new FormData(form);
+
+    // 폼 데이터에 파일이 포함되어 있는지 확인
+    for (let pair of formData.entries()) {
+        console.log(`${pair[0]}:`, pair[1]);
+    }
+
+    const dogNameInput = document.getElementById('dogName');
+    const value = dogNameInput.value.trim();
+    if (!value) {
+        alert(`필수 입력 항목을 모두 채워주세요: 강아지 이름`);
+        if (dogNameInput) {
+            dogNameInput.focus();  // 빈 필드에 포커스 설정
+        }
+        return;
+    }
+
+    const breedSelect = document.getElementById('breedSelect');
+    if (!breedSelect.value){
+        alert(`필수 입력 항목을 모두 채워주세요: 품종`);
+        breedSelect.focus();
+        return;
+    }
+
+    const firstGenderButton = document.querySelector('.gender-select button');
+    const gender = document.getElementById('gender');
+    if (!gender.value){
+        alert(`필수 입력 항목을 모두 채워주세요: 성별`);
+        // 버튼 중 첫 번째 버튼에 포커스를 줌
+        firstGenderButton.focus();
+        return;
+    }
 
     // 전송 전에 체크박스가 체크되지 않은 경우 값을 설정
     if (!formData.has('isMix')) {
@@ -620,4 +678,58 @@ function showSelectedPlayOptions(selectedValues) {
             selectedContainer.appendChild(selectedDiv);
         }
     });
+}
+
+/*function displayUploadedImages(imageUrls) {
+    const photoPreview = document.getElementById('photoPreview');
+    console.log(imageUrls);
+
+    imageUrls.forEach(url => {
+        const img = document.createElement('img');
+        img.src = url;
+
+        const photoBox = document.createElement('div');
+        photoBox.classList.add('photo-box');
+
+        // 사진 삭제 버튼 추가
+        const deleteBtn = document.createElement('span');
+        deleteBtn.classList.add('delete-btn');
+        deleteBtn.textContent = '✖';
+        deleteBtn.onclick = function() {
+            photoBox.remove();
+
+            // 인풋 박스에서 해당 파일명 제거
+            const fileName = url.substring(url.lastIndexOf('/') + 1);
+            const currentFileNames = activityImageFileName.value.split(', ').filter(name => name !== fileName);
+            activityImageFileName.value = currentFileNames.join(', ');
+        };
+
+        photoBox.appendChild(img);
+        photoBox.appendChild(deleteBtn);
+        photoPreview.appendChild(photoBox);
+
+        // 인풋 박스에 파일명 추가
+        const fileName = url.substring(url.lastIndexOf('/') + 1);
+        const currentFileNames = activityImageFileName.value ? activityImageFileName.value.split(', ') : [];
+        currentFileNames.push(fileName);
+        activityImageFileName.value = currentFileNames.join(', ');
+    });
+}*/
+
+/**
+ * 파일 목록 업데이트
+ */
+function updateFileList() {
+    const fileInput = document.getElementById('activityImages');
+    const fileNamesField = document.getElementById('activityImageFileName');
+
+    if (fileInput.files.length > 3) {
+        alert("최대 6개의 파일만 선택할 수 있습니다.");
+        fileInput.value = "";
+        fileNamesField.value = "선택된 파일이 없습니다.";
+        return;
+    }
+
+    const fileNames = Array.from(fileInput.files).map(file => file.name).join(', ');
+    fileNamesField.value = fileNames || "선택된 파일이 없습니다.";
 }

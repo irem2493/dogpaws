@@ -3,8 +3,10 @@ package com.dogpaws.backend.controller.ajy;
 import com.dogpaws.backend.dto.ajy.DogRequestDto;
 import com.dogpaws.backend.dto.ajy.JoinSessionDto;
 import com.dogpaws.backend.dto.ajy.UserRequestDto;
+import com.dogpaws.backend.dto.common.FileDto;
 import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.service.ajy.JoinService;
+import com.dogpaws.backend.service.common.FileService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +20,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/join")
@@ -36,6 +37,7 @@ public class JoinController {
     private String fileDir;
 
     private final JoinService joinService;
+    private final FileService fileService;
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/step1")
@@ -89,14 +91,16 @@ public class JoinController {
 
         // 1단계 데이터 반환
         UserRequestDto step1Data = sessionData.getStep1Data();
-        dogRequestDto.setUsername(step1Data.getUsername());
+
+        String username = step1Data.getUsername();
+        dogRequestDto.setUsername(username);
 
         // 프로필 이미지 URL 저장 로직 확인
         if (dogRequestDto.getProfileUrl() != null) {
             log.info("프로필 이미지 URL 저장: {}", dogRequestDto.getProfileUrl());
         }
 
-        // 이미지 처리 및 임시 파일 저장
+        // 이미지 처리
         MultipartFile profileImage = dogRequestDto.getProfileImage();
 
         if (!profileImage.isEmpty()) {
@@ -106,13 +110,12 @@ public class JoinController {
             String fileNameWithoutExt = originalFilename.substring(0, originalFilename.lastIndexOf('.'));
             String newFileName = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
 
-            // 임시로 파일 저장 (추후에 최종적으로 저장)
+            // 파일 저장
             Path targetPath = Paths.get(uploadDir, newFileName + fileExt);
             Files.copy(profileImage.getInputStream(), targetPath);
 
             // 세션에 저장할 파일 정보 (경로만 저장)
             System.out.println(targetPath);
-            session.setAttribute("profileImagePath", targetPath.toString());
 
             dogRequestDto.setFileOldName(fileNameWithoutExt);
             dogRequestDto.setFileNewName(newFileName);
@@ -124,7 +127,7 @@ public class JoinController {
         sessionData.setStep2Data(dogRequestDto);
         session.setAttribute("joinSession", sessionData);
 
-        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, dogRequestDto.getProfileUrl());
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, dogRequestDto);
 
     }
 
@@ -141,15 +144,28 @@ public class JoinController {
 
         // 1단계 데이터 반환
         DogRequestDto step2Data = sessionData.getStep2Data();
+
+        List<MultipartFile> fileList = step2Data.getActivityImages();
+
+        for(MultipartFile file : fileList) {
+            System.out.println("step2 사이즈 : "+file.getSize());
+        }
+
         log.info("세션에서 2단계 데이터 반환: {}", step2Data);
+
+
 
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, step2Data);
     }
 
     @PostMapping("/step3")
-    public ApiResponse<?> step3(@RequestParam("is_mating_available") String isMatingAvailable, HttpSession session) {
-        log.info("여기는 백 컨트롤러 step3 / is_mating_available 값: {}", isMatingAvailable);
+    public ApiResponse<?> step3(@RequestParam(value = "fileInput1", required = false) MultipartFile file1,
+                                @RequestParam(value = "fileInput2", required = false) MultipartFile file2,
+                                @RequestParam(value = "fileInput3", required = false) MultipartFile file3,
+                                @RequestParam("isMatingAvailable") String isMatingAvailable,
+                                HttpSession session) throws IOException {
 
+        log.info("여기는 백 컨트롤러 step3 / isMatingAvailable 값: {}", isMatingAvailable);
         JoinSessionDto sessionData = (JoinSessionDto) session.getAttribute("joinSession");
 
         if (sessionData == null || sessionData.getStep1Data() == null || sessionData.getStep2Data() == null) {
@@ -160,40 +176,27 @@ public class JoinController {
         // 기존 세션 데이터에 값 갱신
         DogRequestDto step2Data = sessionData.getStep2Data();
         step2Data.setIsMatingAvailable(isMatingAvailable);
-
         sessionData.setStep2Data(step2Data);
         session.setAttribute("joinSession", sessionData);
 
-        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "3단계 저장 완료");
-    }
+        // 1. 파일 데이터를 리스트에 담음
+        List<MultipartFile> files = new ArrayList<>();
 
-    @PostMapping("/step3/data")
-    public ApiResponse<?> getStep3Data(HttpSession session) throws IOException {
-
-        JoinSessionDto sessionData = (JoinSessionDto) session.getAttribute("joinSession");
-
-        // 세션에 데이터가 없는 경우 처리
-        if (sessionData == null || sessionData.getStep2Data() == null) {
-            log.warn("세션에 저장된 2단계 데이터가 없습니다.");
-            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "저장된 데이터 없음");
+        if (file1 != null && !file1.isEmpty()) {
+            files.add(file1);
         }
 
-        DogRequestDto step2Data = sessionData.getStep2Data();
-        System.out.println(step2Data.getIsMatingAvailable());
-
-        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, step2Data.getIsMatingAvailable());
-    }
-
-    @PostMapping("/step4")
-    public ApiResponse<?> step4(HttpSession session) {
-        //log.info("여기는 백 컨트롤러 step3 / is_mating_available 값: {}", isMatingAvailable);
-
-        JoinSessionDto sessionData = (JoinSessionDto) session.getAttribute("joinSession");
-
-        if (sessionData == null || sessionData.getStep1Data() == null || sessionData.getStep2Data() == null) {
-            log.warn("세션에 저장된 데이터가 부족합니다.");
-            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "저장된 데이터 없음");
+        if (file2 != null && !file2.isEmpty()) {
+            files.add(file2);
         }
+
+        if (file3 != null && !file3.isEmpty()) {
+            files.add(file3);
+        }
+
+        // 2. 파일 정보를 세션에 저장
+        sessionData.setStep3Data(files);
+        session.setAttribute("joinSession", sessionData);
 
         joinService.join(sessionData);
 

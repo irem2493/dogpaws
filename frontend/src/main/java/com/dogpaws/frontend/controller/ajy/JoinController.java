@@ -14,7 +14,7 @@ public class JoinController {
 
     @GetMapping("/join")
     public String join(Model model) {
-        return "/layout-parts/ajy/join";
+        return "/ajy/join";
     }
 
     @GetMapping("/dogprofile")
@@ -32,16 +32,16 @@ public class JoinController {
         model.addAttribute("breedList", breedList);
         model.addAttribute("personalityList", personalityList);
         model.addAttribute("playList", playList);
-        return "/layout-parts/ajy/dog_profile";
+        return "/ajy/dog_profile";
     }
 
     @GetMapping("/matching_select")
     public String matching_select() {
-        return "/layout-parts/ajy/matching_select";
+        return "/ajy/matching_select";
     }
 
     @GetMapping("/matching_document")
     public String matching_document() {
-        return "/layout-parts/ajy/matching_document";
+        return "/ajy/matching_document";
     }
 }

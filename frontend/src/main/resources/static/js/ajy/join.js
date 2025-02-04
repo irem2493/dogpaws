@@ -112,49 +112,88 @@ function saveStep1() {
         console.log(pair[0] + ': ' + pair[1]);  // 폼 데이터 확인
     }*/
 
-    // fetch로 FormData 전송
-    api.post('/api/join/step1', formData, )
-        .then(data => {
-            console.log('Response Data:', data);  // 응답 데이터 출력
 
-            // 응답의 body.body가 '1단계 저장 완료'인지 확인
-            if (data.body?.body === '1단계 저장 완료') {
-                alert("1단계 저장 성공");
-                location.href = '/dogprofile';
-            } else {
-                alert("1단계 저장 실패");
+    const requiredFields = ['username', 'password', 'confirmPassword', 'nickname', 'email', 'postcode', 'address', 'detailAddress'];
+    for (let field of requiredFields) {
+        const inputElement = document.querySelector(`input[name='${field}']`);
+        const value = inputElement?.value.trim();
+        if (!value) {
+            alert(`필수 입력 항목을 모두 채워주세요: ${field}`);
+            if (inputElement) {
+                inputElement.focus();  // 빈 필드에 포커스 설정
             }
-        })
-        .catch(error => {
-            console.error("오류:", error);
-            alert("1단계 저장 중 오류.");
-        });
-    
-}
+            return;
+        }
+    }
 
-function idCheck() {
-    const username = document.querySelector("input[name='username']");
-    const checkButton = document.querySelector("button[onclick='idCheck()']");
+    const emailElement = document.getElementById('email').value.trim();
+    // 이메일 형식 검증 정규식 (RFC 5322 표준을 기반으로 간단하게 작성)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!username) {
-        alert("아이디를 입력해주세요.");
+    if (!emailRegex.test(emailElement)) {
+        alert("올바른 이메일 형식이 아닙니다.");
         return;
     }
 
-    api.get(`/api/join/check/${username.value.trim()}`)
-        .then(data => {
-            if (data.body === '중복됨') {
+    const password = document.querySelector("input[name='password']").value.trim();
+    const confirmPasswordInput = document.querySelector("input[name='confirmPassword']");
+    const confirmPassword = confirmPasswordInput.value.trim();
+    if (password !== confirmPassword) {
+        alert("비밀번호가 일치하지 않습니다.");
+        if (confirmPasswordInput) {
+            confirmPasswordInput.focus();  // 빈 필드에 포커스 설정
+        }
+        return;
+    }
 
+
+    if(isDuplicateChecked){
+        // fetch로 FormData 전송
+        api.post('/api/join/step1', formData, )
+            .then(data => {
+                console.log('Response Data:', data);  // 응답 데이터 출력
+
+                // 응답의 body.body가 '1단계 저장 완료'인지 확인
+                if (data.body?.body === '1단계 저장 완료') {
+                    alert("1단계 저장 성공");
+                    location.href = '/dogprofile';
+                } else {
+                    alert("1단계 저장 실패");
+                }
+            })
+            .catch(error => {
+                console.error("오류:", error);
+                alert("1단계 저장 중 오류.");
+            });
+    }else{
+        alert("아이디 중복 확인을 해주세요.");
+    }
+
+    
+}
+
+const username = document.querySelector("input[name='username']");
+const checkButton = document.querySelector("button[onclick='idCheck()']");
+
+function idCheck() {
+    const username = document.getElementById('username').value.trim();
+
+    if (!username) {
+        alert("아이디를 입력하세요.");
+        return;
+    }
+
+    api.get(`/api/join/check/${username}`)
+        .then(data => {
+
+            if (data.body?.body === '중복됨') {
                 alert("중복된 아이디 입니다.");
                 isDuplicateChecked = false;
-
             } else {
                 alert("사용 가능한 아이디입니다.");
                 checkButton.classList.add("disabled");
-                username.display = true;
                 checkButton.disabled = true;
                 checkButton.textContent = "확인 완료";
-                checkButton.classList.add("disabled");  // 버튼 비활성화 클래스 추가
                 isDuplicateChecked = true;
             }
         })
@@ -162,4 +201,16 @@ function idCheck() {
             console.error(error);
             alert("에러 발생.");
         });
+}
+
+
+document.getElementById('username').addEventListener('input', resetDuplicateCheck);
+
+function resetDuplicateCheck() {
+    // 중복 확인 상태 초기화
+    isDuplicateChecked = false;
+    checkButton.classList.remove("disabled");
+    checkButton.disabled = false;
+    checkButton.textContent = "중복 확인";
+    document.getElementById('username-status').textContent = '';
 }

@@ -19,7 +19,7 @@
                     <div class="progress-container">
                         <div class="step">
                             <div class="circle"></div>
-                            <div class="text">회원가입</div>
+                            <div class="text">사용자 정보 등록</div>
                         </div>
                         <div class="step">
                             <div class="circle-container">
@@ -29,18 +29,14 @@
                         </div>
                         <div class="step">
                             <div class="circle"></div>
-                            <div class="text">매칭 선택(친구/ 교배 중 택 1)</div>
-                        </div>
-                        <div class="step">
-                            <div class="circle"></div>
-                            <div class="text">교배 매칭 시, 선택 서류</div>
+                            <div class="text">교배 매칭 선택</div>
                         </div>
                     </div>
                     <div style="margin-top: 200px"></div>
                     <img src="/img/dog.png" alt="강아지 이미지">
                 </div>
 
-                <div class="divider" style="height: 1300px"></div>
+                <div class="divider" style="height: 1200px"></div>
 
                 <div class="form-fields">
                     <form id="step2Form" enctype="multipart/form-data">
@@ -94,7 +90,7 @@
 
                                 <!-- ✅ hidden input 추가 -->
                                 <div class="gender-select">
-                                    <input type="hidden" name="gender" id="gender" value="0" />
+                                    <input type="hidden" name="gender" id="gender" />
 
                                     <button
                                             type="button"
@@ -209,11 +205,11 @@
                     <div class="form-group">
                         <label class="label">활동 사진</label>
                         <div class="photo-upload">
-                            <input type="file" id="fileInput_active" multiple accept="image/*" style="display: none;">
-                            <input type="text" id="fileNameInput" placeholder="파일을 선택하세요" readonly style="width: 75%">
+                            <input type="file" id="activityImages" name="activityImages" multiple accept="image/*" style="display: none;" onchange="updateFileList()">
+                            <input type="text" id="activityImageFileName" name="activityImageFileName" placeholder="파일을 선택하세요" readonly style="width: 75%">
                             <button type="button" id="addPhotoButton">+ 사진 추가</button>
                             <div id="photoPreview" class="photo-preview">
-                                <!-- 미리보기 이미지가 여기에 표시됩니다 -->
+                                <!- 미리보기 이미지가 여기에 표시됩니다 ->
                             </div>
                             <p class="photo-info">
                                 <span class="warning-icon">⚠️</span> 강아지 사진은 최대 6개 등록 가능합니다.
@@ -223,7 +219,7 @@
 
                         </div>
 
-                </div>
+                    </div>
                 </form>
                 <div class="button-container">
                     <button type="button" id="preButton">이전</button>
