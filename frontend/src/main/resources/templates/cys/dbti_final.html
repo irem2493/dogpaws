@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/common/common.css">
+</head>
+<body layout:fragment="content">
+<h1>나는 누구?</h1>
+<div class="result">
+    <div class="left-result">
+        <img src="/img/견BTI임시프로필.jpg" alt="">
+    </div>
+    <div class="right-result">
+        <button class="btn-result">#독립적인 어쩌구</button>
+        <h2 class="result-title">"혼자만의 시간도 좋아!"</h2>
+        <p class="result-content">차분하고 조용한 성격의 강아지! 혼자 있는 걸 편안해하며, 자기만의 공간을 즐기는 성격이에요. 하지만 주인과의 유대도 소중히 여기는 타입!</p>
+    </div>
+    <div class="match">
+        <div class="title">
+            <div class="title-content">
+                <h1>찰떡궁합!</h1>
+                <button class="btn-match">#애교많은 친구형</button>
+            </div>
+            <div class="title-image">
+                <img src="/img/견BTI매치.png" alt="">
+            </div>
+        </div>
+        <div class="content">
+            <p class="match-content">애교형은 사랑받는 걸 좋아하지만, 고독형은 혼자 있는 걸 선호해요. 하지만 애교형이 너무 들이대지 않는다면, 고독형도 점차 마음을 열고 편안한 관계를 형성할 수 있어요.
+                고독형이 애교형에게 안정감을 주고, 애교형은 고독형의 마음을 따뜻하게 만들어 줄 거예요!</p>
+            <p class="match-end">적극적인 사랑 vs. 차분한 안정감의 환상 조합!</p>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    const resultData = [
+        {
+            type: "leader",
+            title : "활발한 리더형",
+            headline : "내가 리더야! 따라와!",
+            description :  "외향적이고 활발한 성격의 강아지! 사람들과 함께 있는 걸 좋아하며, 언제나 에너지가 넘쳐나요. 리더십이 강해 주인과 친구들을 이끌어 나가는 타입이에요!"
+        },
+        {
+            type: "explorer",
+            title : "조용한 탐험가형",
+            headline: "천천히, 세심하게 탐험할 거야!",
+            description: "신중하고 관찰력이 뛰어난 강아지! 새로운 환경을 차근차근 탐색하며, 냄새 맡는 걸 즐겨요. 독립적이지만 주인의 곁도 편안하게 생각하는 타입이에요!"
+        },
+        {
+            type: "affectionate_friend",
+            title : "애교 많은 친구형",
+            headline: "주인님 최고! 사랑해!",
+            description: "주인을 잘 따르고, 애정 표현이 많은 강아지! 항상 사람들에게 다가가고, 껴안거나 애교를 부리는 걸 좋아해요. 주인의 관심과 사랑을 가장 중요하게 생각하는 타입이에요!"
+        },
+        {
+            type: "independent_lonely",
+            title : "독립적인 고독형",
+            headline: "혼자만의 시간도 좋아!",
+            description: "차분하고 조용한 성격의 강아지! 혼자 있는 걸 편안해하며, 자기만의 공간을 즐기는 성격이에요. 하지만 주인과의 유대도 소중히 여기는 타입이에요!"
+        }
+    ]
+
+    const matchData = [
+        {
+            type1: "leader",
+            matching: "affectionate_friend",
+            relationship: "찰떡궁합!",
+            description: "리더형 강아지는 에너지가 넘치고 주도적인 성격이며, 애교 많은 친구형 강아지는 상대방에게 다가가는 걸 좋아해요. 리더형의 활발한 성격이 애교형 강아지의 따뜻한 성격과 잘 맞아, 함께 있으면 즐겁고 에너지 넘치는 관계가 될 거예요! 리더형의 리드 + 애교형의 따름 → 최고의 콤비!"
+        },
+        {
+            type1: "explorer",
+            matching: "independent_lonely",
+            relationship: "찰떡궁합!",
+            description: "탐험가형 강아지는 조용하고 세심한 성격으로 고독형 강아지의 차분함과 완벽한 조화를 이룹니다. 둘 다 독립적이지만 상대의 공간을 존중하는 타입이기 때문에, 서로를 방해하지 않고 편안한 관계를 유지할 수 있어요. 함께 있지만 각자의 공간을 존중하는 베스트 파트너!"
+        },
+        {
+            type1: "leader",
+            matching: "explorer",
+            relationship: "서로 보완!",
+            description: "리더형 강아지는 외향적이고 적극적인 반면, 탐험가형은 신중하고 조용한 성격이라 서로의 부족한 부분을 채워줄 수 있어요. 리더형은 탐험가형에게 더 많은 활동을 이끌어주고, 탐험가형은 리더형에게 신중함을 가르쳐 줄 수 있답니다. 활발함과 신중함의 조화!"
+        },
+        {
+            type1: "affectionate_friend",
+            matching: "independent_lonely",
+            relationship: "서로 보완!",
+            description: "애교형은 사랑받는 걸 좋아하지만, 고독형은 혼자 있는 걸 선호해요. 하지만 애교형이 너무 들이대지 않는다면, 고독형도 점차 마음을 열고 편안한 관계를 형성할 수 있어요. 고독형이 애교형에게 안정감을 주고, 애교형은 고독형의 마음을 따뜻하게 만들어 줄 거예요! 적극적인 사랑 vs. 차분한 안정감의 환상 조합!"
+        }
+    ]
+
+    console.log("스토리지:"+localStorage.getItem("myType"));
+
+
+</script>
+</html>

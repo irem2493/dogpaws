@@ -1,4 +1,4 @@
-package com.dogpaws.frontend.controller.yoonseo;
+package com.dogpaws.frontend.controller.cys;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class dogMbtiController {
 
     @RequestMapping("/dbti-main")
-    public String dogMbti() {return "yoonseo/dbti_main";}
+    public String dogMbti() {return "cys/dbti_main";}
 
     @GetMapping("/dbti-question")
-    public String dogMbtiQuestion() {return "yoonseo/dbti_question";}
+    public String dogMbtiQuestion() {return "cys/dbti_question";}
 
     @GetMapping("/dbti-final")
-    public String dbtiFinal() {return "yoonseo/dbti_final";}
+    public String dbtiFinal() {return "cys/dbti_final";}
 }

@@ -5,6 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <title>견BTI 문제</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="/css/common/common.css">
     <style>
         .all {
@@ -104,7 +106,7 @@
 
     </style>
 </head>
-<body layout:fragment="content" style="min-height: 100vh">
+<body layout:fragment="content" >
 <div class="all">
     <div class="container-box">
         <div class="icon-container">
@@ -125,47 +127,118 @@
         {
             id: 1,
             question: "강아지가 새로운 친구를 만났을 때 어떻게 행동하나요?",
-            option: ["A. 꼬리를 흔들며 바로 다가가요.",
-                "B. 조심스럽게 냄새를 맡아요.",
-                "C. 멀리서 지켜보다가 천천히 다가가요.",
-                "D. 낯을 가리고 숨거나 피하려고 해요."]
+            option: ["꼬리를 흔들며 바로 다가가요.",
+                "조심스럽게 냄새를 맡아요.",
+                "멀리서 지켜보다가 천천히 다가가요.",
+                "낯을 가리고 숨거나 피하려고 해요."]
         },
         {
             id: 2,
             question: "산책 중에 강아지가 가장 좋아하는 활동은 무엇인가요?",
-            option: ["A. 다른 강아지들과 놀기", "B. 냄새를 맡으며 탐험하기", "C. 주인 옆을 따라다니기", "D. 조용히 산책만 하기"]
+            option: ["다른 강아지들과 놀기", "냄새를 맡으며 탐험하기", "주인 옆을 따라다니기", "조용히 산책만 하기"]
         },
         {
             id: 3,
             question: "강아지가 혼자 있을 때 어떻게 행동하나요?",
-            option: ["A. 장난감을 가지고 혼자 잘 놀아요.", "B. 주인을 찾으려고 여기저기 돌아다녀요.", "C. 낮잠을 자거나 조용히 있어요.", "D. 낑낑대거나 짖어요."]
+            option: ["장난감을 가지고 혼자 잘 놀아요.", "주인을 찾으려고 여기저기 돌아다녀요.", "낮잠을 자거나 조용히 있어요.", "낑낑대거나 짖어요."]
         },
         {
             id: 4,
-            question: "간식을 줄 때 강아지는 어떻게 반응하나요?",
-            option: ["A. 간식을 던지면 점프해서 잡아요.", "B. 코로 냄새를 먼저 맡고 천천히 먹어요.", "C. 바로 받아서 조용히 먹어요.", "D. 간식에 크게 관심을 두지 않아요."]
+            question: "강아지가 좋아하는 장난감은 무엇인가요?",
+            option: ["공이나 던지는 장난감", "소리 나는 장난감", "인형이나 부드러운 장난감", "장난감에 크게 관심이 없어요."]
         },
         {
             id: 5,
-            question: "강아지가 좋아하는 장난감은 무엇인가요?",
-            option: ["A. 공이나 던지는 장난감", "B. 소리 나는 장난감", "C. 인형이나 부드러운 장난감", "D. 장난감에 크게 관심이 없어요."]
-        },
-        {
-            id: 6,
             question: "강아지가 주인을 대할 때의 모습은 무엇인가요?",
-            option: ["A. 항상 주위를 따라다니며 관심을 보여요.", "B. 주인이 부를 때만 반응해요.", "C. 혼자 있는 시간도 잘 즐겨요.", "D. 주인이 없으면 불안해해요."]
+            option: ["항상 주위를 따라다니며 관심을 보여요.", "주인이 부를 때만 반응해요.", "혼자 있는 시간도 잘 즐겨요.", "주인이 없으면 불안해해요."]
         }
     ];
 
+            let addQuestion = "손님이 집에 왔을 때 강아지는 어떤 반응을 보이나요?";
+            let addOption = {
+                "A" : "손님에게 먼저 달려가서 인사해요.",
+                "B" : "조심스럽게 다가가 냄새를 맡으며 탐색해요.",
+                "C" : "손님 주위를 천천히 맴돌며 관찰해요.",
+                "D" : "낯을 가리며 숨으려 해요."
+            };
+
+    let tiedTypes = []
     let currentQuestion = 0;
     const optionValues = ["A", "B", "C", "D"];
 
     const $title = document.querySelector(".title-container");
     const $option = document.querySelector(".select-list");
     const iconContainer =document.querySelector(".icon-container");
-    let selectedAnswers = [];
+    // let selectedAnswers = [];
+    let selectA=0;
+    let selectB=0;
+    let selectC=0;
+    let selectD=0;
 
     loadQuestion();
+
+    const icons = document.querySelector(".icon-container");
+
+
+    function nextQuestion() {
+        const selected = document.querySelector('.btn-question.active');
+        if (!selected) {
+            alert("답변을 선택하지 않았습니다.");
+            return;
+        }
+        console.log(`선택한 답변: ${selected.value}`);  // 선택한 값 확인용
+        // console.log(`답변 목록 :  ${selectedAnswers}`)
+
+        switch (selected.value){
+            case 'A' : selectA++; break;
+            case 'B' : selectB++; break;
+            case 'C' : selectC++; break;
+            case 'D' : selectD++; break;
+        }
+
+        let maxValue = Math.max(selectA, selectB, selectC, selectD);
+
+        tiedTypes = [];
+        if(maxValue === selectA) tiedTypes.push("A");
+        if(maxValue === selectB) tiedTypes.push("B");
+        if(maxValue === selectC) tiedTypes.push("C");
+        if(maxValue === selectD) tiedTypes.push("D");
+
+        let myType;
+        switch (selected.value){
+            case 'A' : myType = 'A'; break;
+            case 'B' : myType = "B"; break;
+            case 'C' : myType = "C"; break;
+            case 'D' : myType = 'D'; break;
+        }
+
+        if (currentQuestion < questionData.length - 1) {
+            currentQuestion++;
+            loadQuestion();
+
+        }else if(currentQuestion === questionData.length - 1){
+            currentQuestion++;
+            additionQuestion();
+
+        } else {
+            console.log("나의 타입 : " + myType);
+            localStorage.setItem("myType", myType);
+
+            // axios.post(" http://localhost:8080/api/dbti",{myType})
+            //     .then(response => {
+            //         console.log('Response:', response.data);
+            //     })
+            //     .catch(error => {
+            //         console.error('Error occurred:', error);
+            //     });
+
+            api.post('/api/dbti', {myType})
+                .then(data => console.log(data))
+                .catch(error => console.error(error));
+
+            window.location.href = '/dbti-final';
+        }
+    }
 
     // 질문 로딩 함수
     function loadQuestion() {
@@ -174,12 +247,12 @@
         iconContainer.innerHTML = "";
 
         $title.innerHTML = `
-        <p>Question ${questionData[currentQuestion].id}/6</p>
+        <p>Question ${questionData[currentQuestion].id}/${questionData.length}</p>
         <h2>${questionData[currentQuestion].question}</h2>
     `;
 
         //아이콘
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < questionData.length; i++) {
             const icon = document.createElement('img');
             icon.className = "paws-icon"
             if (i === currentQuestion) {
@@ -204,31 +277,59 @@
             });
             $option.appendChild(btn);
         });
+
     }
 
-    const icons = document.querySelector(".icon-container");
+    //추가질문 로딩함수
+    function additionQuestion(){
+        $title.innerHTML = '';
+        $option.innerHTML = '';
+        iconContainer.innerHTML = "";
 
-    function nextQuestion() {
-        const selected = document.querySelector('.btn-question.active');
-        if (!selected) {
-            alert("답변을 선택하지 않았습니다.");
-            return;
+        $title.innerHTML = `
+                        <p>addition Question</p>
+                        <h2>${addQuestion}</h2>`;
+
+        for (let i = 0; i < questionData.length; i++) {
+            const icon = document.createElement('img');
+            icon.className = "paws-icon"
+                icon.src = "/img/icon/button/paw-icon.svg";
+                icon.alt = "icon";
+            iconContainer.appendChild(icon);
         }
-        selectedAnswers.push(selected.value);
-        console.log(`선택한 답변: ${selected.value}`);  // 선택한 값 확인용
-        console.log(`답변 목록 :  ${selectedAnswers}`)
 
-        if (currentQuestion < questionData.length - 1) {
-            currentQuestion++;
-            loadQuestion();
-        } else {
-            // alert("모든 질문이 완료되었습니다!");
+        // 동점 발생 시 정렬된 조합 키 생성
+        console.log(tiedTypes)
+        tiedTypes.sort();
+        const tieKey = tiedTypes.join("_");
 
-            //로컬스토리지에 저장
-            localStorage.setItem("selectedAnswers", JSON.stringify(selectedAnswers))
-            window.location.href = '/dbti-final';
-        }
+        // 동적 옵션 생성
+        const dynamicOptions = tiedTypes.map(type => {
+            return { value: type, text: addOption[type] };
+        });
+
+        dynamicOptions.forEach(option => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-question';
+            btn.innerText = option.text;
+            btn.value = option.value;
+
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.btn-question').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            });
+
+            $option.appendChild(btn);
+        });
+
+        // 질문과 옵션을 출력
+        console.log("질문:", addQuestion);
+        dynamicOptions.forEach(opt => console.log(opt.value + ": " + opt.text));
+
     }
+
+
+
 
     //버튼 활성화
     const buttons = document.getElementsByClassName("btn-question");
@@ -241,9 +342,6 @@
             this.classList.add('active');
         });
     }
-
-
-
 
 </script>
 </body>
