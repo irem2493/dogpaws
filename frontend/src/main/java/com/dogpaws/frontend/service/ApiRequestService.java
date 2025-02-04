@@ -3,8 +3,11 @@ package com.dogpaws.frontend.service;
 import com.dogpaws.frontend.exception.UnauthorizedAccessException;
 import com.dogpaws.frontend.global.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -76,7 +79,7 @@ public class ApiRequestService {
             throw e;
         } catch (Exception e) {
             log.error("GET 요청 중 오류 발생: {}", e.getMessage(), e);
-            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "GET 요청 실패", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "GET 요청 실패");
         }
     }
 
@@ -132,7 +135,7 @@ public class ApiRequestService {
                         return apiResponse;
                     } else {
                         log.error("HTTP {} 에러: {}", statusCode.value(), body);
-                        return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "HTTP " + statusCode.value() + " - " + body, statusCode.value());
+                        return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "GET 요청 실패");
                     }
                 });
     }
@@ -157,8 +160,24 @@ public class ApiRequestService {
             throw e;
         } catch (Exception e) {
             log.error("POST 요청 중 오류 발생: {}", e.getMessage(), e);
-            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "POST 요청 실패", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "GET 요청 실패");
         }
+    }
+
+    public Mono<ApiResponse<Object>> fetchDataMono(String url, Map<String, String> params) {
+        MultiValueMap<String, String> multiValueParams = new LinkedMultiValueMap<>();
+        multiValueParams.setAll(params);
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path(url)
+                        .queryParams(multiValueParams)
+                        .build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<ApiResponse<Object>>() {})
+                .map(apiResponse -> {
+                    // 중복된 body 처리: 내부의 body를 다시 객체로 변환하거나 처리
+                    return apiResponse;
+                });
     }
 
 }

@@ -183,31 +183,42 @@
                     <img class="cancle-btn" onclick="cardCancle()" src="/img/icon/x-circle.svg" alt="x-circle-icon">
                 </div>
             </div>
-            <th:block th:if="${filterList == null}">
+            <th:block th:if="${filter == null}">
                 <div>
                     저장된 필터가 없습니다!
                 </div>
             </th:block>
-            <th:block th:if="${filterList != null}" th:each="filter : ${filterList}">
+            <th:block th:if="${filter != null}">
                 <!-- 🟢 여기부터 3열 배치 -->
                 <div class="row">
                     <div class="col-md-4 col-sm-4">
                         <div class="dog-filter">
                             <img src="/img/icon/dog-filter/dog.svg" alt="dog-icon"> 견종
                         </div>
-                        <div class="filter-card"></div>
+                        <div class="filter-card">${filter.breed}
+                            <th:block th:if="${filter.is_mix == 'N'}">
+                                <span> |순종</span>
+                            </th:block>
+                        </div>
                     </div>
                     <div class="col-md-4 col-sm-4">
                         <div class="dog-filter">
                             <img src="/img/icon/dog-filter/weight.svg" alt="weight-icon"> 체중
                         </div>
-                        <div class="filter-card">5.9kg 이상</div>
+                        <div class="filter-card">${filter.weight}
+                            <th:block th:if="${filter.weight_category == 'U'}">
+                                <span> 이상</span>
+                            </th:block>
+                            <th:block th:if="${filter.weight_category == 'D'}">
+                                <span> 이하</span>
+                            </th:block>
+                        </div>
                     </div>
                     <div class="col-md-4 col-sm-4">
                         <div class="dog-filter">
                             <img src="/img/icon/dog-filter/foot.svg" alt="foot-icon"> 견BTI
                         </div>
-                        <div class="filter-card">활발한 리더형</div>
+                        <div class="filter-card">${filter.dog_type}</div>
                     </div>
                 </div>
                 <!-- 🟢 여기까지 3열 배치 -->
@@ -217,7 +228,12 @@
                         <img src="/img/icon/dog-filter/clock.svg" alt="clock-icon"> 산책 시작 시간
                     </div>
                     <div class="d-flex flex-wrap" style="gap: 5px;">
-                        <div class="filter-card">월 화 수 | 18:00 ~ 19:00</div>
+                        <div class="filter-card">
+                            <th:block th:each="walkDay : ${filter.walk_day_List}">
+                                <span>${walkDay} </span>
+                            </th:block>
+                            <span>|${filter.walk_start_time} ~ ${filter.walk_end_time}</span>
+                        </div>
                     </div>
                 </div>
 
@@ -226,11 +242,9 @@
                         <img src="/img/icon/dog-filter/bone.svg" alt="bone-icon"> 성격 유형
                     </div>
                     <div class="d-flex flex-wrap" style="gap: 5px;">
-                        <div class="filter-card">활발함</div>
-                        <div class="filter-card">조용함</div>
-                        <div class="filter-card">사교적임</div>
-                        <div class="filter-card">사교적임</div>
-                        <div class="filter-card">사교적임</div>
+                        <th:block th:each="personal : ${filter.dog_personal}">
+                            <<div class="filter-card">${personal}</div>
+                        </th:block>
                     </div>
                 </div>
 
@@ -239,11 +253,9 @@
                         <img src="/img/icon/dog-filter/dribbble-ball.svg" alt="dribbble-ball-icon"> 좋아하는 놀이
                     </div>
                     <div class="d-flex flex-wrap" style="gap: 5px;">
-                        <div class="filter-card">수영</div>
-                        <div class="filter-card">달리기</div>
-                        <div class="filter-card">숨바꼭질</div>
-                        <div class="filter-card">숨바꼭질</div>
-                        <div class="filter-card">숨바꼭질</div>
+                        <th:block th:each="play : ${filter.dog_play}">
+                            <<div class="filter-card">${play}</div>
+                        </th:block>
                     </div>
                 </div>
             </th:block>

@@ -4,41 +4,69 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dogpaws.backend.repository.dao.hyepin.DogMatchDao">
 
-    <resultMap id="dogMatchResultMap" type="com.dogpaws.backend.dto.hyepin.DogMatchDto">
-        <result property="dogMatchId" column="dog_match_id"/>
-        <result property="dogId" column="dog_id"/>
-        <result property="breedGbnCd" column="breed_gbn_cd"/>
-        <result property="weight" column="weight"/>
-        <result property="weightCategory" column="weight_category"/>
-        <result property="dogTypeCodeGbnCd" column="dog_type_code_gbn_cd"/>
-        <result property="walkStartTime" column="walk_start_time"/>
-        <result property="walkEndTime" column="walk_end_time"/>
-        <result property="walkDays" column="walk_days"/>
-        <result property="bloodTestCertified" column="blood_test_certified"/>
-        <result property="vaccinationCertified" column="vaccination_certified"/>
-        <result property="healthRecordCertified" column="health_record_certified"/>
-        <result property="matchType" column="match_type"/>
+    <select id="getFilterBydogIdAndMatchType" resultType="com.dogpaws.backend.dto.hyepin.DogMatchDto">
+        SELECT
+            dm.dog_match_id,
+            dm.dog_id,
+            dm.breed_gbn_cd,
+            dm.is_mix,
+            dm.weight,
+            dm.weight_category,
+            dm.dog_type_code_gbn_cd,
+            dm.walk_start_time,
+            dm.walk_end_time,
+            dm.walk_days,
+            dm.blood_test_certified,
+            dm.vaccination_certified,
+            dm.health_record_certified,
+            dm.match_type,
 
-        <!-- 성격 1~5 매핑 (List<String>) -->
-        <collection property="dogPersonalGbnCd" ofType="java.lang.String">
-            <result column="dog_personal_gbn_cd_1"/>
-            <result column="dog_personal_gbn_cd_2"/>
-            <result column="dog_personal_gbn_cd_3"/>
-            <result column="dog_personal_gbn_cd_4"/>
-            <result column="dog_personal_gbn_cd_5"/>
-        </collection>
+        GROUP_CONCAT(DISTINCT g1.gubn_name) AS dog_personal,
+        GROUP_CONCAT(DISTINCT g2.gubn_name) AS dog_play,
 
-        <!-- 놀이 1~5 매핑 (List<String>) -->
-        <collection property="dogPlayGbnCd" ofType="java.lang.String">
-            <result column="dog_play_gbn_cd_1"/>
-            <result column="dog_play_gbn_cd_2"/>
-            <result column="dog_play_gbn_cd_3"/>
-            <result column="dog_play_gbn_cd_4"/>
-            <result column="dog_play_gbn_cd_5"/>
-        </collection>
-    </resultMap>
+        CONCAT(
+            IFNULL(dm.dog_personal_gbn_cd_1, ''), ',',
+            IFNULL(dm.dog_personal_gbn_cd_2, ''), ',',
+            IFNULL(dm.dog_personal_gbn_cd_3, ''), ',',
+            IFNULL(dm.dog_personal_gbn_cd_4, ''), ',',
+            IFNULL(dm.dog_personal_gbn_cd_5, '')
+            ) AS dog_personal_gbn_cd,
 
+        CONCAT(
+            IFNULL(dm.dog_play_gbn_cd_1, ''), ',',
+            IFNULL(dm.dog_play_gbn_cd_2, ''), ',',
+            IFNULL(dm.dog_play_gbn_cd_3, ''), ',',
+            IFNULL(dm.dog_play_gbn_cd_4, ''), ',',
+            IFNULL(dm.dog_play_gbn_cd_5, '')
+            ) AS dog_play_gbn_cd,
 
+        g3.gubn_name AS breed,
 
+        g4.gubn_name AS dog_type
 
+        FROM tbl_dog_match dm
+        LEFT JOIN
+            tbl_gubn g1 ON g1.group_code = 'dog_personal_code'
+            AND (g1.gubn_code = dm.dog_personal_gbn_cd_1
+            OR g1.gubn_code = dm.dog_personal_gbn_cd_2
+            OR g1.gubn_code = dm.dog_personal_gbn_cd_3
+            OR g1.gubn_code = dm.dog_personal_gbn_cd_4
+            OR g1.gubn_code = dm.dog_personal_gbn_cd_5)
+        LEFT JOIN
+            tbl_gubn g2 ON g2.group_code = 'dog_play_code'
+            AND (g2.gubn_code = dm.dog_play_gbn_cd_1
+            OR g2.gubn_code = dm.dog_play_gbn_cd_2
+            OR g2.gubn_code = dm.dog_play_gbn_cd_3
+            OR g2.gubn_code = dm.dog_play_gbn_cd_4
+            OR g2.gubn_code = dm.dog_play_gbn_cd_5)
+        -- breed_code에 해당하는 gubn_name을 가져오는 조인
+        LEFT JOIN
+            tbl_gubn g3 ON g3.group_code = 'breed_code'
+            AND g3.gubn_code = dm.breed_gbn_cd
+        LEFT JOIN
+            tbl_gubn g4 ON g4.group_code = 'dog_type_code'
+        AND g4.gubn_code = dm.dog_type_code_gbn_cd
+        WHERE dm.dog_id = #{dogId} AND dm.match_type = #{matchType}
+        GROUP BY dm.dog_id;
+    </select>
 </mapper>
