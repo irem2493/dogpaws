@@ -9,7 +9,9 @@
 <body layout:fragment="content" style="min-height: 100vh">
 <div class="container">  <!-- 컨테이너 div.. 지우지 마세요 !-->
     <!-- 여기서부터 작성하시면 됩니다. !-->
-    <div class="pw-title col-12">친구 매칭</div>
+    <div class="row">
+        <div class="pw-title col-12">친구 매칭</div>
+    </div>
 
     <!-- 필터 구분 영역 -->
     <div style="display: flex; gap: 20px; padding: 20px;">
@@ -35,6 +37,11 @@
 
     <!-- 필터 영역 -->
     <div class="matching-filter">
+        <div class="row">
+            <div class="col-12 d-flex justify-content-end">
+                <img src="/img/icon/rollback-arrow.svg" alt="rollback-arrow-icon" width="20px" height="20px" class="reset-btn" onclick="filterReset()">
+            </div>
+        </div>
 
         <div class="row">
             <div class="matching-item col-md-4 col-sm-12">
@@ -72,7 +79,7 @@
                 </div>
                 <div class="dogTypeCode-container">
                     <select class="select-a" style="margin-right: 10px" id="dogTypeSelect" name="dogType">
-                        <option value="" disabled selected>견BTI를 선택하세요</option>
+                        <option value="" selected>견BTI를 선택하세요</option>
                         <option th:each="dogType : ${dogTypeCodeList}"
                                 th:value="${dogType['gubn_code']}"
                                 th:text="${dogType['gubn_name']}">
@@ -80,6 +87,7 @@
                     </select>
                 </div>
             </div>
+
 
             <div class="matching-item col-md-4 col-sm-12">
 
@@ -164,11 +172,89 @@
 
     </div> <!-- 필터 영역 -->
 
+    <!-- 선호 친구 조회 영역 -->
+    <div class="filter-cards col-md-5 col-sm-12" id="filterCard">
+        <div class="row">
+            <div class="row">
+                <div class="dog-filter col-11 d-flex align-items-center" style="gap: 5px; margin-bottom: 20px">
+                    <img src="/img/icon/dog-filter/liking.svg" alt="dog-icon"> 이런 친구가 좋아요!
+                </div>
+                <div class="col-1">
+                    <img class="cancle-btn" onclick="cardCancle()" src="/img/icon/x-circle.svg" alt="x-circle-icon">
+                </div>
+            </div>
+            <th:block th:if="${filterList == null}">
+                <div>
+                    저장된 필터가 없습니다!
+                </div>
+            </th:block>
+            <th:block th:if="${filterList != null}" th:each="filter : ${filterList}">
+                <!-- 🟢 여기부터 3열 배치 -->
+                <div class="row">
+                    <div class="col-md-4 col-sm-4">
+                        <div class="dog-filter">
+                            <img src="/img/icon/dog-filter/dog.svg" alt="dog-icon"> 견종
+                        </div>
+                        <div class="filter-card"></div>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <div class="dog-filter">
+                            <img src="/img/icon/dog-filter/weight.svg" alt="weight-icon"> 체중
+                        </div>
+                        <div class="filter-card">5.9kg 이상</div>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <div class="dog-filter">
+                            <img src="/img/icon/dog-filter/foot.svg" alt="foot-icon"> 견BTI
+                        </div>
+                        <div class="filter-card">활발한 리더형</div>
+                    </div>
+                </div>
+                <!-- 🟢 여기까지 3열 배치 -->
 
-    <div>  <!-- 선호 친구 조회 영역 -->
+                <div class="row">
+                    <div class="dog-filter">
+                        <img src="/img/icon/dog-filter/clock.svg" alt="clock-icon"> 산책 시작 시간
+                    </div>
+                    <div class="d-flex flex-wrap" style="gap: 5px;">
+                        <div class="filter-card">월 화 수 | 18:00 ~ 19:00</div>
+                    </div>
+                </div>
 
-    </div> <!-- 선호 친구 조회 영역 -->
+                <div class="row">
+                    <div class="dog-filter">
+                        <img src="/img/icon/dog-filter/bone.svg" alt="bone-icon"> 성격 유형
+                    </div>
+                    <div class="d-flex flex-wrap" style="gap: 5px;">
+                        <div class="filter-card">활발함</div>
+                        <div class="filter-card">조용함</div>
+                        <div class="filter-card">사교적임</div>
+                        <div class="filter-card">사교적임</div>
+                        <div class="filter-card">사교적임</div>
+                    </div>
+                </div>
 
+                <div class="row">
+                    <div class="dog-filter">
+                        <img src="/img/icon/dog-filter/dribbble-ball.svg" alt="dribbble-ball-icon"> 좋아하는 놀이
+                    </div>
+                    <div class="d-flex flex-wrap" style="gap: 5px;">
+                        <div class="filter-card">수영</div>
+                        <div class="filter-card">달리기</div>
+                        <div class="filter-card">숨바꼭질</div>
+                        <div class="filter-card">숨바꼭질</div>
+                        <div class="filter-card">숨바꼭질</div>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
+    <!-- 선호 친구 조회 영역 -->
+
+    <!-- 스와이프 -->
+    <div class="row" style="display: flex; justify-content: flex-end;">
+        <img class="col-md-3 col-sm-12" src="/img/swipe.svg" alt="dog-icon">
+    </div>
 
     <div>  <!-- 매칭 영역 -->
 

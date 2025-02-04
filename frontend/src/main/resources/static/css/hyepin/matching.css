@@ -3,9 +3,16 @@
     margin: 0;
 }
 
-.matching-filter {
+.matching-filter{
     margin: 20px;
-    padding: 20px;
+    padding: 0px 20px 20px 20px;
+    border: #bebebe solid 1px;
+    border-radius: 10px;
+}
+
+.filter-cards{
+    margin: 20px;
+    padding: 20px 0px 20px 20px;
     border: #bebebe solid 1px;
     border-radius: 10px;
 }
@@ -84,3 +91,18 @@ margin-right: 10px; /* 오른쪽에 15px 마진 */
     margin-bottom: 10px; /* 아래쪽에 10px 마진 */
     display: inline-block; /* 라벨을 인라인 블록으로 만들어서 마진 효과 적용 */
 }
+
+.cancle-btn, .reset-btn{
+    cursor: pointer;
+}
+
+.filter-card {
+    margin-bottom: 10px;
+    display: inline-flex;
+    padding: 5px 10px;  /* 여백 설정 (선택 사항) */
+    border: #bebebe solid 1px;
+    border-radius: 20px;
+    text-align: center;
+    white-space: nowrap;  /* 한 줄 유지 */
+}
+

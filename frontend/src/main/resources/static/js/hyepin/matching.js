@@ -111,3 +111,15 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+//필터카드 숨기기
+function cardCancle(){
+    var filterCardForm = document.getElementById("filterCard");
+    filterCardForm.style.display = "none";
+
+}
+
+//필터 초기화
+function filterReset(){
+
+}

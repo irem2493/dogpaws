@@ -4,28 +4,13 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dogpaws.backend.repository.dao.hyepin.DogMatchDao">
 
-    <resultMap id="dogMatchResultMap" type="DogMatchDTO">
+    <resultMap id="dogMatchResultMap" type="com.dogpaws.backend.dto.hyepin.DogMatchDto">
         <result property="dogMatchId" column="dog_match_id"/>
         <result property="dogId" column="dog_id"/>
         <result property="breedGbnCd" column="breed_gbn_cd"/>
         <result property="weight" column="weight"/>
         <result property="weightCategory" column="weight_category"/>
         <result property="dogTypeCodeGbnCd" column="dog_type_code_gbn_cd"/>
-
-        <!-- 성격 1~5 매핑 -->
-        <result property="dogPersonalGbnCd" column="dog_personal_gbn_cd_1"/>
-        <result property="dogPersonalGbnCd" column="dog_personal_gbn_cd_2"/>
-        <result property="dogPersonalGbnCd" column="dog_personal_gbn_cd_3"/>
-        <result property="dogPersonalGbnCd" column="dog_personal_gbn_cd_4"/>
-        <result property="dogPersonalGbnCd" column="dog_personal_gbn_cd_5"/>
-
-        <!-- 놀이 1~5 매핑 -->
-        <result property="dogPlayGbnCd" column="dog_play_gbn_cd_1"/>
-        <result property="dogPlayGbnCd" column="dog_play_gbn_cd_2"/>
-        <result property="dogPlayGbnCd" column="dog_play_gbn_cd_3"/>
-        <result property="dogPlayGbnCd" column="dog_play_gbn_cd_4"/>
-        <result property="dogPlayGbnCd" column="dog_play_gbn_cd_5"/>
-
         <result property="walkStartTime" column="walk_start_time"/>
         <result property="walkEndTime" column="walk_end_time"/>
         <result property="walkDays" column="walk_days"/>
@@ -33,6 +18,24 @@
         <result property="vaccinationCertified" column="vaccination_certified"/>
         <result property="healthRecordCertified" column="health_record_certified"/>
         <result property="matchType" column="match_type"/>
+
+        <!-- 성격 1~5 매핑 (List<String>) -->
+        <collection property="dogPersonalGbnCd" ofType="java.lang.String">
+            <result column="dog_personal_gbn_cd_1"/>
+            <result column="dog_personal_gbn_cd_2"/>
+            <result column="dog_personal_gbn_cd_3"/>
+            <result column="dog_personal_gbn_cd_4"/>
+            <result column="dog_personal_gbn_cd_5"/>
+        </collection>
+
+        <!-- 놀이 1~5 매핑 (List<String>) -->
+        <collection property="dogPlayGbnCd" ofType="java.lang.String">
+            <result column="dog_play_gbn_cd_1"/>
+            <result column="dog_play_gbn_cd_2"/>
+            <result column="dog_play_gbn_cd_3"/>
+            <result column="dog_play_gbn_cd_4"/>
+            <result column="dog_play_gbn_cd_5"/>
+        </collection>
     </resultMap>
 
 
