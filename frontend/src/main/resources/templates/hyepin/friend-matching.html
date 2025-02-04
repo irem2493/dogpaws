@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/hyepin/mathing.css">
+</head>
+<body layout:fragment="content" style="min-height: 100vh">
+<div class="container">  <!-- 컨테이너 div.. 지우지 마세요 !-->
+    <!-- 여기서부터 작성하시면 됩니다. !-->
+
+    <div class="pw-title">친구 매칭</div>
+
+    <!-- 필터 구분 영역 -->
+    <div style="display: flex; gap: 20px; padding: 20px;">
+        <div class="dog-filter" style="gap: 5px;">
+            <div>
+                <img src="/img/icon/dog-filter/filter.svg" alt="dog-icon"> 필터
+            </div>
+            <div>
+                <img src="/img/icon/button/caret.svg" alt="dog-icon">
+            </div>
+        </div>
+        <div class="dog-filter" style="gap: 5px;">
+            <div>
+                <img src="/img/icon/dog-filter/liking.svg" alt="dog-icon">  이런 친구가 좋아요!
+            </div>
+            <div>
+                <img src="/img/icon/button/caret.svg" alt="dog-icon">
+            </div>
+        </div>
+    </div> <!-- 필터 구분 영역 -->
+
+    <hr class="custom-hr">
+
+    <div class="matching-filter">  <!-- 필터 영역 -->
+
+        <div class="row">
+            <div class="matching-item col-md-4 col-sm-12">
+                <div class="dog-filter" >
+                    <img src="/img/icon/dog-filter/dog.svg" alt="dog-icon">견종
+                </div>
+                <div>
+                    <input type="text" class="input-a" placeholder="견종을 입력해주세요">
+                    <input type="checkbox" class="checkbox-basic"> 순종
+                </div>
+            </div>
+
+            <div class="matching-item col-md-4 col-sm-12">
+                <div class="dog-filter">
+                    <img src="/img/icon/dog-filter/weight.svg" alt="weight-icon"> 체중
+                </div>
+                <div>
+                    <input type="text" class="input-a" placeholder="체중일 입력해주세요"> Kg
+                    <label> <input type="radio" name="radio2" class="radio-round" checked> 이상</label>
+                    <label><input type="radio" name="radio2" class="radio-round"> 이하</label>
+                </div>
+            </div>
+
+            <div class="matching-item col-md-4 col-sm-12">
+                <div class="dog-filter">
+                    <img src="/img/icon/dog-filter/foot.svg" alt="foot-icon"> 견BTI
+                </div>
+                <div>
+                    <input type="text" class="input-a" placeholder="견BTI를 입력해주세요" style="width: 90%;">
+                </div>
+            </div>
+
+            <div class="matching-item col-md-4 col-sm-12">
+                <div class="dog-filter">
+                    <img src="/img/icon/dog-filter/bone.svg" alt="bone-icon">
+                    강아지 성격(최대 5개 선택 가능)
+                </div>
+                <div>
+                    <input type="text" class="input-a" placeholder="성격을 입력해주세요" style="width: 90%;">
+                </div>
+            </div>
+
+            <div class="matching-item col-md-4 col-sm-12">
+                <div class="dog-filter">
+                    <img src="/img/icon/dog-filter/dribbble-ball.svg" alt="dribbble-ball-icon">
+                    강아지 선호놀이(최대 5개 선택 가능)
+                </div>
+                <div>
+                    <input type="text" class="input-a" placeholder="좋아하는 놀이를 입력해주세요" style="width: 90%;">
+                </div>
+            </div>
+
+            <div class="matching-item col-md-4 col-sm-12">
+                <div class="dog-filter">
+                    <img src="/img/icon/dog-filter/clock.svg" alt="clock-icon">
+                    산책 시작 시간
+                </div>
+                <div>
+                    <input  class="input-a" type="time" required>
+                    <input  class="input-a" type="time" required>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button class="btn-a">취소</button>
+            <button class="btn-confirm">확인</button>
+        </div>
+
+    </div> <!-- 필터 영역 -->
+
+
+    <div>  <!-- 선호 친구 조회 영역 -->
+
+    </div> <!-- 선호 친구 조회 영역 -->
+
+
+    <div>  <!-- 매칭 영역 -->
+
+    </div> <!-- 매칭 영역 -->
+
+
+
+
+
+
+
+</div> <!-- 컨테이너 div.. 지우지 마세요 !-->
+<script src="/js/hyepin/mathing.js"></script>
+</body>
+</html>
