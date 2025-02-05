@@ -3,11 +3,17 @@
     margin: 0;
 }
 
+/*이미지 뒤집기*/
+.rotated {
+    transform: rotate(180deg);
+}
+
 .matching-filter{
     margin: 20px;
     padding: 0px 20px 20px 20px;
     border: #bebebe solid 1px;
     border-radius: 10px;
+    display: none;
 }
 
 .filter-cards{
@@ -15,6 +21,7 @@
     padding: 20px 0px 20px 20px;
     border: #bebebe solid 1px;
     border-radius: 10px;
+    display: none;
 }
 
 .matching-item{
@@ -106,3 +113,81 @@ margin-right: 10px; /* 오른쪽에 15px 마진 */
     white-space: nowrap;  /* 한 줄 유지 */
 }
 
+.matching-container{
+    margin: 50px 0px 50px 0px;
+}
+
+/*카드영역*/
+.matching-card{
+    border: 1px #FFA03A solid;
+    border-radius: 10px;
+    width: 350px;
+    height: 450px;
+    overflow: hidden;
+}
+
+.matching-card-side{
+
+    border: 1px #FFA03A solid;
+    border-radius: 10px;
+    width: 200px;
+    height: 280px;
+    overflow: hidden;
+    position: relative;
+}
+
+.matching-card-side::after {
+    content: ""; /* 가상 요소에 내용은 필요 없으므로 빈 문자열 */
+    position: absolute; /* 부모 요소에 대해 절대 위치 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5); /* 흰색 반투명 배경 */
+    border-radius: 10px; /* 부모 요소의 경계와 일치하게 맞추기 */
+}
+
+
+@media (max-width: 768px) {
+    .matching-card-side{
+        display: none;
+    }
+    .col-1 img {
+        max-width: 30px; /* 이미지 크기 조정 */
+        height: auto;
+    }
+}
+
+.card-center{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-bottom{
+   background-color: #FFF7EB;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 20px 0px 20px ;
+}
+
+.center-card{
+    padding: 0px 30px 0px 30px ;
+}
+
+.card-bottom-items img{
+    width: 25px;
+    height: auto;
+}
+
+.center-card img{
+    width: 40px;
+    height: auto;
+}
+
+.icon-container{
+    background-color: #FFEDD8;
+}
