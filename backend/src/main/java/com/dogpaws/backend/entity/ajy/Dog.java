@@ -3,6 +3,8 @@ package com.dogpaws.backend.entity.ajy;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "tbl_dogs")
 @Getter
@@ -78,6 +80,4 @@ public class Dog {
 
     @Column(name = "file_size", nullable = true)
     private Long fileSize;  //파일 크기
-
-
 }
