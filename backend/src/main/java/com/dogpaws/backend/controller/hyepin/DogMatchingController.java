@@ -21,7 +21,7 @@ public class DogMatchingController {
     //매칭필터 가져오기
     @GetMapping
     public DogMatchDto getFilterBydogId(@RequestParam("dogId") int dogId,
-                                                     @RequestParam("matchType") char matchType) throws IOException {
+                                        @RequestParam("matchType") char matchType) throws IOException {
         log.info("여기는 백 컨트롤러 getFilterBydogId / dogId 값: {}", dogId);
         log.info("여기는 백 컨트롤러 getFilterBydogId / matchType 값: {}", matchType);
         DogMatchDto dogMatchDto = matchingService.getFilterBydogId(dogId, matchType);
