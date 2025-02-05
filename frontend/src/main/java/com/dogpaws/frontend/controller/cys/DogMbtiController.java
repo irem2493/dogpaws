@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * Created on 2025-01-27 by 최윤서
  */
 @Controller
-public class dogMbtiController {
+public class DogMbtiController {
 
     @RequestMapping("/dbti-main")
     public String dogMbti() {return "cys/dbti_main";}

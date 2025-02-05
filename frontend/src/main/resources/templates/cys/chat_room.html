@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>채팅</title>
+    <link rel="stylesheet" href="/css/cys/chat_room.css">
+    <script type="module" src="/js/cys/chat_room.js"></script>
+    <link rel="stylesheet" href="https://cdn.jssdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body layout:fragment="content">
+<div class="container-box">
+
+    <!-- 1번 페이지 : 채팅방 목록 -->
+    <section class="page active" id="page1">
+        <div class="list-background">
+            <div class="category">
+                <div class="one-on-one">
+                    <span class="pointer-text">일반</span>
+                </div>
+                <div class="group">
+                    <span class="pointer-text">그룹</span>
+                </div>
+            </div>
+            <div class="chat-list">
+                <div class="chat-one">
+                    <div class="">
+                        <img src="/img/견BTI임시프로필.jpg" width="50" class="profile-img-2" alt="프로필">
+                    </div>
+                    <div class="pre-chat-content">
+                        <div class="pre-chat-with">경림냥</div>
+                        <div class="last-chat">오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉</div>
+                    </div>
+                </div>
+            </div>
+            <!--        <div class="create-chat">그룹 채팅방 만들기</div>-->
+        </div>
+
+    </section>
+
+    <!-- 2번 페이지 : 채팅 -->
+    <main class="page" id="page2">
+        <div class="chat-main">
+            <div class="chat-message left">
+                <img src="/img/견BTI임시프로필.jpg" width="40" class="profile-img-2" alt="프로필">
+                <div class="chat-not-profile">
+                    <div class="chat-name">경림냥</div>
+                    <div class="message-content">
+                        <div class="message-text">내일 모임 같이 가실??</div>
+                        <div class="message-time">오전 10:52</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-message right">
+                <div class="message-content">
+                    <div class="message-time">오전 10:54</div>
+                    <div class="message-text">ㅎㅎㅎ 몇시?</div>
+                </div>
+            </div>
+        </div>
+        <div class="input-box">
+            <input type="text" class="chat-input" placeholder="채팅을 입력하세요">
+            <div class="icon">
+                <img src="/img/icon/add-calender.svg" id="add-calender-icon" width="16" style="cursor: pointer" alt="">
+                <img src="/img/icon/file-icon.svg" id="file-icon" width="16" style="cursor: pointer" alt="">
+            </div>
+            <img src="/img/icon/button/chat-btn.svg" id="goChat-icon" onclick="handleClick()" style="cursor: pointer" alt="">
+        </div>
+    </main>
+
+    <!-- 3번 페이지 : 채팅 상세정보 -->
+    <section class="page" id="page3">
+        <div class="detail-background">
+            <div class="profile">
+                <img src="/img/groupchat.png" class="profile-img-3" alt="">
+            </div>
+            <div class="title-box">
+                <div class="detail-title">경림냥</div>
+                <button class="star-btn">멍바닥 주기</button>
+            </div>
+            <!--            <div class="participant">-->
+            <!--                <div class="participant-title">-->
+            <!--                    <div class="text">참여자</div>-->
+            <!--                    <div class="plus">+</div>-->
+            <!--                </div>-->
+            <!--                <div class="participant-list">-->
+
+            <!--                </div>-->
+            <!--            </div>-->
+            <div class="media">
+                <div class="media-title">
+                    <div class="text">미디어</div>
+                    <div class="plus">+</div>
+                </div>
+                <div class="media-list">
+
+                </div>
+            </div>
+            <div class="calender">
+                <div class="calender-title" style="width: 100%;">가까운 일정</div>
+                <button class="today-btn">오늘</button>
+                <div class="calender-content">
+                    <div class="calender-box"></div>
+                    <div class="calender-text">
+                        <div class="calender-name">일정 제목</div>
+                        <div class="calender-date" style="font-size: 13px; color: #656565">일정 날짜</div>
+                    </div>
+                </div>
+            </div>
+            <div class="out-chat" style="color:red">나가기</div>
+        </div>
+    </section>
+</div>
+</body>
+</html>
