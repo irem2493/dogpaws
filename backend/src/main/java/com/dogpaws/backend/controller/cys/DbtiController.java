@@ -22,8 +22,10 @@ public class DbtiController {
     private DbtiService dbtiService;
 
     @PostMapping("/dbti")
-    public ResponseEntity<String> receiveAnswers(@RequestBody String myType) {
-        dbtiService.dogType(myType);
+    public ResponseEntity<String> receiveAnswers(@RequestBody Map<String, String> request) {
+        String myType = request.get("myType");
+        int dogId = 2;
+        dbtiService.dogType(myType, dogId);
         System.out.println("선택된 답변 목록: " + myType);
 
         // 추가 처리 후 응답 반환

@@ -6,93 +6,329 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="/css/common/common.css">
+    <style>
+        .container-box {
+            width: 1320px;
+            margin: 0 auto; /* 가로 중앙 정렬 */
+            display: flex; /* 내부 요소 정렬을 위한 flex 사용 */
+            flex-direction: column;
+            justify-content: center; /* 내부 요소 중앙 정렬 */
+            align-items: center; /* 수직 중앙 정렬 (필요 시) */
+        }
+
+        .first-h1 {
+            margin: 60px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .result {
+            margin: 20px;
+            display: flex;
+            flex-direction: row;
+            /*height: 300px;*/
+        }
+
+        .left-result{
+            margin: 10px;
+            width: 359px; height: 308px;
+            overflow: hidden;
+            border: solid 1px black;
+            border-radius: 20px;
+        }
+
+        .right-result{
+            margin: 10px;
+            display: flex; /* 내부 요소 정렬을 위한 flex 사용 */
+            flex-direction: column;
+            justify-content: center; /* 내부 요소 중앙 정렬 */
+            align-items: start;
+        }
+
+        .right-result > * {
+            margin: 20px;  /* 모든 자식 요소에 공통 margin 적용 */
+        }
+
+        .result-title{
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .result-content{
+            font-size: 18px;
+        }
+
+        .btn-result, .btn-match {
+            display: inline-flex;
+            min-width: 300px;
+            width: fit-content;
+            height: 60px;
+            flex-shrink: 0;
+            border-radius: 35px;
+            background: #6D73EF;
+            justify-content: center;
+            align-items: center;
+            color: var(--white);
+            text-align: center;
+            padding: 0;
+            font-size: 24px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+            box-sizing: border-box;
+            text-decoration: none;
+            border: none;
+            pointer-events: none;
+        }
+
+        .second-h1{
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .match {
+            margin: 10px 10px 100px 10px;
+            display: flex;                  /* Flex로 내부 요소 정렬 */
+            flex-direction: column;         /* 세로 방향 정렬 */
+            align-items: center;            /* 가로 중앙 정렬 */
+            justify-content: center;        /* 세로 중앙 정렬 */
+            position: relative;             /* 배경 박스와 레이아웃을 분리 */
+            padding: 40px;
+            /*background-color: #fde4e4;*/
+            /*margin: 0 auto;                 !* 가로 중앙으로 이동 *!*/
+            width: 100%;                     /* 너비를 조정 */
+            max-width: 915px;
+            box-sizing: border-box;
+        }
+
+        .background-box {
+            position: absolute;
+            top: 35%;
+            left: 0;
+            width: 100%;
+            height: 65%;
+            background-color: #FDEBDF;
+            z-index: 1;
+        }
+
+        .match-title {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            padding-bottom: 20px;
+        }
+
+        .title-content {
+            flex: 1;
+            text-align: left;
+        }
+
+        .title-content > *{
+           margin: 10px;
+        }
+
+        .btn-match{
+            background-color: #FF577E;
+        }
+
+        .title-image img {
+            max-width: 400px;
+            border-radius: 10px;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .match-content, .match-end {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 10px;
+        }
+
+        .match-end {
+            margin-top: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+    </style>
 </head>
 <body layout:fragment="content">
-<h1>나는 누구?</h1>
-<div class="result">
-    <div class="left-result">
-        <img src="/img/견BTI임시프로필.jpg" alt="">
-    </div>
-    <div class="right-result">
-        <button class="btn-result">#독립적인 어쩌구</button>
-        <h2 class="result-title">"혼자만의 시간도 좋아!"</h2>
-        <p class="result-content">차분하고 조용한 성격의 강아지! 혼자 있는 걸 편안해하며, 자기만의 공간을 즐기는 성격이에요. 하지만 주인과의 유대도 소중히 여기는 타입!</p>
+<div class="container-box">
+
+    <h1 class="first-h1">나는 누구?</h1>
+    <div class="result">
+        <div class="left-result">
+            <img src="/img/견BTI임시프로필.jpg" width="360" alt="">
+        </div>
+        <div class="right-result">
+            <button class="btn-result"></button>
+            <h2 class="result-title"></h2>
+            <p class="result-content"></p>
+        </div>
     </div>
     <div class="match">
-        <div class="title">
+        <div class="background-box"></div>
+        <div class="match-title">
             <div class="title-content">
-                <h1>찰떡궁합!</h1>
-                <button class="btn-match">#애교많은 친구형</button>
+                <h1 class="second-h1">찰떡궁합!</h1>
+                <button class="btn-match"></button>
             </div>
             <div class="title-image">
-                <img src="/img/견BTI매치.png" alt="">
+                <img src="/img/견BTI매치.png" width="400" alt="">
             </div>
         </div>
         <div class="content">
-            <p class="match-content">애교형은 사랑받는 걸 좋아하지만, 고독형은 혼자 있는 걸 선호해요. 하지만 애교형이 너무 들이대지 않는다면, 고독형도 점차 마음을 열고 편안한 관계를 형성할 수 있어요.
-                고독형이 애교형에게 안정감을 주고, 애교형은 고독형의 마음을 따뜻하게 만들어 줄 거예요!</p>
-            <p class="match-end">적극적인 사랑 vs. 차분한 안정감의 환상 조합!</p>
+            <p class="match-content"><p>
+            <p class="match-end"></p>
         </div>
     </div>
 </div>
-</body>
 <script>
     const resultData = [
         {
             type: "leader",
-            title : "활발한 리더형",
-            headline : "내가 리더야! 따라와!",
-            description :  "외향적이고 활발한 성격의 강아지! 사람들과 함께 있는 걸 좋아하며, 언제나 에너지가 넘쳐나요. 리더십이 강해 주인과 친구들을 이끌어 나가는 타입이에요!"
+            title: "활발한 리더형",
+            headline: "내가 리더야! 따라와!",
+            description: "외향적이고 활발한 성격의 강아지!<br> 사람들과 함께 있는 걸 좋아하며, 언제나 에너지가 넘쳐나요.<br> 리더십이 강해 주인과 친구들을 이끌어 나가는 타입이에요!"
         },
         {
             type: "explorer",
-            title : "조용한 탐험가형",
+            title: "조용한 탐험가형",
             headline: "천천히, 세심하게 탐험할 거야!",
-            description: "신중하고 관찰력이 뛰어난 강아지! 새로운 환경을 차근차근 탐색하며, 냄새 맡는 걸 즐겨요. 독립적이지만 주인의 곁도 편안하게 생각하는 타입이에요!"
+            description: "신중하고 관찰력이 뛰어난 강아지!<br> 새로운 환경을 차근차근 탐색하며, 냄새 맡는 걸 즐겨요.<br> 독립적이지만 주인의 곁도 편안하게 생각하는 타입이에요!"
         },
         {
             type: "affectionate_friend",
-            title : "애교 많은 친구형",
+            title: "애교 많은 친구형",
             headline: "주인님 최고! 사랑해!",
-            description: "주인을 잘 따르고, 애정 표현이 많은 강아지! 항상 사람들에게 다가가고, 껴안거나 애교를 부리는 걸 좋아해요. 주인의 관심과 사랑을 가장 중요하게 생각하는 타입이에요!"
+            description: "주인을 잘 따르고, 애정 표현이 많은 강아지!<br> 항상 사람들에게 다가가고, 껴안거나 애교를 부리는 걸 좋아해요.<br> 주인의 관심과 사랑을 가장 중요하게 생각하는 타입이에요!"
         },
         {
             type: "independent_lonely",
-            title : "독립적인 고독형",
+            title: "독립적인 고독형",
             headline: "혼자만의 시간도 좋아!",
-            description: "차분하고 조용한 성격의 강아지! 혼자 있는 걸 편안해하며, 자기만의 공간을 즐기는 성격이에요. 하지만 주인과의 유대도 소중히 여기는 타입이에요!"
+            description: "차분하고 조용한 성격의 강아지!<br> 혼자 있는 걸 편안해하며, 자기만의 공간을 즐기는 성격이에요.<br> 하지만 주인과의 유대도 소중히 여기는 타입이에요!"
         }
     ]
 
     const matchData = [
         {
-            type1: "leader",
-            matching: "affectionate_friend",
-            relationship: "찰떡궁합!",
-            description: "리더형 강아지는 에너지가 넘치고 주도적인 성격이며, 애교 많은 친구형 강아지는 상대방에게 다가가는 걸 좋아해요. 리더형의 활발한 성격이 애교형 강아지의 따뜻한 성격과 잘 맞아, 함께 있으면 즐겁고 에너지 넘치는 관계가 될 거예요! 리더형의 리드 + 애교형의 따름 → 최고의 콤비!"
+            type: "A",
+            matching: "애교 많은 친구형 ",
+            description: "리더형 강아지는 에너지가 넘치고 주도적인 성격이며, 애교 많은 친구형 강아지는 상대방에게 다가가는 걸 좋아해요.<br> 리더형의 활발한 성격이 애교형 강아지의 따뜻한 성격과 잘 맞아, 함께 있으면 즐겁고 에너지 넘치는 관계가 될 거예요!<br>",
+            footer:"리더형의 리드 + 애교형의 따름 → 최고의 콤비!"
         },
         {
-            type1: "explorer",
-            matching: "independent_lonely",
-            relationship: "찰떡궁합!",
-            description: "탐험가형 강아지는 조용하고 세심한 성격으로 고독형 강아지의 차분함과 완벽한 조화를 이룹니다. 둘 다 독립적이지만 상대의 공간을 존중하는 타입이기 때문에, 서로를 방해하지 않고 편안한 관계를 유지할 수 있어요. 함께 있지만 각자의 공간을 존중하는 베스트 파트너!"
+            type: "B",
+            matching: "독립적인 고독형",
+            description: "탐험가형 강아지는 조용하고 세심한 성격으로 고독형 강아지의 차분함과 완벽한 조화를 이룹니다.<br> 둘 다 독립적이지만 상대의 공간을 존중하는 타입이기 때문에, 서로를 방해하지 않고 편안한 관계를 유지할 수 있어요.<br> ",
+            footer:"함께 있지만 각자의 공간을 존중하는 베스트 파트너!"
         },
         {
-            type1: "leader",
-            matching: "explorer",
-            relationship: "서로 보완!",
-            description: "리더형 강아지는 외향적이고 적극적인 반면, 탐험가형은 신중하고 조용한 성격이라 서로의 부족한 부분을 채워줄 수 있어요. 리더형은 탐험가형에게 더 많은 활동을 이끌어주고, 탐험가형은 리더형에게 신중함을 가르쳐 줄 수 있답니다. 활발함과 신중함의 조화!"
+            type: "C",
+            matching: "활발한 리더형",
+            description: "리더형 강아지는 외향적이고 적극적인 반면, 탐험가형은 신중하고 조용한 성격이라 서로의 부족한 부분을 채워줄 수 있어요.<br> 리더형은 탐험가형에게 더 많은 활동을 이끌어주고, 탐험가형은 리더형에게 신중함을 가르쳐 줄 수 있답니다.<br> ",
+            footer: "활발함과 신중함의 조화!"
         },
         {
-            type1: "affectionate_friend",
-            matching: "independent_lonely",
-            relationship: "서로 보완!",
-            description: "애교형은 사랑받는 걸 좋아하지만, 고독형은 혼자 있는 걸 선호해요. 하지만 애교형이 너무 들이대지 않는다면, 고독형도 점차 마음을 열고 편안한 관계를 형성할 수 있어요. 고독형이 애교형에게 안정감을 주고, 애교형은 고독형의 마음을 따뜻하게 만들어 줄 거예요! 적극적인 사랑 vs. 차분한 안정감의 환상 조합!"
+            type: "D",
+            matching: "조용한 탐험가형",
+            description: "애교형은 사랑받는 걸 좋아하지만, 고독형은 혼자 있는 걸 선호해요.<br> 하지만 애교형이 너무 들이대지 않는다면, 고독형도 점차 마음을 열고 편안한 관계를 형성할 수 있어요.<br> 고독형이 애교형에게 안정감을 주고, 애교형은 고독형의 마음을 따뜻하게 만들어 줄 거예요! ",
+            footer:"적극적인 사랑 vs. 차분한 안정감의 환상 조합!"
         }
     ]
 
-    console.log("스토리지:"+localStorage.getItem("myType"));
+    let myType = localStorage.getItem("myType");
+    console.log("스토리지:" + myType);
+
+    const $TypeBtn = document.querySelector(".btn-result");
+    const $TypeTitle = document.querySelector(".result-title");
+    const $TypeContent = document.querySelector(".result-content");
+
+    const $MatchBtn = document.querySelector(".btn-match");
+    const $MatchContent = document.querySelector(".match-content");
+    const $MatchFooter = document.querySelector(".match-end")
+
+    $TypeBtn.innerHTML='';
+    $TypeTitle.innerHTML='';
+    $TypeContent.innerHTML='';
+
+    $MatchBtn.innerHTML='';
+    $MatchContent.innerHTML='';
+    $MatchFooter.innerHTML='';
+
+    type(myType);
+    match(myType);
+
+    //나의 타입
+    function type(myType){
+        switch (myType){
+            case 'A':
+                $TypeBtn.style.backgroundColor = "#FF7542"
+                $TypeBtn.innerText="#"+resultData[0].title;
+                $TypeTitle.innerText=resultData[0].headline;
+                $TypeContent.innerHTML=resultData[0].description;
+                break;
+            case 'B':
+                $TypeBtn.style.backgroundColor = "#A7C957"
+                $TypeBtn.innerText="#"+resultData[1].title;
+                $TypeTitle.innerText=resultData[1].headline;
+                $TypeContent.innerHTML=resultData[1].description;
+                break;
+            case 'C':
+                $TypeBtn.style.backgroundColor = "#FF577E"
+                $TypeBtn.innerText="#"+resultData[2].title;
+                $TypeTitle.innerText=resultData[2].headline;
+                $TypeContent.innerHTML=resultData[2].description;
+                break;
+            case 'D':
+                $TypeBtn.style.backgroundColor = "#6D73EF"
+                $TypeBtn.innerText="#"+resultData[3].title;
+                $TypeTitle.innerText=resultData[3].headline;
+                $TypeContent.innerHTML=resultData[3].description;
+                break;
+        }
+    }
+
+    function match(myType){
+        switch (myType){
+            case 'A':
+                $MatchBtn.style.backgroundColor = "#FF577E"
+                $MatchBtn.innerText="#"+matchData[0].matching;
+                $MatchContent.innerHTML=matchData[0].description;
+                $MatchFooter.innerText=matchData[0].footer;
+                break;
+            case 'B':
+                $MatchBtn.style.backgroundColor = "#6D73EF"
+                $MatchBtn.innerText="#"+matchData[1].matching;
+                $MatchContent.innerHTML=matchData[1].description;
+                $MatchFooter.innerText=matchData[1].footer;
+                break;
+            case 'C':
+                $MatchBtn.style.backgroundColor = "#FF7542"
+                $MatchBtn.innerText="#"+matchData[2].matching;
+                $MatchContent.innerHTML=matchData[2].description;
+                $MatchFooter.innerText=matchData[2].footer;
+                break;
+            case 'D':
+                $MatchBtn.style.backgroundColor = "#A7C957"
+                $MatchBtn.innerText="#"+matchData[3].matching;
+                $MatchContent.innerHTML=matchData[3].description;
+                $MatchFooter.innerText=matchData[3].footer;
+                break;
+        }
+    }
 
 
 </script>
+</body>
+
 </html>
