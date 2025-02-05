@@ -12,6 +12,12 @@ function getCalendarList() {
             console.log('calendarList loaded:', calendarList);  // 배열 확인
 
             const events = calendarList.map(event => {
+                // 날짜 데이터가 없으면 기본값을 넣거나 제외
+                if (!event.calendar_start_date || !event.calendar_end_date) {
+                    console.warn("🚨 날짜 데이터 없음:", event);
+                    return null;  // 잘못된 데이터는 필터링
+                }
+
                 // 날짜 형식을 'YYYY-MM-DD HH:mm:ss' -> 'YYYY-MM-DDTHH:mm:ss'로 변환
                 const startDateStr = event.calendar_start_date.replace(" ", "T");
                 const endDateStr = event.calendar_end_date.replace(" ", "T");
@@ -59,7 +65,6 @@ function getCalendarList() {
 
 //document.addEventListener('DOMContentLoaded', function() {
 function renderCalendar(events){
-
     var calendarEl = document.getElementById('calendar');
 
     if (!calendarEl) {
