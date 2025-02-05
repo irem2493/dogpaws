@@ -16,6 +16,6 @@ public class DbtiService {
     @Autowired
     private DbtiDao dao;
 
-    public void dogType(String type) {dao.dogType(type);}
+    public void dogType(String type, int dogId) {dao.dogType(type, dogId);}
 
 }

@@ -216,7 +216,7 @@
             currentQuestion++;
             loadQuestion();
 
-        }else if(currentQuestion === questionData.length - 1){
+        }else if(currentQuestion === questionData.length - 1 && tiedTypes.length > 1){
             currentQuestion++;
             additionQuestion();
 
@@ -327,9 +327,6 @@
         dynamicOptions.forEach(opt => console.log(opt.value + ": " + opt.text));
 
     }
-
-
-
 
     //버튼 활성화
     const buttons = document.getElementsByClassName("btn-question");
