@@ -24,13 +24,13 @@ public class DogMatchingController {
 
     //매칭필터 가져오기
     @GetMapping
-    public ApiResponse<DogMatchDto> getFilterBydogId(@RequestParam("dogId") int dogId,
+    public DogMatchDto getFilterBydogId(@RequestParam("dogId") int dogId,
                                                      @RequestParam("matchType") char matchType) throws IOException {
         log.info("여기는 백 컨트롤러 getFilterBydogId / dogId 값: {}", dogId);
         log.info("여기는 백 컨트롤러 getFilterBydogId / matchType 값: {}", matchType);
         DogMatchDto dogMatchDto = matchingService.getFilterBydogId(dogId, matchType);
         log.info("여기는 백 컨트롤러 getFilterBydogId / dogMatchDto 값: {}", dogMatchDto);
-        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, dogMatchDto);
+        return dogMatchDto;
     }
 
     //매칭필터 등록 / 수정
