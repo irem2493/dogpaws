@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>견BTI</title>
+    <link rel="stylesheet" href="/css/common/common.css">
+    <style>
+        .container-box {
+            width: 1320px;
+            margin: 0 auto; /* 가로 중앙 정렬 */
+            display: flex; /* 내부 요소 정렬을 위한 flex 사용 */
+            justify-content: center; /* 내부 요소 중앙 정렬 */
+            align-items: center; /* 수직 중앙 정렬 (필요 시) */
+        }
+
+        .right-container{
+            text-align: center;
+            margin-top: 170px;
+        }
+
+        .right-container h1{
+            margin: 40px;
+        }
+
+        .right-container h1, .right-container h4{
+            font-weight: bold;
+        }
+
+        .right-container p{
+            font-size: 24px;
+        }
+
+        div .btn-orange{
+            min-width: 250px;
+        }
+
+        div .btn-b{
+            color: black;
+            font-weight: bold;
+            font-size: 24px;
+            margin: 10px;
+            padding: 20px 30px;
+            cursor: none;
+        }
+
+        .top-personality, .bottom-personality{
+            justify-content: space-between;
+        }
+
+    </style>
+</head>
+<body layout:fragment="content">
+<div class="container-box">
+    <div class="left-container">
+        <img src="/img/견BTI메인.png" style="width: 100%; max-width: 100%; height: auto;">
+    </div>
+    <div class="right-container">
+        <h1>견BTI</h1>
+        <h4>"활발한 리더? 조용한 탐험가?"</h4>
+        <p>우리 강아지의 숨겨진 매력을 지금 확인하세요!</p>
+        <button class="btn-orange" onclick="location.href='/dbti-question'" style="margin: 20px">검사하러 가기</button>
+        <div class="personality" style="margin: 20px">
+            <div class="top-personality">
+                <button class="btn-b">#활발한 리더형</button>
+                <button class="btn-b">#독립적인 고독형</button>
+            </div>
+            <div class="bottom-personality">
+                <button class="btn-b">#애교 많은 친구형</button>
+                <button class="btn-b">#조용한 탐험가형</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

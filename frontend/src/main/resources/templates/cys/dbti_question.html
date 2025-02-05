@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>견BTI 문제</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="/css/common/common.css">
+    <style>
+        .all {
+            background-color: #FFFCF8;
+            padding: 50px;
+        }
+
+        .icon-container {
+            margin: 25px;
+            /*color: #FFE4CA;*/
+        }
+
+        .paws-icon {
+            width: 90px;
+        }
+
+        .container-box {
+            width: 1320px;
+            margin: 0 auto; /* 가로 중앙 정렬 */
+            display: flex; /* 내부 요소 정렬을 위한 flex 사용 */
+            flex-direction: column;
+            justify-content: center; /* 내부 요소 중앙 정렬 */
+            align-items: center; /* 수직 중앙 정렬 (필요 시) */
+        }
+
+        .title-container {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .title-container p {
+            font-size: 20px;
+            color: #FF8300;
+        }
+
+        .title-container h2 {
+            font-weight: bold;
+        }
+
+        .select-list {
+            display: flex;
+            flex-direction: column;
+            margin: 25px;
+        }
+
+        .btn-question {
+            display: inline-flex;
+            width: 580px;
+            height: 60px;
+            flex-shrink: 0;
+            border-radius: 10px;
+            background: #FDEBDF;
+            /*background: var(--primary-color);*/
+            justify-content: center;
+            align-items: center;
+            color: black;
+            text-align: center;
+            padding: 0;
+            font-size: 20px;
+            font-style: normal;
+            line-height: normal;
+            box-sizing: border-box;
+            text-decoration: none;
+            border: none;
+            margin: 10px;
+        }
+
+        .btn-question:hover {
+            background: var(--primary-color);
+        }
+
+        .btn-question.active {
+            background: var(--primary-color);
+        }
+
+        .btn-next {
+            display: inline-flex;
+            width: 150px;
+            height: 60px;
+            flex-shrink: 0;
+            border-radius: 10px;
+            background: var(--primary-color);
+            justify-content: center;
+            align-items: center;
+            color: black;
+            text-align: center;
+            padding: 0;
+            font-size: 20px;
+            font-style: normal;
+            line-height: normal;
+            box-sizing: border-box;
+            text-decoration: none;
+            border: none;
+            margin: 10px;
+        }
+
+    </style>
+</head>
+<body layout:fragment="content" >
+<div class="all">
+    <div class="container-box">
+        <div class="icon-container">
+
+        </div>
+        <div class="title-container">
+
+        </div>
+        <div class="select-list">
+
+        </div>
+        <button class="btn-next" onclick="nextQuestion()">다음</button>
+    </div>
+</div>
+<script>
+
+    const questionData = [
+        {
+            id: 1,
+            question: "강아지가 새로운 친구를 만났을 때 어떻게 행동하나요?",
+            option: ["꼬리를 흔들며 바로 다가가요.",
+                "조심스럽게 냄새를 맡아요.",
+                "멀리서 지켜보다가 천천히 다가가요.",
+                "낯을 가리고 숨거나 피하려고 해요."]
+        },
+        {
+            id: 2,
+            question: "산책 중에 강아지가 가장 좋아하는 활동은 무엇인가요?",
+            option: ["다른 강아지들과 놀기", "냄새를 맡으며 탐험하기", "주인 옆을 따라다니기", "조용히 산책만 하기"]
+        },
+        {
+            id: 3,
+            question: "강아지가 혼자 있을 때 어떻게 행동하나요?",
+            option: ["장난감을 가지고 혼자 잘 놀아요.", "주인을 찾으려고 여기저기 돌아다녀요.", "낮잠을 자거나 조용히 있어요.", "낑낑대거나 짖어요."]
+        },
+        {
+            id: 4,
+            question: "강아지가 좋아하는 장난감은 무엇인가요?",
+            option: ["공이나 던지는 장난감", "소리 나는 장난감", "인형이나 부드러운 장난감", "장난감에 크게 관심이 없어요."]
+        },
+        {
+            id: 5,
+            question: "강아지가 주인을 대할 때의 모습은 무엇인가요?",
+            option: ["항상 주위를 따라다니며 관심을 보여요.", "주인이 부를 때만 반응해요.", "혼자 있는 시간도 잘 즐겨요.", "주인이 없으면 불안해해요."]
+        }
+    ];
+
+            let addQuestion = "손님이 집에 왔을 때 강아지는 어떤 반응을 보이나요?";
+            let addOption = {
+                "A" : "손님에게 먼저 달려가서 인사해요.",
+                "B" : "조심스럽게 다가가 냄새를 맡으며 탐색해요.",
+                "C" : "손님 주위를 천천히 맴돌며 관찰해요.",
+                "D" : "낯을 가리며 숨으려 해요."
+            };
+
+    let tiedTypes = []
+    let currentQuestion = 0;
+    const optionValues = ["A", "B", "C", "D"];
+
+    const $title = document.querySelector(".title-container");
+    const $option = document.querySelector(".select-list");
+    const iconContainer =document.querySelector(".icon-container");
+    // let selectedAnswers = [];
+    let selectA=0;
+    let selectB=0;
+    let selectC=0;
+    let selectD=0;
+
+    loadQuestion();
+
+    const icons = document.querySelector(".icon-container");
+
+
+    function nextQuestion() {
+        const selected = document.querySelector('.btn-question.active');
+        if (!selected) {
+            alert("답변을 선택하지 않았습니다.");
+            return;
+        }
+        console.log(`선택한 답변: ${selected.value}`);  // 선택한 값 확인용
+        // console.log(`답변 목록 :  ${selectedAnswers}`)
+
+        switch (selected.value){
+            case 'A' : selectA++; break;
+            case 'B' : selectB++; break;
+            case 'C' : selectC++; break;
+            case 'D' : selectD++; break;
+        }
+
+        let maxValue = Math.max(selectA, selectB, selectC, selectD);
+
+        tiedTypes = [];
+        if(maxValue === selectA) tiedTypes.push("A");
+        if(maxValue === selectB) tiedTypes.push("B");
+        if(maxValue === selectC) tiedTypes.push("C");
+        if(maxValue === selectD) tiedTypes.push("D");
+
+        let myType;
+        switch (selected.value){
+            case 'A' : myType = 'A'; break;
+            case 'B' : myType = "B"; break;
+            case 'C' : myType = "C"; break;
+            case 'D' : myType = 'D'; break;
+        }
+
+        if (currentQuestion < questionData.length - 1) {
+            currentQuestion++;
+            loadQuestion();
+
+        }else if(currentQuestion === questionData.length - 1 && tiedTypes.length > 1){
+            currentQuestion++;
+            additionQuestion();
+
+        } else {
+            console.log("나의 타입 : " + myType);
+            localStorage.setItem("myType", myType);
+
+            // axios.post(" http://localhost:8080/api/dbti",{myType})
+            //     .then(response => {
+            //         console.log('Response:', response.data);
+            //     })
+            //     .catch(error => {
+            //         console.error('Error occurred:', error);
+            //     });
+
+            api.post('/api/dbti', {myType})
+                .then(data => console.log(data))
+                .catch(error => console.error(error));
+
+            window.location.href = '/dbti-final';
+        }
+    }
+
+    // 질문 로딩 함수
+    function loadQuestion() {
+        $title.innerHTML = '';
+        $option.innerHTML = '';
+        iconContainer.innerHTML = "";
+
+        $title.innerHTML = `
+        <p>Question ${questionData[currentQuestion].id}/${questionData.length}</p>
+        <h2>${questionData[currentQuestion].question}</h2>
+    `;
+
+        //아이콘
+        for (let i = 0; i < questionData.length; i++) {
+            const icon = document.createElement('img');
+            icon.className = "paws-icon"
+            if (i === currentQuestion) {
+                icon.src = "/img/icon/button/paw-icon.svg";
+                icon.alt = "icon";
+            } else {
+                icon.src = "/img/icon/button/paw-icon2.svg";
+                icon.alt = "icon2";
+            }
+            iconContainer.appendChild(icon);
+        }
+
+        // 선택지 버튼
+        questionData[currentQuestion].option.forEach((option, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-question';
+            btn.innerText = option;
+            btn.value = optionValues[index];  // "A", "B" 등의 값 저장
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.btn-question').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            });
+            $option.appendChild(btn);
+        });
+
+    }
+
+    //추가질문 로딩함수
+    function additionQuestion(){
+        $title.innerHTML = '';
+        $option.innerHTML = '';
+        iconContainer.innerHTML = "";
+
+        $title.innerHTML = `
+                        <p>addition Question</p>
+                        <h2>${addQuestion}</h2>`;
+
+        for (let i = 0; i < questionData.length; i++) {
+            const icon = document.createElement('img');
+            icon.className = "paws-icon"
+                icon.src = "/img/icon/button/paw-icon.svg";
+                icon.alt = "icon";
+            iconContainer.appendChild(icon);
+        }
+
+        // 동점 발생 시 정렬된 조합 키 생성
+        console.log(tiedTypes)
+        tiedTypes.sort();
+        const tieKey = tiedTypes.join("_");
+
+        // 동적 옵션 생성
+        const dynamicOptions = tiedTypes.map(type => {
+            return { value: type, text: addOption[type] };
+        });
+
+        dynamicOptions.forEach(option => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-question';
+            btn.innerText = option.text;
+            btn.value = option.value;
+
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.btn-question').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            });
+
+            $option.appendChild(btn);
+        });
+
+        // 질문과 옵션을 출력
+        console.log("질문:", addQuestion);
+        dynamicOptions.forEach(opt => console.log(opt.value + ": " + opt.text));
+
+    }
+
+    //버튼 활성화
+    const buttons = document.getElementsByClassName("btn-question");
+    for (let i = 0; i < buttons.length; i++) {
+        buttons[i].addEventListener('click', function () {
+            for (let j = 0; j < buttons.length; j++) {
+                buttons[j].classList.remove('active');
+            }
+
+            this.classList.add('active');
+        });
+    }
+
+</script>
+</body>
+</html>
