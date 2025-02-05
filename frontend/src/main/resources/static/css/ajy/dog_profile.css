@@ -1,0 +1,283 @@
+
+
+/* 프로필 업로드 버튼 */
+.join-container .profile{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+
+    width: 150px;
+    height: 150px;
+}
+
+.join-container .profile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.join-container .profile-upload-circle {
+    width: 150px;
+    height: 150px;
+    border: 2px solid #FFA03A;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 40px;
+    color: #ddd;
+}
+.join-container input[type="file"] {
+    display: none;
+}
+
+.join-container .center-profile{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 라디오 버튼일 경우 테두리 제거 및 기본 스타일 적용 */
+.join-container .form-fields input[type="checkbox"] {
+    width: 24px;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    outline: none;
+    transition: none;
+}
+
+.join-container .form-fields input[type="checkbox"]:focus{
+    border: none;
+}
+
+.join-container .form-fields textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+
+    outline: none;  /* 기본 아웃라인 제거 */
+    transition: all 0.3s ease-in-out;
+}
+
+.join-container .form-fields textarea:focus {
+    border-color: #FFA03A; /* 테두리 색상 변경 */
+    box-shadow: 0 0 5px rgba(255, 128, 0, 0.8); /* 포커스 시 빛나는 효과 */
+    background-color: #fffaf0; /* 배경색 변경 */
+}
+
+
+.join-container .personality-container {
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
+
+.join-container .personality-container .label {
+    font-size: 16px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.join-container .personality-container .search-box {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #fff;
+}
+
+.join-container .personality-container .search-box input {
+    border: none;
+    outline: none;
+    flex: 1;
+}
+
+
+.join-container .personality-container .dropdown {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 5px;
+    display: none;
+    background-color: #fff;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.join-container .personality-container .dropdown .option {
+    padding: 10px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.join-container .personality-container .dropdown .option:last-child {
+    border-bottom: none;
+}
+
+.join-container .dropdown .option input {
+    margin-right: 10px;
+    transform: scale(1.2);
+}
+
+.join-container .dropdown .option input:checked + label {
+    font-weight: bold;
+    color: #ff7f0e;
+}
+
+.join-container .selected-options {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.join-container .selected-option {
+    background-color: #ff7f0e;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin: 2px;
+    display: flex;
+    align-items: center;
+}
+
+.join-container .selected-option span {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.join-container #dropdown {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ddd;
+    width: 35%;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+/*놀이*/
+.join-container #dropdown2 {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ddd;
+    width: 35%;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+/* 사진 추가 버튼 */
+.join-container #addPhotoButton {
+    background-color: #ff9500;
+    color: black;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.join-container #addPhotoButton:hover {
+    background-color: #e08600;
+}
+
+/* 사진 미리보기 */
+.join-container .photo-preview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.join-container .photo-box {
+    width: 100%;
+    height: 100px;
+    background-color: #ddd;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.join-container .photo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.join-container .photo-box .delete-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    color: black;
+}
+
+/* 경고 아이콘 */
+.join-container .photo-info {
+    font-size: 14px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.join-container .warning-icon {
+    font-size: 18px;
+    color: #ff9500;
+}
+.join-container #fileNameInput {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    font-size: 14px;
+    color: #555;
+    background-color: #f9f9f9;
+    cursor: default;
+}
+
+.join-container .form-group_profile{
+    display: flex;
+    flex-direction: column; /* ✅ 세로 정렬 */
+    align-items: flex-start;
+}
+
+.join-container .flex-box{
+    display: flex;
+
+}
+
+.join-container #breedSelect:disabled {
+    background-color: #f0f0f0;
+    color: #888;
+    cursor: not-allowed;
+}
+
+.join-container #step2Form{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.join-container .disabled-input {
+    background-color: #f0f0f0; /* 회색 배경 */
+    color: #a0a0a0;           /* 글자 색상도 회색 */
+    border: 1px solid #d0d0d0;
+}
+
+.join-container .gender-select button:focus {
+    outline: 2px solid #ff9500;  /* 테두리 강조 */
+    background-color: #ffe0b3;   /* 배경색 변경 */
+    color: black;                /* 텍스트 색상 변경 */
+    border-radius: 5px;          /* 둥근 테두리 */
+}
