@@ -2,14 +2,10 @@ package com.dogpaws.backend.service.hyepin;
 
 import com.dogpaws.backend.dto.hyepin.DogMatchDto;
 import com.dogpaws.backend.repository.dao.hyepin.DogMatchDao;
-import com.dogpaws.backend.utils.StringUtils;
+import com.dogpaws.backend.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,13 +18,13 @@ public class MatchingService {
     public DogMatchDto getFilterBydogId(int dogId, char matchType) {
         DogMatchDto dogMatchDto = dogMatchDao.getFilterBydogIdAndMatchType(dogId, matchType);
 
-        dogMatchDto.setDogPlayList(StringUtils.splitToList(dogMatchDto.getDogPlay()));
-        dogMatchDto.setDogPlayGbnCdList(StringUtils.splitToList(dogMatchDto.getDogPlayGbnCd()));
-        dogMatchDto.setDogPersonalList(StringUtils.splitToList(dogMatchDto.getDogPersonal()));
-        dogMatchDto.setDogPersonalGbnCdList(StringUtils.splitToList(dogMatchDto.getDogPersonalGbnCd()));
-        dogMatchDto.setWalkDayList(StringUtils.splitToList(dogMatchDto.getWalkDays()));
-        dogMatchDto.setStrWalkStartTime(StringUtils.formatTime(dogMatchDto.getWalkStartTime()));
-        dogMatchDto.setStrWalkEndTime(StringUtils.formatTime(dogMatchDto.getWalkEndTime()));
+        dogMatchDto.setDogPlayList(StringUtil.splitToList(dogMatchDto.getDogPlay()));
+        dogMatchDto.setDogPlayGbnCdList(StringUtil.splitToList(dogMatchDto.getDogPlayGbnCd()));
+        dogMatchDto.setDogPersonalList(StringUtil.splitToList(dogMatchDto.getDogPersonal()));
+        dogMatchDto.setDogPersonalGbnCdList(StringUtil.splitToList(dogMatchDto.getDogPersonalGbnCd()));
+        dogMatchDto.setWalkDayList(StringUtil.splitToList(dogMatchDto.getWalkDays()));
+        dogMatchDto.setStrWalkStartTime(StringUtil.formatTime(dogMatchDto.getWalkStartTime()));
+        dogMatchDto.setStrWalkEndTime(StringUtil.formatTime(dogMatchDto.getWalkEndTime()));
         return dogMatchDto;
     }
 
