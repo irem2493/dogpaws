@@ -149,13 +149,10 @@ margin-right: 10px; /* 오른쪽에 15px 마진 */
 
 
 @media (max-width: 768px) {
-    .matching-card-side{
-        display: none;
+    .matching-card-side, .matching-arrow {
+        display: none !important;
     }
-    .col-1 img {
-        max-width: 30px; /* 이미지 크기 조정 */
-        height: auto;
-    }
+
 }
 
 .card-center{
