@@ -9,19 +9,19 @@
         FROM tbl_likes
         WHERE username = #{username}
         AND like_code = #{likeCode}
-        AND like_id = #{likeId};
+        AND dog_id = #{dogId};
     </select>
 
     <insert id="insertLike">
-        INSERT INTO tbl_likes (username, like_code, like_id)
-        VALUES (#{username}, #{likeCode}, #{likeId});
+        INSERT INTO tbl_likes (username, like_code, dog_id)
+        VALUES (#{username}, #{likeCode}, #{dogId});
     </insert>
 
     <delete id="deleteLike">
         DELETE FROM tbl_likes
         WHERE username = #{username}
         AND like_code = #{likeCode}
-        AND like_id = #{likeId};
+        AND dog_id = #{dogId};
     </delete>
 
 </mapper>
