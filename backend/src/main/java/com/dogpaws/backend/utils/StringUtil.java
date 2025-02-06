@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class StringUtils {
+public class StringUtil {
     public static List<String> splitToList(String str) {
         return Optional.ofNullable(str)
                 .map(s -> Arrays.stream(s.split(","))

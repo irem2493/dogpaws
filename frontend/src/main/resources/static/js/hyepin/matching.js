@@ -38,6 +38,7 @@ function addSelectedOption(checkbox, container) {
     checkbox.disabled = true;
 }
 
+//필터 컨테이너 토글
 function filterToggle(element){
     element.classList.toggle("rotated");
     const filterBox = document.getElementById("matchingFilter");
@@ -279,3 +280,78 @@ function likeToggle() {
 
     //좋아요 토글 api 연결하기
 }
+
+//메시지 폼 열기
+function messageForm(element){
+    const target = element.dataset.target;
+    if(target === "O"){
+        //개인톡 실행
+
+    }else if(target === "G"){
+        //그룹채팅 리스트 출력
+
+    }
+}
+
+//신고 폼 열기
+function declarationForm(){
+
+}
+
+//카드 이동
+document.addEventListener('DOMContentLoaded', function () {
+    let isSwiping = false;
+    let startX = 0;
+    let container = document.querySelector('.matching-container');
+    let cardSides = document.querySelectorAll('.matching-card-side'); // 카드들
+    let cards = document.querySelectorAll('.matching-card'); // 중간 카드들
+
+    // 카드의 총 갯수
+    const totalCards = cardSides.length;
+
+    // 마우스 다운 시 스와이프 시작
+    container.addEventListener('mousedown', function (e) {
+        isSwiping = true;
+        startX = e.pageX;  // 마우스 시작 위치 저장
+        e.preventDefault(); // 기본 이벤트 방지
+    });
+
+    // 마우스 이동 시 스와이프 처리
+    container.addEventListener('mousemove', function (e) {
+        if (isSwiping) {
+            let diff = startX - e.pageX;  // 마우스 이동 거리 계산
+
+            if (diff > 50) {  // 오른쪽 스와이프 (카드 순서가 2 3 4로 변경)
+                moveCards('right');
+                isSwiping = false;  // 스와이프 완료 후 리셋
+            } else if (diff < -50) {  // 왼쪽 스와이프 (카드 순서가 1 2 3으로 변경)
+                moveCards('left');
+                isSwiping = false;  // 스와이프 완료 후 리셋
+            }
+        }
+    });
+
+    // 마우스 뗄 때 스와이프 종료
+    container.addEventListener('mouseup', function () {
+        isSwiping = false;
+    });
+
+    // 카드 이동 함수
+    function moveCards(direction) {
+        if (direction === 'right') {
+            // 1번째 카드가 마지막으로 가는 방식
+            let firstSide = cardSides[0]; // 첫 번째 카드
+            let firstCard = cards[0]; // 첫 번째 중간 카드
+
+            container.appendChild(firstSide); // 첫 번째 카드 사이드 맨 뒤로 보냄
+            container.appendChild(firstCard); // 첫 번째 카드 중간 맨 뒤로 보냄
+        } else if (direction === 'left') {
+            // 마지막 카드가 첫 번째로 가는 방식
+            let lastSide = cardSides[cardSides.length - 1]; // 마지막 카드
+            let lastCard = cards[cards.length - 1]; // 마지막 중간 카드
+
+            container.insertBefore(lastSide, cardSides[0]); // 마지막 카드 사이드를 맨 앞에 보냄
+            container.insertBefore(lastCard, cards[0]); // 마지막 중간 카드를 맨 앞에 보냄
+        }
+    }
+});
