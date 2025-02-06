@@ -5,10 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class LikeDto {
+@AllArgsConstructor
+public class TokenUserDto {
     private String username;
-    private int dogId;
-    private char likeCode;
+    private String nickname;
+    private String role;
 }

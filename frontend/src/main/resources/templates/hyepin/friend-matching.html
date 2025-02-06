@@ -4,13 +4,14 @@
       layout:decorate="~{layout/layout}">
 <head>
     <title>Title</title>
-    <link rel="stylesheet" href="/css/hyepin/mathing.css">
+    <link rel="stylesheet" href="/css/hyepin/matching.css">
 </head>
 <body layout:fragment="content" style="min-height: 100vh">
 <div class="container">  <!-- 컨테이너 div.. 지우지 마세요 !-->
     <!-- 여기서부터 작성하시면 됩니다. !-->
-
-    <div class="pw-title">친구 매칭</div>
+    <div class="row">
+        <div class="pw-title col-12">친구 매칭</div>
+    </div>
 
     <!-- 필터 구분 영역 -->
     <div style="display: flex; gap: 20px; padding: 20px;">
@@ -19,22 +20,28 @@
                 <img src="/img/icon/dog-filter/filter.svg" alt="dog-icon"> 필터
             </div>
             <div>
-                <img src="/img/icon/button/caret.svg" alt="dog-icon">
+                <img src="/img/icon/button/caret.svg" alt="dog-icon" style="cursor: pointer" data-target="filter" onclick="filterToggle(this)">
             </div>
         </div>
         <div class="dog-filter" style="gap: 5px;">
             <div>
-                <img src="/img/icon/dog-filter/liking.svg" alt="dog-icon">  이런 친구가 좋아요!
+                <img src="/img/icon/dog-filter/liking.svg"  alt="dog-icon">  이런 친구가 좋아요!
             </div>
             <div>
-                <img src="/img/icon/button/caret.svg" alt="dog-icon">
+                <img src="/img/icon/button/caret.svg" alt="dog-icon" style="cursor: pointer" data-target="card" onclick="filterToggle(this)">
             </div>
         </div>
     </div> <!-- 필터 구분 영역 -->
 
     <hr class="custom-hr">
 
-    <div class="matching-filter">  <!-- 필터 영역 -->
+    <!-- 필터 영역 -->
+    <div class="matching-filter" id="matchingFilter">
+        <div class="row">
+            <div class="col-12 d-flex justify-content-end">
+                <img src="/img/icon/rollback-arrow.svg" alt="rollback-arrow-icon" width="20px" height="20px" class="reset-btn" onclick="filterReset()">
+            </div>
+        </div>
 
         <div class="row">
             <div class="matching-item col-md-4 col-sm-12">
@@ -42,8 +49,16 @@
                     <img src="/img/icon/dog-filter/dog.svg" alt="dog-icon">견종
                 </div>
                 <div>
-                    <input type="text" class="input-a" placeholder="견종을 입력해주세요">
-                    <input type="checkbox" class="checkbox-basic"> 순종
+                    <div class="flex-box">
+                        <select class="select-a" style="margin-right: 10px" id="breedSelect" name="breed">
+                            <option value="" selected>품종을 선택하세요</option>
+                            <option th:each="breed : ${breedList}"
+                                    th:value="${breed['gubn_code']}"
+                                    th:text="${breed['gubn_name']}">
+                            </option>
+                        </select>
+                        <label><input type="checkbox" class="checkbox-basic"> 순종</label>
+                    </div>
                 </div>
             </div>
 
@@ -52,9 +67,9 @@
                     <img src="/img/icon/dog-filter/weight.svg" alt="weight-icon"> 체중
                 </div>
                 <div>
-                    <input type="text" class="input-a" placeholder="체중일 입력해주세요"> Kg
-                    <label> <input type="radio" name="radio2" class="radio-round" checked> 이상</label>
-                    <label><input type="radio" name="radio2" class="radio-round"> 이하</label>
+                    <input type="text" class="input-a" placeholder="체중을 입력해주세요" style="width: 50%"> Kg
+                    <label> <input type="radio" name="radio2" class="radio-round" value="U" checked> 이상</label>
+                    <label><input type="radio" name="radio2" class="radio-round" value="D"> 이하</label>
                 </div>
             </div>
 
@@ -62,18 +77,42 @@
                 <div class="dog-filter">
                     <img src="/img/icon/dog-filter/foot.svg" alt="foot-icon"> 견BTI
                 </div>
-                <div>
-                    <input type="text" class="input-a" placeholder="견BTI를 입력해주세요" style="width: 90%;">
+                <div class="dogTypeCode-container">
+                    <select class="select-a" style="margin-right: 10px" onchange="test()" id="dogTypeSelect" name="dogType">
+                        <option value="" selected>견BTI를 선택하세요</option>
+                        <option th:each="dogType : ${dogTypeCodeList}"
+                                th:value="${dogType['gubn_code']}"
+                                th:text="${dogType['gubn_name']}">
+                        </option>
+                    </select>
                 </div>
             </div>
 
+
             <div class="matching-item col-md-4 col-sm-12">
+
                 <div class="dog-filter">
                     <img src="/img/icon/dog-filter/bone.svg" alt="bone-icon">
                     강아지 성격(최대 5개 선택 가능)
                 </div>
-                <div>
-                    <input type="text" class="input-a" placeholder="성격을 입력해주세요" style="width: 90%;">
+                <div class="personality-container">
+                    <div class="search-box">
+                        <input type="text" class="input-a" id="searchInput" style="width: 90%" placeholder="성격을 입력해 주세요" onfocus="showDropdown()">
+                        <span onclick="clearInput()" class="search-icon">
+                            <img src="/img/icon/search.svg" alt="search-icon">
+                        </span>
+                    </div>
+                    <div class="dropdown" id="dropdown" style="display: none;">
+                        <div th:if="${personalityList != null}" th:each="personality : ${personalityList}" class="option">
+                            <input type="checkbox" class="checkbox-basic"
+                                   th:id="'option' + ${personality['gubn_code']}"
+                                   th:value="${personality['gubn_code']}"
+                                   th:attr="data-name=${personality['gubn_name']}"
+                                   onclick="selectOption(this)">
+                            <label th:for="'option' + ${personality['gubn_code']}" th:text="${personality['gubn_name']}"></label>
+                        </div>
+                    </div>
+                    <div class="selected-options" id="selectedOptions"></div>
                 </div>
             </div>
 
@@ -82,20 +121,47 @@
                     <img src="/img/icon/dog-filter/dribbble-ball.svg" alt="dribbble-ball-icon">
                     강아지 선호놀이(최대 5개 선택 가능)
                 </div>
-                <div>
-                    <input type="text" class="input-a" placeholder="좋아하는 놀이를 입력해주세요" style="width: 90%;">
+                <div class="play-container personality-container">
+                    <div class="search-box">
+                        <input type="text" class="input-a" id="searchInput2" style="width: 90%"  placeholder="좋아하는 놀이를 입력해 주세요" onfocus="showDropdown2()">
+                        <span onclick="clearInput2()"><img src="/img/icon/search.svg" alt="search-icon"></span>
+                    </div>
+                    <div class="dropdown" id="dropdown2" style="display: none;">
+                        <div th:if="${playList != null}" th:each="play : ${playList}" class="option">
+                            <input type="checkbox" class="checkbox-basic"
+                                   th:id="'option' + ${play['gubn_code']}"
+                                   th:value="${play['gubn_code']}"
+                                   th:attr="data-name=${play['gubn_name']}"
+                                   onclick="selectOption2(this)">
+                            <label th:for="'option' + ${play['gubn_code']}" th:text="${play['gubn_name']}"></label>
+                        </div>
+                    </div>
+                    <div class="selected-options" id="selectedOptions2"></div>
                 </div>
+
             </div>
 
-            <div class="matching-item col-md-4 col-sm-12">
+            <div class="matching-item col-md-4 col-sm-12 day">
                 <div class="dog-filter">
-                    <img src="/img/icon/dog-filter/clock.svg" alt="clock-icon">
-                    산책 시작 시간
+                    <img src="/img/icon/dog-filter/clock.svg" alt="clock-icon"> 산책 시작 시간
                 </div>
                 <div>
-                    <input  class="input-a" type="time" required>
-                    <input  class="input-a" type="time" required>
+                    <input  class="input-a" type="time">
+                    <input  class="input-a" type="time">
                 </div>
+                <div>
+                    <div>산책요일 <label>  <input type="checkbox" class="checkbox-basic" id="selectAll"> 전체</label></div>
+                </div>
+                <div>
+                     <label>  <input type="checkbox" class="checkbox-basic day-checkbox">월요일</label>
+                     <label>  <input type="checkbox" class="checkbox-basic day-checkbox">화요일</label>
+                     <label>  <input type="checkbox" class="checkbox-basic day-checkbox">수요일</label>
+                     <label>  <input type="checkbox" class="checkbox-basic day-checkbox">목요일</label>
+                     <label>  <input type="checkbox" class="checkbox-basic day-checkbox">금요일</label>
+                     <label>  <input type="checkbox" class="checkbox-basic day-checkbox">토요일</label>
+                     <label>  <input type="checkbox" class="checkbox-basic day-checkbox">일요일</label>
+                </div>
+
             </div>
         </div>
 
@@ -106,23 +172,214 @@
 
     </div> <!-- 필터 영역 -->
 
+    <!-- 선호 친구 조회 영역 -->
+    <div class="filter-cards col-md-5 col-sm-12" id="filterCard">
+        <div class="row">
+            <div class="row">
+                <div class="dog-filter col-11 d-flex align-items-center" style="gap: 5px; margin-bottom: 20px">
+                    <img src="/img/icon/dog-filter/liking.svg" alt="dog-icon"> 이런 친구가 좋아요!
+                </div>
+                <div class="col-1">
+                    <img class="cancle-btn" onclick="cardCancle()" src="/img/icon/x-circle.svg" alt="x-circle-icon">
+                </div>
+            </div>
+            <th:block th:if="${filter == null}">
+                <div>
+                    저장된 필터가 없습니다!
+                </div>
+            </th:block>
+            <th:block th:if="${filter != null}">
 
-    <div>  <!-- 선호 친구 조회 영역 -->
+                <!-- 🟢 여기부터 3열 배치 -->
+                <div class="row">
+                    <th:block th:if="${filter.breed != null}">
+                        <div class="col-md-4 col-sm-4">
+                            <div class="dog-filter">
+                                <img src="/img/icon/dog-filter/dog.svg" alt="dog-icon"> 견종
+                            </div>
+                            <div class="filter-card">[[${filter.breed}]]
+                                <th:block th:if="${filter.is_mix == 'N'}">
+                                    <span style="margin-left: 5px;"> |순종</span>
+                                </th:block>
+                            </div>
+                        </div>
+                    </th:block>
 
-    </div> <!-- 선호 친구 조회 영역 -->
+                    <th:block th:if="${filter.weight != null}">
+                        <div class="col-md-4 col-sm-4">
+                            <div class="dog-filter">
+                                <img src="/img/icon/dog-filter/weight.svg" alt="weight-icon" > 체중
+                            </div>
+                            <div class="filter-card" >[[${filter.weight}]]kg
+                                <th:block th:if="${filter.weight_category == 'U'}">
+                                    <span style="margin-left: 5px;"> 이상</span>
+                                </th:block>
+                                <th:block th:if="${filter.weight_category == 'D'}">
+                                    <span style="margin-left: 5px;"> 이하</span>
+                                </th:block>
+                            </div>
+                        </div>
+                    </th:block>
 
+                    <th:block th:if="${filter.dog_type != null}">
+                        <div class="col-md-4 col-sm-4">
+                            <div class="dog-filter">
+                                <img src="/img/icon/dog-filter/foot.svg" alt="foot-icon"> 견BTI
+                            </div>
+                            <div class="filter-card">[[${filter.dog_type}]]</div>
+                        </div>
+                    </th:block>
+                </div>
+                <!-- 🟢 여기까지 3열 배치 -->
 
-    <div>  <!-- 매칭 영역 -->
+                <th:block th:if="${filter.walk_day_list != null}">
+                    <div class="row">
+                        <div class="dog-filter">
+                            <img src="/img/icon/dog-filter/clock.svg" alt="clock-icon"> 산책 시작 시간
+                        </div>
+                        <div class="d-flex flex-wrap" style="gap: 5px;">
+                            <div class="filter-card">
+                                <th:block th:each="walkDay : ${filter.walk_day_list}">
+                                    <span style="margin-right: 5px;">[[${walkDay}]] </span>
+                                </th:block>
+                                <span>|[[${filter.str_walk_start_time}]] ~ [[${filter.str_walk_end_time}]]</span>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+
+                <th:block th:if="${filter.dog_personal_list != null}">
+                    <div class="row">
+                        <div class="dog-filter">
+                            <img src="/img/icon/dog-filter/bone.svg" alt="bone-icon"> 성격 유형
+                        </div>
+                        <div class="d-flex flex-wrap" style="gap: 5px;">
+                            <th:block th:each="personal : ${filter.dog_personal_list}">
+                                <div class="filter-card">[[${personal}]]</div>
+                            </th:block>
+                        </div>
+                    </div>
+                </th:block>
+
+                <th:block th:if="${filter.dog_play_list != null}">
+                    <div class="row">
+                        <div class="dog-filter">
+                            <img src="/img/icon/dog-filter/dribbble-ball.svg" alt="dribbble-ball-icon"> 좋아하는 놀이
+                        </div>
+                        <div class="d-flex flex-wrap" style="gap: 5px;">
+                            <th:block th:each="play : ${filter.dog_play_list}">
+                                <div class="filter-card">[[${play}]]</div>
+                            </th:block>
+                        </div>
+                    </div>
+                </th:block>
+            </th:block>
+        </div>
+    </div>
+    <!-- 선호 친구 조회 영역 -->
+
+    <!-- 스와이프 -->
+    <div class="row" style="display: flex; justify-content: flex-end;">
+        <img class="col-md-3 col-sm-12" src="/img/swipe.svg" alt="dog-icon">
+    </div>
+
+    <!-- 매칭 영역 -->
+    <div class="row matching-container">
+        <!-- 왼쪽 화살표 -->
+        <div class="col-1 d-flex flex-column justify-content-center align-items-center" style="padding: 0px;">
+            <img src="/img/icon/left-btn.svg" alt="left-btn-icon">
+        </div> <!-- 왼쪽 화살표 -->
+
+        <!-- 카드 영역 -->
+        <div class="matching-card-side col-2" style="margin: 80px; padding: 0px;">
+            <div class="card-top" style="height: 55%; position: relative;">
+                <img src="/img/dog_profile_example.jpg" alt="강아지 매칭 프로필" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="position: absolute; top: 5px; right: 5px; width: 10%; border-radius: 20px; background-color: rgba(255, 255, 255, 0.6);">아이콘 영역</div>
+            </div>
+            <div class="card-center" style="height: 33%;">
+                <div>이름 |견종 (믹스)</div>
+                <div>성별 (중성화 X)</div>
+                <div>지역</div>
+            </div>
+            <div class="card-bottom" style="height: 12%;">
+                <div class="card-bottom-items">
+                    <img src="/img/icon/like.svg" alt="like-icon">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/messege.svg" alt="messege-icon">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/wechat-logo.svg" alt="wechat-logo-icon">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/alarm-warning-line.svg" alt="alarm-warning-line-icon">
+                </div>
+            </div>
+        </div> <!-- 카드 영역 -->
+
+        <!-- 카드 영역 -->
+        <div class="matching-card col-6" style="padding: 0px;">
+            <div class="card-top" style="height: 55%; position: relative;">
+                <img src="/img/dog_profile_example.jpg" alt="강아지 매칭 프로필" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="position: absolute; top: 5px; right: 5px; width: 8%; border-radius: 20px; font-size: 18px; background-color: rgba(255, 255, 255, 0.6);">아이콘 영역</div>
+            </div>
+            <div class="card-center" style="font-size: 24px; height: 33%;">
+                <div>이름 |견종 (믹스)</div>
+                <div>성별 (중성화 X)</div>
+                <div>지역</div>
+            </div>
+            <div class="card-bottom center-card" style="height: 12%;">
+                <div class="card-bottom-items">
+                    <img id="likeIcon" src="/img/icon/like.svg" alt="like-icon" onclick="likeToggle()">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/messege.svg" alt="messege-icon">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/wechat-logo.svg" alt="wechat-logo-icon">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/alarm-warning-line.svg" alt="alarm-warning-line-icon">
+                </div>
+            </div>
+        </div> <!-- 카드 영역 -->
+
+        <!-- 카드 영역 -->
+        <div class="matching-card-side col-2" style="margin: 80px; padding: 0px;">
+            <div class="card-top" style="height: 55%; position: relative;">
+                <img src="/img/dog_profile_example.jpg" alt="강아지 매칭 프로필" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="position: absolute; top: 5px; right: 5px; width: 10%; border-radius: 20px; background-color: rgba(255, 255, 255, 0.6);">아이콘 영역</div>
+            </div>
+            <div class="card-center" style="height: 33%;">
+                <div>이름 |견종 (믹스)</div>
+                <div>성별 (중성화 X)</div>
+                <div>지역</div>
+            </div>
+            <div class="card-bottom" style="height: 12%;">
+                <div class="card-bottom-items">
+                    <img src="/img/icon/like.svg" alt="like-icon">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/messege.svg" alt="messege-icon">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/wechat-logo.svg" alt="wechat-logo-icon">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/alarm-warning-line.svg" alt="alarm-warning-line-icon">
+                </div>
+            </div>
+        </div> <!-- 카드 영역 -->
+
+        <!-- 오른쪽 화살표 -->
+        <div class="col-1 d-flex flex-column justify-content-center align-items-center" style="padding: 0px">
+            <img src="/img/icon/right-btn.svg" alt="right-btn-icon">
+        </div> <!-- 오른쪽 화살표 -->
+
 
     </div> <!-- 매칭 영역 -->
 
-
-
-
-
-
-
 </div> <!-- 컨테이너 div.. 지우지 마세요 !-->
-<script src="/js/hyepin/mathing.js"></script>
+<script src="/js/hyepin/matching.js"></script>
 </body>
 </html>

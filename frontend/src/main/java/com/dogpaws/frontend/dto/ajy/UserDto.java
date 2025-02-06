@@ -1,4 +1,5 @@
-package com.dogpaws.backend.dto.common;
+package com.dogpaws.frontend.dto.ajy;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LikeDto {
+public class UserDto {
     private String username;
-    private int dogId;
-    private char likeCode;
+    private String nickname;
+    private String role;
 }

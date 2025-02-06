@@ -7,14 +7,14 @@ import org.apache.ibatis.annotations.Param;
 public interface LikeDao {
 
     Integer checkLike(@Param("username") String username,
-                      @Param("likeCode") String likeCode,
-                      @Param("likeId") String likeId);
+                      @Param("likeCode") char likeCode,
+                      @Param("dogId") int dogId);
 
-    void insertLike(@Param("username") String username,
-                    @Param("likeCode") String likeCode,
-                    @Param("likeId") String likeId);
+    int insertLike(@Param("username") String username,
+                    @Param("likeCode") char likeCode,
+                    @Param("dogId") int dogId);
 
-    void deleteLike(@Param("username") String username,
-                    @Param("likeCode") String likeCode,
-                    @Param("likeId") String likeId);
+    int deleteLike(@Param("username") String username,
+                    @Param("likeCode") char likeCode,
+                    @Param("dogId") int dogId);
 }
