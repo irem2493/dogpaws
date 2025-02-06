@@ -234,10 +234,47 @@ document.addEventListener("DOMContentLoaded", function () {
 function cardCancle(){
     var filterCardForm = document.getElementById("filterCard");
     filterCardForm.style.display = "none";
-
 }
 
 //필터 초기화
 function filterReset(){
 
+}
+
+//좋아요 토글
+function likeToggle() {
+    let icon = document.getElementById("likeIcon");
+    let isLiked = icon.src.includes("like-push.svg");
+
+    const username = "안혜빈";
+    const dogId = 1;
+
+    const LikeDto = {
+        "username" : username,
+        "dogId" : dogId,
+        "likeCode" : "F"
+    }
+
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("dogId", dogId);
+    formData.append("likeCode", "F");
+
+    api.post('/api/likes/toggle', formData, {
+    })
+        .then(res => {
+            if (res.body.body == '성공') {  // res.body.body 로 받아야합니다..
+                icon.src = isLiked ? "/img/icon/like.svg" : "/img/icon/like-push.svg";
+            } else {
+                alert("좋아요 실패!");
+            }
+        })
+        .catch(error => {
+            console.error("오류:", error);
+            alert("저장 오류");
+        });
+
+
+
+    //좋아요 토글 api 연결하기
 }

@@ -191,3 +191,8 @@ margin-right: 10px; /* 오른쪽에 15px 마진 */
 .icon-container{
     background-color: #FFEDD8;
 }
+
+.card-bottom-items{
+    cursor: pointer;
+}
+

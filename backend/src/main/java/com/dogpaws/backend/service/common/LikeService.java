@@ -10,13 +10,15 @@ public class LikeService {
 
     private final LikeDao likeDao;
 
-    public void toggleLike(String username, String likeCode, String likeId) {
-        Integer isCheck = likeDao.checkLike(username, likeCode, likeId);
-
+    public int toggleLike(String username, char likeCode, int dogId) {
+        Integer isCheck = likeDao.checkLike(username, likeCode, dogId);
+        int result = 0;
         if (isCheck != null && isCheck > 0) {
-            likeDao.deleteLike(username, likeCode, likeId);
+            result = likeDao.deleteLike(username, likeCode, dogId);
+            return result;
         } else {
-            likeDao.insertLike(username, likeCode, likeId);
+            result = likeDao.insertLike(username, likeCode, dogId);
+            return result;
         }
     }
 }
