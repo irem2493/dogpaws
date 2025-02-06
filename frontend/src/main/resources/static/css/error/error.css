@@ -1,0 +1,60 @@
+body {
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 유지 */
+    min-height: 100vh;
+    margin: 0;
+    background-color: #fff;
+}
+
+.error-container{
+    display: flex;
+    flex-direction: column;
+    margin-left: 100px;
+    margin-bottom: 50px;
+}
+.error-msg{
+    margin: 0px 0px 20px 0px;
+    font-size: 1.8rem;
+}
+/*TODO : 중복제거하기*/
+.common-error404-logo {
+    width: fit-content; /* 컨텐츠 크기에 맞춤 */
+    height: auto; /* 비율 유지 */
+    background-image: url('/img/icon/error/error404msg.svg');
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: contain;
+    /* SVG 실제 크기만큼 최소 크기 지정 */
+    min-width: 362px;
+    min-height: 145px;
+}
+.common-error500-logo{
+    width: fit-content; /* 컨텐츠 크기에 맞춤 */
+    height: auto; /* 비율 유지 */
+    background-image: url('/img/icon/error/error500msg.svg');
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: contain;
+    /* SVG 실제 크기만큼 최소 크기 지정 */
+    min-width: 362px;
+    min-height: 145px;
+}
+.common-error-logo{
+    width: fit-content; /* 컨텐츠 크기에 맞춤 */
+    height: auto; /* 비율 유지 */
+    background-image: url('/img/icon/error/errorMsg.svg');
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: contain;
+    /* SVG 실제 크기만큼 최소 크기 지정 */
+    min-width: 362px;
+    min-height: 145px;
+}
+
+.btn-goto{
+    transform: scale(0.7);
+    transform-origin: left center;
+    min-width: 270px;
+    padding-left: 10px;
+    cursor: pointer;
+}
