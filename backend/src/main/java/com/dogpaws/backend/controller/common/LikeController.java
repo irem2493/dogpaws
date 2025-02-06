@@ -2,6 +2,7 @@ package com.dogpaws.backend.controller.common;
 
 
 import com.dogpaws.backend.dto.common.LikeDto;
+import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.service.common.LikeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +23,14 @@ public class LikeController {
      *  likeId   강아지 ID
      */
     @PostMapping("/toggle")
-    public String toggleLike(@RequestBody LikeDto likeDto) {
+    public ApiResponse<String> toggleLike(@ModelAttribute LikeDto likeDto) {
         log.info("toggleLike {}", likeDto);
-        likeService.toggleLike(likeDto.getUsername(), likeDto.getLikeCode(), likeDto.getLikeId());
-        return "성공";
+        int result = likeService.toggleLike(likeDto.getUsername(), likeDto.getLikeCode(), likeDto.getDogId());
+        if(result == 1) {
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "성공");
+        }else {
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "실패");
+        }
     }
 }
+

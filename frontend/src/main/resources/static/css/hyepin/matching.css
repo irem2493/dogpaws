@@ -1,0 +1,198 @@
+.custom-hr {
+    border: 1px solid #B0B0B0;
+    margin: 0;
+}
+
+/*이미지 뒤집기*/
+.rotated {
+    transform: rotate(180deg);
+}
+
+.matching-filter{
+    margin: 20px;
+    padding: 0px 20px 20px 20px;
+    border: #bebebe solid 1px;
+    border-radius: 10px;
+    display: none;
+}
+
+.filter-cards{
+    margin: 20px;
+    padding: 20px 0px 20px 20px;
+    border: #bebebe solid 1px;
+    border-radius: 10px;
+    display: none;
+}
+
+.matching-item{
+    margin-bottom: 30px;
+}
+
+.pw-title {
+    width: 100%; /* 너비를 100%로 설정 */
+    text-align: center; /* 텍스트가 중앙에 오도록 설정 (옵션) */
+}
+
+.search-box {
+    position: relative; /* input의 부모 요소로 상대 위치 설정 */
+    width: 100%;
+}
+
+.input-a {
+    width: 100%; /* 입력창의 너비 100%로 설정 */
+    padding-right: 35px; /* 아이콘과 겹치지 않도록 오른쪽 여백 추가 */
+    box-sizing: border-box; /* padding을 포함하여 전체 너비가 100% 되도록 설정 */
+}
+
+.search-icon {
+    position: absolute; /* 절대 위치로 설정 */
+    top: 50%; /* 수직 중앙 정렬 */
+    right: 10px; /* 오른쪽 끝에 위치 */
+    transform: translateY(-50%); /* 정확히 중앙으로 위치시키기 위해 변환 */
+    cursor: pointer;
+}
+
+.dropdown {
+    padding: 10px;
+    max-height: 150px; /* 5개 옵션이 최대 2rem 높이로 표시될 때 */
+    overflow-y: auto;
+    border: #bebebe solid 1px;
+    border-radius: 10px;
+}
+
+/* 드롭다운의 스크롤바를 숨기기 위해 */
+.dropdown::-webkit-scrollbar {
+    display: none; /* 웹킷 기반 브라우저에서 스크롤바 숨김 */
+}
+
+.dropdown {
+    -ms-overflow-style: none;  /* IE 10+에서 스크롤바 숨김 */
+    scrollbar-width: none;  /* Firefox에서 스크롤바 숨김 */
+}
+
+
+.selected-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.selected-option {
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+    border: 1px solid #B0B0B0;
+    border-radius: 20px;
+    padding: 8px 16px;
+}
+
+.remove-option {
+    margin-left: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.day label{
+margin-right: 10px; /* 오른쪽에 15px 마진 */
+    margin-bottom: 10px; /* 아래쪽에 10px 마진 */
+    display: inline-block; /* 라벨을 인라인 블록으로 만들어서 마진 효과 적용 */
+}
+
+.cancle-btn, .reset-btn{
+    cursor: pointer;
+}
+
+.filter-card {
+    margin-bottom: 10px;
+    display: inline-flex;
+    padding: 5px 10px;  /* 여백 설정 (선택 사항) */
+    border: #bebebe solid 1px;
+    border-radius: 20px;
+    text-align: center;
+    white-space: nowrap;  /* 한 줄 유지 */
+}
+
+.matching-container{
+    margin: 50px 0px 50px 0px;
+}
+
+/*카드영역*/
+.matching-card{
+    border: 1px #FFA03A solid;
+    border-radius: 10px;
+    width: 350px;
+    height: 450px;
+    overflow: hidden;
+}
+
+.matching-card-side{
+
+    border: 1px #FFA03A solid;
+    border-radius: 10px;
+    width: 200px;
+    height: 280px;
+    overflow: hidden;
+    position: relative;
+}
+
+.matching-card-side::after {
+    content: ""; /* 가상 요소에 내용은 필요 없으므로 빈 문자열 */
+    position: absolute; /* 부모 요소에 대해 절대 위치 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5); /* 흰색 반투명 배경 */
+    border-radius: 10px; /* 부모 요소의 경계와 일치하게 맞추기 */
+}
+
+
+@media (max-width: 768px) {
+    .matching-card-side{
+        display: none;
+    }
+    .col-1 img {
+        max-width: 30px; /* 이미지 크기 조정 */
+        height: auto;
+    }
+}
+
+.card-center{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-bottom{
+   background-color: #FFF7EB;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 20px 0px 20px ;
+}
+
+.center-card{
+    padding: 0px 30px 0px 30px ;
+}
+
+.card-bottom-items img{
+    width: 25px;
+    height: auto;
+}
+
+.center-card img{
+    width: 40px;
+    height: auto;
+}
+
+.icon-container{
+    background-color: #FFEDD8;
+}
+
+.card-bottom-items{
+    cursor: pointer;
+}
+
