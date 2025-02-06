@@ -1,11 +1,13 @@
-import { db } from '/js/firebase-config.js';  // 절대 경로 적용
+import { db } from '/js/cys/firebase-config.js';  // 절대 경로 적용
 import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, getDocs }
     from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
 
 // 현재 로그인한 사용자 가져오기
-const currentUser = sessionStorage.getItem("username");
-const chatListElement = document.getElementById("chat-list");
+const currentUser = document.querySelector("#username").value;  // 서버에서 넘겨받은 세션 값
+console.log("현재 사용자:", currentUser);
+// const currentUser = sessionStorage.getItem("username");
+const chatListElement = document.querySelector(".chat-list");
 
 async function subscribeToNotifications() {
     if (!currentUser) {
@@ -29,10 +31,18 @@ async function subscribeToNotifications() {
 
             querySnapshot.forEach((doc) => {
                 const chatRoom = doc.data();
-                const listItem = document.createElement("li");
+                const listItem = document.createElement("div");
 
                 listItem.innerHTML = `
-                    <a href="/chat/${doc.id}">${chatRoom.roomName}</a>
+                    <div class="chat-one" onclick="go-room()">
+                        <div class="">
+                            <img src="/img/견BTI임시프로필.jpg" width="50" class="profile-img-2" alt="프로필">
+                        </div>
+                        <div class="pre-chat-content">
+                            <div class="pre-chat-with">${chatRoom.roomName}</div>
+                            <div class="last-chat">${chatRoom['lastMessage'].text}</div>
+                        </div>
+                    </div>
                 `;
 
                 chatListElement.appendChild(listItem);
@@ -65,6 +75,7 @@ async function sendMessage() {
         });
 
         document.getElementById('messageInput').value = '';
+
     } catch (error) {
         console.log('메시지 전송 실패:', error);
     }
@@ -75,26 +86,42 @@ function subscribeToMessages() {
     const q = query(collection(db, "chatRooms", roomId, "messages"), orderBy("timestamp"));
 
     onSnapshot(q, (snapshot) => {
-        const chatBox = document.getElementById('chat-input');
-        chatBox.innerHTML = ''; // 기존 메시지 초기화
+        const chatMain = document.querySelector('.chat-main'); // 채팅 메시지 컨테이너
+        chatMain.innerHTML = ''; // 기존 메시지 초기화
 
         snapshot.forEach((doc) => {
             const message = doc.data();
             const messageDiv = document.createElement('div');
 
-            // 메시지를 사용자 구분하여 출력
+// 메시지 구조 생성
             if (message.sender === username) {
-                messageDiv.style.color = 'blue';  // 본인 메시지는 파란색
-                messageDiv.textContent = `[나] ${message.text}`;
+                // 본인 메시지일 경우 오른쪽 정렬
+                messageDiv.className = 'chat-message right';
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        <div class="message-time">${formatTime(message.timestamp)}</div>
+                        <div class="message-text">${message.text}</div>
+                    </div>
+                `;
             } else {
-                messageDiv.style.color = 'green';  // 상대 메시지는 초록색
-                messageDiv.textContent = `${message.sender}: ${message.text}`;
+                // 상대방 메시지일 경우 왼쪽 정렬
+                messageDiv.className = 'chat-message left';
+                messageDiv.innerHTML = `
+                    <img src="/img/견BTI임시프로필.jpg" width="40" class="profile-img-2" alt="프로필">
+                    <div class="chat-not-profile">
+                        <div class="chat-name">${message.nickname}</div>
+                        <div class="message-content">
+                            <div class="message-text">${message.text}</div>
+                            <div class="message-time">${formatTime(message.timestamp)}</div>
+                        </div>
+                    </div>
+                `;
             }
 
-            chatBox.appendChild(messageDiv);
+            chatMain.appendChild(messageDiv);
         });
 
-        chatBox.scrollTop = chatBox.scrollHeight; // 자동 스크롤 다운
+        chatMain.scrollTop = chatMain.scrollHeight; // 자동 스크롤 다운
     });
 }
 
@@ -104,4 +131,9 @@ window.onload = function () {
 
 window.handleClick = function() {
     sendMessage();
+}
+
+function formatTime(timestamp) {
+    const date = new Date(timestamp.seconds * 1000);
+    return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
 }

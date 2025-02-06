@@ -1,6 +1,10 @@
 package com.dogpaws.frontend.controller.cys;
 
+import com.dogpaws.frontend.dto.ajy.UserDto;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -9,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class ChatController {
 
-    @RequestMapping("/chat-room")
-    public String chatRoom() {
+    @GetMapping("/chat-room")
+    public String chatRoom(HttpSession session, Model model) {
+        UserDto user = (UserDto) session.getAttribute("user");
+        String username = user.getUsername();
+        model.addAttribute("username", username);
         return "cys/chat_room";
     }
 }

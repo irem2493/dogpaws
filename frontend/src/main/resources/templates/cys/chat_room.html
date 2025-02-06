@@ -7,11 +7,10 @@
     <title>채팅</title>
     <link rel="stylesheet" href="/css/cys/chat_room.css">
     <script type="module" src="/js/cys/chat_room.js"></script>
-    <link rel="stylesheet" href="https://cdn.jssdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body layout:fragment="content">
 <div class="container-box">
-
+    <input type="hidden" id="username" th:value="${username}">
     <!-- 1번 페이지 : 채팅방 목록 -->
     <section class="page active" id="page1">
         <div class="list-background">
@@ -42,23 +41,23 @@
     <!-- 2번 페이지 : 채팅 -->
     <main class="page" id="page2">
         <div class="chat-main">
-            <div class="chat-message left">
-                <img src="/img/견BTI임시프로필.jpg" width="40" class="profile-img-2" alt="프로필">
-                <div class="chat-not-profile">
-                    <div class="chat-name">경림냥</div>
-                    <div class="message-content">
-                        <div class="message-text">내일 모임 같이 가실??</div>
-                        <div class="message-time">오전 10:52</div>
-                    </div>
-                </div>
-            </div>
+<!--            <div class="chat-message left">-->
+<!--                <img src="/img/견BTI임시프로필.jpg" width="40" class="profile-img-2" alt="프로필">-->
+<!--                <div class="chat-not-profile">-->
+<!--                    <div class="chat-name">경림냥</div>-->
+<!--                    <div class="message-content">-->
+<!--                        <div class="message-text">내일 모임 같이 가실??</div>-->
+<!--                        <div class="message-time">오전 10:52</div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
 
-            <div class="chat-message right">
-                <div class="message-content">
-                    <div class="message-time">오전 10:54</div>
-                    <div class="message-text">ㅎㅎㅎ 몇시?</div>
-                </div>
-            </div>
+<!--            <div class="chat-message right">-->
+<!--                <div class="message-content">-->
+<!--                    <div class="message-time">오전 10:54</div>-->
+<!--                    <div class="message-text">ㅎㅎㅎ 몇시?</div>-->
+<!--                </div>-->
+<!--            </div>-->
         </div>
         <div class="input-box">
             <input type="text" class="chat-input" placeholder="채팅을 입력하세요">

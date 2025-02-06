@@ -1,7 +1,7 @@
 // <script type="module">
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-analytics.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
     // TODO: Add SDKs for Firebase products that you want to use
     // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -10,6 +10,7 @@
     const firebaseConfig = {
     apiKey: "AIzaSyBNqsnBfUpdLzD5O62ixY8Yyk6RUdUNFVo",
     authDomain: "paws2-6ce51.firebaseapp.com",
+    databaseURL: "https://paws2-6ce51-default-rtdb.firebaseio.com",
     projectId: "paws2-6ce51",
     storageBucket: "paws2-6ce51.firebasestorage.app",
     messagingSenderId: "978825288307",
@@ -19,7 +20,7 @@
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
 
 // `db` 객체를 내보내기(export)
-export { analytics };
+export { db };
