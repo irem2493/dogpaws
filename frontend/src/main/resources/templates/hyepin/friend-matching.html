@@ -319,8 +319,9 @@
 
         <!-- 카드 영역 -->
         <div class="matching-card col-6" style="padding: 0px;">
-            <div class="card-top" style="height: 55%;">
+            <div class="card-top" style="height: 55%; position: relative;">
                 <img src="/img/dog_profile_example.jpg" alt="강아지 매칭 프로필" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="position: absolute; top: 5px; right: 5px; width: 8%; border-radius: 20px; font-size: 18px; background-color: rgba(255, 255, 255, 0.6);">아이콘 영역</div>
             </div>
             <div class="card-center" style="font-size: 24px; height: 33%;">
                 <div>이름 |견종 (믹스)</div>
@@ -329,7 +330,7 @@
             </div>
             <div class="card-bottom center-card" style="height: 12%;">
                 <div class="card-bottom-items">
-                    <img src="/img/icon/like.svg" alt="like-icon">
+                    <img id="likeIcon" src="/img/icon/like.svg" alt="like-icon" onclick="likeToggle()">
                 </div>
                 <div class="card-bottom-items">
                     <img src="/img/icon/messege.svg" alt="messege-icon">
@@ -345,8 +346,9 @@
 
         <!-- 카드 영역 -->
         <div class="matching-card-side col-2" style="margin: 80px; padding: 0px;">
-            <div class="card-top" style="height: 55%;">
+            <div class="card-top" style="height: 55%; position: relative;">
                 <img src="/img/dog_profile_example.jpg" alt="강아지 매칭 프로필" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="position: absolute; top: 5px; right: 5px; width: 10%; border-radius: 20px; background-color: rgba(255, 255, 255, 0.6);">아이콘 영역</div>
             </div>
             <div class="card-center" style="height: 33%;">
                 <div>이름 |견종 (믹스)</div>
