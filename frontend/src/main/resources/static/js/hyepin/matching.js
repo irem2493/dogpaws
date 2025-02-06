@@ -249,10 +249,11 @@ function likeToggle() {
     const username = "안혜빈";
     const dogId = 1;
 
+    //숫자와 char 형식은 변환이 필요하기 때문에 폼데이터로 보내겠습니다.
     const LikeDto = {
         "username" : username,
-        "dogId" : dogId,
-        "likeCode" : "F"
+        "dogId": parseInt(dogId), // <-- 숫자로 변환
+        "likeCode": "F".charAt(0) // <-- char 변환
     }
 
     const formData = new FormData();
