@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/ajy/dog_profile_select.css" />
+    <title>강아지 프로필 선택</title>
+</head>
+<body>
+<div class="profile-container">
+<h2>프로필 선택</h2>
+    <hr class="custom-hr">
+<p>강아지 프로필은 최대 5개까지 등록 가능합니다.</p>
+
+    <!-- 세션에 저장된 강아지 목록을 Thymeleaf로 렌더링 -->
+    <div id="dogProfiles" class="profile-list"
+         th:data-dogs='${session.dogList != null ? session.dogList : "[]"}'>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/js/ajy/dog_profile_select.js"></script>
+</body>
+</html>
