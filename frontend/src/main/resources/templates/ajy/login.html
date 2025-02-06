@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <link rel="stylesheet" href="/css/ajy/login.css" />
+
+    <title>회원가입</title>
+</head>
+<body layout:fragment="content" style="min-height: 100vh">
+<div class="container">
+        <div class="login-container">
+            <h1>로그인</h1>
+            <hr>
+
+            <form class="login-form" id="loginForm">
+                <label class="required">* <span style="color:black">아이디</span></label>
+                <input
+                        type="text"
+                        name="username"
+                        id="username"
+                        placeholder="아이디를 입력하세요"
+                />
+
+                <label class="required">* <span style="color:black">패스워드</span></label>
+                <input type="password"
+                       name="password"
+                       id="password"
+                       placeholder="패스워드를 입력하세요"
+                />
+                <div id="error-message" class="genesis-error-message-custom" style="display: none;">
+                    아이디 또는 비밀번호를 다시 확인해주세요...
+                </div>
+                <input type="submit" class="login-btn" value="로그인"/>
+            </form>
+
+            <div class="login-links">
+                <a href="/join">회원가입</a>
+                <span>
+            <a href="/find-id">아이디 찾기</a>
+            <span style="padding : 10px">|</span>
+                <a href="/find-password">비밀번호 찾기</a>
+                </span>
+            </div>
+
+            <div class="separator">
+                <span>또는</span>
+            </div>
+
+            <!-- 소셜 로그인 이미지 버튼 -->
+            <div class="social-login">
+                <div class="social-login">
+                    <button class="kakao-btn" onclick="">
+                        <img src="/img/kakao_logo.png" alt="카카오 로고"/>
+                        카카오 로그인
+                    </button>
+                    <button class="naver-btn">
+                        <img src="/img/naver_logo.png" alt="네이버 로고"/>
+                        네이버 로그인
+                    </button>
+                    <button class="google-btn">
+                        <img src="/img/google_logo.png" alt="구글 로고"/>
+                        Google 로그인
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="/js/ajy/login.js"></script>
+</body>
+</html>
