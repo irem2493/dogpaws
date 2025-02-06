@@ -27,16 +27,31 @@
                 <i class="bi bi-bell-fill" style="font-size: 24px;"></i>
                 <span class="header-redbell"></span>
             </div>
-            <div>
-                <img src="/img/증명사진.jpg"
-                    width="50px"
-                    height="50px"
-                    style="border-radius: 50%; width: 50px !important; height: 50px !important;"
-                    onerror="this.src='/img/증명사진.jpg';"
-                    alt="사용자 프로필 이미지">
+            <div th:if="${session.user != null and session.dog != null}">
+                <img th:src="${session.dog.profileUrl}"
+                     width="50px"
+                     height="50px"
+                     style="border-radius: 50%; width: 50px !important; height: 50px !important;"
+                     onerror="this.src='/img/증명사진.jpg';"
+                     alt="사용자 프로필 이미지">
             </div>
-            <div class="header-username" onclick="toggleDropdown()" style="cursor: pointer;">
+            <!--<div class="header-username" onclick="toggleDropdown()" style="cursor: pointer;">
                 <span>강아지고양이</span><span> 님</span>
+            </div>-->
+
+            <div class="header-username" onclick="toggleDropdown()" style="cursor: pointer;">
+                <!-- 로그인 상태 -->
+                <span th:if="${session.user != null && session.dog != null}" class="header-username" onclick="toggleDropdown()" style="cursor: pointer;">
+                    <span th:text="${session.dog.dogName != null ? session.dog.dogName +' 님' : session.user.username + '님'}"></span>
+                    <img src="/img/icon/button/down-sign.svg" alt="dropdown img" style="width: 12px; height: 12px"/>
+                </span>
+
+                <!-- 비로그인 상태 -->
+                <div th:if="${session.user == null}" class="header-auth-links">
+                    <a href="/login" style="text-decoration: none; color: black">로그인</a>
+                    <span>|</span>
+                    <a href="/join" style="text-decoration: none; color: black">회원가입</a>
+                </div>
             </div>
         
         </div>

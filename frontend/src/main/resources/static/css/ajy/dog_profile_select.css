@@ -1,0 +1,98 @@
+/* 컨테이너 스타일 */
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh; /* 화면 높이를 기준으로 중앙 정렬 */
+    text-align: center;
+    padding: 20px;
+}
+
+.profile-container .profile-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.profile-container .profile-description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* 프로필 목록 스타일 */
+.profile-container .profile-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* 각 프로필 아이템 */
+.profile-container .add-profile {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #f0f0f0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* 마우스 호버 시 효과 */
+.profile-container .profile-item:hover,
+.profile-container .add-profile:hover {
+    transform: scale(1.05);
+}
+
+.profile-container .profile-item {
+    position: relative;
+    width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.profile-container .profile-item img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px solid #f0f0f0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    object-fit: cover;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* 프로필 이름 */
+.profile-container .profile-name {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 추가 버튼 스타일 */
+.profile-container .add-profile {
+    background-color: #f8f8f8;
+    border: 2px dashed #ccc;
+    color: #aaa;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.profile-container .custom-hr {
+    border: none;
+    height: 1px;
+    width: 800px;
+    background-color: #FFA03A; /* 원하는 색상 */
+}
