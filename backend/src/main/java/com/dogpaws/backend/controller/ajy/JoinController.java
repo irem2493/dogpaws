@@ -38,7 +38,7 @@ public class JoinController {
     private String fileDir;
 
     private final JoinService joinService;
-    private final  tokenService;
+    private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/step1")

@@ -2,6 +2,7 @@ package com.dogpaws.backend.filter;
 
 import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.global.common.ErrorResponse;
+import com.dogpaws.backend.service.ajy.TokenService;
 import com.dogpaws.backend.service.common.CustomUserDetails;
 import com.dogpaws.backend.utils.JWTUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +11,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,10 +27,12 @@ import java.util.Map;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter{
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final TokenService tokenService;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, TokenService tokenService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.tokenService = tokenService;
     }
 
 
@@ -81,24 +85,38 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter{
         String role = userDetails.getAuthorities().iterator().next().getAuthority();
         String nickname = userDetails.getNickname();
 
-        String token = jwtUtil.createJwt(username, role, nickname, 60 * 60 * 24 * 1000L);
 
-
-        Cookie cookie = new Cookie("Authorization", token);
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60 * 24);
-        response.addCookie(cookie);
-
-
-        log.info("JWT 쿠키 설정 완료: {}", token);
-        Map<String, String> userInfo = Map.of("username", username, "role", role, "nickname", nickname);
-        ApiResponse<Map<String, String>> apiResponse = new ApiResponse<>(
-                ApiResponse.ApiStatus.SUCCESS,
-                userInfo,
-                false
+        String accessToken = jwtUtil.generateAccessToken(
+                userDetails.getUsername(),
+                userDetails.getAuthorities().iterator().next().getAuthority(),
+                userDetails.getNickname()
         );
+        String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername(),
+                userDetails.getAuthorities().iterator().next().getAuthority(),
+                userDetails.getNickname());
 
+        // Refresh Token을 DB나 캐시에 저장 (예: Redis)
+        tokenService.saveRefreshToken(username, refreshToken);
 
+        // Access Token을 헤더에 추가
+        response.setHeader("Authorization", "Bearer " + accessToken);
+
+        // Refresh Token을 쿠키에 저장 (Secure 및 HttpOnly 설정 권장)
+        Cookie refreshTokenCookie = new Cookie("Refresh-Token", refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(false);  // HTTPS 환경에서는 true로 설정
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(12 * 60 * 60);  // 12시간 유효
+
+        response.addCookie(refreshTokenCookie);
+
+        log.info("JWT 쿠키 설정 완료: accessToken={}, refreshToken={}", accessToken, refreshToken);
+
+        // 사용자 정보 응답 (API Response)
+        Map<String, String> userInfo = Map.of("username", username, "role", role, "nickname", nickname);
+        ApiResponse<Map<String, String>> apiResponse = new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, userInfo, false);
+
+        // 응답 전송
         ObjectMapper objectMapper = new ObjectMapper();
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(apiResponse));

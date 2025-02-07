@@ -20,9 +20,6 @@ public class User {
     @Column(name = "provider", length = 255, nullable = true)
     private String provider; // 소셜 로그인 제공자 (ex: google, kakao, naver)
 
-    @Column(name = "refresh_token", length = 255, nullable = true)
-    private String refreshToken; // 소셜 로그인 refreshToken
-
     @Column(name = "nickname", length = 255, nullable = false)
     private String nickname; // 사용자 닉네임
 

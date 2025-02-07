@@ -2,6 +2,7 @@ package com.dogpaws.backend.service.ajy;
 
 import com.dogpaws.backend.entity.ajy.User;
 import com.dogpaws.backend.repository.jpa.ajy.UserRepository;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
