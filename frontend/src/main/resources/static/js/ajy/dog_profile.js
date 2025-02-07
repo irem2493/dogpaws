@@ -1,3 +1,5 @@
+let provider='';
+
 document.addEventListener("DOMContentLoaded", function() {
     const profileUpload = document.getElementById('profileUpload');
     const fileInput = document.getElementById('fileInput');
@@ -101,9 +103,6 @@ document.addEventListener("DOMContentLoaded", function() {
         .catch(error => {
             console.error('세션 데이터 로드 오류:', error);
         });
-
-
-
 
     document.querySelectorAll('.select-box').forEach(selectBox => {
         const selected = selectBox.querySelector('.select-box-selected');
@@ -225,7 +224,20 @@ document.addEventListener("DOMContentLoaded", function() {
     // "이전" 버튼 클릭 시 페이지 이동
     document.querySelector("#preButton").addEventListener("click", function () {
         // 이동할 페이지 URL 설정 (예: nextpage.html)
-        window.location.href = "/join";
+
+        api.post('/api/join/social/provider')
+            .then(data => {
+                console.log('세션 데이터:', data);
+
+                // 응답 JSON에서 사용자 정보를 가져옴
+                const provider = data.body?.body;
+
+                if (provider) window.location.href = "/socialJoin";
+                else window.location.href = "/join";
+            })
+            .catch(error => {
+                console.error('세션 데이터 로드 오류:', error);
+            });
     });
 
 });

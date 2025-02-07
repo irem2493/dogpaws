@@ -11,6 +11,8 @@ public class UserRequestDto {
 
     private String provider; // 소셜 로그인 제공자 (ex: google, kakao, naver)
 
+    private String refreshToken;
+
     private String nickname; // 사용자 닉네임
 
     private String password; // 비밀번호
@@ -28,4 +30,6 @@ public class UserRequestDto {
     private String  gender; // 성별 ('M' = 남성, 'F' = 여성)
 
     private String role;
+
+
 }

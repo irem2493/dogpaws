@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.token.TokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,7 +38,7 @@ public class JoinController {
     private String fileDir;
 
     private final JoinService joinService;
-    private final FileService fileService;
+    private final  tokenService;
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/step1")
@@ -52,9 +53,9 @@ public class JoinController {
         if (sessionData == null) {
             sessionData = new JoinSessionDto();
         }
-
         sessionData.setStep1Data(userRequestDto);
         session.setAttribute("joinSession", sessionData);
+
 
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "1단계 저장 완료");
     }
@@ -115,7 +116,7 @@ public class JoinController {
             Files.copy(profileImage.getInputStream(), targetPath);
 
             // 세션에 저장할 파일 정보 (경로만 저장)
-            System.out.println(targetPath);
+
 
             dogRequestDto.setFileOldName(fileNameWithoutExt);
             dogRequestDto.setFileNewName(newFileName);
@@ -123,7 +124,6 @@ public class JoinController {
             dogRequestDto.setFileExt(fileExt);
             dogRequestDto.setProfileUrl(fileDir + newFileName + fileExt);
         }
-
         sessionData.setStep2Data(dogRequestDto);
         session.setAttribute("joinSession", sessionData);
 
@@ -200,6 +200,14 @@ public class JoinController {
 
         joinService.join(sessionData);
 
+        if(session.getAttribute("provider") != null){
+
+            // 1단계 데이터 반환
+            UserRequestDto step1Data = sessionData.getStep1Data();
+            step1Data.setRefreshToken();
+            //String accessToken =
+        }
+
         // 회원가입 완료 처리 로직
         log.info("회원가입이 완료되었습니다.");
 
@@ -216,5 +224,64 @@ public class JoinController {
     @GetMapping("/check/{username}")
     public ApiResponse<?> duplicateCheck(@PathVariable String username) {
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, joinService.duplicateCheck(username));
+    }
+
+    //소셜 로그인
+    @PostMapping("/social/step1")
+    public ApiResponse<?> socialStep1(@ModelAttribute UserRequestDto userRequestDto, HttpSession session) throws IOException {
+        //log.info("여기는 백 컨트롤러 step1 / userRequestDto 값: {}", userRequestDto);
+
+        JoinSessionDto sessionData = (JoinSessionDto) session.getAttribute("joinSession");
+
+        // 세션에 데이터가 없는 경우 처리
+        if (sessionData == null || sessionData.getStep1Data() == null) {
+            log.warn("세션에 저장된 1단계 데이터가 없습니다.");
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "저장된 데이터 없음");
+        }
+
+
+        // 1단계 데이터 반환
+        UserRequestDto step1Data = sessionData.getStep1Data();
+
+        System.out.println(step1Data);
+
+        step1Data.setPostcode(userRequestDto.getPostcode());
+        step1Data.setAddress(userRequestDto.getAddress());
+        step1Data.setDetailAddress(userRequestDto.getDetailAddress());
+        sessionData.setStep1Data(step1Data);
+
+        session.setAttribute("provider", step1Data.getProvider());
+
+        
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "1단계 저장 완료");
+    }
+
+    //소셜 로그인
+    @PostMapping("/social/step1/data")
+    public ApiResponse<?> getSocialStep1(@ModelAttribute UserRequestDto userRequestDto, HttpSession session) throws IOException {
+        //log.info("여기는 백 컨트롤러 step1 / userRequestDto 값: {}", userRequestDto);
+
+        JoinSessionDto sessionData = (JoinSessionDto) session.getAttribute("joinSession");
+
+        // 세션에 데이터가 없는 경우 처리
+        if (sessionData == null || sessionData.getStep1Data() == null) {
+            log.warn("세션에 저장된 1단계 데이터가 없습니다.");
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "저장된 데이터 없음");
+        }
+        // 1단계 데이터 반환
+        UserRequestDto step1Data = sessionData.getStep1Data();
+        log.info("세션에서 1단계 데이터 반환: {}", step1Data);
+
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, step1Data);
+    }
+    
+    @PostMapping("/social/provider")
+    public ApiResponse<?> getSocialProvider(@ModelAttribute UserRequestDto userRequestDto, HttpSession session) throws IOException {
+        if(session.getAttribute("provider") != null) {
+            String provider = (String) session.getAttribute("provider");
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, provider);
+        }
+        
+        else return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "소셜 제공자 정보 없음");
     }
 }

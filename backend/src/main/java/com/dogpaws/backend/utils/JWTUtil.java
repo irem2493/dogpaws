@@ -49,4 +49,28 @@ public class JWTUtil {
                 .signWith(secretKey)
                 .compact();
     }
+
+    // Access Token 생성 (10분 유효)
+    public String generateAccessToken(String username, String role, String nickname ) {
+        return Jwts.builder()
+                .claim("username", username)
+                .claim("role", role)
+                .claim("nickname", nickname)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + + 10 * 60))// 10분 유효
+                .signWith(secretKey)
+                .compact();
+    }
+
+    // Refresh Token 생성 (12시간 유효)
+    public String generateRefreshToken(String username, String role, String nickname) {
+        return Jwts.builder()
+                .claim("username", username)
+                .claim("role", role)
+                .claim("nickname", nickname)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + + 12 * 60 * 60))// 12시간 유효
+                .signWith(secretKey)
+                .compact();
+    }
 }
