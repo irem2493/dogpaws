@@ -284,100 +284,25 @@
     </div>
 
     <!-- 매칭 영역 -->
-    <div class="row matching-container">
+    <div class="row matching-container" id="matchingContainer">
         <!-- 왼쪽 화살표 -->
-        <div class="matching-arrow col-1 d-flex flex-column justify-content-center align-items-center" style="padding: 0px;">
+        <div class="matching-arrow col-1 d-flex flex-column justify-content-center align-items-center" id="prev">
             <img src="/img/icon/left-btn.svg" alt="left-btn-icon">
-        </div> <!-- 왼쪽 화살표 -->
+        </div>
 
-        <!-- 왼쪽 카드 영역 -->
-        <div class="matching-card-side col-2" style="margin: 80px; padding: 0px;">
-            <div class="card-top" style="height: 55%; position: relative;">
-                <img src="/img/dog_profile_example.jpg" alt="강아지 매칭 프로필" style="width: 100%; height: 100%; object-fit: cover;">
-                <div style="position: absolute; top: 5px; right: 5px; width: 10%; border-radius: 20px; background-color: rgba(255, 255, 255, 0.6);">아이콘 영역</div>
-            </div>
-            <div class="card-center" style="height: 33%;">
-                <div>이름 |견종 (믹스)</div>
-                <div>성별 (중성화 X)</div>
-                <div>지역</div>
-            </div>
-            <div class="card-bottom" style="height: 12%;">
-                <div class="card-bottom-items">
-                    <img src="/img/icon/like.svg" alt="like-icon">
-                </div>
-                <div class="card-bottom-items">
-                    <img src="/img/icon/messege.svg" alt="messege-icon">
-                </div>
-                <div class="card-bottom-items">
-                    <img src="/img/icon/wechat-logo.svg" alt="wechat-logo-icon">
-                </div>
-                <div class="card-bottom-items">
-                    <img src="/img/icon/alarm-warning-line.svg" alt="alarm-warning-line-icon">
-                </div>
-            </div>
-        </div> <!-- 카드 영역 -->
-
-        <!-- 가운데 카드 영역 -->
-        <div class="matching-card col-6 mx-auto" style="padding: 0px;">
-            <div class="card-top" style="height: 55%; position: relative;">
-                <img src="/img/dog_profile_example.jpg" alt="강아지 매칭 프로필" style="width: 100%; height: 100%; object-fit: cover;">
-                <div style="position: absolute; top: 5px; right: 5px; width: 8%; border-radius: 20px; font-size: 18px; background-color: rgba(255, 255, 255, 0.6);">아이콘 영역</div>
-            </div>
-            <div class="card-center" style="font-size: 24px; height: 33%;">
-                <div>이름 |견종 (믹스)</div>
-                <div>성별 (중성화 X)</div>
-                <div>지역</div>
-            </div>
-            <div class="card-bottom center-card" style="height: 12%;">
-                <div class="card-bottom-items">
-                    <img id="likeIcon" src="/img/icon/like.svg" alt="like-icon" onclick="likeToggle()">
-                </div>
-                <div class="card-bottom-items">
-                    <img src="/img/icon/messege.svg" alt="messege-icon" data-target="O" onclick="messageForm(this)">
-                </div>
-                <div class="card-bottom-items">
-                    <img src="/img/icon/wechat-logo.svg" alt="wechat-logo-icon" data-target="G" onclick="messageForm(this)">
-                </div>
-                <div class="card-bottom-items">
-                    <img src="/img/icon/alarm-warning-line.svg" alt="alarm-warning-line-icon" onclick="declarationForm()">
-                </div>
-            </div>
-        </div> <!-- 카드 영역 -->
-
-        <!-- 오른쪽 카드 영역 -->
-        <div class="matching-card-side col-2" style="margin: 80px; padding: 0px;">
-            <div class="card-top" style="height: 55%; position: relative;">
-                <img src="/img/dog_profile_example.jpg" alt="강아지 매칭 프로필" style="width: 100%; height: 100%; object-fit: cover;">
-                <div style="position: absolute; top: 5px; right: 5px; width: 10%; border-radius: 20px; background-color: rgba(255, 255, 255, 0.6);">아이콘 영역</div>
-            </div>
-            <div class="card-center" style="height: 33%;">
-                <div>이름 |견종 (믹스)</div>
-                <div>성별 (중성화 X)</div>
-                <div>지역</div>
-            </div>
-            <div class="card-bottom" style="height: 12%;">
-                <div class="card-bottom-items">
-                    <img src="/img/icon/like.svg" alt="like-icon">
-                </div>
-                <div class="card-bottom-items">
-                    <img src="/img/icon/messege.svg" alt="messege-icon">
-                </div>
-                <div class="card-bottom-items">
-                    <img src="/img/icon/wechat-logo.svg" alt="wechat-logo-icon">
-                </div>
-                <div class="card-bottom-items">
-                    <img src="/img/icon/alarm-warning-line.svg" alt="alarm-warning-line-icon">
-                </div>
-            </div>
-        </div> <!-- 카드 영역 -->
+        <!-- 카드 컨테이너 -->
+        <div class="col-10" id="cardContainer" style="display: flex; justify-content: center; align-items: center;"></div>
 
         <!-- 오른쪽 화살표 -->
-        <div class="matching-arrow col-1 d-flex flex-column justify-content-center align-items-center" style="padding: 0px">
+        <div class="matching-arrow col-1 d-flex flex-column justify-content-center align-items-center" id="next">
             <img src="/img/icon/right-btn.svg" alt="right-btn-icon">
-        </div> <!-- 오른쪽 화살표 -->
-
-
+        </div>
     </div> <!-- 매칭 영역 -->
+
+
+
+
+
 
 </div> <!-- 컨테이너 div.. 지우지 마세요 !-->
 <script src="/js/hyepin/matching.js"></script>

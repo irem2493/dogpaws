@@ -1,4 +1,4 @@
-package com.dogpaws.backend.dto.hyepin;
+package com.dogpaws.frontend.dto.hyepin;
 
 import lombok.Data;
 
@@ -6,7 +6,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Data
-public class DogMatchDto {
+public class FilterDto {
     private Long dogMatchId;  // 매칭 필터 고유 넘버
     private Integer dogId;  // 강아지 ID
     private String breedGbnCd;  // 견종 구분 코드

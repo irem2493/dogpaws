@@ -51,7 +51,7 @@ function filterToggle(element){
 
             const dogId = 1;
             const matchType = 'F';
-            api.get('/api/matching?dogId='+dogId+'&matchType='+matchType)
+            api.get('/api/matching/filter?dogId='+dogId+'&matchType='+matchType)
                 .then(data => {
                     filter = data.body;  // body 속성의 배열을 할당
                     console.log('filter loaded:', filter);  // 배열 확인
@@ -245,7 +245,7 @@ function filterReset(){
 //좋아요 토글
 function likeToggle() {
     let icon = document.getElementById("likeIcon");
-    let isLiked = icon.src.includes("like-push.svg");
+    //let isLiked = icon.src.includes("like-push.svg");
 
     const username = "안혜빈";
     const dogId = 1;
@@ -275,10 +275,6 @@ function likeToggle() {
             console.error("오류:", error);
             alert("저장 오류");
         });
-
-
-
-    //좋아요 토글 api 연결하기
 }
 
 //메시지 폼 열기
@@ -298,60 +294,99 @@ function declarationForm(){
 
 }
 
-//카드 이동
-document.addEventListener('DOMContentLoaded', function () {
-    let isSwiping = false;
-    let startX = 0;
-    let container = document.querySelector('.matching-container');
-    let cardSides = document.querySelectorAll('.matching-card-side'); // 카드들
-    let cards = document.querySelectorAll('.matching-card'); // 중간 카드들
 
-    // 카드의 총 갯수
-    const totalCards = cardSides.length;
+let matchList = [];  // 데이터를 저장할 배열
+let startIndex = 0;   // 현재 시작 인덱스
 
-    // 마우스 다운 시 스와이프 시작
-    container.addEventListener('mousedown', function (e) {
-        isSwiping = true;
-        startX = e.pageX;  // 마우스 시작 위치 저장
-        e.preventDefault(); // 기본 이벤트 방지
+const dogId = 1;
+
+// 컨트롤러에서 matchList 데이터 가져오기
+api.get('/api/matching?dogId=' + dogId)
+    .then(data => {
+        matchList = data.body;
+        console.log('match loaded:', matchList);
+        updateCards();
+    })
+    .catch(error => {
+        console.error(error);
+        alert("오류가 발생했습니다.");
     });
 
-    // 마우스 이동 시 스와이프 처리
-    container.addEventListener('mousemove', function (e) {
-        if (isSwiping) {
-            let diff = startX - e.pageX;  // 마우스 이동 거리 계산
+function updateCards() {
+    const container = document.getElementById('cardContainer');
+    container.style.padding = "0px";
+    container.innerHTML = '';
 
-            if (diff > 50) {  // 오른쪽 스와이프 (카드 순서가 2 3 4로 변경)
-                moveCards('right');
-                isSwiping = false;  // 스와이프 완료 후 리셋
-            } else if (diff < -50) {  // 왼쪽 스와이프 (카드 순서가 1 2 3으로 변경)
-                moveCards('left');
-                isSwiping = false;  // 스와이프 완료 후 리셋
-            }
+    matchList.slice(startIndex, startIndex + 3).forEach((dog, index) => {
+        const card = document.createElement('div');
+
+        // 가운데 카드(index === 1)만 다른 클래스 적용
+        if (index === 1) {
+            card.classList.add('matching-card');
+            card.classList.add('col-6');
+            card.classList.add('mx-auto');
+            card.style.padding = "0px";
+        } else {
+            card.classList.add('matching-card-side');
+            card.classList.add('col-2');
+            card.style.margin = "80px";
+            card.style.padding = "0px";
         }
-    });
 
-    // 마우스 뗄 때 스와이프 종료
-    container.addEventListener('mouseup', function () {
-        isSwiping = false;
-    });
-
-    // 카드 이동 함수
-    function moveCards(direction) {
-        if (direction === 'right') {
-            // 1번째 카드가 마지막으로 가는 방식
-            let firstSide = cardSides[0]; // 첫 번째 카드
-            let firstCard = cards[0]; // 첫 번째 중간 카드
-
-            container.appendChild(firstSide); // 첫 번째 카드 사이드 맨 뒤로 보냄
-            container.appendChild(firstCard); // 첫 번째 카드 중간 맨 뒤로 보냄
-        } else if (direction === 'left') {
-            // 마지막 카드가 첫 번째로 가는 방식
-            let lastSide = cardSides[cardSides.length - 1]; // 마지막 카드
-            let lastCard = cards[cards.length - 1]; // 마지막 중간 카드
-
-            container.insertBefore(lastSide, cardSides[0]); // 마지막 카드 사이드를 맨 앞에 보냄
-            container.insertBefore(lastCard, cards[0]); // 마지막 중간 카드를 맨 앞에 보냄
+        card.innerHTML = `
+            
+            <div class="card-top" style="height: 55%; position: relative;">
+                <img src="${dog.profile_url}" alt="${dog.dog_name}" style="width: 100%; height: 100%; object-fit: cover;" />
+                ${index === 1 ?
+            '<div style="position: absolute; top: 5px; right: 5px; width: 8%; border-radius: 20px; font-size: 18px; background-color: rgba(255, 255, 255, 0.6);">아이콘 영역</div>' :
+            '<div style="position: absolute; top: 5px; right: 5px; width: 10%; border-radius: 20px; background-color: rgba(255, 255, 255, 0.6);">아이콘 영역</div>'
         }
+            </div>
+            ${index === 1 ?
+            '<div class="card-center" style="font-size: 24px; height: 33%;">' :
+            '<div class="card-center" style="height: 33%;">'
+        }
+                <div>${dog.dog_name} | ${dog.breed_name}</div>
+                <div>${dog.gender} (${dog.neutered ? '중성화 O' : '중성화 X'})</div>
+                <div>${dog.address}</div>
+            </div>
+            
+            ${index === 1 ?
+            '<div class="card-bottom center-card" style="height: 12%;">' :
+            '<div class="card-bottom" style="height: 12%; display: flex; justify-content: space-around;">'
+        }
+               <div class="card-bottom-items">
+                    <img id="likeIcon" src="/img/icon/like.svg" alt="like-icon" data-index="${index}" onclick="likeToggle(this)">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/messege.svg" alt="messege-icon" data-target="O" onclick="messageForm(this)">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/wechat-logo.svg" alt="wechat-logo-icon" data-target="G" onclick="messageForm(this)">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/alarm-warning-line.svg" alt="alarm-warning-line-icon" onclick="declarationForm()">
+                </div>
+            </div>
+             
+        `;
+
+
+        container.appendChild(card);
+    });
+}
+
+document.getElementById("next").addEventListener("click", () => {
+    if (startIndex + 1 < matchList.length) {
+        startIndex += 1;
+        updateCards();
     }
 });
+
+document.getElementById("prev").addEventListener("click", () => {
+    if (startIndex - 1 >= 0) {
+        startIndex -= 1;
+        updateCards();
+    }
+});
+
