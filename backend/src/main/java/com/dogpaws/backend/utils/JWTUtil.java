@@ -57,7 +57,7 @@ public class JWTUtil {
                 .claim("role", role)
                 .claim("nickname", nickname)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + + 10 * 60))// 10분 유효
+                .expiration(new Date(System.currentTimeMillis() + + 10 * 60*1000))// 10분 유효
                 .signWith(secretKey)
                 .compact();
     }
@@ -69,7 +69,7 @@ public class JWTUtil {
                 .claim("role", role)
                 .claim("nickname", nickname)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + + 12 * 60 * 60))// 12시간 유효
+                .expiration(new Date(System.currentTimeMillis() + + 12 * 60 * 60+1000))// 12시간 유효
                 .signWith(secretKey)
                 .compact();
     }
