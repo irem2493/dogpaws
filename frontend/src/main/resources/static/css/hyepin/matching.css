@@ -193,3 +193,9 @@ margin-right: 10px; /* 오른쪽에 15px 마진 */
     cursor: pointer;
 }
 
+
+
+.test-container { display: flex; align-items: center; }
+.test-card-container { display: flex; overflow: hidden; width: 900px; }
+.test-card { width: 300px; padding: 10px; border: 1px solid #ddd; margin: 0 5px; }
+button { padding: 10px; cursor: pointer; }
