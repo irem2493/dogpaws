@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <link rel="stylesheet" href="/css/ajy/join.css" />
+
+    <title>회원가입</title>
+</head>
+<body layout:fragment="content" style="min-height: 100vh">
+<div class="container">
+    <div class="join-container">
+        <div class="container_box">
+            <div class="header">사용자 정보 등록</div>
+
+            <div class="form-container">
+
+                <div class="sidebar">
+
+                    <div class="progress-container">
+                        <div class="step">
+                            <div class="circle-container">
+                                <div class="inner-circle completed"></div>
+                            </div>
+                            <div class="text">사용자 정보 등록</div>
+                        </div>
+                        <div class="step">
+                            <div class="circle"></div>
+                            <div class="text">강아지 프로필 등록(1개 필수 등록)</div>
+                        </div>
+                        <div class="step">
+                            <div class="circle"></div>
+                            <div class="text">교배 매칭 선택</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 200px"></div>
+                    <img src="/img/dog.png" alt="강아지 이미지">
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="form-fields">
+                    <form id="socialStep1Form">
+                        <label for="address"><span class="required">*</span> 산책로 주소검색</label>
+                        <div class="input-with-button">
+                            <input type="text" id="postcode" name="postcode" placeholder="우편번호를 입력하세요">
+                            <button type="button" id="addressBtn" onclick="execDaumPostcode()">우편번호</button>
+                        </div>
+                        <input type="text" id="address" name="address" placeholder="주소 입력">
+                        <input type="text" id="detailAddress" name="detailAddress" placeholder="상세 주소 입력">
+
+
+                    </form>
+                    <div class="button-container">
+                        <button id="nextButton" onclick="socialSaveStep1()">다음</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="/js/ajy/join_social_address.js"></script>
+</body>
+</html>
