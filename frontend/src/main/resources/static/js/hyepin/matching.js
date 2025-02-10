@@ -1,3 +1,8 @@
+//username 가져오기
+const sessionUsername = document.getElementById("sessionUsername");
+//dogId 가져오기
+const sessionDogId = document.getElementById("sessionDogId");
+
 // 첫 번째 드롭다운
 let searchInput1 = document.getElementById("searchInput");
 let dropdown1 = document.getElementById("dropdown");
@@ -242,41 +247,6 @@ function filterReset(){
 
 }
 
-//좋아요 토글
-function likeToggle() {
-    let icon = document.getElementById("likeIcon");
-    //let isLiked = icon.src.includes("like-push.svg");
-
-    const username = "안혜빈";
-    const dogId = 1;
-
-    //숫자와 char 형식은 변환이 필요하기 때문에 폼데이터로 보내겠습니다.
-    const LikeDto = {
-        "username" : username,
-        "dogId": parseInt(dogId), // <-- 숫자로 변환
-        "likeCode": "F".charAt(0) // <-- char 변환
-    }
-
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("dogId", dogId);
-    formData.append("likeCode", "F");
-
-    api.post('/api/likes/toggle', formData, {
-    })
-        .then(res => {
-            if (res.body.body == '성공') {  // res.body.body 로 받아야합니다..
-                icon.src = isLiked ? "/img/icon/like.svg" : "/img/icon/like-push.svg";
-            } else {
-                alert("좋아요 실패!");
-            }
-        })
-        .catch(error => {
-            console.error("오류:", error);
-            alert("저장 오류");
-        });
-}
-
 //메시지 폼 열기
 function messageForm(element){
     const target = element.dataset.target;
@@ -295,7 +265,7 @@ function declarationForm(){
 }
 
 
-let matchList = [];  // 데이터를 저장할 배열
+let matchList = [{ dog_id: '', profile_url: null, dog_name: '', breed_name: '', gender: '', is_neutered: '', address: '', matchedCriteriaList: null}];  // 빈 객체로 초기화;  // 데이터를 저장할 배열
 let startIndex = 0;   // 현재 시작 인덱스
 
 const dogId = 1;
@@ -303,7 +273,7 @@ const dogId = 1;
 // 컨트롤러에서 matchList 데이터 가져오기
 api.get('/api/matching?dogId=' + dogId)
     .then(data => {
-        matchList = data.body;
+        matchList = [...matchList, ...data.body];
         console.log('match loaded:', matchList);
         updateCards();
     })
@@ -320,6 +290,10 @@ function updateCards() {
     matchList.slice(startIndex, startIndex + 3).forEach((dog, index) => {
         const card = document.createElement('div');
 
+        let dogId = dog.dog_id;
+        let dogLiked = dog.liked;
+        console.log("dogLiked" + dogLiked);
+
         // 가운데 카드(index === 1)만 다른 클래스 적용
         if (index === 1) {
             card.classList.add('matching-card');
@@ -333,22 +307,49 @@ function updateCards() {
             card.style.padding = "0px";
         }
 
+        const iconHtml = dog.matched_criteria_list && dog.matched_criteria_list.length > 0 ?
+            dog.matched_criteria_list.map(criteria => {
+                // 각 항목에 맞는 아이콘을 조건에 따라 출력
+                switch (criteria) {
+                    case '품종':
+                        return '<img src="/img/icon/dog-filter/dog.svg" alt="dog-icon" title="견종이 일치해요!">';
+                    case '체중':
+                        return '<img src="/img/icon/dog-filter/weight.svg" alt="weight-icon" style="max-width: 18px; height: auto;" title="선호하는 체중대와 맞아요!">';
+                    case '성격유형':
+                        return '<img src="/img/icon/dog-filter/foot.svg" alt="foot-icon" title="견BTI가 같아요!">';
+                    case '성격':
+                        return '<img src="/img/icon/dog-filter/bone.svg" alt="foot-icon" title="성격 유형이 잘 맞아요!">';
+                    case '놀이':
+                        return '<img src="/img/icon/dog-filter/dribbble-ball.svg" alt="dribbble-ball-icon" title="좋아하는 놀이 스타일이 같아요!">';
+                    case '산책시간':
+                        return '<img src="/img/icon/dog-filter/clock.svg" alt="clock-icon" title="산책 시간이 잘 맞아요!">';
+                    case '산책요일':
+                        return '<img src="/img/icon/dog-filter/calendar.svg" alt="foot-icon" title="산책 요일이 잘 맞아요!">';
+                    default:
+                        return '';  // 조건에 맞는 값이 없으면 빈 문자열
+                }
+            }).join('') : '';
+
         card.innerHTML = `
             
-            <div class="card-top" style="height: 55%; position: relative;">
-                <img src="${dog.profile_url}" alt="${dog.dog_name}" style="width: 100%; height: 100%; object-fit: cover;" />
-                ${index === 1 ?
-            '<div style="position: absolute; top: 5px; right: 5px; width: 8%; border-radius: 20px; font-size: 18px; background-color: rgba(255, 255, 255, 0.6);">아이콘 영역</div>' :
-            '<div style="position: absolute; top: 5px; right: 5px; width: 10%; border-radius: 20px; background-color: rgba(255, 255, 255, 0.6);">아이콘 영역</div>'
-        }
+            <div class="card-top" style="height: 60%; position: relative; z-index: 9999">
+                <img class="card-top-img" src="${dog.profile_url != null ? dog.profile_url : '/img/로고.jpg'}"}" alt="${dog.dog_name}" style="width: 100%; height: 100%; object-fit: cover;" />
+                <div class="card-top-icon" style="
+                    position: absolute; 
+                    ${index === 1 ? 'top: 8px;' : 'top: 5px;'} 
+                    ${index === 1 ? 'right: 8px;' : 'right: 5px;'} 
+                    min-width: 5%; padding: 10px 5px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.6);
+                    display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center;">
+                    ${iconHtml}
+                </div>
             </div>
             ${index === 1 ?
-            '<div class="card-center" style="font-size: 24px; height: 33%;">' :
-            '<div class="card-center" style="height: 33%;">'
+            '<div class="card-center" style="font-size: 20px; height: 28%;">' :
+            '<div class="card-center" style="font-size: 14px; height: 28%;">'
         }
-                <div>${dog.dog_name} | ${dog.breed_name}</div>
-                <div>${dog.gender} (${dog.neutered ? '중성화 O' : '중성화 X'})</div>
-                <div>${dog.address}</div>
+                <div style="${index === 1 ? 'line-height: 1.8;' : 'line-height: 1.5;'}">${dog.dog_name} ${dog.breed_name !== '' ? `| ${dog.breed_name}` : ''}</div>
+                <div style="${index === 1 ? 'line-height: 1.8;' : 'line-height: 1.2;'}">${dog.gender === "M" ? '남' : dog.gender === "" ? '' : '여'} ${dog.is_neutered === "Y" ? '(중성화 O)' : dog.is_neutered === "" ? "" : '(중성화 X)'}</div>
+                <div style="line-height: 1.8; color: #5e5e5e; font-size: 0.8em; text-align: center; ${index === 1 ? 'width: 100%' : 'width: 80%'}">${dog.address != null ? dog.address : '지정된 산책로가 없습니다.'}</div>
             </div>
             
             ${index === 1 ?
@@ -356,7 +357,10 @@ function updateCards() {
             '<div class="card-bottom" style="height: 12%; display: flex; justify-content: space-around;">'
         }
                <div class="card-bottom-items">
-                    <img id="likeIcon" src="/img/icon/like.svg" alt="like-icon" data-index="${index}" onclick="likeToggle(this)">
+            ${index === 1 ?
+            `<img id="likeIcon" src="${dogLiked ? '/img/icon/like-push.svg' : '/img/icon/like.svg'}" alt="like-icon" data-target="${dogId}" onclick="likeToggle(this)">` :
+            `<img src="${dogLiked ? '/img/icon/like-push.svg' : '/img/icon/like.svg'}" alt="like-icon">`
+        }
                 </div>
                 <div class="card-bottom-items">
                     <img src="/img/icon/messege.svg" alt="messege-icon" data-target="O" onclick="messageForm(this)">
@@ -368,10 +372,7 @@ function updateCards() {
                     <img src="/img/icon/alarm-warning-line.svg" alt="alarm-warning-line-icon" onclick="declarationForm()">
                 </div>
             </div>
-             
         `;
-
-
         container.appendChild(card);
     });
 }
@@ -390,3 +391,105 @@ document.getElementById("prev").addEventListener("click", () => {
     }
 });
 
+//스와이프 감지
+let touchStartX = 0; // 터치 또는 마우스 시작 X 좌표
+let touchEndX = 0;   // 터치 또는 마우스 끝 X 좌표
+let isSwiping = false; // 스와이프가 진행 중인지 체크하는 플래그
+const swipeThreshold = 50; // 최소 스와이프 거리 (50px 이상만 넘어가게)
+
+const cardContainer = document.getElementById("cardContainer");
+
+// 터치 시작 (모바일)
+cardContainer.addEventListener("touchstart", (event) => {
+    touchStartX = event.touches[0].clientX; // 터치 시작 X 좌표
+    isSwiping = true;  // 스와이프 시작
+});
+
+// 터치 끝 (모바일)
+cardContainer.addEventListener("touchend", (event) => {
+    touchEndX = event.changedTouches[0].clientX; // 터치 끝 X 좌표
+    handleSwipe();
+    isSwiping = false; // 스와이프 종료
+});
+
+// 마우스 다운 (PC)
+cardContainer.addEventListener("mousedown", (event) => {
+    touchStartX = event.clientX; // 마우스 시작 X 좌표
+    isSwiping = true;  // 스와이프 시작
+});
+
+// 마우스 업 (PC)
+cardContainer.addEventListener("mouseup", (event) => {
+    touchEndX = event.clientX; // 마우스 끝 X 좌표
+    handleSwipe();
+    isSwiping = false; // 스와이프 종료
+});
+
+// 스와이프 처리 함수
+function handleSwipe() {
+    const swipeDistance = touchEndX - touchStartX; // 스와이프 거리 계산
+    console.log('Swipe distance:', swipeDistance); // 디버깅용
+
+    // 스와이프가 threshold 이상일 경우에만 카드 넘어가도록
+    if (isSwiping && Math.abs(swipeDistance) > swipeThreshold) {
+        if (swipeDistance > 0) {
+            // 오른쪽 스와이프 (이전 카드로 넘어가기)
+            console.log('Swipe right: Previous card');
+            if (startIndex - 1 >= 0) {
+                startIndex -= 1;
+                updateCards();
+            }
+        } else {
+            // 왼쪽 스와이프 (다음 카드로 넘어가기)
+            console.log('Swipe left: Next card');
+            if (startIndex + 1 < matchList.length) {
+                startIndex += 1;
+                updateCards();
+            }
+        }
+        cardContainer.style.userSelect = 'none'; // 글자 드래그 방지
+    }
+}
+
+//좋아요 토글
+function likeToggle(element) {
+    let icon = document.getElementById("likeIcon");
+    let isLiked = icon.src.includes("like-push.svg");
+
+    const username = sessionUsername.value;
+    const dogId = element.dataset.target;
+    console.log("dogId:" + dogId);
+
+    //숫자와 char 형식은 변환이 필요하기 때문에 폼데이터로 보내겠습니다.
+    const LikeDto = {
+        "username" : username,
+        "dogId": parseInt(dogId), // <-- 숫자로 변환
+        "likeCode": "F".charAt(0) // <-- char 변환
+    }
+
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("dogId", dogId);
+    formData.append("likeCode", "F");
+
+    api.post('/api/likes/toggle', formData, {
+    })
+        .then(res => {
+            if (res.body.body == '성공') {  // res.body.body 로 받아야합니다..
+                icon.src = isLiked ? "/img/icon/like.svg" : "/img/icon/like-push.svg";
+                matchList.forEach(dog => {
+                    if (dog.dog_id === parseInt(dogId)) {
+                        console.log("dog.dog_id: " + dog.dog_id + "dogId: " + dogId + "찾았다 dogId")
+                        dog.liked = !dog.liked;
+                    }
+                });
+                updateCards();
+            } else {
+                alert("좋아요 실패!");
+            }
+        })
+        .catch(error => {
+            console.error("오류:", error);
+            alert("저장 오류");
+        });
+}

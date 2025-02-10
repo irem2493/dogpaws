@@ -12,6 +12,11 @@
 <div class="container">
   <!-- 여기서부터 작성하시면 됩니다. !-->
 
+  <!-- 세션에서 유저값 받기 !-->
+  <th:block th:if="${session.user != null && session.dog != null}">
+    <input type="hidden" id="sessionUsername" th:value="${session.user.username}">
+  </th:block>
+
   <div style="display:flex;">
     <div style="flex: 1;" class="sidebar-container">
       <div class="sidebar">
@@ -46,7 +51,6 @@
     </div>
   </div>
 
-    <input type="hidden" name="username" id="username" value="안혜빈">
     <!-- 일정 추가 폼 모달 -->
     <div class="pawsModal" id="calendarForm" style="display: none;">
       <form id="addCalendarForm">
@@ -85,7 +89,7 @@
 
           <div>
             <label for="calendarTitle">제목</label><br>
-            <input class="input-a" type="text" name="calendarTitle" id="calendarTitle" required><br><br>
+            <input class="input-a" type="text" name="calendarTitle" id="calendarTitle" maxlength="7" required><br><br>
           </div>
 
           <div id="shareUserField" style="display: none;">

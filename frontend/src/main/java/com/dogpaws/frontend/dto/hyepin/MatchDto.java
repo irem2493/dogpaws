@@ -29,4 +29,6 @@ public class MatchDto {
     private String matchedCriteria; // 매칭 일치조건 , 형식 문자열
     private List<String> matchedCriteriaList; //매칭 일치조건 리스트
 
+    private boolean liked; //좋아요 여부
+
 }
