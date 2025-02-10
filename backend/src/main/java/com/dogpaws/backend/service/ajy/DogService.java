@@ -27,6 +27,8 @@ public class DogService {
         List<Dog> dogList = dogRepository.findByUsername(username);
         for (Dog d : dogList) {
             DogDto dogDto = new DogDto();
+            dogDto.setDogId(d.getDogId());
+            dogDto.setDogName(d.getDogName());
             dogDto.setDogName(d.getDogName());
             dogDto.setProfileUrl(d.getProfileUrl());
             dogDtoList.add(dogDto);

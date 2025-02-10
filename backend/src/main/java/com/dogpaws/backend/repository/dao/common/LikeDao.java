@@ -17,4 +17,6 @@ public interface LikeDao {
     int deleteLike(@Param("username") String username,
                     @Param("likeCode") char likeCode,
                     @Param("dogId") int dogId);
+
+
 }
