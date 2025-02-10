@@ -1,12 +1,12 @@
 package com.dogpaws.backend.controller.hyepin;
 
-import com.dogpaws.backend.dto.ajy.UserRequestDto;
-import com.dogpaws.backend.dto.common.UserDto;
 import com.dogpaws.backend.dto.hyepin.FilterDto;
 import com.dogpaws.backend.dto.hyepin.MatchDto;
 import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.service.common.LikeService;
 import com.dogpaws.backend.service.hyepin.MatchingService;
+import com.dogpaws.frontend.dto.ajy.UserDto;
+import com.dogpaws.frontend.utils.SessionUtil;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +67,7 @@ public class DogMatchingController {
     public List<MatchDto> getDogFriendMatchList(@RequestParam("dogId") int dogId, HttpSession session) throws IOException {
         log.info("여기는 백 컨트롤러 getDogFriendMatchList / dogId 값: {}", dogId);
         List<MatchDto> matchList = matchingService.getDogFriendMatchList(dogId);
-        UserDto user = (UserDto) session.getAttribute("username");
+        UserDto user = SessionUtil.getUser(session);
         String username = null;
         if(user != null) {
             username = user.getUsername();
@@ -76,7 +76,7 @@ public class DogMatchingController {
             log.info("여기는 백 컨트롤러 getDogFriendMatchList / matchList 값: {}", matchList);
             return matchList;
         }
-        System.out.println(username);
+        System.out.println("username: " + username);
         return matchList;
     }
 
