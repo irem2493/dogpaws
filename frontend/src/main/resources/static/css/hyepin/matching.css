@@ -145,6 +145,7 @@ margin-right: 10px; /* 오른쪽에 15px 마진 */
     height: 100%;
     background-color: rgba(255, 255, 255, 0.5); /* 흰색 반투명 배경 */
     border-radius: 10px; /* 부모 요소의 경계와 일치하게 맞추기 */
+    z-index: 9999;
 }
 
 
@@ -152,7 +153,20 @@ margin-right: 10px; /* 오른쪽에 15px 마진 */
     .matching-card-side, .matching-arrow {
         display: none !important;
     }
+    #cardContainer {
+        width: 100%;
+        height: 100%;
+    }
+    .swipe-img{
+        width: 90%;
+        display: block; /* 이미지 중앙 정렬을 위해 block으로 설정 */
+        margin: 0 auto; /* 부모 div에서 중앙 정렬 */
+    }
 
+}
+
+.matching-arrow:hover{
+    cursor: pointer;
 }
 
 .card-center{
@@ -193,9 +207,19 @@ margin-right: 10px; /* 오른쪽에 15px 마진 */
     cursor: pointer;
 }
 
+#cardContainer {
+    position: relative;
+    z-index: 10;
+    overflow: hidden;  /* 수평 스크롤 방지 */
+}
 
+.card-top-img {
+    user-select: none; /* 드래그 방지 */
+    pointer-events: none; /* 클릭, 드래그 등 이벤트 방지 */
+}
 
-.test-container { display: flex; align-items: center; }
-.test-card-container { display: flex; overflow: hidden; width: 900px; }
-.test-card { width: 300px; padding: 10px; border: 1px solid #ddd; margin: 0 5px; }
-button { padding: 10px; cursor: pointer; }
+.card-bottom, .card-top-icon{
+    position: relative;
+    z-index: 9999;
+}
+

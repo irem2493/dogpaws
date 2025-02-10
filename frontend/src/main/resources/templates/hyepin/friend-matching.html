@@ -9,6 +9,13 @@
 <body layout:fragment="content" style="min-height: 100vh">
 <div class="container">  <!-- 컨테이너 div.. 지우지 마세요 !-->
     <!-- 여기서부터 작성하시면 됩니다. !-->
+
+    <!-- 세션에서 유저값 받기 !-->
+    <th:block th:if="${session.user != null && session.dog != null}">
+        <input type="hidden" id="sessionUsername" th:value="${session.user.username}">
+    </th:block>
+
+
     <div class="row">
         <div class="pw-title col-12">친구 매칭</div>
     </div>
@@ -280,7 +287,7 @@
 
     <!-- 스와이프 -->
     <div class="row" style="display: flex; margin-top: 10px; justify-content: flex-end;">
-        <img class="col-md-3 col-sm-12" src="/img/swipe.svg" alt="dog-icon">
+        <img class="col-md-3 col-sm-6 swipe-img" src="/img/swipe.svg" alt="dog-icon">
     </div>
 
     <!-- 매칭 영역 -->

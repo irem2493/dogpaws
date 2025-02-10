@@ -1,9 +1,13 @@
 package com.dogpaws.backend.controller.hyepin;
 
+import com.dogpaws.backend.dto.ajy.UserRequestDto;
+import com.dogpaws.backend.dto.common.UserDto;
 import com.dogpaws.backend.dto.hyepin.FilterDto;
 import com.dogpaws.backend.dto.hyepin.MatchDto;
 import com.dogpaws.backend.global.common.ApiResponse;
+import com.dogpaws.backend.service.common.LikeService;
 import com.dogpaws.backend.service.hyepin.MatchingService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +22,7 @@ import java.util.List;
 public class DogMatchingController {
 
     private final MatchingService matchingService;
+    private final LikeService likeService;
 
     //매칭필터 가져오기
     @GetMapping("/filter")
@@ -59,10 +64,19 @@ public class DogMatchingController {
 
     //친구매칭 가져오기
     @GetMapping
-    public List<MatchDto> getDogFriendMatchList(@RequestParam("dogId") int dogId) throws IOException {
+    public List<MatchDto> getDogFriendMatchList(@RequestParam("dogId") int dogId, HttpSession session) throws IOException {
         log.info("여기는 백 컨트롤러 getDogFriendMatchList / dogId 값: {}", dogId);
         List<MatchDto> matchList = matchingService.getDogFriendMatchList(dogId);
-        log.info("여기는 백 컨트롤러 getDogFriendMatchList / matchList 값: {}", matchList);
+        UserDto user = (UserDto) session.getAttribute("username");
+        String username = null;
+        if(user != null) {
+            username = user.getUsername();
+            //getDogFriendMatchList 좋아요 리스트 받아오기
+            matchList = likeService.getMatcingLike(username, matchList, 'F');
+            log.info("여기는 백 컨트롤러 getDogFriendMatchList / matchList 값: {}", matchList);
+            return matchList;
+        }
+        System.out.println(username);
         return matchList;
     }
 

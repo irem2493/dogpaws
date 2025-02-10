@@ -139,7 +139,8 @@
 
         FROM tbl_dogs d
         JOIN tbl_dog_match m ON m.dog_id = #{dogId} -- 강아지 ID
-        WHERE d.breed = m.breed_gbn_cd
+        WHERE (d.breed = m.breed_gbn_cd OR m.breed_gbn_cd IS NULL) -- breed_gbn_cd가 NULL일 때는 조건을 빼고 다른 필터들만 적용
+
         AND d.is_mix = m.is_mix
         ORDER BY match_score DESC, RAND()
         LIMIT 20;
