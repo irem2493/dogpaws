@@ -4,7 +4,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dogpaws.backend.repository.dao.hyepin.DogMatchDao">
 
-    <select id="getFilterBydogIdAndMatchType" resultType="com.dogpaws.backend.dto.hyepin.DogMatchDto">
+    <select id="getFilterBydogIdAndMatchType" resultType="com.dogpaws.backend.dto.hyepin.FilterDto">
         SELECT
             dm.dog_match_id,
             dm.dog_id,
@@ -68,5 +68,81 @@
         AND g4.gubn_code = dm.dog_type_code_gbn_cd
         WHERE dm.dog_id = #{dogId} AND dm.match_type = #{matchType}
         GROUP BY dm.dog_id;
+    </select>
+
+    <select id="getDogFriendMatchList" resultType="com.dogpaws.backend.dto.hyepin.MatchDto">
+        -- 매칭
+        SELECT
+        d.*,
+        -- breed 한글명 가져오기 (단일 행 보장)
+        (SELECT g.gubn_name
+        FROM tbl_gubn g
+        WHERE g.group_code = 'breed_code'
+        AND g.gubn_code = d.breed
+        LIMIT 1) AS breed_name,
+
+        -- 사용자 주소 가져오기 (단일 행 보장)
+        (SELECT u.address
+        FROM tbl_users u
+        WHERE u.username = d.username
+        LIMIT 1) AS address,
+
+        -- 최종 match_score 계산
+        (7 * (CASE WHEN m.weight_category = 'U' AND d.weight >= m.weight - 1 THEN 1 ELSE 0 END)
+        + 7 * (CASE WHEN d.personality_type = m.dog_type_code_gbn_cd THEN 1 ELSE 0 END)
+        + 2 * (SELECT COUNT(*) FROM tbl_dog_personal p
+        WHERE p.dog_id = d.dog_id
+        AND p.dog_personal_gbn_cd IN (m.dog_personal_gbn_cd_1, m.dog_personal_gbn_cd_2,
+        m.dog_personal_gbn_cd_3, m.dog_personal_gbn_cd_4,
+        m.dog_personal_gbn_cd_5))
+        + 2 * (SELECT COUNT(*) FROM tbl_dog_play pl
+        WHERE pl.dog_id = d.dog_id
+        AND pl.dog_play_gbn_cd IN (m.dog_play_gbn_cd_1, m.dog_play_gbn_cd_2,
+        m.dog_play_gbn_cd_3, m.dog_play_gbn_cd_4,
+        m.dog_play_gbn_cd_5))
+        + 10 * (CASE WHEN d.walk_start_time = m.walk_start_time AND d.walk_end_time = m.walk_end_time THEN 1 ELSE 0 END)
+        + COALESCE(LENGTH(d.walk_days) - LENGTH(REPLACE(d.walk_days, ',', '')) + 1, 0)
+        + CASE
+        WHEN ABS(TIMESTAMPDIFF(MINUTE, d.walk_start_time, m.walk_start_time)) &lt;= 30 THEN 10
+        WHEN ABS(TIMESTAMPDIFF(MINUTE, d.walk_start_time, m.walk_start_time)) &lt;= 60 THEN 5
+        ELSE 0
+        END
+        + CASE
+        WHEN ABS(TIMESTAMPDIFF(MINUTE, d.walk_end_time, m.walk_end_time)) &lt;= 30 THEN 10
+        WHEN ABS(TIMESTAMPDIFF(MINUTE, d.walk_end_time, m.walk_end_time)) &lt;= 60 THEN 5
+        ELSE 0
+        END
+        ) AS match_score,
+
+        CONCAT(
+        CASE WHEN d.breed = m.breed_gbn_cd THEN '품종' ELSE '' END,
+        CASE WHEN d.is_mix = m.is_mix THEN ',믹스여부' ELSE '' END,
+        CASE WHEN m.weight_category = 'U' AND d.weight >= m.weight - 1 THEN ',체중'
+        WHEN m.weight_category = 'D' AND d.weight &lt;= m.weight + 1 THEN ',체중'
+        ELSE '' END,
+        CASE WHEN d.personality_type = m.dog_type_code_gbn_cd THEN ',성격유형' ELSE '' END,
+        CASE WHEN (SELECT COUNT(*) FROM tbl_dog_personal p
+        WHERE p.dog_id = d.dog_id
+        AND p.dog_personal_gbn_cd IN (m.dog_personal_gbn_cd_1, m.dog_personal_gbn_cd_2,
+        m.dog_personal_gbn_cd_3, m.dog_personal_gbn_cd_4,
+        m.dog_personal_gbn_cd_5)) > 0 THEN ',성격' ELSE '' END,
+        CASE WHEN (SELECT COUNT(*) FROM tbl_dog_play pl
+        WHERE pl.dog_id = d.dog_id
+        AND pl.dog_play_gbn_cd IN (m.dog_play_gbn_cd_1, m.dog_play_gbn_cd_2,
+        m.dog_play_gbn_cd_3, m.dog_play_gbn_cd_4,
+        m.dog_play_gbn_cd_5)) > 0 THEN ',놀이' ELSE '' END,
+        CASE WHEN (ABS(TIMESTAMPDIFF(MINUTE, d.walk_start_time, m.walk_start_time)) &lt;= 60 OR
+        ABS(TIMESTAMPDIFF(MINUTE, d.walk_end_time, m.walk_end_time)) &lt;= 60)
+        THEN ',산책시간' ELSE '' END,
+        CASE WHEN (LENGTH(d.walk_days) - LENGTH(REPLACE(d.walk_days, ',', '')) + 1) > 0 THEN ',산책요일' ELSE '' END
+        ) AS matched_criteria
+
+        FROM tbl_dogs d
+        JOIN tbl_dog_match m ON m.dog_id = #{dogId} -- 강아지 ID
+        WHERE (d.breed = m.breed_gbn_cd OR m.breed_gbn_cd IS NULL) -- breed_gbn_cd가 NULL일 때는 조건을 빼고 다른 필터들만 적용
+
+        AND d.is_mix = m.is_mix
+        ORDER BY match_score DESC, RAND()
+        LIMIT 20;
     </select>
 </mapper>

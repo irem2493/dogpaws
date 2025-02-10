@@ -1,11 +1,17 @@
 package com.dogpaws.backend.service.common;
 
+import com.dogpaws.backend.dto.hyepin.MatchDto;
 import com.dogpaws.backend.repository.dao.common.LikeDao;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LikeService {
 
     private final LikeDao likeDao;
@@ -21,4 +27,19 @@ public class LikeService {
             return result;
         }
     }
+
+
+    public List<MatchDto> getMatcingLike (String username, List<MatchDto> matchList, char likeCode) {
+        for (MatchDto m : matchList) {
+            int check = likeDao.checkLike(username, likeCode, m.getDogId());
+            if (check == 0) {
+                m.setLiked(false);
+            }else if(check == 1){
+                m.setLiked(true);
+            }
+        }
+        return matchList;
+    }
+
+
 }
