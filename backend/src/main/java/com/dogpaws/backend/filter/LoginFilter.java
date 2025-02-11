@@ -113,7 +113,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter{
         log.info("JWT 쿠키 설정 완료: accessToken={}, refreshToken={}", accessToken, refreshToken);
 
         // 사용자 정보 응답 (API Response)
-        Map<String, String> userInfo = Map.of("username", username, "role", role, "nickname", nickname);
+        Map<String, String> userInfo = Map.of("accessToken", accessToken,"username", username, "role", role, "nickname", nickname);
         ApiResponse<Map<String, String>> apiResponse = new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, userInfo, false);
 
         // 응답 전송

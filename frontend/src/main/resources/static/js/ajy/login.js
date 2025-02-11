@@ -20,6 +20,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
 
     api.post('/login', {username, password, userType:'ROLE_USER'})
         .then(response => {
+            sessionStorage.setItem('accessToken', response.body.access_token);
             sessionStorage.setItem('username', response.body.username);
             sessionStorage.setItem('role', response.body.role);
             sessionStorage.setItem('nickname', response.body.nickname);
