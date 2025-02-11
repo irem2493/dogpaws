@@ -5,6 +5,7 @@
 <mapper namespace="com.dogpaws.backend.repository.dao.hyepin.DogMatchDao">
 
     <select id="getFilterBydogIdAndMatchType" resultType="com.dogpaws.backend.dto.hyepin.FilterDto">
+        -- 강아지 필터 정보
         SELECT
             dm.dog_match_id,
             dm.dog_id,
@@ -70,8 +71,14 @@
         GROUP BY dm.dog_id;
     </select>
 
+    <delete id="deleteFilter">
+        -- 강아지 필터 삭제
+        DELETE FROM tbl_dog_match
+        WHERE dog_id = #{dogId} AND match_type = #{matchType}
+    </delete>
+
     <select id="getDogFriendMatchList" resultType="com.dogpaws.backend.dto.hyepin.MatchDto">
-        -- 매칭
+        -- 강아지 매칭 리스트
         SELECT
         d.*,
         -- breed 한글명 가져오기 (단일 행 보장)
@@ -139,9 +146,9 @@
 
         FROM tbl_dogs d
         JOIN tbl_dog_match m ON m.dog_id = #{dogId} -- 강아지 ID
-        WHERE (d.breed = m.breed_gbn_cd OR m.breed_gbn_cd IS NULL) -- breed_gbn_cd가 NULL일 때는 조건을 빼고 다른 필터들만 적용
-
-        AND d.is_mix = m.is_mix
+        WHERE (d.breed = m.breed_gbn_cd OR m.breed_gbn_cd IS NULL)
+        AND (m.is_mix = 'N' AND d.is_mix = 'N' OR m.is_mix = 'Y')
+        AND d.username &lt;&gt; #{username}
         ORDER BY match_score DESC, RAND()
         LIMIT 20;
     </select>
