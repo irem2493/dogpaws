@@ -1,4 +1,34 @@
+document.addEventListener("DOMContentLoaded", function() {
+
+    console.log("DOMContentLoaded 이벤트 실행됨"); // 추가
+
+    verifyAccessToken()
+        .then(() => {
+            console.log("토큰 검증 완료");
+        })
+        .catch((error) => {
+            console.error("토큰 검증 중 오류 발생:", error);
+        });
+
+    // 로그아웃 버튼이 존재하는지 확인 후 이벤트 등록
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            logout().then(() => {
+                alert('로그아웃 성공');
+            }).catch((error) => {
+                console.log('로그아웃 중 오류 발생:', error);
+            });
+        });
+    } else {
+        console.error("로그아웃 버튼을 찾을 수 없습니다.");
+    }
+});
+
 async function verifyAccessToken() {
+
+    console.log("verifyAccessToken 호출됨"); // 추가
+
     const accessToken = sessionStorage.getItem('accessToken');
 
     if (!accessToken) {
@@ -19,41 +49,58 @@ async function verifyAccessToken() {
     }
 }
 
-    async function refreshAccessToken() {
-        try {
-            const refreshToken = getRefreshTokenFromCookie();
+async function refreshAccessToken() {
+    try {
+        const refreshToken = getRefreshTokenFromCookie();
 
-            const data = await api.post('/api/auth/token/refresh', { refreshToken });
-
-            // Access Token 갱신 후 세션 스토리지에 저장
-            sessionStorage.setItem('accessToken', data.accessToken);
-            console.log('Access Token 갱신 완료');
-        } catch (error) {
-            console.log('토큰 갱신 실패. 재로그인 필요');
-            logout();
+        if (!refreshToken) {
+            console.log('Refresh Token이 없습니다. 재로그인 필요');
+            return logout();
         }
+
+        const response = await api.post('/api/auth/token/refresh', { refreshToken });
+
+        // 응답에서 Access Token을 가져온 후 저장
+        const accessToken = response.accessToken;
+
+        if (accessToken) {
+            sessionStorage.setItem('accessToken', accessToken);
+            console.log('Access Token 갱신 완료');
+        } else {
+            console.log('Access Token 갱신 실패. 재로그인 필요');
+            void logout();
+        }
+    } catch (error) {
+        console.log('토큰 갱신 실패. 재로그인 필요');
+        void logout();
     }
-
-
-verifyAccessToken()
-    .then(() => {
-        console.log("토큰 검증 완료");
-    })
-    .catch((error) => {
-        console.error("토큰 검증 중 오류 발생:", error);
-    });
-
+}
 
     async function logout() {
         try {
+            // 서버에 GET 요청으로 로그아웃 API 호출
+            console.time("authLogoutAPI");
             await api.post('/api/auth/logout', {});
+            console.timeEnd("authLogoutAPI");
 
             // 세션 및 쿠키 삭제
             sessionStorage.removeItem('accessToken');
             document.cookie = 'Refresh-Token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
 
-            window.location.href = '/login';  // 로그인 페이지로 이동
+            location.href="/logout";
         } catch (error) {
             console.error('로그아웃 중 오류 발생:', error);
         }
     }
+
+function getRefreshTokenFromCookie() {
+    const cookies = document.cookie.split('; ');
+    for (let cookie of cookies) {
+        const [name, value] = cookie.split('=');
+        if (name === 'Refresh-Token') {
+            return value;
+        }
+    }
+    return null;
+}
+
