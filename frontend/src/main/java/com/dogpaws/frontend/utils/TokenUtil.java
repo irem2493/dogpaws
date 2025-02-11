@@ -30,7 +30,7 @@ public class TokenUtil {
 
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if ("Authorization".equals(cookie.getName())) {
+                if ("Refresh-Token".equals(cookie.getName())) {
                     return cookie.getValue();
                 }
             }
@@ -38,15 +38,35 @@ public class TokenUtil {
         return null;
     }
 
-    public static UserDto verifyTokenAndSetSession(String token, ApiRequestService apiRequestService, HttpSession session) {
+    public static UserDto verifyTokenAndSetSession(String token, ApiRequestService apiRequestService, HttpSession session, HttpServletRequest request) {
         if (token == null) {
             log.warn("토큰이 존재하지 않습니다.");
             return null;
         }
 
         var response = apiRequestService.postDataWithToken("/api/verify-token", null, token);
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+
+        // Access Token이 만료된 경우 처리
+        if (response.getStatus() == ApiResponse.ApiStatus.ERROR && response.getBody() != null &&responseBody.get("body").equals("401") ) {
+
+            log.info("Access Token이 만료되었습니다. Refresh Token으로 갱신 시도 중...");
+
+            // Refresh Token으로 Access Token 갱신
+            String newAccessToken = refreshAccessToken(apiRequestService, request ,session);
+            if (newAccessToken != null) {
+                // 다시 verify-token 요청 시도
+                return verifyTokenAndSetSession(newAccessToken, apiRequestService, session, request);
+            } else {
+                log.warn("토큰 갱신 실패");
+                return null;
+            }
+        }
+
         if (response.getStatus() == ApiResponse.ApiStatus.SUCCESS && response.getBody() instanceof Map) {
-            Map<String, Object> userData = (Map<String, Object>) response.getBody();
+            Map<String, Object> userData = (Map<String, Object>) responseBody.get("body");
+
+
             UserDto user = new UserDto();
             user.setUsername((String) userData.get("username"));
             user.setNickname((String) userData.get("nickname"));
@@ -60,5 +80,29 @@ public class TokenUtil {
             return null;
         }
     }
+
+    private static String refreshAccessToken(ApiRequestService apiRequestService, HttpServletRequest request, HttpSession session) {
+        // 쿠키에서 Refresh Token 가져오기
+        String refreshToken = getTokenFromCookies(request);
+
+        // Refresh Token API 요청
+        ApiResponse<?> response = apiRequestService.fetchDataToken("/api/auth/token/refresh", refreshToken);
+
+        if (response.getStatus() == ApiResponse.ApiStatus.SUCCESS && response.getBody() instanceof Map) {
+
+            Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+            Map<String, Object> data = (Map<String, Object>) responseBody.get("body");
+
+            String newAccessToken = data.get("accessToken").toString();
+
+            // 새로운 Access Token을 세션에 저장
+            session.setAttribute("accessToken", newAccessToken);
+            return newAccessToken;
+        } else {
+            log.warn("Access Token 갱신 실패: {}", response);
+            return null;
+        }
+    }
+
 
 }

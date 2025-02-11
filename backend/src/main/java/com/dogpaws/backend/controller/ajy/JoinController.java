@@ -6,7 +6,12 @@ import com.dogpaws.backend.dto.ajy.UserRequestDto;
 import com.dogpaws.backend.dto.common.FileDto;
 import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.service.ajy.JoinService;
-import com.dogpaws.backend.service.common.FileService;
+import com.dogpaws.backend.service.ajy.TokenService;
+import com.dogpaws.backend.utils.JWTUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +42,8 @@ public class JoinController {
     private String fileDir;
 
     private final JoinService joinService;
-    private final FileService fileService;
+    private final JWTUtil jwtUtil;
+    private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/step1")
@@ -52,9 +58,9 @@ public class JoinController {
         if (sessionData == null) {
             sessionData = new JoinSessionDto();
         }
-
         sessionData.setStep1Data(userRequestDto);
         session.setAttribute("joinSession", sessionData);
+
 
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "1단계 저장 완료");
     }
@@ -115,7 +121,7 @@ public class JoinController {
             Files.copy(profileImage.getInputStream(), targetPath);
 
             // 세션에 저장할 파일 정보 (경로만 저장)
-            System.out.println(targetPath);
+
 
             dogRequestDto.setFileOldName(fileNameWithoutExt);
             dogRequestDto.setFileNewName(newFileName);
@@ -123,7 +129,6 @@ public class JoinController {
             dogRequestDto.setFileExt(fileExt);
             dogRequestDto.setProfileUrl(fileDir + newFileName + fileExt);
         }
-
         sessionData.setStep2Data(dogRequestDto);
         session.setAttribute("joinSession", sessionData);
 
@@ -163,7 +168,8 @@ public class JoinController {
                                 @RequestParam(value = "fileInput2", required = false) MultipartFile file2,
                                 @RequestParam(value = "fileInput3", required = false) MultipartFile file3,
                                 @RequestParam("isMatingAvailable") String isMatingAvailable,
-                                HttpSession session) throws IOException {
+                                HttpSession session,
+                                HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         log.info("여기는 백 컨트롤러 step3 / isMatingAvailable 값: {}", isMatingAvailable);
         JoinSessionDto sessionData = (JoinSessionDto) session.getAttribute("joinSession");
@@ -200,6 +206,52 @@ public class JoinController {
 
         joinService.join(sessionData);
 
+        System.out.println(session.getAttribute("provider"));
+
+        if(session.getAttribute("provider") != null) {
+            UserRequestDto user = sessionData.getStep1Data();
+
+            // 4. JWT 토큰 생성
+            String accessToken = jwtUtil.generateAccessToken(user.getUsername(), user.getRole(), user.getNickname());
+            String refreshToken = jwtUtil.generateRefreshToken(user.getUsername(), user.getRole(), user.getNickname());
+
+            System.out.println("step3 -username : " + user.getUsername());
+            System.out.println("step3 -refreshToken : " + accessToken);
+
+            // Refresh Token을 DB나 캐시에 저장 (예: Redis)
+            tokenService.saveRefreshToken(user.getUsername(), refreshToken);
+
+            // Access Token을 헤더에 추가
+            response.setHeader("Authorization", "Bearer " + accessToken);
+
+            // Refresh Token을 쿠키에 저장 (Secure 및 HttpOnly 설정 권장)
+            Cookie refreshTokenCookie = new Cookie("Refresh-Token", refreshToken);
+            refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setSecure(false);  // HTTPS 환경에서는 true로 설정
+            refreshTokenCookie.setPath("/");
+            refreshTokenCookie.setMaxAge(12 * 60 * 60);  // 12시간 유효
+
+            response.addCookie(refreshTokenCookie);
+
+            log.info("JWT 쿠키 설정 완료: accessToken={}, refreshToken={}", accessToken, refreshToken);
+
+            System.out.println(user);
+            System.out.println(accessToken);
+
+            // 사용자 정보 응답 (API Response)
+            Map<String, String> userInfo = Map.of("accessToken", accessToken,"username", user.getUsername(), "role", "ROLE_USER", "nickname", user.getNickname());
+            ApiResponse<Map<String, String>> apiResponse = new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, userInfo, false);
+
+            // 응답 전송
+            /*ObjectMapper objectMapper = new ObjectMapper();
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(objectMapper.writeValueAsString(apiResponse));*/
+
+            log.info("로그인 성공: username={}, role={}",  user.getRole(), user.getNickname());
+
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "로그인 완료");
+        }
+
         // 회원가입 완료 처리 로직
         log.info("회원가입이 완료되었습니다.");
 
@@ -216,5 +268,64 @@ public class JoinController {
     @GetMapping("/check/{username}")
     public ApiResponse<?> duplicateCheck(@PathVariable String username) {
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, joinService.duplicateCheck(username));
+    }
+
+    //소셜 로그인
+    @PostMapping("/social/step1")
+    public ApiResponse<?> socialStep1(@ModelAttribute UserRequestDto userRequestDto, HttpSession session) throws IOException {
+        //log.info("여기는 백 컨트롤러 step1 / userRequestDto 값: {}", userRequestDto);
+
+        JoinSessionDto sessionData = (JoinSessionDto) session.getAttribute("joinSession");
+
+        // 세션에 데이터가 없는 경우 처리
+        if (sessionData == null || sessionData.getStep1Data() == null) {
+            log.warn("세션에 저장된 1단계 데이터가 없습니다.");
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "저장된 데이터 없음");
+        }
+
+
+        // 1단계 데이터 반환
+        UserRequestDto step1Data = sessionData.getStep1Data();
+
+        System.out.println(step1Data);
+
+        step1Data.setPostcode(userRequestDto.getPostcode());
+        step1Data.setAddress(userRequestDto.getAddress());
+        step1Data.setDetailAddress(userRequestDto.getDetailAddress());
+        sessionData.setStep1Data(step1Data);
+
+        session.setAttribute("provider", step1Data.getProvider());
+
+        
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "1단계 저장 완료");
+    }
+
+    //소셜 로그인
+    @PostMapping("/social/step1/data")
+    public ApiResponse<?> getSocialStep1(@ModelAttribute UserRequestDto userRequestDto, HttpSession session) throws IOException {
+        //log.info("여기는 백 컨트롤러 step1 / userRequestDto 값: {}", userRequestDto);
+
+        JoinSessionDto sessionData = (JoinSessionDto) session.getAttribute("joinSession");
+
+        // 세션에 데이터가 없는 경우 처리
+        if (sessionData == null || sessionData.getStep1Data() == null) {
+            log.warn("세션에 저장된 1단계 데이터가 없습니다.");
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "저장된 데이터 없음");
+        }
+        // 1단계 데이터 반환
+        UserRequestDto step1Data = sessionData.getStep1Data();
+        log.info("세션에서 1단계 데이터 반환: {}", step1Data);
+
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, step1Data);
+    }
+    
+    @PostMapping("/social/provider")
+    public ApiResponse<?> getSocialProvider(@ModelAttribute UserRequestDto userRequestDto, HttpSession session) throws IOException {
+        if(session.getAttribute("provider") != null) {
+            String provider = (String) session.getAttribute("provider");
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, provider);
+        }
+        
+        else return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "소셜 제공자 정보 없음");
     }
 }

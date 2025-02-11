@@ -26,7 +26,12 @@ public class DogController {
     @GetMapping("/dogProfileSelect")
     public String dogProfileSelect(HttpServletRequest request, HttpSession session) {
         String token = TokenUtil.getTokenFromCookies(request);
-        UserDto userDto = TokenUtil.verifyTokenAndSetSession(token, apiRequestService, session);
+
+       // System.out.println("강아지 리스트 토큰 : "+ token);
+
+        UserDto userDto = TokenUtil.verifyTokenAndSetSession(token, apiRequestService, session, request);
+
+        System.out.println("강아지 리스트 요청 : " + userDto);
 
         if (userDto != null) {
             var dogResponse = apiRequestService.fetchData("/api/dog/dogList/" + userDto.getUsername());
