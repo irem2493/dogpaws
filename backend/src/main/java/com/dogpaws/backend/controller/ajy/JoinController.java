@@ -6,12 +6,16 @@ import com.dogpaws.backend.dto.ajy.UserRequestDto;
 import com.dogpaws.backend.dto.common.FileDto;
 import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.service.ajy.JoinService;
-import com.dogpaws.backend.service.common.FileService;
+import com.dogpaws.backend.service.ajy.TokenService;
+import com.dogpaws.backend.utils.JWTUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.token.TokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +42,7 @@ public class JoinController {
     private String fileDir;
 
     private final JoinService joinService;
+    private final JWTUtil jwtUtil;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
 
@@ -163,7 +168,8 @@ public class JoinController {
                                 @RequestParam(value = "fileInput2", required = false) MultipartFile file2,
                                 @RequestParam(value = "fileInput3", required = false) MultipartFile file3,
                                 @RequestParam("isMatingAvailable") String isMatingAvailable,
-                                HttpSession session) throws IOException {
+                                HttpSession session,
+                                HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         log.info("여기는 백 컨트롤러 step3 / isMatingAvailable 값: {}", isMatingAvailable);
         JoinSessionDto sessionData = (JoinSessionDto) session.getAttribute("joinSession");
@@ -200,12 +206,50 @@ public class JoinController {
 
         joinService.join(sessionData);
 
-        if(session.getAttribute("provider") != null){
+        System.out.println(session.getAttribute("provider"));
 
-            // 1단계 데이터 반환
-            UserRequestDto step1Data = sessionData.getStep1Data();
-            step1Data.setRefreshToken();
-            //String accessToken =
+        if(session.getAttribute("provider") != null) {
+            UserRequestDto user = sessionData.getStep1Data();
+
+            // 4. JWT 토큰 생성
+            String accessToken = jwtUtil.generateAccessToken(user.getUsername(), user.getRole(), user.getNickname());
+            String refreshToken = jwtUtil.generateRefreshToken(user.getUsername(), user.getRole(), user.getNickname());
+
+            System.out.println("step3 -username : " + user.getUsername());
+            System.out.println("step3 -refreshToken : " + accessToken);
+
+            // Refresh Token을 DB나 캐시에 저장 (예: Redis)
+            tokenService.saveRefreshToken(user.getUsername(), refreshToken);
+
+            // Access Token을 헤더에 추가
+            response.setHeader("Authorization", "Bearer " + accessToken);
+
+            // Refresh Token을 쿠키에 저장 (Secure 및 HttpOnly 설정 권장)
+            Cookie refreshTokenCookie = new Cookie("Refresh-Token", refreshToken);
+            refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setSecure(false);  // HTTPS 환경에서는 true로 설정
+            refreshTokenCookie.setPath("/");
+            refreshTokenCookie.setMaxAge(12 * 60 * 60);  // 12시간 유효
+
+            response.addCookie(refreshTokenCookie);
+
+            log.info("JWT 쿠키 설정 완료: accessToken={}, refreshToken={}", accessToken, refreshToken);
+
+            System.out.println(user);
+            System.out.println(accessToken);
+
+            // 사용자 정보 응답 (API Response)
+            Map<String, String> userInfo = Map.of("accessToken", accessToken,"username", user.getUsername(), "role", "ROLE_USER", "nickname", user.getNickname());
+            ApiResponse<Map<String, String>> apiResponse = new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, userInfo, false);
+
+            // 응답 전송
+            /*ObjectMapper objectMapper = new ObjectMapper();
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(objectMapper.writeValueAsString(apiResponse));*/
+
+            log.info("로그인 성공: username={}, role={}",  user.getRole(), user.getNickname());
+
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "로그인 완료");
         }
 
         // 회원가입 완료 처리 로직

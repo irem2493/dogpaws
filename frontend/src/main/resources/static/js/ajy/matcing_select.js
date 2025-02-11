@@ -59,12 +59,26 @@ document.getElementById('step3Form').addEventListener('submit', function(event) 
         .then(data => {
             console.log('Response Data:', data);
 
-            if (data.status === 'SUCCESS') {
+            if (data.body?.body === '회원가입 완료') {
                 alert("회원가입 완료");
                 location.href = '/';
                 // 세션 무효화 API 호출
                 return api.post('/api/join/success-join');
-            } else {
+            } else if(data.body?.body === '로그인 완료'){
+
+                console.log(data.body.access_token);
+                console.log(data.body.username);
+                console.log(data.body.role);
+                console.log(data.body.nickname);
+
+                sessionStorage.setItem('accessToken', data.body.access_token);
+                sessionStorage.setItem('username', data.body.username);
+                sessionStorage.setItem('role', data.body.role);
+                sessionStorage.setItem('nickname', data.body.nickname);
+                alert('로그인 성공!');
+
+                location.href='/dogProfileSelect';
+            }else {
                 throw new Error("회원가입 실패");
             }
         })

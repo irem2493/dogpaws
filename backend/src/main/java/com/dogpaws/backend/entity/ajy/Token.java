@@ -17,7 +17,8 @@ public class Token {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name="token_id", nullable = false)
+    private Integer tokenId;
 
     @Column(nullable = false, unique = true)
     private String username;  // 사용자 아이디
