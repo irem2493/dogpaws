@@ -83,9 +83,12 @@ public class TokenCheck {
     @PostMapping("/auth/logout")
     public ApiResponse<?> logout(HttpServletRequest request) {
         String refreshToken = extractRefreshTokenFromCookie(request);
+        String username = jwtUtil.getUsername(refreshToken);
+
+        System.out.println("logout username : " + username);
 
         if (refreshToken != null) {
-            tokenService.deleteRefreshToken(refreshToken);
+            tokenService.deleteRefreshToken(username);
             log.info("로그아웃 성공: 리프레쉬 토큰 삭제 완료");
         }
 
