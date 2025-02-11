@@ -304,6 +304,12 @@
     gap: 15px;
 }
 
+.join-container #socialStep1Form{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
 .join-container /* 중복 확인 완료 후 버튼 비활성화 스타일 */
 .disabled {
     background-color: #ccc; /* 비활성화된 회색 배경 */
