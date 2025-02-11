@@ -4,6 +4,7 @@ import com.dogpaws.backend.entity.ajy.Token;
 import com.dogpaws.backend.repository.jpa.ajy.TokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -32,6 +33,7 @@ public class TokenService {
                 .orElse(false);
     }
 
+    @Transactional
     // Refresh Token 삭제 (로그아웃 시)
     public void deleteRefreshToken(String username) {
         tokenRepository.deleteByUsername(username);
