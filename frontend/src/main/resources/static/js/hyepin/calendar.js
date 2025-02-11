@@ -1,9 +1,14 @@
 let currentEventId = null;  // 수정할 이벤트의 ID를 저장할 변수
  // 서버에서 전달된 데이터 확인
 
+//username 가져오기
+const sessionUsername = document.getElementById("sessionUsername");
+//dogId 가져오기
+const sessionDogId = document.getElementById("sessionDogId");
+
 /* 캘린더 리스트 불러오기 */
 let calendarList = [];
-let username = document.getElementById("username").value;
+const username = sessionUsername.value;
 window.onload = getCalendarList;
 function getCalendarList() {
     api.get('/api/calendar?username='+username)
@@ -291,7 +296,8 @@ function resetForm() {
 //일정 등록
 function calendarSubmit(button) {
     const formData = new FormData(document.getElementById('addCalendarForm'));
-    formData.append("username", "안혜빈");
+    const username = sessionUsername.value;
+    formData.append("username", username);
     //폼데이터 보내기
     api.post('/api/calendar', formData, {
     })
@@ -313,13 +319,14 @@ function calendarSubmit(button) {
 //일정 수정
 function calendarUpdate(){
     const formData = new FormData(document.getElementById('addCalendarForm'));
+    const username = sessionUsername.value;
     let scheduleType = document.getElementById("scheduleType").value;
     let sharedYn = document.getElementById("sharedYn").value;
     let sharedId = document.getElementById("sharedId").value;
     formData.append("scheduleType", scheduleType);
     formData.append("sharedYn", sharedYn);
     formData.append("sharedId", sharedId);
-    formData.append("username", "안혜빈");
+    formData.append("username", username);
     //폼데이터 보내기
     api.put('/api/calendar', formData, {
     })
@@ -341,13 +348,14 @@ function calendarUpdate(){
 //일정 삭제
 function calendarDelete(){
     const formData = new FormData(document.getElementById('addCalendarForm'));
+    const username = sessionUsername.value;
     let scheduleType = document.getElementById("scheduleType").value;
     let sharedYn = document.getElementById("sharedYn").value;
     let sharedId = document.getElementById("sharedId").value;
     formData.append("scheduleType", scheduleType);
     formData.append("sharedYn", sharedYn);
     formData.append("sharedId", sharedId);
-    formData.append("username", "안혜빈");
+    formData.append("username", username);
     //폼데이터 보내기
     api.post('/api/calendar/delete', formData, {
     })
@@ -382,7 +390,7 @@ function calendarShare(){
     alert("일정 공유");
     // 선택한 채팅방에 공유 api
     // 사용자 이름, 채팅방 번호(이거 개인톡, 그룹톡 안나눠도 번호로 나눠지겠지?), 일정 번호
-    var username = "안혜빈";
+    const username = sessionUsername.value;
     var calendarId = parseInt(document.querySelector('input[name="calendarId"]').value, 10);  // 문자열을 Integer로 변환
     var roomId = 1;
     /*

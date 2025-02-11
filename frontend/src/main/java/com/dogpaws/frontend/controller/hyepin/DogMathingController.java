@@ -28,7 +28,7 @@ public class DogMathingController {
                 "matchType", "F"
         );
 
-        var filterResponse = apiService.fetchData("/api/matching", matchingFilterMap, true);
+        var filterResponse = apiService.fetchData("/api/matching/filter", matchingFilterMap, true);
         var breedResponse = apiService.fetchData("/api/gubn/breed_code");
         var personalityResponse = apiService.fetchData("/api/gubn/dog_personal_code");
         var playResponse = apiService.fetchData("/api/gubn/dog_play_code");
