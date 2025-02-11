@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tbl_users")
+@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
