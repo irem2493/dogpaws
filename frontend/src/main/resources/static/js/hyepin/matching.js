@@ -1,3 +1,8 @@
+//username 가져오기
+const sessionUsername = document.getElementById("sessionUsername");
+//dogId 가져오기
+const sessionDogId = document.getElementById("sessionDogId");
+
 // 첫 번째 드롭다운
 let searchInput1 = document.getElementById("searchInput");
 let dropdown1 = document.getElementById("dropdown");
@@ -51,7 +56,7 @@ function filterToggle(element){
 
             const dogId = 1;
             const matchType = 'F';
-            api.get('/api/matching?dogId='+dogId+'&matchType='+matchType)
+            api.get('/api/matching/filter?dogId='+dogId+'&matchType='+matchType)
                 .then(data => {
                     filter = data.body;  // body 속성의 배열을 할당
                     console.log('filter loaded:', filter);  // 배열 확인
@@ -242,13 +247,218 @@ function filterReset(){
 
 }
 
+//메시지 폼 열기
+function messageForm(element){
+    const target = element.dataset.target;
+    if(target === "O"){
+        //개인톡 실행
+
+    }else if(target === "G"){
+        //그룹채팅 리스트 출력
+
+    }
+}
+
+//신고 폼 열기
+function declarationForm(){
+
+}
+
+
+let matchList = [{ dog_id: '', profile_url: null, dog_name: '', breed_name: '', gender: '', is_neutered: '', address: '', matchedCriteriaList: null}];  // 빈 객체로 초기화;  // 데이터를 저장할 배열
+let startIndex = 0;   // 현재 시작 인덱스
+
+const dogId = 1;
+
+// 컨트롤러에서 matchList 데이터 가져오기
+api.get('/api/matching?dogId=' + dogId)
+    .then(data => {
+        matchList = [...matchList, ...data.body];
+        console.log('match loaded:', matchList);
+        updateCards();
+    })
+    .catch(error => {
+        console.error(error);
+        alert("오류가 발생했습니다.");
+    });
+
+function updateCards() {
+    const container = document.getElementById('cardContainer');
+    container.style.padding = "0px";
+    container.innerHTML = '';
+
+    matchList.slice(startIndex, startIndex + 3).forEach((dog, index) => {
+        const card = document.createElement('div');
+
+        let dogId = dog.dog_id;
+        let dogLiked = dog.liked;
+        console.log("dogLiked" + dogLiked);
+
+        // 가운데 카드(index === 1)만 다른 클래스 적용
+        if (index === 1) {
+            card.classList.add('matching-card');
+            card.classList.add('col-6');
+            card.classList.add('mx-auto');
+            card.style.padding = "0px";
+        } else {
+            card.classList.add('matching-card-side');
+            card.classList.add('col-2');
+            card.style.margin = "80px";
+            card.style.padding = "0px";
+        }
+
+        const iconHtml = dog.matched_criteria_list && dog.matched_criteria_list.length > 0 ?
+            dog.matched_criteria_list.map(criteria => {
+                // 각 항목에 맞는 아이콘을 조건에 따라 출력
+                switch (criteria) {
+                    case '품종':
+                        return '<img src="/img/icon/dog-filter/dog.svg" alt="dog-icon" title="견종이 일치해요!">';
+                    case '체중':
+                        return '<img src="/img/icon/dog-filter/weight.svg" alt="weight-icon" style="max-width: 18px; height: auto;" title="선호하는 체중대와 맞아요!">';
+                    case '성격유형':
+                        return '<img src="/img/icon/dog-filter/foot.svg" alt="foot-icon" title="견BTI가 같아요!">';
+                    case '성격':
+                        return '<img src="/img/icon/dog-filter/bone.svg" alt="foot-icon" title="성격 유형이 잘 맞아요!">';
+                    case '놀이':
+                        return '<img src="/img/icon/dog-filter/dribbble-ball.svg" alt="dribbble-ball-icon" title="좋아하는 놀이 스타일이 같아요!">';
+                    case '산책시간':
+                        return '<img src="/img/icon/dog-filter/clock.svg" alt="clock-icon" title="산책 시간이 잘 맞아요!">';
+                    case '산책요일':
+                        return '<img src="/img/icon/dog-filter/calendar.svg" alt="foot-icon" title="산책 요일이 잘 맞아요!">';
+                    default:
+                        return '';  // 조건에 맞는 값이 없으면 빈 문자열
+                }
+            }).join('') : '';
+
+        card.innerHTML = `
+            
+            <div class="card-top" style="height: 60%; position: relative; z-index: 9999">
+                <img class="card-top-img" src="${dog.profile_url != null ? dog.profile_url : '/img/로고.jpg'}"}" alt="${dog.dog_name}" style="width: 100%; height: 100%; object-fit: cover;" />
+                <div class="card-top-icon" style="
+                    position: absolute; 
+                    ${index === 1 ? 'top: 8px;' : 'top: 5px;'} 
+                    ${index === 1 ? 'right: 8px;' : 'right: 5px;'} 
+                    min-width: 5%; padding: 10px 5px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.6);
+                    display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center;">
+                    ${iconHtml}
+                </div>
+            </div>
+            ${index === 1 ?
+            '<div class="card-center" style="font-size: 20px; height: 28%;">' :
+            '<div class="card-center" style="font-size: 14px; height: 28%;">'
+        }
+                <div style="${index === 1 ? 'line-height: 1.8;' : 'line-height: 1.5;'}">${dog.dog_name} ${dog.breed_name !== '' ? `| ${dog.breed_name}` : ''}</div>
+                <div style="${index === 1 ? 'line-height: 1.8;' : 'line-height: 1.2;'}">${dog.gender === "M" ? '남' : dog.gender === "" ? '' : '여'} ${dog.is_neutered === "Y" ? '(중성화 O)' : dog.is_neutered === "" ? "" : '(중성화 X)'}</div>
+                <div style="line-height: 1.8; color: #5e5e5e; font-size: 0.8em; text-align: center; ${index === 1 ? 'width: 100%' : 'width: 80%'}">${dog.address != null ? dog.address : '지정된 산책로가 없습니다.'}</div>
+            </div>
+            
+            ${index === 1 ?
+            '<div class="card-bottom center-card" style="height: 12%;">' :
+            '<div class="card-bottom" style="height: 12%; display: flex; justify-content: space-around;">'
+        }
+               <div class="card-bottom-items">
+            ${index === 1 ?
+            `<img id="likeIcon" src="${dogLiked ? '/img/icon/like-push.svg' : '/img/icon/like.svg'}" alt="like-icon" data-target="${dogId}" onclick="likeToggle(this)">` :
+            `<img src="${dogLiked ? '/img/icon/like-push.svg' : '/img/icon/like.svg'}" alt="like-icon">`
+        }
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/messege.svg" alt="messege-icon" data-target="O" onclick="messageForm(this)">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/wechat-logo.svg" alt="wechat-logo-icon" data-target="G" onclick="messageForm(this)">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/alarm-warning-line.svg" alt="alarm-warning-line-icon" onclick="declarationForm()">
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+document.getElementById("next").addEventListener("click", () => {
+    if (startIndex + 1 < matchList.length) {
+        startIndex += 1;
+        updateCards();
+    }
+});
+
+document.getElementById("prev").addEventListener("click", () => {
+    if (startIndex - 1 >= 0) {
+        startIndex -= 1;
+        updateCards();
+    }
+});
+
+//스와이프 감지
+let touchStartX = 0; // 터치 또는 마우스 시작 X 좌표
+let touchEndX = 0;   // 터치 또는 마우스 끝 X 좌표
+let isSwiping = false; // 스와이프가 진행 중인지 체크하는 플래그
+const swipeThreshold = 50; // 최소 스와이프 거리 (50px 이상만 넘어가게)
+
+const cardContainer = document.getElementById("cardContainer");
+
+// 터치 시작 (모바일)
+cardContainer.addEventListener("touchstart", (event) => {
+    touchStartX = event.touches[0].clientX; // 터치 시작 X 좌표
+    isSwiping = true;  // 스와이프 시작
+});
+
+// 터치 끝 (모바일)
+cardContainer.addEventListener("touchend", (event) => {
+    touchEndX = event.changedTouches[0].clientX; // 터치 끝 X 좌표
+    handleSwipe();
+    isSwiping = false; // 스와이프 종료
+});
+
+// 마우스 다운 (PC)
+cardContainer.addEventListener("mousedown", (event) => {
+    touchStartX = event.clientX; // 마우스 시작 X 좌표
+    isSwiping = true;  // 스와이프 시작
+});
+
+// 마우스 업 (PC)
+cardContainer.addEventListener("mouseup", (event) => {
+    touchEndX = event.clientX; // 마우스 끝 X 좌표
+    handleSwipe();
+    isSwiping = false; // 스와이프 종료
+});
+
+// 스와이프 처리 함수
+function handleSwipe() {
+    const swipeDistance = touchEndX - touchStartX; // 스와이프 거리 계산
+    console.log('Swipe distance:', swipeDistance); // 디버깅용
+
+    // 스와이프가 threshold 이상일 경우에만 카드 넘어가도록
+    if (isSwiping && Math.abs(swipeDistance) > swipeThreshold) {
+        if (swipeDistance > 0) {
+            // 오른쪽 스와이프 (이전 카드로 넘어가기)
+            console.log('Swipe right: Previous card');
+            if (startIndex - 1 >= 0) {
+                startIndex -= 1;
+                updateCards();
+            }
+        } else {
+            // 왼쪽 스와이프 (다음 카드로 넘어가기)
+            console.log('Swipe left: Next card');
+            if (startIndex + 1 < matchList.length) {
+                startIndex += 1;
+                updateCards();
+            }
+        }
+        cardContainer.style.userSelect = 'none'; // 글자 드래그 방지
+    }
+}
+
 //좋아요 토글
-function likeToggle() {
+function likeToggle(element) {
     let icon = document.getElementById("likeIcon");
     let isLiked = icon.src.includes("like-push.svg");
 
-    const username = "안혜빈";
-    const dogId = 1;
+    const username = sessionUsername.value;
+    const dogId = element.dataset.target;
+    console.log("dogId:" + dogId);
 
     //숫자와 char 형식은 변환이 필요하기 때문에 폼데이터로 보내겠습니다.
     const LikeDto = {
@@ -267,6 +477,13 @@ function likeToggle() {
         .then(res => {
             if (res.body.body == '성공') {  // res.body.body 로 받아야합니다..
                 icon.src = isLiked ? "/img/icon/like.svg" : "/img/icon/like-push.svg";
+                matchList.forEach(dog => {
+                    if (dog.dog_id === parseInt(dogId)) {
+                        console.log("dog.dog_id: " + dog.dog_id + "dogId: " + dogId + "찾았다 dogId")
+                        dog.liked = !dog.liked;
+                    }
+                });
+                updateCards();
             } else {
                 alert("좋아요 실패!");
             }
@@ -275,83 +492,4 @@ function likeToggle() {
             console.error("오류:", error);
             alert("저장 오류");
         });
-
-
-
-    //좋아요 토글 api 연결하기
 }
-
-//메시지 폼 열기
-function messageForm(element){
-    const target = element.dataset.target;
-    if(target === "O"){
-        //개인톡 실행
-
-    }else if(target === "G"){
-        //그룹채팅 리스트 출력
-
-    }
-}
-
-//신고 폼 열기
-function declarationForm(){
-
-}
-
-//카드 이동
-document.addEventListener('DOMContentLoaded', function () {
-    let isSwiping = false;
-    let startX = 0;
-    let container = document.querySelector('.matching-container');
-    let cardSides = document.querySelectorAll('.matching-card-side'); // 카드들
-    let cards = document.querySelectorAll('.matching-card'); // 중간 카드들
-
-    // 카드의 총 갯수
-    const totalCards = cardSides.length;
-
-    // 마우스 다운 시 스와이프 시작
-    container.addEventListener('mousedown', function (e) {
-        isSwiping = true;
-        startX = e.pageX;  // 마우스 시작 위치 저장
-        e.preventDefault(); // 기본 이벤트 방지
-    });
-
-    // 마우스 이동 시 스와이프 처리
-    container.addEventListener('mousemove', function (e) {
-        if (isSwiping) {
-            let diff = startX - e.pageX;  // 마우스 이동 거리 계산
-
-            if (diff > 50) {  // 오른쪽 스와이프 (카드 순서가 2 3 4로 변경)
-                moveCards('right');
-                isSwiping = false;  // 스와이프 완료 후 리셋
-            } else if (diff < -50) {  // 왼쪽 스와이프 (카드 순서가 1 2 3으로 변경)
-                moveCards('left');
-                isSwiping = false;  // 스와이프 완료 후 리셋
-            }
-        }
-    });
-
-    // 마우스 뗄 때 스와이프 종료
-    container.addEventListener('mouseup', function () {
-        isSwiping = false;
-    });
-
-    // 카드 이동 함수
-    function moveCards(direction) {
-        if (direction === 'right') {
-            // 1번째 카드가 마지막으로 가는 방식
-            let firstSide = cardSides[0]; // 첫 번째 카드
-            let firstCard = cards[0]; // 첫 번째 중간 카드
-
-            container.appendChild(firstSide); // 첫 번째 카드 사이드 맨 뒤로 보냄
-            container.appendChild(firstCard); // 첫 번째 카드 중간 맨 뒤로 보냄
-        } else if (direction === 'left') {
-            // 마지막 카드가 첫 번째로 가는 방식
-            let lastSide = cardSides[cardSides.length - 1]; // 마지막 카드
-            let lastCard = cards[cards.length - 1]; // 마지막 중간 카드
-
-            container.insertBefore(lastSide, cardSides[0]); // 마지막 카드 사이드를 맨 앞에 보냄
-            container.insertBefore(lastCard, cards[0]); // 마지막 중간 카드를 맨 앞에 보냄
-        }
-    }
-});
