@@ -16,5 +16,5 @@ public interface DogMatchDao {
     public int deleteFilter(@Param("dogId") int dogId, @Param("matchType") char matchType);
     
     //매칭 (친구)
-    public List<MatchDto> getDogFriendMatchList(@Param("dogId") int dogId);
+    public List<MatchDto> getDogFriendMatchList(@Param("dogId") int dogId, @Param("username") String username);
 }
