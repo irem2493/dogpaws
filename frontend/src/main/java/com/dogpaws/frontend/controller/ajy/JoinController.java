@@ -40,8 +40,8 @@ public class JoinController {
         return "/ajy/matching_select";
     }
 
-    @GetMapping("/matching_document")
-    public String matching_document() {
-        return "/ajy/matching_document";
+    @GetMapping("/socialJoin")
+    public String socialJoin() {
+        return "/ajy/join_social_address";
     }
 }

@@ -11,15 +11,19 @@
 <body layout:fragment="content">
 <div class="container-box">
     <input type="hidden" id="username" th:value="${username}">
+    <input type="hidden" id="nickname" th:value="${nickname}">
+    <input type="hidden" id="dogId" th:value="${dogId}">
+<!--    <input type="hidden" id="dogName" th:value="${dogName}">-->
+    <input type="hidden" id="dogProfile" th:value="${dogProfile}">
     <!-- 1번 페이지 : 채팅방 목록 -->
     <section class="page active" id="page1">
         <div class="list-background">
             <div class="category">
                 <div class="one-on-one">
-                    <span class="pointer-text">일반</span>
+                    <span class="pointer-text" id="match">일반</span>
                 </div>
                 <div class="group">
-                    <span class="pointer-text">그룹</span>
+                    <span class="pointer-text" id="group">그룹</span>
                 </div>
             </div>
             <div class="chat-list">
@@ -41,23 +45,7 @@
     <!-- 2번 페이지 : 채팅 -->
     <main class="page" id="page2">
         <div class="chat-main">
-<!--            <div class="chat-message left">-->
-<!--                <img src="/img/견BTI임시프로필.jpg" width="40" class="profile-img-2" alt="프로필">-->
-<!--                <div class="chat-not-profile">-->
-<!--                    <div class="chat-name">경림냥</div>-->
-<!--                    <div class="message-content">-->
-<!--                        <div class="message-text">내일 모임 같이 가실??</div>-->
-<!--                        <div class="message-time">오전 10:52</div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
 
-<!--            <div class="chat-message right">-->
-<!--                <div class="message-content">-->
-<!--                    <div class="message-time">오전 10:54</div>-->
-<!--                    <div class="message-text">ㅎㅎㅎ 몇시?</div>-->
-<!--                </div>-->
-<!--            </div>-->
         </div>
         <div class="input-box">
             <input type="text" class="chat-input" placeholder="채팅을 입력하세요">
@@ -65,7 +53,7 @@
                 <img src="/img/icon/add-calender.svg" id="add-calender-icon" width="16" style="cursor: pointer" alt="">
                 <img src="/img/icon/file-icon.svg" id="file-icon" width="16" style="cursor: pointer" alt="">
             </div>
-            <img src="/img/icon/button/chat-btn.svg" id="goChat-icon" onclick="handleClick()" style="cursor: pointer" alt="">
+            <img src="/img/icon/button/chat-btn.svg" id="goChat-icon" onclick="goChat()" style="cursor: pointer" alt="">
         </div>
     </main>
 
@@ -79,15 +67,7 @@
                 <div class="detail-title">경림냥</div>
                 <button class="star-btn">멍바닥 주기</button>
             </div>
-            <!--            <div class="participant">-->
-            <!--                <div class="participant-title">-->
-            <!--                    <div class="text">참여자</div>-->
-            <!--                    <div class="plus">+</div>-->
-            <!--                </div>-->
-            <!--                <div class="participant-list">-->
 
-            <!--                </div>-->
-            <!--            </div>-->
             <div class="media">
                 <div class="media-title">
                     <div class="text">미디어</div>

@@ -23,7 +23,7 @@ public class User {
     @Column(name = "nickname", length = 255, nullable = false)
     private String nickname; // 사용자 닉네임
 
-    @Column(name = "password", length = 255, nullable = false)
+    @Column(name = "password", length = 255, nullable = true)
     private String password; // 비밀번호
 
     @Column(name = "email", length = 255, nullable = false, unique = true)

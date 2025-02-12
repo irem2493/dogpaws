@@ -66,12 +66,19 @@
 .chat-list{
     display: flex;
     flex-direction: column;
+    height: 635px; /* 원하는 높이 설정 */
+    overflow-y: auto; /* 스크롤 활성화 */
 }
 
 .chat-one{
-    margin: 10px 22px;
+    padding: 10px 22px;
     width: 100%;             /* 부모 요소에 너비 설정 */
     display: flex;
+    cursor: pointer;
+}
+
+.chat-one:hover{
+    background-color: #FFF4F1;
 }
 
 .pre-chat-content{
@@ -94,15 +101,17 @@
 .chat-main {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding: 10px;
+    /*gap: 15px;*/
+    margin: 20px 10px;
+    height: 640px; /* 원하는 높이 설정 */
+    overflow-y: auto; /* 스크롤 활성화 */
 }
 
 .chat-message {
     display: flex;
     align-items: flex-start;
-    max-width: 70%;
-    margin: 20px 15px 0 20px;
+    max-width: 100%;
+    margin: 10px 15px 0 20px;
 }
 
 .left {

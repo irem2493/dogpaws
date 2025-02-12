@@ -28,4 +28,6 @@ public class UserRequestDto {
     private String  gender; // 성별 ('M' = 남성, 'F' = 여성)
 
     private String role;
+
+
 }
