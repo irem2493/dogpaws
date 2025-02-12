@@ -14,7 +14,10 @@ public interface CalendarDao {
     public int insertCalendar(CalendarDto calendarDto);
     public int updateCalendar(CalendarDto calendarDto);
     public int deleteCalendar(CalendarDto calendarDto);
+
+    public int shareCaleandar(CalendarDto calendarDto);
+
+    public int insertShareCalendar(ShareDto shareDto);
     public int updateShareCalendar(CalendarDto calendarDto);
     public int deleteShareCalendar(CalendarDto calendarDto);
-    public int insertSharedCalendar(ShareDto shareDto);
 }

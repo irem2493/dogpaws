@@ -62,7 +62,7 @@ function getCalendarList() {
         });
 }
 
-//document.addEventListener('DOMContentLoaded', function() {
+//캘린더 표시
 function renderCalendar(events){
 
     var calendarEl = document.getElementById('calendar');

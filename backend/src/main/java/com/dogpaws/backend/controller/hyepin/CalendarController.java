@@ -64,20 +64,18 @@ public class CalendarController {
 
     //일정 공유
     @PostMapping("share")
-    public ApiResponse<String> shareCalendar(@ModelAttribute ShareDto shareDto) throws IOException {
+    public ApiResponse<String> shareCalendar(@ModelAttribute CalendarDto calendarDto) throws IOException {
         //채팅방으로 연결 -> 채팅방에 일정이 공유됨.
         //상대방 알림 테이블에 등록(알림유형 - C / 구분코드 - SH(calendar_code)
-        log.info("shareCalendar / shareDto 값: {}", shareDto);
-        System.out.println("shareDto: " + shareDto);
-        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "일정 공유 성공");
-        /*
-        int result = calendarService.shareCalendar(shareDto);
+        log.info("shareCalendar / calendarDto 값: {}", calendarDto);
+        System.out.println("calendarDto: " + calendarDto);
+        int result = calendarService.shareCalendar(calendarDto);
         if (result == 1) {
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "일정 공유 성공");
         } else {
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "일정 공유 실패");
         }
-         */
+
     }
 
     //일정 공유받기
