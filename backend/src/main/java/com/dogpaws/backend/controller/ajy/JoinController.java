@@ -210,10 +210,11 @@ public class JoinController {
 
         if(session.getAttribute("provider") != null) {
             UserRequestDto user = sessionData.getStep1Data();
+            user.setProvider(session.getAttribute("provider").toString());
 
             // 4. JWT 토큰 생성
-            String accessToken = jwtUtil.generateAccessToken(user.getUsername(), user.getRole(), user.getNickname());
-            String refreshToken = jwtUtil.generateRefreshToken(user.getUsername(), user.getRole(), user.getNickname());
+            String accessToken = jwtUtil.generateAccessToken(user.getUsername(), "ROLE_USER", user.getNickname());
+            String refreshToken = jwtUtil.generateRefreshToken(user.getUsername(), "ROLE_USER", user.getNickname());
 
             System.out.println("step3 -username : " + user.getUsername());
             System.out.println("step3 -refreshToken : " + accessToken);
