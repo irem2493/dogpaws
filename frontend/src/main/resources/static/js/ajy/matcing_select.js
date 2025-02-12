@@ -1,4 +1,26 @@
+let privatyCheck = false;
 document.addEventListener("DOMContentLoaded", function () {
+
+    const agreeCheckbox = document.getElementById("agreePrivacy");
+    const joinButton = document.getElementById("joinButton");
+    const form = document.getElementById("step3Form");
+
+    // 초기 버튼 비활성화 (회색)
+    joinButton.disabled = true;
+    joinButton.style.backgroundColor = "#ccc";
+
+    // 체크박스 변경 감지
+    agreeCheckbox.addEventListener("change", function () {
+        if (this.checked) {
+            joinButton.disabled = false;
+            joinButton.style.backgroundColor = "#ff7f00"; // 활성화 색 (예제: 주황)
+            privatyCheck = true;
+        } else {
+            joinButton.disabled = true;
+            joinButton.style.backgroundColor = "#ccc"; // 비활성화 색
+            privatyCheck = false;
+        }
+    });
 
     // "이전" 버튼 클릭 시 페이지 이동
     document.querySelector("#preButton").addEventListener("click", function () {
@@ -42,6 +64,8 @@ document.getElementById('step3Form').addEventListener('submit', function(event) 
 
     const formData = new FormData();
 
+
+
     // 파일 선택 상태 확인 및 폼데이터에 추가
     addFileToFormData('fileInput1', 'fileName1', formData);
     addFileToFormData('fileInput2', 'fileName2', formData);
@@ -54,6 +78,9 @@ document.getElementById('step3Form').addEventListener('submit', function(event) 
     for (let pair of formData.entries()) {
         console.log(`${pair[0]}: ${pair[1]}`);
     }
+
+    if(privatyCheck){
+
 
     api.post('/api/join/step3', formData)
         .then(data => {
@@ -86,6 +113,7 @@ document.getElementById('step3Form').addEventListener('submit', function(event) 
             console.error("오류:", error);
             alert("회원가입 중 오류가 발생했습니다.");
         })
+    }
 });
 
 // 파일을 폼데이터에 추가하는 함수

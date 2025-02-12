@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
             addProfileItem.classList.add('add-profile');
             addProfileItem.innerHTML = '+';
             addProfileItem.addEventListener('click', function () {
-                alert('프로필 추가 기능 구현 필요!');
+                location.href="/dogProfileRegister";
             });
 
             profileContainer.appendChild(addProfileItem);
