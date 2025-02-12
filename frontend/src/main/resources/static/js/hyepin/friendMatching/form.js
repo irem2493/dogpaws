@@ -24,6 +24,12 @@ const walkDayList = [];
 
 // 선택된 옵션 추가 함수
 function addSelectedOption(checkbox, container, selectedOptions) {
+
+    // selectedOptions가 undefined라면 빈 배열로 초기화
+    if (!Array.isArray(selectedOptions)) {
+        selectedOptions = [];
+    }
+
     const value = checkbox.value;
     const name = checkbox.getAttribute("data-name");
 

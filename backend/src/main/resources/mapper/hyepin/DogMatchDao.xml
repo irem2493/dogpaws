@@ -4,6 +4,61 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dogpaws.backend.repository.dao.hyepin.DogMatchDao">
 
+    <insert id="insertFilter">
+        -- 강아지 필터 등록
+        INSERT INTO tbl_dog_match (
+            dog_id, is_mix, breed_gbn_cd, weight, weight_category,
+            dog_type_code_gbn_cd,
+            dog_personal_gbn_cd_1, dog_personal_gbn_cd_2, dog_personal_gbn_cd_3,
+            dog_personal_gbn_cd_4, dog_personal_gbn_cd_5,
+            dog_play_gbn_cd_1, dog_play_gbn_cd_2, dog_play_gbn_cd_3,
+            dog_play_gbn_cd_4, dog_play_gbn_cd_5,
+            walk_start_time, walk_end_time, walk_days,
+            blood_test_certified, vaccination_certified, health_record_certified, match_type
+        ) VALUES (
+            #{dogId}, #{isMix},
+            #{breedGbnCd}, #{weight}, #{weightCategory},
+            #{dogTypeCodeGbnCd},
+
+            <!-- dog_personal_gbn_cd 리스트를 고정된 컬럼에 맞춰 삽입 -->
+            <foreach collection="dogPersonalGbnCdList" item="item" index="index" open="" close="" separator=",">
+                #{item}
+            </foreach>,
+
+            <!-- dog_play_gbn_cd 리스트를 고정된 컬럼에 맞춰 삽입 -->
+            <foreach collection="dogPlayGbnCdList" item="item" index="index" open="" close="" separator=",">
+                #{item}
+            </foreach>,
+
+            #{walkStartTime}, #{walkEndTime}, #{walkDays},
+            #{bloodTestCertified}, #{vaccinationCertified}, #{healthRecordCertified}, #{matchType})
+    </insert>
+
+
+    <update id="updateFilter">
+        -- 강아지 필터 업뎃
+        UPDATE tbl_dog_match
+        SET
+            is_mix =  #{isMix},
+            breed_gbn_cd = #{breedGbnCd}, weight = #{weight}, weight_category = #{weightCategory},
+            dog_type_code_gbn_cd = #{dogTypeCodeGbnCd},
+            dog_personal_gbn_cd_1 = #{dogPersonalGbnCd1}, dog_personal_gbn_cd_2 = #{dogPersonalGbnCd2},
+            dog_personal_gbn_cd_3 = #{dogPersonalGbnCd3}, dog_personal_gbn_cd_4 = #{dogPersonalGbnCd4},
+            dog_personal_gbn_cd_5 = #{dogPersonalGbnCd5}, dog_play_gbn_cd_1 = #{dogPlayGbnCd1},
+            dog_play_gbn_cd_2 = #{dogPlayGbnCd2}, dog_play_gbn_cd_3 = #{dogPlayGbnCd3},
+            dog_play_gbn_cd_4 = #{dogPlayGbnCd4}, dog_play_gbn_cd_5 = #{dogPlayGbnCd5},
+            walk_start_time = #{walkStartTime}, walk_end_time = #{walkEndTime}, walk_days = #{walkDays},
+            blood_test_certified = #{bloodTestCertified}, vaccination_certified = #{vaccinationCertified},
+            health_record_certified = #{healthRecordCertified}
+        WHERE dog_id = #{dogId} AND match_type = #{matchType}
+    </update>
+
+    <delete id="deleteFilter">
+        -- 강아지 필터 삭제
+        DELETE FROM tbl_dog_match
+        WHERE dog_id = #{dogId} AND match_type = #{matchType}
+    </delete>
+
     <select id="getFilterBydogIdAndMatchType" resultType="com.dogpaws.backend.dto.hyepin.FilterDto">
         -- 강아지 필터 정보
         SELECT
@@ -70,12 +125,6 @@
         WHERE dm.dog_id = #{dogId} AND dm.match_type = #{matchType}
         GROUP BY dm.dog_id;
     </select>
-
-    <delete id="deleteFilter">
-        -- 강아지 필터 삭제
-        DELETE FROM tbl_dog_match
-        WHERE dog_id = #{dogId} AND match_type = #{matchType}
-    </delete>
 
     <select id="getDogFriendMatchList" resultType="com.dogpaws.backend.dto.hyepin.MatchDto">
         -- 강아지 매칭 리스트
