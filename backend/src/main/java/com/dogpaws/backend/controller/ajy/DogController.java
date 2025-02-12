@@ -26,6 +26,8 @@ public class DogController {
         dogRegisterRequestDto.setUsername(username);
 
         System.out.println(dogRegisterRequestDto);
+        
+        //현재 파일 안 옴
 
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "강아지 등록 완료");
     }
