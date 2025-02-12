@@ -1,0 +1,126 @@
+
+//매칭 리스트
+let matchList = [{
+    dog_id: '',
+    profile_url: null,
+    dog_name: '',
+    breed_name: '',
+    gender: '',
+    is_neutered: '',
+    address: '',
+    matchedCriteriaList: null,
+    is_mix: ''
+}];  // 빈 객체로 초기화;  // 데이터를 저장할 배열
+let startIndex = 0;   // 현재 시작 인덱스
+
+const dogId = sessionDogId.value;
+const username = sessionUsername.value;
+// 컨트롤러에서 matchList 데이터 가져오기
+api.get('/api/matching?dogId=' + dogId + '&username=' + username)
+    .then(data => {
+        matchList = [...matchList, ...data.body];
+        console.log('match loaded:', matchList);
+        updateCards();
+    })
+    .catch(error => {
+        console.error(error);
+        alert("오류가 발생했습니다.");
+    });
+
+
+//매칭 띄워주기
+function updateCards() {
+    const container = document.getElementById('cardContainer');
+    container.style.padding = "0px";
+    container.innerHTML = '';
+
+    matchList.slice(startIndex, startIndex + 3).forEach((dog, index) => {
+        const card = document.createElement('div');
+
+        let dogId = dog.dog_id;
+        let dogLiked = dog.liked;
+        console.log("dogLiked" + dogLiked);
+
+        // 가운데 카드(index === 1)만 다른 클래스 적용
+        if (index === 1) {
+            card.classList.add('matching-card');
+            card.classList.add('col-6');
+            card.classList.add('mx-auto');
+            card.style.padding = "0px";
+        } else {
+            card.classList.add('matching-card-side');
+            card.classList.add('col-2');
+            card.style.margin = "80px";
+            card.style.padding = "0px";
+        }
+
+        const iconHtml = dog.matched_criteria_list && dog.matched_criteria_list.length > 0 ?
+            dog.matched_criteria_list.map(criteria => {
+                // 각 항목에 맞는 아이콘을 조건에 따라 출력
+                switch (criteria) {
+                    case '품종':
+                        return '<img src="/img/icon/dog-filter/dog.svg" alt="dog-icon" title="견종이 일치해요!">';
+                    case '체중':
+                        return '<img src="/img/icon/dog-filter/weight.svg" alt="weight-icon" style="max-width: 18px; height: auto;" title="선호하는 체중대와 맞아요!">';
+                    case '성격유형':
+                        return '<img src="/img/icon/dog-filter/foot.svg" alt="foot-icon" title="견BTI가 같아요!">';
+                    case '성격':
+                        return '<img src="/img/icon/dog-filter/bone.svg" alt="foot-icon" title="성격 유형이 잘 맞아요!">';
+                    case '놀이':
+                        return '<img src="/img/icon/dog-filter/dribbble-ball.svg" alt="dribbble-ball-icon" title="좋아하는 놀이 스타일이 같아요!">';
+                    case '산책시간':
+                        return '<img src="/img/icon/dog-filter/clock.svg" alt="clock-icon" title="산책 시간이 잘 맞아요!">';
+                    case '산책요일':
+                        return '<img src="/img/icon/dog-filter/calendar.svg" alt="foot-icon" title="산책 요일이 잘 맞아요!">';
+                    default:
+                        return '';  // 조건에 맞는 값이 없으면 빈 문자열
+                }
+            }).join('') : '';
+
+        card.innerHTML = `
+            
+            <div class="card-top" style="height: 60%; position: relative; z-index: 9999">
+                <img class="card-top-img" src="${dog.profile_url != null ? dog.profile_url : '/img/로고.jpg'}"}" alt="${dog.dog_name}" style="width: 100%; height: 100%; object-fit: cover;" />
+                <div class="card-top-icon" style="
+                    position: absolute; 
+                    ${index === 1 ? 'top: 8px;' : 'top: 5px;'} 
+                    ${index === 1 ? 'right: 8px;' : 'right: 5px;'} 
+                    min-width: 5%; padding: 10px 5px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.6);
+                    display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center;">
+                    ${iconHtml}
+                </div>
+            </div>
+            ${index === 1 ?
+            '<div class="card-center" style="font-size: 20px; height: 28%;">' :
+            '<div class="card-center" style="font-size: 14px; height: 28%;">'
+        }
+                <div style="${index === 1 ? 'line-height: 1.8;' : 'line-height: 1.5;'}">${dog.dog_name} ${dog.breed_name !== '' ? `| ${dog.breed_name}` : ''} ${dog.is_mix === 'N' ? '(순종)' : dog.is_mix === "" ? "" : '(믹스)'}</div>
+                <div style="${index === 1 ? 'line-height: 1.8;' : 'line-height: 1.2;'}">${dog.gender === "M" ? '남' : dog.gender === "" ? '' : '여'} ${dog.is_neutered === "Y" ? '(중성화 O)' : dog.is_neutered === "" ? "" : '(중성화 X)'}</div>
+                <div style="line-height: 1.8; color: #5e5e5e; font-size: 0.8em; text-align: center; ${index === 1 ? 'width: 100%' : 'width: 80%'}">${dog.address != null ? dog.address : '지정된 산책로가 없습니다.'}</div>
+            </div>
+            
+            ${index === 1 ?
+            '<div class="card-bottom center-card" style="height: 12%;">' :
+            '<div class="card-bottom" style="height: 12%; display: flex; justify-content: space-around;">'
+        }
+               <div class="card-bottom-items">
+            ${index === 1 ?
+            `<img id="likeIcon" src="${dogLiked ? '/img/icon/like-push.svg' : '/img/icon/like.svg'}" alt="like-icon" data-target="${dogId}" onclick="likeToggle(this)">` :
+            `<img src="${dogLiked ? '/img/icon/like-push.svg' : '/img/icon/like.svg'}" alt="like-icon">`
+        }
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/messege.svg" alt="messege-icon" data-target="O" onclick="messageForm(this)">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/wechat-logo.svg" alt="wechat-logo-icon" data-target="G" onclick="messageForm(this)">
+                </div>
+                <div class="card-bottom-items">
+                    <img src="/img/icon/alarm-warning-line.svg" alt="alarm-warning-line-icon" onclick="declarationForm()">
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+

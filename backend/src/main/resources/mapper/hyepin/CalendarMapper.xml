@@ -62,6 +62,12 @@
         WHERE calendar_id = #{calendarId}
     </update>
 
+    <update id="shareCaleandar">
+        UPDATE tbl_calendar
+        SET shared_yn = #{sharedYn}
+        WHERE calendar_id = #{calendarId}
+    </update>
+
     <delete id="deleteCalendar">
         DELETE
         FROM tbl_calendar
@@ -86,12 +92,5 @@
         FROM tbl_calendar_shared
         WHERE shared_id = #{sharedId}
     </delete>
-
-    <insert id="insertSharedCalendar">
-        INSERT INTO tbl_calendar_shared
-        (calendar_id, username, room_id, dog_id)
-        VALUES
-        (#{calendarId}, #{username}, #{roomId}, #{dogId})
-    </insert>
 
 </mapper>
