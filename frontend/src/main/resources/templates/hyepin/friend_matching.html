@@ -64,7 +64,7 @@
                     <div>
                         <div class="flex-box">
                             <select class="select-a" style="margin-right: 10px" id="breedSelect" name="breedGbnCd">
-                                <option value="" selected>품종을 선택하세요</option>
+                                <option value="" selected>견종을 선택하세요</option>
                                 <option th:each="breed : ${breedList}"
                                         th:value="${breed['gubn_code']}"
                                         th:text="${breed['gubn_name']}">
