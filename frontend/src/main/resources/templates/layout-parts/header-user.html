@@ -3,7 +3,7 @@
 
 <header th:fragment="header" class="header-container">
 <link rel="stylesheet" th:href="@{/css/common/common.css}" />
-
+    <link rel="stylesheet" th:href="@{/css/ajy/header_profile.css}" />
 <!-- 전체 박스 -->
 <div class="header-container-web">
     <!-- 로고 -->
@@ -39,12 +39,27 @@
                 <span>강아지고양이</span><span> 님</span>
             </div>-->
 
-            <div class="header-username" onclick="toggleDropdown()" style="cursor: pointer;">
+            <div class="profile-dropdown"  style="cursor: pointer;">
                 <!-- 로그인 상태 -->
-                <span th:if="${session.user != null && session.dog != null}" class="header-username" onclick="toggleDropdown()" style="cursor: pointer;">
-                    <span th:text="${session.dog.dogName != null ? session.dog.dogName +' 님' : session.user.username + '님'}"></span>
+                <span th:if="${session.user != null}" class="profile-dropdown"  style="cursor: pointer;">
+                    <span th:text="${session.dog != null and session.dog.dogName != null ? session.dog.dogName + ' 님' :
+                                    (session.user != null and session.user.username != null ? session.user.username + '님' : 'Guest')}"></span>
                     <img src="/img/icon/button/down-sign.svg" alt="dropdown img" style="width: 12px; height: 12px"/>
+                    <!--<button id="logoutButton">로그아웃</button>-->
 
+                    <!-- 드롭다운 모달 -->
+                    <div id="profileModal" class="profile-modal">
+                        <a class="modal-header" href="/editUserPassword">마이페이지</a>
+                        <hr>
+                        <div class="modal-content" th:if="${session.dogList != null}">
+                            <div th:each="dog : ${session.dogList}" class="dog-profile" onclick="selectDogProfile(this)">
+                                <img th:src="${dog['profile_url']}" alt="강아지 프로필 이미지">
+                                <span th:text="${dog['dog_name']}"></span>
+                                <input type="hidden" th:value="${dog['dog_id']}">
+                            </div>
+                        </div>
+                        <button id="logoutButton">로그아웃</button>
+                    </div>
                 </span>
 
                 <!-- 비로그인 상태 -->
@@ -118,6 +133,8 @@
 
 <script src="/js/common/modal.js"></script>
 <script src="/js/ajy/token.js"></script>
+<script src="/js/ajy/header_profile.js"></script>
+<script src="/js/ajy/dog_profile_select.js"></script>
 <script>
     //TODO 시간관계상 여기서 처리
     function clearStorage() {

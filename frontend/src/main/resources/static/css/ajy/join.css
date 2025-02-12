@@ -318,3 +318,13 @@
     pointer-events: none;   /* 클릭 불가 */
     border: 1px solid #aaa;
 }
+
+.edit-container{
+    display: flex;
+}
+
+.edit-container #editForm{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

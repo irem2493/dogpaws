@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
 <head>
-    <meta charset="UTF-8">
     <link rel="stylesheet" href="/css/ajy/dog_profile_select.css" />
-    <title>강아지 프로필 선택</title>
+
+    <title>로그인</title>
 </head>
-<body>
+<body layout:fragment="content" style="min-height: 100vh">
+<div class="container">
 <div class="profile-container">
 <h2>프로필 선택</h2>
     <hr class="custom-hr">
@@ -18,5 +21,6 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="/js/ajy/dog_profile_select.js"></script>
+</div>
 </body>
 </html>

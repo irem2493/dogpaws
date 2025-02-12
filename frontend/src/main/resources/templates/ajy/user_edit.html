@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+  <link rel="stylesheet" href="/css/ajy/join.css" />
+  <title>회원정보 관리</title>
+</head>
+<body layout:fragment="content" style="min-height: 100vh">
+<div class="container">
+  <div class="edit-container">
+    <div class="sidebar">
+      <div class="sidebar-container">
+        <div class="sidebar-header">
+          <img src="/img/icon/pet.svg" alt="로고" class="logo" />
+          <p>마이페이지</p>
+        </div>
+        <hr />
+        <ul class="sidebar-menu">
+          <li><a href="/editUserPassword" class="active">개인정보 관리</a></li>
+          <li><a href="#">반려견 프로필 관리</a></li>
+          <li><a href="#">좋아요 목록</a></li>
+          <li><a href="#">작성한 게시글 보기</a></li>
+          <li><a href="#">일정 관리</a></li>
+          <li><a href="#">스토어</a></li>
+          <li>
+            <ul>
+              <li><a href="#">장바구니</a></li>
+              <li><a href="#">주문 · 배송</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="join-container" style="max-width: 450px; margin: 50px auto;">
+      <div class="container_box">
+        <div class="header">사용자 정보 등록</div>
+
+        <div class="form-container" style="margin-top: 20px">
+          <div class="form-fields" style="width: 100%">
+            <form id="editForm">
+            <label for="username">아이디</label>
+            <input type="text" id="username" name="username" th:value="${user.username}" readonly style="background: #F7F7F7;">
+
+            <label for="password"><span class="required">*</span> 패스워드</label>
+            <input type="password" id="password" name="password" placeholder="패스워드를 입력하세요">
+            <label for="confirmPassword"><span class="required">*</span> 패스워드 확인</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="패스워드를 재입력하세요">
+
+            <label for="nickname"><span class="required">*</span>닉네임</label>
+            <input type="text" id="nickname" name="nickname" th:value="${user.nickname}" th:attr="data-prev-value=${user.nickname}" placeholder="닉네임을 재입력하세요">
+
+            <div class="form-row">
+              <div class="form-group1">
+                <label for="ageGroup">연령대</label>
+                <select id="ageGroup" class="select-a" name="ageGroup" th:attr="data-prev-value=${user.ageGroup}">
+                  <option value="" disabled selected>연령대를 선택해주세요</option>
+                  <option value="20대" th:selected="${user.ageGroup == '20대'}">20대 (20 - 29)</option>
+                  <option value="30대" th:selected="${user.ageGroup == '30대'}">30대 (30 - 39)</option>
+                  <option value="40대" th:selected="${user.ageGroup == '40대'}">40대 (40 - 49)</option>
+                  <option value="50대" th:selected="${user.ageGroup == '50대'}">50대 (50 - 59)</option>
+                  <option value="60대" th:selected="${user.ageGroup == '60대'}">60대 (60 - 69)</option>
+                  <option value="70대" th:selected="${user.ageGroup == '70대'}">70대 (70 - 79)</option>
+                  <option value="80대" th:selected="${user.ageGroup == '80대'}">80대 (80 - 89)</option>
+                </select>
+              </div>
+
+              <div class="form-group2">
+
+                <label>성별</label>
+                <div class="gender-container">
+
+                  <!-- ✅ hidden input 추가 -->
+                  <div class="gender-select">
+                    <input type="hidden" name="gender" id="gender" th:value="${user.gender}" th:attr="data-prev-value=${user.gender}"/>
+
+                    <button
+                            type="button"
+                            onclick="setGender('M', this)"
+                            th:classappend="${user.gender == 'M'} ? 'selected'"
+                    >
+                      남자
+                    </button>
+
+                    <button
+                            type="button"
+                            onclick="setGender('F', this)"
+                            th:classappend="${user.gender == 'M'} ? 'selected'"
+                    >
+                      여자
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <label for="email"><span class="required">*</span> 이메일</label>
+            <input type="email" id="email" name="email" th:value="${user.email}" th:attr="data-prev-value=${user.email}" placeholder="이메일을 재입력하세요">
+
+            <label for="address"><span class="required">*</span> 산책로 주소검색</label>
+            <div class="input-with-button">
+              <input type="text" id="postcode" name="postcode" placeholder="우편번호를 입력하세요" th:value="${user.postcode}" th:attr="data-prev-value=${user.postcode}">
+              <button type="button" id="addressBtn" onclick="execDaumPostcode()">우편번호</button>
+            </div>
+            <input type="text" id="address" name="address" placeholder="주소 입력" th:value="${user.address}" th:attr="data-prev-value=${user.address}">
+            <input type="text" id="detailAddress" name="detailAddress" placeholder="상세 주소 입력" th:value="${user.detailAddress}" th:attr="data-prev-value=${user.detailAddress}">
+
+              <input type="submit" value="개인정보 수정" style="background: #FFA03A"/>
+              <button type="button" onclick="deleteUser()" style="width: 100%; background: #F20F38">회원탈퇴</button>
+            </form>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+</div>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="/js/ajy/user_edit.js"></script>
+</body>
+</html>
