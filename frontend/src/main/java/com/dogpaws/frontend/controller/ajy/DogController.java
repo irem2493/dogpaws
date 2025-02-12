@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class DogController {
 
     private final ApiRequestService apiRequestService;
+    private final ApiRequestService apiService;
 
     @GetMapping("/dogProfileSelect")
     public String dogProfileSelect(HttpServletRequest request, HttpSession session) {
@@ -36,7 +38,7 @@ public class DogController {
         if (userDto != null) {
             var dogResponse = apiRequestService.fetchData("/api/dog/dogList/" + userDto.getUsername());
             if (dogResponse != null && dogResponse.getBody() != null) {
-                //System.out.println(dogResponse.getBody());
+                System.out.println("dogList : " + dogResponse.getBody());
                 session.setAttribute("dogList", dogResponse.getBody());
             } else {
                 // 오류 처리 또는 디폴트 동작 설정
@@ -58,5 +60,25 @@ public class DogController {
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
+    @GetMapping("/dogProfileRegister")
+    public String dogProfileRegister(Model model) {
+
+        var breedResponse = apiService.fetchData("/api/gubn/breed_code");
+        var personalityResponse = apiService.fetchData("/api/gubn/dog_personal_code");
+        var playResponse = apiService.fetchData("/api/gubn/dog_play_code");
+
+        var breedList = breedResponse.getBody();
+        var personalityList = personalityResponse.getBody();
+        var playList = playResponse.getBody();
+
+        //System.out.println(personalityResponse.getBody());
+
+        model.addAttribute("breedList", breedList);
+        model.addAttribute("personalityList", personalityList);
+        model.addAttribute("playList", playList);
+
+        return "/ajy/dog_profile_register";
     }
 }

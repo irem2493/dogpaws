@@ -98,6 +98,8 @@ public class SocialLoginController {
                 return "redirect:http://localhost:2000/socialJoin";  // 프론트로 리다이렉트
             }
             else{
+                //여기에 토큰 발급하는 로직 필요
+                
                 return "redirect:http://localhost:2000/dogProfileSelect";  // 프론트로 리다이렉트
             }
         } catch (Exception e) {

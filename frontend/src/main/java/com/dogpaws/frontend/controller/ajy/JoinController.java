@@ -1,6 +1,7 @@
 package com.dogpaws.frontend.controller.ajy;
 
 import com.dogpaws.frontend.service.ApiRequestService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +14,12 @@ public class JoinController {
     private final ApiRequestService apiService;
 
     @GetMapping("/join")
-    public String join(Model model) {
+    public String join(Model model, HttpSession session) {
+
+        if(session.getAttribute("provider") != null) {
+            return "/ajy/join_social_address";
+        }
+
         return "/ajy/join";
     }
 
