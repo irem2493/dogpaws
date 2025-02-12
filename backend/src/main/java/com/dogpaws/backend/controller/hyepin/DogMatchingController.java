@@ -37,8 +37,6 @@ public class DogMatchingController {
     @PostMapping("/filter")
     public ApiResponse<String> setMatchingFilter(@ModelAttribute FilterDto filterDto) throws IOException {
         log.info("여기는 백 컨트롤러 setMatchingFilter / FilterDto 값: {}", filterDto);
-            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "필터 등록 성공");
-        /*
         int result = matchingService.setMatchingFilter(filterDto);
         if (result == 1) {
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "필터 등록 성공");
@@ -46,7 +44,6 @@ public class DogMatchingController {
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "필터 등록 실패");
         }
 
-         */
     }
 
     //매칭필터 삭제

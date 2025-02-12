@@ -34,16 +34,15 @@ function filterToggle(element) {
     }
 }
 
-//필터 등록
+//필터 등록 & 업데이트
 function filterSubmit(matchType) {
-    //********여기 하드코딩
-    const dogId = 2;
+    const dogId = sessionDogId.value;
 
     const form = document.getElementById("filterForm");
     const formData = new FormData(form);
-
     formData.append("dogId", dogId);
     formData.append("matchType", matchType);
+
     dogPersonalGbnCdList.forEach(function(code, index) {
         formData.append("dogPersonalGbnCdList[" + index + "]", code);
         console.log("dogPersonalGbnCdList: " + "dogPersonalGbnCdList[" + index + "]" + code);
@@ -60,8 +59,8 @@ function filterSubmit(matchType) {
     api.post('/api/matching/filter', formData, {})
         .then(res => {
             if (res.body.body == '필터 등록 성공') {  // res.body.body 로 받아야합니다..
+                console.log("필터 등록 성공!");
                 window.location.reload();
-                console.log("필터가 초기화 되었습니다!");
             } else {
                 alert("필터 초기화 실패!");
             }
@@ -70,10 +69,7 @@ function filterSubmit(matchType) {
             console.error("오류:", error);
             alert("저장 오류");
         });
-
-
 }
-
 
 //필터 초기화 (삭제) matchType : F / P
 function filterReset(matchType) {
@@ -87,6 +83,7 @@ function filterReset(matchType) {
         api.post('/api/matching/filter/delete?dogId=' + dogId + '&matchType=' + matchType)
             .then(res => {
                 if (res.body.body == '필터 삭제 성공') {  // res.body.body 로 받아야합니다..
+                    console.log("필터 초기화 성공!");
                     window.location.reload();
                 } else {
                     window.location.reload();
