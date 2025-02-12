@@ -30,6 +30,17 @@ public class UserController {
         return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
     }
 
+    @GetMapping("/{username}")
+    public ApiResponse<?> getUser(@PathVariable("username") String username) {
+        User user = userService.findByUsername(username);
+
+        if(user != null ) {
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, user);
+        }
+
+        return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
+    }
+
     @PutMapping("/edit-user")
     public ApiResponse<?> editUser(@ModelAttribute UserRequestDto userRequestDto) {
         boolean result =  userService.updateUser(userRequestDto);

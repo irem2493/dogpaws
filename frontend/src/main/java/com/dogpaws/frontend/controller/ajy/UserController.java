@@ -2,6 +2,7 @@ package com.dogpaws.frontend.controller.ajy;
 
 import com.dogpaws.frontend.dto.ajy.UserDto;
 import com.dogpaws.frontend.dto.ajy.UserResponseDto;
+import com.dogpaws.frontend.global.ApiResponse;
 import com.dogpaws.frontend.service.ApiRequestService;
 import com.dogpaws.frontend.utils.SessionUtil;
 import com.dogpaws.frontend.utils.TokenUtil;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,18 +33,17 @@ public class UserController {
 
         UserDto userDto = SessionUtil.getUser(session);
 
-        var providerResponse = apiRequestService.fetchData("/api/join/social/provider");
-        var provider = providerResponse.getBody();
-
         if(userDto != null) {
+        Map<String, String> params = Map.of("username", userDto.getUsername());
+        var apiResponse = apiRequestService.fetchData("/api/user/", params, true);
+        var provider = apiResponse.getBody();
+            if(provider != null) {
+                return "/ajy/user_edit_social";
+            }
+
             model.addAttribute("user", userDto);
             return "/ajy/user_edit_password";
         }
-
-        if(provider != null) {
-            return "/ajy/user_edit_social";
-        }
-
         return "redirect:/login";
     }
 
