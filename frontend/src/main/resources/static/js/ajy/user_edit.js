@@ -17,7 +17,7 @@ document.getElementById('editForm').addEventListener('submit', function(event) {
     });
 
     // 입력값 가져오기
-    const username = document.getElementById("nickname").value.trim();
+    /*const username = document.getElementById("nickname").value.trim();
     const password = document.getElementById("password").value.trim();
     const nickname = document.getElementById("nickname").value.trim();
     const ageGroup = document.getElementById("ageGroup").value;
@@ -32,10 +32,35 @@ document.getElementById('editForm').addEventListener('submit', function(event) {
     if (!email) document.getElementById("email").value = previousValues.email;
     if (!postcode) document.getElementById("postcode").value = previousValues.postcode;
     if (!address) document.getElementById("address").value = previousValues.address;
-    if (!detailAddress) document.getElementById("detailAddress").value = previousValues.detailAddress;
+    if (!detailAddress) document.getElementById("detailAddress").value = previousValues.detailAddress;*/
 
 
-   /* for (let field of fields) {
+    fields.forEach(field => {
+        const inputElement = document.getElementById(field);
+        if (inputElement) {
+            const currentValue = inputElement.value.trim();
+            const prevValue = inputElement.getAttribute("data-prev-value") || "";
+
+            // 값이 비어 있으면 이전 값으로 설정
+            if (!currentValue) {
+                inputElement.value = prevValue;
+            }
+        }
+    });
+
+    // 이메일 형식 검증 정규식 (RFC 5322 표준을 기반으로 간단하게 작성)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const email = document.getElementById("email").value.trim();
+    if (!emailRegex.test(email)) {
+        alert("올바른 이메일 형식이 아닙니다.");
+        return;
+    }
+    const password = document.getElementById("password").value.trim();
+    const confirmPasswordInput = document.querySelector("input[name='confirmPassword']");
+    const confirmPassword = confirmPasswordInput.value.trim();
+
+    const requiredFields = ['password', 'confirmPassword'];
+    for (let field of requiredFields) {
         const inputElement = document.querySelector(`input[name='${field}']`);
         const value = inputElement?.value.trim();
         if (!value) {
@@ -45,18 +70,8 @@ document.getElementById('editForm').addEventListener('submit', function(event) {
             }
             return;
         }
-    }*/
-
-    // 이메일 형식 검증 정규식 (RFC 5322 표준을 기반으로 간단하게 작성)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(email)) {
-        alert("올바른 이메일 형식이 아닙니다.");
-        return;
     }
 
-    const confirmPasswordInput = document.querySelector("input[name='confirmPassword']");
-    const confirmPassword = confirmPasswordInput.value.trim();
     if (password !== confirmPassword) {
         alert("비밀번호가 일치하지 않습니다.");
         if (confirmPasswordInput) {
@@ -72,7 +87,6 @@ document.getElementById('editForm').addEventListener('submit', function(event) {
             // 응답의 body.body가 '1단계 저장 완료'인지 확인
             if (data.body?.body === '개인정보 수정 완료') {
                 alert("개인정보 수정 완료");
-                location.href = '/';
             } else {
                 alert("개인정보 수정 실패");
             }

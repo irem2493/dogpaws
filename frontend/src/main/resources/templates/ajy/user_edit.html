@@ -17,7 +17,7 @@
         </div>
         <hr />
         <ul class="sidebar-menu">
-          <li><a href="#" class="active">개인정보 관리</a></li>
+          <li><a href="/editUserPassword" class="active">개인정보 관리</a></li>
           <li><a href="#">반려견 프로필 관리</a></li>
           <li><a href="#">좋아요 목록</a></li>
           <li><a href="#">작성한 게시글 보기</a></li>
@@ -49,12 +49,12 @@
             <input type="password" id="confirmPassword" name="confirmPassword" placeholder="패스워드를 재입력하세요">
 
             <label for="nickname"><span class="required">*</span>닉네임</label>
-            <input type="text" id="nickname" name="nickname" th:value="${user.nickname}" placeholder="닉네임을 재입력하세요">
+            <input type="text" id="nickname" name="nickname" th:value="${user.nickname}" th:attr="data-prev-value=${user.nickname}" placeholder="닉네임을 재입력하세요">
 
             <div class="form-row">
               <div class="form-group1">
                 <label for="ageGroup">연령대</label>
-                <select id="ageGroup" class="select-a" name="ageGroup">
+                <select id="ageGroup" class="select-a" name="ageGroup" th:attr="data-prev-value=${user.ageGroup}">
                   <option value="" disabled selected>연령대를 선택해주세요</option>
                   <option value="20대" th:selected="${user.ageGroup == '20대'}">20대 (20 - 29)</option>
                   <option value="30대" th:selected="${user.ageGroup == '30대'}">30대 (30 - 39)</option>
@@ -73,7 +73,7 @@
 
                   <!-- ✅ hidden input 추가 -->
                   <div class="gender-select">
-                    <input type="hidden" name="gender" id="gender" th:value="${user.gender}"/>
+                    <input type="hidden" name="gender" id="gender" th:value="${user.gender}" th:attr="data-prev-value=${user.gender}"/>
 
                     <button
                             type="button"
@@ -95,15 +95,15 @@
               </div>
             </div>
             <label for="email"><span class="required">*</span> 이메일</label>
-            <input type="email" id="email" name="email" th:value="${user.email}" placeholder="이메일을 재입력하세요">
+            <input type="email" id="email" name="email" th:value="${user.email}" th:attr="data-prev-value=${user.email}" placeholder="이메일을 재입력하세요">
 
             <label for="address"><span class="required">*</span> 산책로 주소검색</label>
             <div class="input-with-button">
-              <input type="text" id="postcode" name="postcode" placeholder="우편번호를 입력하세요" th:value="${user.postcode}">
+              <input type="text" id="postcode" name="postcode" placeholder="우편번호를 입력하세요" th:value="${user.postcode}" th:attr="data-prev-value=${user.postcode}">
               <button type="button" id="addressBtn" onclick="execDaumPostcode()">우편번호</button>
             </div>
-            <input type="text" id="address" name="address" placeholder="주소 입력" th:value="${user.address}">
-            <input type="text" id="detailAddress" name="detailAddress" placeholder="상세 주소 입력" th:value="${user.detailAddress}">
+            <input type="text" id="address" name="address" placeholder="주소 입력" th:value="${user.address}" th:attr="data-prev-value=${user.address}">
+            <input type="text" id="detailAddress" name="detailAddress" placeholder="상세 주소 입력" th:value="${user.detailAddress}" th:attr="data-prev-value=${user.detailAddress}">
 
               <input type="submit" value="개인정보 수정" style="background: #FFA03A"/>
               <button type="button" onclick="deleteUser()" style="width: 100%; background: #F20F38">회원탈퇴</button>

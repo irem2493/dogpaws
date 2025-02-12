@@ -1,0 +1,81 @@
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-dropdown #profileButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.profile-dropdown .profile-modal {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 200px;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    z-index: 10;
+}
+
+.profile-dropdown .modal-header {
+    font-size: 20px;
+    padding: 20px 0 0 0 ;
+    text-align: center;
+    display: block; /* 블록 요소로 변경하여 가로폭을 채우도록 설정 */
+    text-decoration: none; /* 링크 밑줄 제거 */
+    color: black; /* 기본 색상 */
+
+}
+
+.profile-dropdown .modal-header:hover {
+    color: orange; /* 마우스 올릴 때 색상 변경 */
+}
+
+.profile-dropdown .modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 10px;
+}
+
+.profile-dropdown .dog-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.profile-dropdown .dog-profile img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: blue;
+}
+
+.profile-dropdown .dog-profile span {
+    font-size: 18px;
+}
+
+.profile-dropdown #logoutButton {
+    width: 100%;
+    background: #ddd;
+    border: none;
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.profile-dropdown #logoutButton:hover {
+    background: #ccc;
+}
