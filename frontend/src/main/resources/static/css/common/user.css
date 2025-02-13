@@ -11,6 +11,12 @@ body {
     display: none;
 }
 
+.body-container{
+    display: flex;
+    margin-left: 13%;
+    max-width: 80%;
+}
+
 /* 모바일 화면에서 박스를 보이게 설정 */
 @media (max-width: 767px) {
     .header-container-mobile {
@@ -139,6 +145,14 @@ body {
         margin-bottom: 20px; /* 푸터와 구분선 간격 */
     }
 
+    .sidebar-container-container{
+        display: none;
+    }
+
+    .body-container{
+        margin-left: 0px;
+        max-width: 100%;
+    }
 
 }
 
