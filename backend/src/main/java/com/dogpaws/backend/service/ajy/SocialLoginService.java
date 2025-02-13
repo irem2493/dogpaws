@@ -19,6 +19,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -369,14 +370,18 @@ public class SocialLoginService {
             System.out.println(userInfo);
             System.out.println(accessToken2);
 
-            // 사용자 정보 응답 (API Response)
-            Map<String, String> userInfo2 = Map.of("accessToken", accessToken2,"username", user.getUsername(), "role", "ROLE_USER", "nickname", user.getNickname());
-            //ApiResponse<Map<String, String>> apiResponse = new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, userInfo, false);
+            // ✅ 프론트엔드로 전달할 사용자 정보
+            String redirectUrl = String.format(
+                    "http://localhost:2000/dogProfileSelect?accessToken=%s&username=%s&role=%s&nickname=%s",
+                    accessToken2,
+                    user.getUsername(),
+                    "ROLE_USER",
+                    URLEncoder.encode(user.getNickname(), "UTF-8")
+            );
 
-            log.info("로그인 성공: username={}, role={}",  user.getRole(), user.getNickname());
+            log.info("✅ 로그인 성공: username={}, role={}", user.getUsername(), "ROLE_USER");
 
-
-            return "redirect:http://localhost:2000/dogProfileSelect";  // 프론트로 리다이렉트*/
+            return "redirect:" + redirectUrl;  // ✅ 프론트엔드로 토큰과 사용자 정보를 전달
 
         }else return  null;
     }
