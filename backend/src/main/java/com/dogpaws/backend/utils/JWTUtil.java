@@ -1,5 +1,7 @@
 package com.dogpaws.backend.utils;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Jwts;
 
 @Component
+@Slf4j
 public class JWTUtil {
     private SecretKey secretKey;
 
@@ -36,7 +39,15 @@ public class JWTUtil {
     }
 
     public Boolean isExpired(String token) {
+        try {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            log.warn("⏳ 토큰 만료됨: {}", token);
+            return true; // ✅ 만료된 경우 true 반환
+        } catch (Exception e) {
+            log.error("❌ 토큰 검증 실패: {}", e.getMessage());
+            return false; // ✅ 예외 발생 시 안전하게 만료된 것으로 처리
+        }
     }
 
     public String createJwt(String username, String role, String nickname, Long expiredMs) {
@@ -57,7 +68,7 @@ public class JWTUtil {
                 .claim("role", role)
                 .claim("nickname", nickname)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + + 10 * 60*1000))// 10분 유효
+                .expiration(new Date(System.currentTimeMillis() +60 * 60*1000))// 10분 유효 - > 1시간 유효하도록 변경
                 .signWith(secretKey)
                 .compact();
     }
@@ -69,7 +80,7 @@ public class JWTUtil {
                 .claim("role", role)
                 .claim("nickname", nickname)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + + 12 * 60 * 60+1000))// 12시간 유효
+                .expiration(new Date(System.currentTimeMillis() + 12 * 60 * 60 *1000))// 12시간 유효
                 .signWith(secretKey)
                 .compact();
     }

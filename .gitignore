@@ -36,4 +36,7 @@ out/
 ### VS Code ###
 .vscode/
 
+# Firebase 서비스 계정 JSON 파일 숨기기
+frontend/src/main/resources/paws2-6ce51-firebase-adminsdk-fbsvc-*.json
+
 docs/

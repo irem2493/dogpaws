@@ -260,13 +260,25 @@
                                 <th:block th:each="walkDay : ${filter.walk_day_list}">
                                     <span style="margin-right: 5px;">[[${walkDay}]] </span>
                                 </th:block>
-                                <span>|[[${filter.str_walk_start_time}]] ~ [[${filter.str_walk_end_time}]]</span>
+                                <span>
+                                    <th:block th:if="${filter.str_walk_start_time == '' && filter.str_walk_end_time != ''}">
+                                        |anytime ~ [[${filter.str_walk_end_time}]]
+                                    </th:block>
+                                     <th:block th:if="${filter.str_walk_start_time != '' && filter.str_walk_end_time == ''}">
+                                        |[[${filter.str_walk_start_time}]] ~ anytime
+                                    </th:block>
+                                    <th:block th:if="${filter.str_walk_start_time == '' && filter.str_walk_end_time == ''}">
+                                    </th:block>
+                                    <th:block th:if="${filter.str_walk_start_time != '' && filter.str_walk_end_time != ''}">
+                                        |[[${filter.str_walk_start_time}]] ~ [[${filter.str_walk_end_time}]]
+                                    </th:block>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </th:block>
 
-                <th:block th:if="${filter.dog_personal_list != null}">
+                <th:block th:if="${filter.dog_personal_list != null and not #lists.isEmpty(filter.dog_personal_list)}">
                     <div class="row">
                         <div class="dog-filter">
                             <img src="/img/icon/dog-filter/bone.svg" alt="bone-icon"> 성격 유형
@@ -279,7 +291,7 @@
                     </div>
                 </th:block>
 
-                <th:block th:if="${filter.dog_play_list != null}">
+                <th:block th:if="${filter.dog_play_list != null and not #lists.isEmpty(filter.dog_play_list)}">
                     <div class="row">
                         <div class="dog-filter">
                             <img src="/img/icon/dog-filter/dribbble-ball.svg" alt="dribbble-ball-icon"> 좋아하는 놀이
@@ -313,10 +325,104 @@
              style="display: flex; justify-content: center; align-items: center;"></div>
 
         <!-- 오른쪽 화살표 -->
-        <div class="matching-arrow col-1 d-flex flex-column justify-content-cesnter align-items-center" id="next">
+        <div class="matching-arrow col-1 d-flex flex-column justify-content-center align-items-center" id="next">
             <img src="/img/icon/right-btn.svg" alt="right-btn-icon">
         </div>
     </div> <!-- 매칭 영역 -->
+
+    <!-- 채팅방으로 공유 모달창 -->
+    <div class="pawsModal" id="groupChat" style="display: none;">
+        <h2 class="pawsModal-title">기본 모달</h2>
+        <button class="pawsModal-close" onclick="closeModal(this)"></button>
+        <div class="pawsModal-content">
+            <p>이것은 기본적인 모달 창입니다.</p>
+        </div>
+        <div class="pawsModal-footer">
+            <button class="pawsModal-confirm" onclick="closeModal(this); groupChatSubmit()">확인</button>
+            <button class="pawsModal-cancel" onclick="closeModal(this)">취소</button>
+        </div>
+    </div>   <!-- 채팅방으로 공유 모달창 -->
+
+    <!-- 신고 모달 창 -->
+    <div class="pawsModal" id="declarationForm" style="display: none;">
+        <h2 class="pawsModal-title">사용자 신고</h2>
+        <button class="pawsModal-close" onclick="closeModal(this)"></button>
+        <div class="pawsModal-content">
+            <div class="pawsModal-container">
+                <form name="declaration" id="declaration">
+                    <div class="declaration-container" style="margin-top: 5px">
+                        <div class="declaration-radio">
+                            <input type="radio" id="declaration1" name="declarationCode" value="IC" class="radio-round" checked>
+                        </div>
+                        <label for="declaration1" class="declaration-label">
+                            <div class="declaration-title">부적절한 콘텐츠</div>
+                            <div class="declaration-content">욕설, 비방, 혐오 발언, 또는 폭력적인 내용 포함</div>
+                        </label>
+                    </div>
+
+                    <div class="declaration-container">
+                        <div class="declaration-radio">
+                            <input type="radio" id="declaration2" name="declarationCode" value="SA" class="radio-round">
+                        </div>
+                        <div>
+                            <label for="declaration2" class="declaration-label">
+                                <div class="declaration-title">스팸 또는 광고</div>
+                                <div class="declaration-content">과도한 홍보, 스팸성 메시지, 또는 반복적인 광고 게시</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="declaration-container">
+                        <div class="declaration-radio">
+                            <input type="radio" id="declaration3" name="declarationCode" value="HI" class="radio-round">
+                        </div>
+                        <div>
+                            <label for="declaration3" class="declaration-label">
+                                <div class="declaration-title">유해하거나 불법적인 정보</div>
+                                <div class="declaration-content">불법적인 활동을 조장하거나, 유해한 정보(사기, 도박 등) 포함</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="declaration-container">
+                        <div class="declaration-radio">
+                            <input type="radio" id="declaration4" name="declarationCode" value="FI" class="radio-round">
+                        </div>
+                        <div>
+                            <label for="declaration4" class="declaration-label">
+                                <div class="declaration-title">허위 또는 사칭 계정</div>
+                                <div class="declaration-content">다른 사람의 신분을 사칭하거나, 잘못된 정보를 포함한 계정</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="declaration-container">
+                        <div class="declaration-radio">
+                            <input type="radio" id="declaration5" name="declarationCode" value="PV" class="radio-round">
+                        </div>
+                        <div>
+                            <label for="declaration5" class="declaration-label">
+                                <div class="declaration-title">개인정보 침해</div>
+                                <div class="declaration-content">타인의 사진, 연락처, 주소 등 개인 정보를 무단으로 공개</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>상세사유</div>
+                    <textarea name="declarationContent" class="input-a" placeholder="상세한 사유를 같이 입력하시면 도움이 됩니다." style="width: 350px; height: 150px;"></textarea>
+                </form>
+
+            </div>
+
+        </div>
+        <div class="pawsModal-footer">
+            <button class="pawsModal-confirm" onclick="closeModal(this); declarationSubmit()">확인</button>
+            <button class="pawsModal-cancel" onclick="closeModal(this)">취소</button>
+        </div>
+    </div> <!-- 신고 모달 창 -->
+
+
+
 
 </div> <!-- 컨테이너 div.. 지우지 마세요 !-->
 <script src="/js/hyepin/friendMatching/form.js"></script>
@@ -324,5 +430,7 @@
 <script src="/js/hyepin/friendMatching/matching_card.js"></script>
 <script src="/js/hyepin/friendMatching/swipe.js"></script>
 <script src="/js/hyepin/friendMatching/toggle.js"></script>
+<script src="/js/hyepin/friendMatching/chat.js"></script>
+<script src="/js/hyepin/friendMatching/declaration.js"></script>
 </body>
 </html>
