@@ -2,11 +2,16 @@ package com.dogpaws.backend.controller.ajy;
 
 import com.dogpaws.backend.dto.ajy.JoinSessionDto;
 import com.dogpaws.backend.dto.ajy.UserRequestDto;
+import com.dogpaws.backend.entity.ajy.User;
 import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.service.ajy.SocialLoginService;
+import com.dogpaws.backend.service.ajy.TokenService;
+import com.dogpaws.backend.service.ajy.UserService;
+import com.dogpaws.backend.utils.JWTUtil;
 import com.dogpaws.backend.value.KakaoValue;
 import com.dogpaws.backend.value.NaverValue;
 import com.dogpaws.backend.value.GoogleValue;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +28,7 @@ import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
+
 public class SocialLoginController {
 
     private final KakaoValue kakaoValue;
@@ -32,6 +38,8 @@ public class SocialLoginController {
     private final GoogleValue googleValue;
 
     private final SocialLoginService socialLoginService;
+    private final RestTemplate restTemplate = new RestTemplate();
+
 
     // 로그인 요청: 사용자 인증 URL로 리디렉션
     @GetMapping("/social/kakao/login")
@@ -77,29 +85,19 @@ public class SocialLoginController {
     // 2. Callback: Authorization Code 수신 -kakao
 
     @GetMapping("/oauth")
-    public String handleOAuthRedirect(@RequestParam String code, HttpSession session ) throws IOException {
-        try {
+    public String handleOAuthRedirect(@RequestParam String code, HttpSession session, HttpServletResponse response) throws IOException {
+       try {
             // 1. Access Token 요청
             String accessToken = socialLoginService.getAccessToken(code);
 
             // 2. 사용자 정보 요청
-            UserRequestDto userInfo = socialLoginService.getUserInfo(accessToken);
+            var userResponse = socialLoginService.getUserInfo(accessToken);
+            var userInfo = userResponse.getBody();
 
-            if(userInfo != null) {
-                JoinSessionDto sessionData = (JoinSessionDto) session.getAttribute("joinSession");
+            //System.out.println(userInfo);
 
-                if (sessionData == null) {
-                    sessionData = new JoinSessionDto();
-                }
+           return socialLoginService.getReturnPage(userInfo, session, response);
 
-                sessionData.setStep1Data(userInfo);
-                session.setAttribute("joinSession", sessionData);
-
-                return "redirect:http://localhost:2000/socialJoin";  // 프론트로 리다이렉트
-            }
-            else{
-                return "redirect:http://localhost:2000/dogProfileSelect";  // 프론트로 리다이렉트
-            }
         } catch (Exception e) {
             e.printStackTrace();
             //model.addAttribute("error", e.getMessage());
@@ -107,18 +105,62 @@ public class SocialLoginController {
         }
     }
 
-    // 로그아웃 요청
-    @GetMapping("/kakao/logout")
-    public void kakaoLogout(HttpServletResponse response) throws IOException {
-        // 로그아웃 URL 생성
-        String logoutUrl = "https://kauth.kakao.com/oauth/logout" +
-                "?client_id=" + kakaoValue.getClientId() +
-                "&logout_redirect_uri=" + kakaoValue.getLogoutRedirectUri();
+    @GetMapping("/naver/callback")
+    public String oauthCallback(
+            @RequestParam String code, @RequestParam String state, HttpSession session, HttpServletResponse response) throws IOException {
+        try {
+            // 1. Access Token 요청
+            String accessToken = socialLoginService.getNaverAccessToken(code, state);
 
-        // 브라우저 리다이렉트
-        response.sendRedirect(logoutUrl);
+            // 2. 사용자 정보 요청
+            var userResponse = socialLoginService.getNaverUserInfo(accessToken);
+            var userInfo = userResponse.getBody();
+
+            //System.out.println(userInfo);
+
+            return socialLoginService.getReturnPage(userInfo, session, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:http://localhost:2000/join";  // 프론트로 리다이렉트
+        }
     }
 
+    @GetMapping("/auth/callback")
+    public String handleGoogleCallback(@RequestParam String code,HttpSession session, HttpServletResponse response) {
+        try {
+            // 1. 액세스 토큰 요청
+            String accessToken = getGoogleAccessToken(code);
 
+            // 2. 사용자 정보 요청
+            var userInfo = socialLoginService.getGoogleUserInfo(accessToken);
+            System.out.println(userInfo);
+            System.out.println(socialLoginService.getReturnPage(userInfo, session, response));
+            //System.out.println(userInfo);
+            return socialLoginService.getReturnPage(userInfo.getBody(), session, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:http://localhost:2000/join";  // 프론트로 리다이렉트
+        }
+    }
+
+    private String getGoogleAccessToken(String code) {
+        String tokenUri = "https://oauth2.googleapis.com/token";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("client_id", googleValue.getClientId());
+        params.add("client_secret", googleValue.getClientSecret());
+        params.add("redirect_uri", googleValue.getRedirectUri());
+        params.add("grant_type", "authorization_code");
+        params.add("code", code);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
+        ResponseEntity<Map> response = restTemplate.postForEntity(tokenUri, request, Map.class);
+        return (String) response.getBody().get("access_token");
+    }
 
 }

@@ -183,3 +183,9 @@
 .join-container input[type="submit"]:hover {
     background-color: #e08600;
 }
+
+
+.join-container #joinButton:disabled {
+    background-color: #555; /* 회색 */
+    cursor: not-allowed;
+}

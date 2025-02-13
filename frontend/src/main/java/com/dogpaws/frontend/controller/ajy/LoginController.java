@@ -21,12 +21,9 @@ public class LoginController {
         return "/ajy/login";
     }
 
-    /*@GetMapping("/logout")
+    @GetMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
-
-
-
-        request.getSession().invalidate();
+    request.getSession().invalidate();
 
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -39,8 +36,6 @@ public class LoginController {
         }
 
         return "redirect:/login";
-    }*/
-
-
+    }
 
 }

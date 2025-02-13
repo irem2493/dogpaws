@@ -178,6 +178,8 @@ function showCalendarForm(selectedDate) {
     openModal('calendarForm');
 
     currentEventId = null;
+    document.getElementById("calendarRegist").style.display = "block";
+    document.getElementById("calendarDetail").style.display = "none";
     submitBtn.style.display = "block";
     updateBtn.style.display = "none";
     shareBtn.style.display = "none";

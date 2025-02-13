@@ -83,9 +83,9 @@
                 <div>
                     <label for="dogId">반려견 선택</label>
                     <select class="select-a" id="dogId" name="dogId">
-                        <option value="1">뭉이</option>
-                        <option value="2">최윤서</option>
-                        <option value="3">융더</option>
+                        <th:block th:each="dog: ${dogList}">
+                            <option th:value="${dog.dog_id}">[[${dog.dog_name}]]</option>
+                        </th:block>
                     </select>
                 </div>
 

@@ -9,10 +9,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -53,39 +52,62 @@ public class TokenCheck {
         return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
     }
 
+    //이 부분 수정
     @PostMapping("/auth/token/refresh")
-    public ApiResponse<?> refreshAccessToken(@RequestBody Map<String, String> request) {
-        String refreshToken = request.get("refreshToken");
+    public ResponseEntity<?> refreshAccessToken(@RequestHeader("Refresh-Token") String refreshToken) {
+        log.info("🔄 Refresh Token 요청 받음");
 
         try {
+            // ✅ Refresh Token이 만료되었는지 확인
             if (jwtUtil.isExpired(refreshToken)) {
-                String username = jwtUtil.getUsername(refreshToken);
-                String role = jwtUtil.getRole(refreshToken);
-                String nickname = jwtUtil.getNickname(refreshToken);
-
-                // 새로운 Access Token 생성
-                String newAccessToken = jwtUtil.generateAccessToken(username, role, nickname);
-
-                System.out.println("newAccessToken : " + newAccessToken);
-
-                Map<String, String> response = Map.of("accessToken", newAccessToken);
-                return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, response);
-            } else {
-                return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
+                log.warn("❌ Refresh Token이 만료되었습니다.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("status", "ERROR", "message", "Expired Refresh Token"));
             }
+
+            // ✅ Refresh Token에서 사용자 정보 추출
+            String username = jwtUtil.getUsername(refreshToken);
+            String role = jwtUtil.getRole(refreshToken);
+            String nickname = jwtUtil.getNickname(refreshToken);
+
+            // ✅ Refresh Token 검증 (DB에서 유효한지 확인)
+            if (!tokenService.validateRefreshToken(username, refreshToken)) {
+                log.warn("❌ 유효하지 않은 Refresh Token: " + refreshToken);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("status", "ERROR", "message", "Invalid Refresh Token"));
+            }
+
+            // ✅ 새로운 Access Token 생성
+            String newAccessToken = jwtUtil.generateAccessToken(username, role, nickname);
+
+            log.info("✅ 새로운 Access Token 발급 완료: " + newAccessToken);
+
+            // ✅ 프론트엔드가 받을 수 있도록 JSON 응답
+            return ResponseEntity.ok(Map.of(
+                    "status", "SUCCESS",
+                    "accessToken", newAccessToken
+            ));
+
         } catch (Exception e) {
-            log.error("토큰 갱신 중 오류 발생: {}", e.getMessage());
-            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
+            log.error("❌ Refresh Token 처리 중 오류 발생: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("status", "ERROR", "message", "Token Processing Error"));
         }
     }
+
+
+
 
     //로그아웃
     @PostMapping("/auth/logout")
     public ApiResponse<?> logout(HttpServletRequest request) {
         String refreshToken = extractRefreshTokenFromCookie(request);
+        String username = jwtUtil.getUsername(refreshToken);
+
+        System.out.println("logout username : " + username);
 
         if (refreshToken != null) {
-            tokenService.deleteRefreshToken(refreshToken);
+            tokenService.deleteRefreshToken(username);
             log.info("로그아웃 성공: 리프레쉬 토큰 삭제 완료");
         }
 
