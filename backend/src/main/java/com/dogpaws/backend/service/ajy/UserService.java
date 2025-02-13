@@ -21,6 +21,11 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    public User findByEmailAndProvider(String email, String provider) {
+        return userRepository.findByEmailAndProvider(email, provider);
+    }
+
+
     @Transactional
     public boolean updateUser(UserRequestDto userRequestDto) {
         User user = userRepository.findByUsername(userRequestDto.getUsername());
@@ -47,6 +52,26 @@ public class UserService {
         return false;
 
     }
+
+    @Transactional
+    public boolean updateUserSocial(UserRequestDto userRequestDto) {
+        User user = userRepository.findByUsername(userRequestDto.getUsername());
+
+        if(user != null) {
+            // 수정할 필드 값 변경
+            user.setAddress(userRequestDto.getAddress());
+            user.setDetailAddress(userRequestDto.getDetailAddress());
+            user.setModifyDate(LocalDateTime.now());
+
+            // 변경 사항 저장
+            userRepository.save(user);
+            return true;
+        }
+
+        return false;
+
+    }
+
     @Transactional
     public boolean deleteUser(String username) {
         User user = userRepository.findByUsername(username);

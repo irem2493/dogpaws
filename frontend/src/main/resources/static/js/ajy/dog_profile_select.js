@@ -1,4 +1,27 @@
 document.addEventListener("DOMContentLoaded", function () {
+
+    // ✅ URL에서 Query Parameters 가져오기
+    const params = new URLSearchParams(window.location.search);
+    const accessToken = params.get("accessToken");
+    const username = params.get("username");
+    const role = params.get("role");
+    const nickname = params.get("nickname");
+
+    // ✅ 토큰과 사용자 정보가 존재하면 세션 스토리지에 저장
+    if (accessToken && username && role && nickname) {
+        sessionStorage.setItem("accessToken", accessToken);
+        sessionStorage.setItem("username", username);
+        sessionStorage.setItem("role", role);
+        sessionStorage.setItem("nickname", nickname);
+
+        console.log("✅ 소셜 로그인 성공! sessionStorage 저장 완료.");
+    }
+
+    // ✅ 기존 URL에서 Query Parameters 제거 (보안을 위해)
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+
+
     // Thymeleaf에서 데이터를 가져옴
     const profileContainer = document.getElementById('dogProfiles');
     let dogProfilesStr = profileContainer.getAttribute('data-dogs');

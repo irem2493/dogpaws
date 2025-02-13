@@ -1,6 +1,8 @@
 package com.dogpaws.frontend.controller.hyepin;
 
+import com.dogpaws.frontend.dto.ajy.DogDto;
 import com.dogpaws.frontend.service.ApiRequestService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -19,11 +21,13 @@ public class DogMathingController {
     private final ApiRequestService apiService;
 
     @GetMapping
-    public String friendMatchingForm(Model model) {
+    public String friendMatchingForm(Model model, HttpSession session) {
 
+        DogDto dog = (DogDto) session.getAttribute("dog");
+        String dogId = String.valueOf(dog.getDogId());
         //Map<String, String> 변환
         Map<String, String> matchingFilterMap = Map.of(
-                "dogId", "1",
+                "dogId", dogId,
                 "matchType", "F"
         );
 
@@ -34,6 +38,7 @@ public class DogMathingController {
         var dogTypeCodeResponse = apiService.fetchData("/api/gubn/dog_type_code");
 
         var filter = filterResponse.getBody();
+        System.out.println("filter" + filter);
         var breedList = breedResponse.getBody();
         var personalityList = personalityResponse.getBody();
         var playList = playResponse.getBody();

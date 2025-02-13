@@ -30,12 +30,45 @@ public class UserController {
         return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
     }
 
+    @PostMapping("/checkUserEmail")
+    public ApiResponse<?> checkUseEmail(@RequestParam("email") String email, @RequestParam("provider") String provider) {
+        System.out.println("checkUserEmail, Provider : " + email + ", " + provider);
+        User user = userService.findByEmailAndProvider(email, provider);
+
+        System.out.println("checkUserEmail : " + user);
+
+        if(user != null) {
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, user);
+        }
+
+        return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
+    }
+
+    @GetMapping("/{username}")
+    public ApiResponse<?> getUser(@PathVariable("username") String username) {
+        User user = userService.findByUsername(username);
+
+        if(user != null ) {
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, user);
+        }
+
+        return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
+    }
+
     @PutMapping("/edit-user")
     public ApiResponse<?> editUser(@ModelAttribute UserRequestDto userRequestDto) {
         boolean result =  userService.updateUser(userRequestDto);
 
         if(result)
           return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "개인정보 수정 완료");
+        else return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
+    }
+
+    @PutMapping("/edit-user-social")
+    public ApiResponse<?> editUserSocial(@ModelAttribute UserRequestDto userRequestDto) {
+        boolean result =  userService.updateUserSocial(userRequestDto);
+        if(result)
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "개인정보 수정 완료");
         else return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
     }
 

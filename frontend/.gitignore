@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Firebase Admin SDK JSON 키 파일 무시
+src/main/resources/*.json
