@@ -80,8 +80,12 @@ function updateCards() {
         card.innerHTML = `
             
             <div class="card-top" style="height: 60%; position: relative; z-index: 9999">
-                <img class="card-top-img" src="${dog.profile_url != null ? dog.profile_url : '/img/로고.jpg'}"}" alt="${dog.dog_name}" style="width: 100%; height: 100%; object-fit: cover;" />
-                <div class="card-top-icon" style="
+                <img class="card-top-img" 
+                     src="${dog.profile_url ? dog.profile_url : '/img/로고.jpg'}" 
+                     alt="${dog.dog_name}" 
+                     onerror="this.onerror=null; this.src='/img/로고.jpg';"
+                     style="width: 100%; height: 100%; object-fit: cover;" />
+                     <div class="card-top-icon" style="
                     position: absolute; 
                     ${index === 1 ? 'top: 8px;' : 'top: 5px;'} 
                     ${index === 1 ? 'right: 8px;' : 'right: 5px;'} 
@@ -110,17 +114,16 @@ function updateCards() {
         }
                 </div>
                 <div class="card-bottom-items">
-                    <img src="/img/icon/messege.svg" alt="messege-icon" data-target="O" onclick="messageForm(this)">
+                    <img src="/img/icon/messege.svg" alt="messege-icon" onclick="chatForm()">
                 </div>
                 <div class="card-bottom-items">
-                    <img src="/img/icon/wechat-logo.svg" alt="wechat-logo-icon" data-target="G" onclick="messageForm(this)">
+                    <img src="/img/icon/wechat-logo.svg" alt="wechat-logo-icon" data-target="${dogId}" onclick="openModal('groupChat'); getGroupChatRoom(this)">
                 </div>
                 <div class="card-bottom-items">
-                    <img src="/img/icon/alarm-warning-line.svg" alt="alarm-warning-line-icon" onclick="declarationForm()">
+                    <img src="/img/icon/alarm-warning-line.svg" alt="alarm-warning-line-icon" data-target="${dogId}" onclick="openModal('declarationForm'); declarationForm(this)">
                 </div>
             </div>
         `;
         container.appendChild(card);
     });
 }
-
