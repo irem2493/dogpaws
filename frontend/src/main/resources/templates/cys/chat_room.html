@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>채팅</title>
+    <link rel="stylesheet" href="/css/cys/chat_room.css">
+    <script type="module" src="/js/cys/chat_room.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+</head>
+<body layout:fragment="content">
+<div class="container-box">
+    <input type="hidden" id="username" th:value="${username}">
+    <input type="hidden" id="nickname" th:value="${nickname}">
+    <input type="hidden" id="dogId" th:value="${dogId}">
+        <input type="hidden" id="dogName" th:value="${dogName}">
+    <input type="hidden" id="dogProfile" th:value="${dogProfile}">
+    <!-- 1번 페이지 : 채팅방 목록 -->
+    <section class="page active" id="page1">
+        <div class="list-background">
+            <div class="category">
+                <div class="one-on-one">
+                    <span class="pointer-text" id="match">일반</span>
+                </div>
+                <div class="group">
+                    <span class="pointer-text" id="group">그룹</span>
+                </div>
+            </div>
+            <div class="chat-list">
+                <div class="chat-one">
+                    <div class="">
+                        <img src="/img/견BTI임시프로필.jpg" width="50" class="profile-img-2" alt="프로필">
+                    </div>
+                    <div class="pre-chat-content">
+                        <div class="pre-chat-with">경림냥</div>
+                        <div class="last-chat">오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉</div>
+                    </div>
+                </div>
+            </div>
+            <!--        <div class="create-chat">그룹 채팅방 만들기</div>-->
+        </div>
+
+    </section>
+
+    <!-- 2번 페이지 : 채팅 -->
+    <main class="page" id="page2">
+
+        <!--      일정  모달창-->
+        <div class="modal-all" style="display: none">
+            <div class="Modal" id="scheduleModal">
+
+                <div class="title">
+                    <p id="main-title" style="font-weight: bold;">일정 등록</p>
+                    <div class="close-btn" style="cursor: pointer"><img  src="/img/icon/modal/modal-delete.svg" alt="" width="15"></div>
+                </div>
+
+                <div class="content">
+                    <div class="division-box">
+                        <span>일정 구분</span>
+                        <select name="" id="calendarType" style="height: 30px;">
+                            <option value="W">산책</option>
+                            <option value="P">놀이</option>
+                            <option value="M">교배</option>
+                        </select>
+                    </div>
+
+                    <div class=detail-box>
+                        <div class="title-box">
+                            <div class="orange-box" style="background-color: #FE904B; width: 5px; height: 35px;"></div>
+                            <input type="text" id="calendarTitle" placeholder="제목을 입력하세요"
+                                   style="height: 35px; width: 250px;">
+                        </div>
+                        <div class="date-box">
+                            <div class="date-icon" id="date-icon">
+                                <img src="/img/icon/modal/scheduleModal.svg" alt="">
+                            </div>
+                            <div class="date-content">
+                                <div class="start-date">
+                                    <input type="datetime-local" id="calendarStartDate" style="height: 30px;">
+                                </div>
+                                <div class="end-date">
+                                    <input type="datetime-local" id="calendarEndDate" style="height: 30px;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="location-box">
+                            <div class="location-icon" id="location-icon"><img src="/img/icon/modal/locationModal.svg" alt="">
+                            </div>
+                            <div class="location-content">
+                                <input type="text" id="address" placeholder="장소를 입력하세요" style="width: 200px; height: 30px;" readonly>
+                                <button class="modal-btn" id="search-location" onclick="sample5_execDaumPostcode()">주소검색</button>
+                            </div>
+                        </div>
+                        <div class="schedule-content-box">
+                            <p>일정내용</p>
+                            <textarea name="" id="calendarDescription" placeholder="일정을 입력하세요"
+                                      style="width: 325px; height: 120px; resize: none; padding: 10px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <button class="modal-btn" id="insert-btn" onclick="goSchedule()" style="width: 90px; color: white; margin-right: 30px;">등록</button>
+                </div>
+            </div>
+        </div>
+        <!-- 일정모달창 완-->
+
+        <div class="chat-main">
+
+        </div>
+        <div class="input-box">
+            <input type="text" class="chat-input" placeholder="채팅을 입력하세요">
+            <div class="icon">
+                <img src="/img/icon/add-calender.svg" id="add-calender-icon" width="16" style="cursor: pointer" alt="">
+                <img src="/img/icon/file-icon.svg" id="file-icon" width="16" style="cursor: pointer" alt="">
+            </div>
+            <img src="/img/icon/button/chat-btn.svg" id="goChat-icon" onclick="goChat()" style="cursor: pointer" alt="">
+        </div>
+    </main>
+
+    <!-- 3번 페이지 : 채팅 상세정보 -->
+    <section class="page" id="page3">
+
+        <div class="detail-background">
+            <div class="profile">
+                <img src="/img/groupchat.png" class="profile-img-3" alt="">
+            </div>
+            <div class="title-box">
+                <div class="detail-title">경림냥</div>
+                <button class="star-btn">멍바닥 주기</button>
+            </div>
+
+            <div class="media">
+                <div class="media-title">
+                    <div class="text">미디어</div>
+                    <div class="plus">+</div>
+                </div>
+                <div class="media-list">
+
+                </div>
+            </div>
+            <div class="calender">
+                <div class="calender-title" style="width: 100%;">가까운 일정</div>
+                <button class="today-btn">오늘</button>
+                <div class="calender-content">
+                    <div class="calender-box"></div>
+                    <div class="calender-text">
+                        <div class="calender-name">일정 제목</div>
+                        <div class="calender-date" style="font-size: 13px; color: #656565">일정 날짜</div>
+                    </div>
+                </div>
+            </div>
+            <div class="out-chat" style="color:red">나가기</div>
+        </div>
+    </section>
+</div>
+</body>
+</html>
