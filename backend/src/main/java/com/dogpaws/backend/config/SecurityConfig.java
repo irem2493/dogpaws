@@ -1,5 +1,6 @@
 package com.dogpaws.backend.config;
 
+import com.dogpaws.backend.filter.AdminLoginFilter;
 import com.dogpaws.backend.filter.JWTFilter;
 import com.dogpaws.backend.filter.LoginFilter;
 import com.dogpaws.backend.utils.JWTUtil;
@@ -23,11 +24,13 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final TokenService tokenService;
+    private final AuthenticationManager authenticationManager;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, TokenService tokenService) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, TokenService tokenService, AuthenticationManager authenticationManager) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.tokenService = tokenService;
+        this.authenticationManager = authenticationManager;
     }
 
     @Bean
@@ -42,6 +45,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화 (테스트 환경)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정
@@ -54,6 +58,7 @@ public class SecurityConfig {
 
         http
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, tokenService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(new AdminLoginFilter(authenticationManager(authenticationConfiguration),jwtUtil,tokenService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
