@@ -15,7 +15,7 @@ function handleClick(event) {
             window.location.href = '';
             alert('교배 매칭');
         }else if(clickedId === 'chat'){
-            window.location.href = '';
+            window.location.href = '/chat-room';
             alert('채팅하기');
         } else if(clickedId === 'map'){
             window.location.href = '';
