@@ -3,47 +3,62 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 <head>
-    <link rel="stylesheet" href="/css/ajy/login.css" />
-
-    <title>개인정보 수정</title>
+    <link rel="stylesheet" href="/css/ajy/join.css" />
+    <title>회원정보 관리</title>
 </head>
 <body layout:fragment="content" style="min-height: 100vh">
 <div class="container">
     <div class="edit-container">
-    <div class="sidebar">
-        <div class="sidebar-container">
-            <div class="sidebar-header">
-                <img src="/img/icon/pet.svg" alt="로고" class="logo" />
-                <p>마이페이지</p>
+        <div class="sidebar">
+            <div class="sidebar-container">
+                <div class="sidebar-header">
+                    <img src="/img/icon/pet.svg" alt="로고" class="logo" />
+                    <p>마이페이지</p>
+                </div>
+                <hr />
+                <ul class="sidebar-menu">
+                    <li><a href="/editUserPassword" class="active">개인정보 관리</a></li>
+                    <li><a href="#">반려견 프로필 관리</a></li>
+                    <li><a href="#">좋아요 목록</a></li>
+                    <li><a href="#">작성한 게시글 보기</a></li>
+                    <li><a href="#">일정 관리</a></li>
+                    <li><a href="#">스토어</a></li>
+                    <li>
+                        <ul>
+                            <li><a href="#">장바구니</a></li>
+                            <li><a href="#">주문 · 배송</a></li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
-            <hr />
-            <ul class="sidebar-menu">
-                <li><a href="#" class="active">개인정보 관리</a></li>
-                <li><a href="#">반려견 프로필 관리</a></li>
-                <li><a href="#">좋아요 목록</a></li>
-                <li><a href="#">작성한 게시글 보기</a></li>
-                <li><a href="#">일정 관리</a></li>
-                <li><a href="#">스토어</a></li>
-                <li>
-                    <ul>
-                        <li><a href="#">장바구니</a></li>
-                        <li><a href="#">주문 · 배송</a></li>
-                    </ul>
-                </li>
-            </ul>
+        </div>
+
+        <div class="join-container" style="max-width: 450px; margin: 50px auto;">
+            <div class="container_box">
+                <div class="header">사용자 정보 등록</div>
+
+                <div class="form-container" style="margin-top: 20px">
+                    <div class="form-fields" style="width: 100%">
+                        <form id="editForm">
+                            <input type="hidden" name="username" id="username" th:value="${user.username}"/>
+                            <label for="address"><span class="required">*</span> 산책로 주소검색</label>
+                            <div class="input-with-button">
+                                <input type="text" id="postcode" name="postcode" placeholder="우편번호를 입력하세요" th:value="${user.postcode}" th:attr="data-prev-value=${user.postcode}">
+                                <button type="button" id="addressBtn" onclick="execDaumPostcode()">우편번호</button>
+                            </div>
+                            <input type="text" id="address" name="address" placeholder="주소 입력" th:value="${user.address}" th:attr="data-prev-value=${user.address}">
+                            <input type="text" id="detailAddress" name="detailAddress" placeholder="상세 주소 입력" th:value="${user.detailAddress}" th:attr="data-prev-value=${user.detailAddress}">
+
+                            <input type="submit" value="개인정보 수정" style="background: #FFA03A"/>
+                            <button type="button" id="deleteAccountBtn" style="width: 100%; background: #F20F38">회원탈퇴</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="login-container" style="max-width: 450px">
-        <h1>개인정보 관리</h1>
-        <hr>
-        <p>
-        <span class="info-icon">⚠️</span> 소셜 회원인 경우, 정보 수정이 불가합니다. <br>회원탈퇴 시, 관리자한테 문의주세요.
-        </p>
-
-    </div>
-    </div>
-
 </div>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="/js/ajy/user_edit_social.js"></script>
 </body>
 </html>

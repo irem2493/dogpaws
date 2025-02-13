@@ -1,21 +1,15 @@
-document.getElementById('checkForm').addEventListener('submit', function(event) {
-    event.preventDefault();  // 기본 폼 제출 방지
+document.getElementById('checkForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // 기본 폼 제출 방지
 
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
     const errorMessage = document.getElementById('error-message');
 
-    const requiredFields = ['password'];
-    for (let field of requiredFields) {
-        const inputElement = document.querySelector(`input[name='${field}']`);
-        const value = inputElement?.value.trim();
-        if (!value) {
-            alert(`필수 입력 항목을 모두 채워주세요: ${field}`);
-            if (inputElement) {
-                inputElement.focus();  // 빈 필드에 포커스 설정
-            }
-            return;
-        }
+    // 필수 입력 항목 검증
+    if (!password) {
+        alert("비밀번호를 입력하세요.");
+        document.getElementById('password').focus();
+        return;
     }
 
     const formData = new FormData();
@@ -24,32 +18,38 @@ document.getElementById('checkForm').addEventListener('submit', function(event) 
 
     api.post('/api/user/check-user', formData)
         .then(response => {
-            if (response.status === 'SUCCESS') {
-                const userData = response.body?.body; // 받아온 userData 객체
+            console.log("서버 응답:", response); // ✅ 응답 데이터 로그 확인
 
-                // POST 요청으로 /editUser로 데이터 전송
+            if (response.status === 'SUCCESS') {
+                const userData = response.body?.body; // ✅ userData 추출
+                console.log("UserData:", userData);
+
+                if (!userData) {
+                    return Promise.reject(new Error('비밀번호가 올바르지 않습니다.'));
+                }
+
+                // ✅ 폼을 동적으로 생성하여 데이터 전송
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '/editUser';
 
-                // hidden input을 만들어서 데이터를 전송합니다
                 const input = document.createElement('input');
                 input.type = 'hidden';
-                input.name = 'userData';  // 서버에서 받을 파라미터 이름
-                input.value = JSON.stringify(userData);  // 데이터 직렬화 후 입력값으로 설정
+                input.name = 'userData';
+                input.value = JSON.stringify(userData);
 
                 form.appendChild(input);
                 document.body.appendChild(form);
 
-                // 폼 제출
+                console.log("폼 제출 실행");
                 form.submit();
             } else {
-                throw new Error('확인 실패');
+                return Promise.reject(new Error('비밀번호가 올바르지 않습니다.'));
             }
         })
         .catch(error => {
-            errorMessage.textContent = '비밀번호가 올바르지 않습니다.';
+            console.error("비밀번호 확인 중 오류 발생:", error);
+            errorMessage.textContent = error.message;
             errorMessage.style.display = 'block';
-            console.error('패스워드 에러:', error);
         });
 });

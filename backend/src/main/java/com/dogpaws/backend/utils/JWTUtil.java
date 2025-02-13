@@ -57,7 +57,7 @@ public class JWTUtil {
                 .claim("role", role)
                 .claim("nickname", nickname)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() +30 * 60*1000))// 10분 유효 - > 30분 유효하도록 변경
+                .expiration(new Date(System.currentTimeMillis() +60 * 60*1000))// 10분 유효 - > 1시간 유효하도록 변경
                 .signWith(secretKey)
                 .compact();
     }

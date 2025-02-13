@@ -106,7 +106,7 @@
             <input type="text" id="detailAddress" name="detailAddress" placeholder="상세 주소 입력" th:value="${user.detailAddress}" th:attr="data-prev-value=${user.detailAddress}">
 
               <input type="submit" value="개인정보 수정" style="background: #FFA03A"/>
-              <button type="button" onclick="deleteUser()" style="width: 100%; background: #F20F38">회원탈퇴</button>
+              <button type="button" id="deleteAccountBtn" style="width: 100%; background: #F20F38">회원탈퇴</button>
             </form>
           </div>
         </div>
