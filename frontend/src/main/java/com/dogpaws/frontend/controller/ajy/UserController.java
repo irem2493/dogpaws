@@ -2,26 +2,20 @@ package com.dogpaws.frontend.controller.ajy;
 
 import com.dogpaws.frontend.dto.ajy.UserDto;
 import com.dogpaws.frontend.dto.ajy.UserResponseDto;
-import com.dogpaws.frontend.global.ApiResponse;
 import com.dogpaws.frontend.service.ApiRequestService;
 import com.dogpaws.frontend.utils.SessionUtil;
-import com.dogpaws.frontend.utils.TokenUtil;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Controller
@@ -50,13 +44,13 @@ public class UserController {
 
                     if (provider != null && !provider.toString().trim().isEmpty()) { // ✅ null 또는 빈 문자열 방지
                         model.addAttribute("provider", provider);
-                        return "/ajy/user_edit_email";
+                        return "/ajy/mypage/user_edit_email";
                     }
                 }
             }
 
             model.addAttribute("user", userDto);
-            return "/ajy/user_edit_password";
+            return "/ajy/mypage/user_edit_password";
         }
         return "redirect:/login";
     }
@@ -72,7 +66,7 @@ public class UserController {
             System.out.println("editUser : " + userDto);
 
             model.addAttribute("user", userDto);
-            return "/ajy/user_edit";
+            return "/ajy/mypage/user_edit";
         } catch (Exception e) {
             e.printStackTrace();
             return "error";
@@ -89,7 +83,7 @@ public class UserController {
             System.out.println("editUserSocial : " + userDto);
 
             model.addAttribute("user", userDto);
-            return "/ajy/user_edit_social";
+            return "/ajy/mypage/user_edit_social";
         } catch (Exception e) {
             e.printStackTrace();
             return "error";

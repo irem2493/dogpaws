@@ -8,4 +8,11 @@
       FROM tbl_gubn
       WHERE group_code = #{groupCode};
     </select>
+
+  <select id="getGubn" parameterType="String" resultType="com.dogpaws.backend.dto.common.GubnDto">
+    SELECT group_code, gubn_code, gubn_name
+    FROM tbl_gubn
+    WHERE group_code = #{groupCode}
+          and gubn_code = #{gubnCode};
+  </select>
 </mapper>
