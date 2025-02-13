@@ -20,7 +20,7 @@ public class ChatController {
         DogDto dog = (DogDto) session.getAttribute("dog");
         UserDto user = (UserDto) session.getAttribute("user");
         int dogId = dog.getDogId();
-//        String dogName = dog.getDogName();
+        String dogName = dog.getDogName();
         String dogProfile = dog.getProfileUrl();
         model.addAttribute("dogId", dogId);
         model.addAttribute("dogProfile", dogProfile);
@@ -29,7 +29,7 @@ public class ChatController {
         String nickname = user.getNickname();
         model.addAttribute("username", username);
         model.addAttribute("nickname", nickname);
-//        model.addAttribute("dogName", dogName);
+        model.addAttribute("dogName", dogName);
         System.out.println(dogId+':'+username+':'+nickname+':'+dogProfile);
         return "cys/chat_room";
     }

@@ -1,6 +1,7 @@
 package com.dogpaws.backend.service.cys;
 
-import com.dogpaws.backend.dto.ajy.DogDto;
+import com.dogpaws.backend.dto.cys.DogResponseDto;
+import com.dogpaws.backend.dto.hyepin.CalendarDto;
 import com.dogpaws.backend.repository.dao.cys.ChatDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,17 +19,23 @@ public class ChatService {
     private ChatDao chatDao;
 
     //profile 불러오기
-    public List<DogDto> getChatProfile(List<Integer> otherParticipants) {
-        List<DogDto> profiles = new ArrayList<>();
+    public List<DogResponseDto> getChatProfile(List<Integer> otherParticipants) {
+        List<DogResponseDto> profiles = new ArrayList<>();
 
         for (Integer otherParticipant : otherParticipants) {
-            DogDto profile = chatDao.getChatProfile(otherParticipant);
+            DogResponseDto profile = chatDao.getChatProfile(otherParticipant);
             if (profile != null) {
                 profiles.add(profile);
             }
         }
         return profiles;
     };
+
+    public int insertSchedule(CalendarDto calendarDto){
+        int result = chatDao.insertCalendar(calendarDto);
+        System.out.println("Dao. result" + result);
+        return result;
+    }
 
 
 }

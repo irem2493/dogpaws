@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dogpaws.backend.repository.dao.cys.ChatDao">
+    <select id="getChatProfile" resultType="com.dogpaws.backend.dto.cys.DogResponseDto">
+        SELECT d.dog_id, d.username, d.dog_name, u.nickname, d.profile_url
+        FROM tbl_dogs d
+        JOIN tbl_users u ON u.username = d.username
+        WHERE dog_id = #{id}
+    </select>
+
+    <insert id="insertCalendar">
+        INSERT INTO tbl_calendar
+        (username, dog_id, calendar_title, address, calendar_type,
+        calendar_start_date, calendar_end_date, calendar_description)
+        VALUES
+        (#{calenderDto.username}, #{calenderDto.dogId}, #{calenderDto.calendarTitle}, #{calenderDto.address}, #{calenderDto.calendarType},
+        #{calenderDto.calendarStartDate}, #{calenderDto.calendarEndDate}, #{calenderDto.calendarDescription})
+    </insert>
+</mapper>

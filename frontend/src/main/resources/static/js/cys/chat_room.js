@@ -7,7 +7,7 @@ import {collection, doc, updateDoc, getDoc, addDoc, query, orderBy, onSnapshot, 
 const currentUser = document.querySelector("#username").value;  // 서버에서 넘겨받은 세션 값
 const currentUserNickname = document.querySelector("#nickname").value;  // 서버에서 넘겨받은 세션 값
 const currentDogId = document.querySelector("#dogId").value;
-// const currentDogName = document.querySelector("#dogName").value;
+const currentDogName = document.querySelector("#dogName").value;
 const currentDogProfile = document.querySelector("#dogProfile").value;
 console.log("현재 사용자 강아지:", currentDogId);
 const chatListElement = document.querySelector(".chat-list");
@@ -90,6 +90,12 @@ function getProfileById(participantsId){
     return profile ? profile.profile_url : '/img/groupchat.png';
 }
 
+function getNicknameById(participantsId){
+    // 프로필 데이터에서 해당 ID의 프로필 찾기
+    const profile = chatProfiles.find(profile => profile.dog_id === parseInt(participantsId));
+    return profile.nickname;
+}
+
 let currentFilterStatus = 'F'
 
 function chatCategory(filterStatus) {
@@ -109,14 +115,29 @@ function chatCategory(filterStatus) {
                 participantId = '/img/groupchat.png';  // 여러 명일 경우 기본값 설정
             }
 
-            const profileUrl = getProfileById(participantId);
+
 
             const listItem = document.createElement("div");
 
-            listItem.innerHTML = `
+            if (filterStatus === 'F' || filterStatus === 'M'){
+            const profileUrl = getProfileById(participantId);
+            const otherNickname = getNicknameById(participantId);
+                listItem.innerHTML = `
                     <div class="chat-one" onclick="room('${chatRoom.id}')">
                         <div class="">
-                            <img src="${profileUrl}" width="50" class="profile-img-2" alt="프로필">
+                            <img src="${profileUrl}" width="50" height="50" class="profile-img-2" alt="프로필">
+                        </div>
+                        <div class="pre-chat-content">
+                            <div class="pre-chat-with">${otherNickname}</div>
+                            <div class="last-chat">${chatRoom['lastMessage'].text}</div>
+                        </div>
+                    </div>  
+                `;
+            }else if(filterStatus === 'G'){
+                listItem.innerHTML = `
+                    <div class="chat-one" onclick="room('${chatRoom.id}')">
+                        <div class="">
+                            <img src="${chatRoom.roomImage}" width="50" class="profile-img-2" alt="프로필">
                         </div>
                         <div class="pre-chat-content">
                             <div class="pre-chat-with">${chatRoom.roomName}</div>
@@ -124,6 +145,9 @@ function chatCategory(filterStatus) {
                         </div>
                     </div>  
                 `;
+            }
+
+
             chatListElement.appendChild(listItem);
             if (filterStatus === 'F') {
                 oneOnOneCategory.style.borderBottom = "solid 5px #FE904B";
@@ -171,22 +195,68 @@ function subscribeToMessages(roomId) {
             const message = doc.data();
             const messageDiv = document.createElement('div');
 
-// 메시지 구조 생성
-            if (message.sender === currentDogId) {
-                // 본인 메시지일 경우 오른쪽 정렬
-                messageDiv.className = "chat-message right";
-                messageDiv.innerHTML = `
+            //일정 공유 채팅
+            if(message.status === 'S'){
+                if (message.sender === currentDogId) {
+                    messageDiv.className = "chat-message right";
+                    messageDiv.innerHTML = `
+                        <p class="message-time">${formatTime(message.timestamp)}</p>
+                        <div class="schedule-message">
+                            <p class="schedule-title">${message.text}</p>
+                            <div class="schedule-content">
+                                <div class="schedule-icon">
+                                    <img src="/img/icon/CalendarCheck.svg" alt="일정 아이콘">
+                                </div>
+                                <div class="schedule-info">
+                                    <p class="schedule-name">${message.calendarTitle}</p>
+                                    <p class="schedule-time">시간 <span>${message.calendarStartDate} ~ ${message.calendarEndDate}</span></p>
+                                </div>
+                            </div>
+                            <button class="schedule-btn">일정 보기</button>
+                        </div>
+                    `;
+                } else {
+                    const profileUrl = getProfileById(message.sender);
+                    messageDiv.className = "chat-message left";
+                    messageDiv.innerHTML = `
+                        <img src="${profileUrl}" width="40" height="40" class="profile-img-2" alt="프로필">
+                        <div class="chat-not-profile">
+                            <div class="chat-name">${message.nickname}</div>
+                            <div class="schedule-message">
+                                <p class="schedule-title">일정이 공유되었어요.</p>
+                                <div class="schedule-content">
+                                    <div class="schedule-icon">
+                                        <img src="/img/icon/CalendarCheck.svg" alt="일정 아이콘">
+                                    </div>
+                                    <div class="schedule-info">
+                                        <p class="schedule-name">${message.calendarTitle}</p>
+                                        <p class="schedule-time">시간 <span>${message.calendarStartDate} ~ ${message.calendarEndDate}</span></p>
+                                    </div>
+                                </div>
+                                <button class="schedule-btn">일정 보기</button>
+                            </div>
+                        </div>
+                        <p class="message-time">${formatTime(message.timestamp)}</p>
+                    `;
+                }
+
+            }else if(message.status === 'C' || message.status !== 'S'){
+                // 메시지 구조 생성
+                if (message.sender === currentDogId) {
+                    // 본인 메시지일 경우 오른쪽 정렬
+                    messageDiv.className = "chat-message right";
+                    messageDiv.innerHTML = `
                         <div class="message-content">
                             <div class="message-time">${formatTime(message.timestamp)}</div>
                             <div class="message-text">${message.text}</div>
                         </div>
                     `;
-            } else {
-                const profileUrl = getProfileById(message.sender);
-                // 상대방 메시지일 경우 왼쪽 정렬
-                messageDiv.className = 'chat-message left';
-                messageDiv.innerHTML = `
-                        <img src="${profileUrl}" width="40" class="profile-img-2" alt="프로필">
+                } else {
+                    const profileUrl = getProfileById(message.sender);
+                    // 상대방 메시지일 경우 왼쪽 정렬
+                    messageDiv.className = 'chat-message left';
+                    messageDiv.innerHTML = `
+                        <img src="${profileUrl}" width="40" height="40" class="profile-img-2" alt="프로필">
                         <div class="chat-not-profile">
                             <div class="chat-name">${message.nickname}</div>
                             <div class="message-content">
@@ -195,6 +265,7 @@ function subscribeToMessages(roomId) {
                             </div>
                         </div>
                     `;
+                }
             }
 
             chatMain.appendChild(messageDiv);
@@ -259,4 +330,97 @@ function formatTime(timestamp) {
 
     console.error("유효하지 않은 timestamp:", timestamp);
     return "알 수 없음";
+}
+
+/////////////////////////////// 일정 /////////////////////////////\
+
+const schedulesBtn = document.querySelector("#add-calender-icon");
+const scheduleModal = document.querySelector(".modal-all");
+const closeModal = document.querySelector('.close-btn');
+
+schedulesBtn.addEventListener('click', function (event){
+    event.stopPropagation(); // 클릭 이벤트 전파 방지!
+    scheduleModal.style.display = "flex";
+});
+
+closeModal.addEventListener('click', function (event){
+    event.stopPropagation(); // 클릭 이벤트 전파 방지!
+    scheduleModal.style.display = 'none';
+});
+
+// 모달 내부 클릭 시 이벤트 전파 방지
+scheduleModal.addEventListener("click", (event) => {
+    event.stopPropagation();
+});
+
+
+document.addEventListener("click", (event) => {
+    if (scheduleModal.style.display === "flex") {
+        scheduleModal.style.display = "none";
+    }
+});
+
+//주소 검색
+window.sample5_execDaumPostcode = function () {
+    new daum.Postcode({
+        oncomplete: function (data) {
+            // 최종 주소 (도로명 주소 또는 지번 주소)
+            let addr = data.roadAddress ? data.roadAddress : data.jibunAddress;
+
+            // 주소 정보를 input 태그에 넣기
+            document.getElementById("address").value = addr;
+        }
+    }).open();
+};
+
+//일정 등록
+window.goSchedule = function (){
+
+    const calendarType = document.querySelector('#calendarType').value;
+    const calendarTitle = document.querySelector('#calendarTitle').value;
+    const calendarStartDate = document.querySelector('#calendarStartDate').value;
+    const calendarEndDate = document.querySelector('#calendarEndDate').value;
+    const address = document.querySelector('#address').value;
+    const calendarDescription = document.querySelector('#calendarDescription').value;
+
+    let formData = new FormData();
+
+    formData.append("username",currentUser);
+    formData.append("dogId",currentDogId);
+    formData.append("dogName",currentDogName);
+    formData.append("calendarTitle",calendarTitle);
+    formData.append("calendarType",calendarType);
+    formData.append("address",address);
+    formData.append("calendarStartDate",calendarStartDate);
+    formData.append("calendarEndDate",calendarEndDate);
+    formData.append("calendarDescription",calendarDescription);
+
+    api.post('/api/chat/schedule', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+        .then(async response => {
+            console.log("응답 데이터jjjjj:", response);
+
+            const NewSchedule = {
+                sender: currentDogId,
+                nickname: currentUserNickname,
+                text: "일정이 공유되었습니다.",
+                calendarTitle: calendarTitle,
+                calendarStartDate: calendarStartDate,
+                calendarEndDate: calendarEndDate,
+                timestamp: serverTimestamp(),
+                status : 'S'
+            };
+
+            await addDoc(collection(db, "chatRooms", selectedRoomId, "messages"), NewSchedule);
+
+            //lastMessage Update
+            await updateDoc(doc(db, "chatRooms", selectedRoomId), {lastMessage: NewSchedule})
+
+            scheduleModal.style.display = "none";
+
+        })
+        .catch(error => console.error(error));
 }
