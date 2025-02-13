@@ -223,3 +223,28 @@ margin-right: 10px; /* 오른쪽에 15px 마진 */
     z-index: 9999;
 }
 
+.pawsModal-container{
+    margin-left: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.declaration-container{
+    display: flex;
+    gap: 15px;
+}
+
+.declaration-radio{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.declaration-title{
+    font-size: 18px;
+}
+
+.declaration-content{
+    font-size: 14px;
+}

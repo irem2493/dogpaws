@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dogpaws.backend.repository.dao.hyepin.DeclarationDao">
+
+    <insert id="insertDeclaration">
+        INSERT INTO tbl_declaration
+        (username, dog_id, declaration_code, declaration_content)
+        VALUES
+        (#{username}, #{dogId}, #{declarationCode}, #{declarationContent})
+    </insert>
+
+
+</mapper>
