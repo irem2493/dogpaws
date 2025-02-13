@@ -8,7 +8,7 @@ document.getElementById('editForm').addEventListener('submit', function(event) {
     const formData = new FormData(form);
 
     // 기존 값 저장
-    const fields = ["nickname", "password","confirmPassword", "ageGroup", "email", "postcode", "address", "detailAddress"];
+    const fields = ["postcode", "address", "detailAddress"];
     const previousValues = {};
 
     fields.forEach(field => {
@@ -16,23 +16,6 @@ document.getElementById('editForm').addEventListener('submit', function(event) {
         previousValues[field] = element.getAttribute("th:value") || "";
     });
 
-    // 입력값 가져오기
-    /*const username = document.getElementById("nickname").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const nickname = document.getElementById("nickname").value.trim();
-    const ageGroup = document.getElementById("ageGroup").value;
-    const email = document.getElementById("email").value.trim();
-    const postcode = document.getElementById("postcode").value.trim();
-    const address = document.getElementById("address").value.trim();
-    const detailAddress = document.getElementById("detailAddress").value.trim();
-
-    // 필수값 검증 및 기존 값 유지
-    if (!nickname) document.getElementById("nickname").value = previousValues.nickname;
-    if (!ageGroup) document.getElementById("ageGroup").value = previousValues.ageGroup;
-    if (!email) document.getElementById("email").value = previousValues.email;
-    if (!postcode) document.getElementById("postcode").value = previousValues.postcode;
-    if (!address) document.getElementById("address").value = previousValues.address;
-    if (!detailAddress) document.getElementById("detailAddress").value = previousValues.detailAddress;*/
 
 
     fields.forEach(field => {
@@ -48,39 +31,8 @@ document.getElementById('editForm').addEventListener('submit', function(event) {
         }
     });
 
-    // 이메일 형식 검증 정규식 (RFC 5322 표준을 기반으로 간단하게 작성)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const email = document.getElementById("email").value.trim();
-    if (!emailRegex.test(email)) {
-        alert("올바른 이메일 형식이 아닙니다.");
-        return;
-    }
-    const password = document.getElementById("password").value.trim();
-    const confirmPasswordInput = document.querySelector("input[name='confirmPassword']");
-    const confirmPassword = confirmPasswordInput.value.trim();
 
-    const requiredFields = ['password', 'confirmPassword'];
-    for (let field of requiredFields) {
-        const inputElement = document.querySelector(`input[name='${field}']`);
-        const value = inputElement?.value.trim();
-        if (!value) {
-            alert(`필수 입력 항목을 모두 채워주세요: ${field}`);
-            if (inputElement) {
-                inputElement.focus();  // 빈 필드에 포커스 설정
-            }
-            return;
-        }
-    }
-
-    if (password !== confirmPassword) {
-        alert("비밀번호가 일치하지 않습니다.");
-        if (confirmPasswordInput) {
-            confirmPasswordInput.focus();  // 빈 필드에 포커스 설정
-        }
-        return;
-    }
-
-    api.put('/api/user/edit-user', formData, )
+    api.put('/api/user/edit-user-social', formData, )
         .then(data => {
             console.log('Response Data:', data);  // 응답 데이터 출력
 
@@ -99,32 +51,6 @@ document.getElementById('editForm').addEventListener('submit', function(event) {
 
 });
 
-function setGender(value, btn) {
-    // 성별 값을 hidden input에 설정
-    document.getElementById('gender').value = value;
-
-    // 모든 버튼에서 active 클래스 제거
-    const buttons = document.querySelectorAll('.gender-select button');
-    buttons.forEach(button => button.classList.remove('active'));
-
-    // 클릭된 버튼에 active 클래스 추가
-    btn.classList.add('active');
-}
-
-function initializeGenderSelection() {
-    const genderValue = document.getElementById('gender').value;
-
-    // 초기 값에 따라 active 클래스 추가
-    if (genderValue) {
-        const button = document.querySelector(`.gender-select button[onclick="setGender('${genderValue}', this)"]`);
-        if (button) {
-            button.classList.add('active');
-        }
-    }
-}
-
-// 페이지 로드 시 초기 상태 설정
-initializeGenderSelection();
 
 function execDaumPostcode() {
     new daum.Postcode({
