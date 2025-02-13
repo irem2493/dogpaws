@@ -635,7 +635,7 @@ textarea.input-a {
 
 .sidebar {
     width: 260px;
-    min-height: 100vh;
+    min-height: 100%;
     background-color: #FFFAF4;
     border-right: 1px solid #ddd;
     padding: 30px;
