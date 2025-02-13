@@ -3,6 +3,7 @@ package com.dogpaws.frontend.controller.ajy;
 import com.dogpaws.frontend.dto.ajy.DogDto;
 import com.dogpaws.frontend.dto.ajy.UserDto;
 import com.dogpaws.frontend.service.ApiRequestService;
+import com.dogpaws.frontend.utils.SessionUtil;
 import com.dogpaws.frontend.utils.TokenUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -80,5 +83,31 @@ public class DogController {
         model.addAttribute("playList", playList);
 
         return "/ajy/dog_profile_register";
+    }
+    
+    //마이페이지 -강아지 리스트 요청
+    @GetMapping("/mypage/dogList")
+    public String dogList(Model model, HttpSession session) {
+
+        if(SessionUtil.getUser(session) != null){
+            var dogListResponse = apiService.fetchData("/api/dog/mypage/dogList/"+ Objects.requireNonNull(SessionUtil.getUser(session)).getUsername());
+            var dogList = dogListResponse.getBody();
+
+            var breedResponse = apiService.fetchData("/api/gubn/breed_code");
+            var personalityResponse = apiService.fetchData("/api/gubn/dog_personal_code");
+            var playResponse = apiService.fetchData("/api/gubn/dog_play_code");
+
+            var breedList = breedResponse.getBody();
+            var personalityList = personalityResponse.getBody();
+            var playList = playResponse.getBody();
+
+            System.out.println("dogList Mypage : " + dogList);
+            model.addAttribute("dogList", dogList);
+            model.addAttribute("breedList", breedList);
+            model.addAttribute("personalityList", personalityList);
+            model.addAttribute("playList", playList);
+            return "/ajy/mypage/doglist";
+        }
+        return "redirect:/login";
     }
 }

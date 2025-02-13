@@ -31,6 +31,14 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        // ✅ SecurityContext에 이미 인증 정보가 있으면 다시 확인하지 않음
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            log.info("🔄 기존 인증 정보 존재 - 재검증 생략");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         response.setContentType("application/json;charset=UTF-8");
         String token = extractToken(request);
 

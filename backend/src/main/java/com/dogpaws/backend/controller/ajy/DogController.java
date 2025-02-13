@@ -2,6 +2,7 @@ package com.dogpaws.backend.controller.ajy;
 
 import com.dogpaws.backend.dto.ajy.DogDto;
 import com.dogpaws.backend.dto.ajy.DogRegisterRequestDto;
+import com.dogpaws.backend.dto.ajy.DogResponseDto;
 import com.dogpaws.backend.service.ajy.DogService;
 import com.dogpaws.backend.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,11 @@ public class DogController {
         //현재 파일 안 옴
 
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "강아지 등록 완료");
+    }
+
+    @GetMapping("/mypage/dogList/{username}")
+    public  List<DogResponseDto> getDogList2(@PathVariable String username) {
+        return dogService.getDogList(username);
     }
 
 }
