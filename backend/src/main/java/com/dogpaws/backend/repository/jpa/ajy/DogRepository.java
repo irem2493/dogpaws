@@ -11,4 +11,6 @@ public interface DogRepository extends JpaRepository<Dog, Integer> {
 
     // username을 통해 강아지 정보를 모두 조회
     List<Dog> findByUsername(String username);
+
+    Dog findByDogId(Integer dogId);
 }

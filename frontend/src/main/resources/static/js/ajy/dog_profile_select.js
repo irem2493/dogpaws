@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
             profileItem.classList.add('profile-item');
 
             profileItem.innerHTML = `
-                <img src="${profile.profile_url}" alt="프로필 이미지">
+                <img src="${profile.profile_url}" alt="프로필 이미지" onerror="this.src='/img/dog_foot2.png';">
                 <div class="profile-name" >${profile.dog_name}</div>
             `;
 
@@ -115,7 +115,7 @@ function saveSelectedProfile(profile) {
 
     axios({
         method: 'post',
-        url: 'http://localhost:2000/saveProfile', // 서버의 정확한 URL
+        url: 'http://localhost:2000/dog/saveProfile', // 서버의 정확한 URL
         data: JSON.stringify(profile),  // JSON으로 전송
         headers: {
             'Content-Type': 'application/json'
