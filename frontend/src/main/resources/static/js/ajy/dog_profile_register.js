@@ -4,11 +4,27 @@ document.addEventListener("DOMContentLoaded", function() {
     const profileImagePreview = document.getElementById('profileImagePreview');
     const uploadCircle = document.querySelector('.profile-upload-circle');
 
+    const isMatingAvailable = document.getElementById('isMatingAvailable');
+    const fileUploadContainer = document.getElementById('fileUploadContainer');
 
-    // 서버에서 가져온 프로필 이미지가 있을 경우 미리보기 표시
+    if (!isMatingAvailable || !fileUploadContainer) {
+        console.error("체크박스 또는 파일 업로드 컨테이너를 찾을 수 없습니다.");
+        return;
+    }
 
-    profileImagePreview.style.display = 'none'; // 초기에는 이미지 숨기기
+    // ✅ 초기 상태 반영 (체크박스가 체크되어 있으면 파일 업로드 컨테이너 보이게)
+    fileUploadContainer.style.display = isMatingAvailable.checked ? 'block' : 'none';
 
+    // ✅ 체크박스 변경 이벤트 리스너 추가
+    isMatingAvailable.addEventListener('change', function () {
+        console.log("체크박스 상태 변경됨:", this.checked); // 상태 확인 로그
+        fileUploadContainer.style.display = this.checked ? 'block' : 'none';
+    });
+
+    document.getElementById("dogForm").addEventListener("submit", function (event) {
+        event.preventDefault(); // 기본 제출 방지
+        saveDog(); // saveDog() 실행
+    });
 
     // 프로필 업로드 클릭 시 파일 선택 창 열기
     profileUpload.addEventListener('click', function () {
@@ -28,7 +44,6 @@ document.addEventListener("DOMContentLoaded", function() {
             reader.readAsDataURL(file);
         }
     });
-
 
     document.querySelectorAll('.select-box').forEach(selectBox => {
         const selected = selectBox.querySelector('.select-box-selected');
@@ -146,25 +161,6 @@ document.addEventListener("DOMContentLoaded", function() {
             endTimeInput.classList.remove('disabled-input');
         }
     }
-
-    // "이전" 버튼 클릭 시 페이지 이동
-    document.querySelector("#preButton").addEventListener("click", function () {
-        // 이동할 페이지 URL 설정 (예: nextpage.html)
-
-        api.post('/api/join/social/provider')
-            .then(data => {
-                console.log('세션 데이터:', data);
-
-                // 응답 JSON에서 사용자 정보를 가져옴
-                const provider = data.body?.body;
-
-                if (provider) window.location.href = "/socialJoin";
-                else window.location.href = "/join";
-            })
-            .catch(error => {
-                console.error('세션 데이터 로드 오류:', error);
-            });
-    });
 
 });
 
@@ -437,7 +433,9 @@ function initializeGenderSelection() {
 // 페이지 로드 시 초기 상태 설정
 initializeGenderSelection();
 
-function saveStep1Dog() {
+
+
+function saveDog() {
     const form = document.getElementById("dogForm");
 
     // FormData 객체 생성
@@ -501,15 +499,15 @@ function saveStep1Dog() {
 
             // 응답의 body.body가 '1단계 저장 완료'인지 확인
             if (data.status === 'SUCCESS') {
-                alert("강아지 등록 완료");
-                location.href = '/dogProfile';
+                alert("강아지 프로필 저장 완료");
+                location.href = '/dog/mypage/dogList';
             } else {
-                alert("강아지 등록 완료");
+                alert("강아지 프로필 저장 실패");
             }
         })
         .catch(error => {
             console.error("오류:", error);
-            alert("강아지 등록 중 오류.");
+            alert("강아지 프로필 저장 중 오류.");
         });
 
 }
@@ -619,17 +617,6 @@ function showSelectedPlayOptions(selectedValues) {
     });
 }
 
-// 체크박스 상태에 따라 파일 업로드 리스트 표시/숨기기
-document.getElementById('isMatingAvailable').addEventListener('change', function() {
-    const fileUploadContainer = document.getElementById('fileUploadContainer');
-
-    if (this.checked) {
-        fileUploadContainer.style.display = 'block';  // 체크 시 파일 리스트 보이기
-    } else {
-        fileUploadContainer.style.display = 'none';   // 체크 해제 시 숨기기
-    }
-});
-
 // 파일 찾기 버튼 클릭 시 파일 선택창 열기
 function openFileDialog(inputId, fileNameInputId) {
     const fileInput = document.getElementById(inputId);
@@ -662,3 +649,27 @@ function updateFileList() {
     const fileNames = Array.from(fileInput.files).map(file => file.name).join(', ');
     fileNamesField.value = fileNames || "선택된 파일이 없습니다.";
 }
+
+// 파일을 폼데이터에 추가하는 함수
+function addFileToFormData(fileInputId, fileNameInputId, formData) {
+    const fileInput = document.getElementById(fileInputId);
+    const fileNameInput = document.getElementById(fileNameInputId);
+
+    if (fileInput.files.length > 0) {
+        formData.append(fileInputId, fileInput.files[0]);
+    } else {
+        console.log(`${fileNameInputId}에 선택된 파일이 없습니다.`);
+    }
+}
+
+
+// 체크박스 상태에 따라 파일 업로드 리스트 표시/숨기기
+document.getElementById('isMatingAvailable').addEventListener('change', function() {
+    const fileUploadContainer = document.getElementById('fileUploadContainer');
+
+    if (this.checked) {
+        fileUploadContainer.style.display = 'block';  // 체크 시 파일 리스트 보이기
+    } else {
+        fileUploadContainer.style.display = 'none';   // 체크 해제 시 숨기기
+    }
+});

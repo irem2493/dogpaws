@@ -122,7 +122,6 @@ public class JoinController {
 
             // 세션에 저장할 파일 정보 (경로만 저장)
 
-
             dogRequestDto.setFileOldName(fileNameWithoutExt);
             dogRequestDto.setFileNewName(newFileName);
             dogRequestDto.setFileSize(fileSize);
@@ -157,8 +156,6 @@ public class JoinController {
         }
 
         log.info("세션에서 2단계 데이터 반환: {}", step2Data);
-
-
 
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, step2Data);
     }

@@ -87,7 +87,7 @@
                 </div>
                 <!-- 추가 버튼 (강아지가 5마리 이상이면 숨김) -->
                 <div class="profile-actions" th:if="${#lists.size(dogList) < 5}" style="margin-bottom: 80px">
-                    <button type="button" class="plus-button">
+                    <button type="button" class="plus-button" onclick="location.href='/dog/dogProfileRegister'">
                         <span class="plus-icon">+</span>
                     </button>
                 </div>

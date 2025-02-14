@@ -83,6 +83,26 @@ public class JoinService {
         }
     }
 
+    @Transactional
+    public void dogRegister(DogRequestDto dogRequestDto) throws IOException {
+
+        Dog dog = createDog(dogRequestDto);
+        dogRepository.save(dog);
+
+        System.out.println(dogRequestDto.getActivityImages());
+
+        Optional<Dog> dogId = dogRepository.findTopByOrderByDogIdDesc();
+        if (dogId.isPresent()) {
+            Integer maxDogId = dogId.get().getDogId();
+            createDogPersonal(maxDogId, dogRequestDto.getSelectedPersonalities());
+            createDogPlay(maxDogId, dogRequestDto.getSelectedPlays());
+
+            getActiveDogImage(maxDogId,dogRequestDto.getUsername(), dogRequestDto.getActivityImages());
+
+            getMatching(maxDogId, dogRequestDto.getUsername(), dogRequestDto.getFileTypeMap());
+        }
+    }
+
     private User createUser(UserRequestDto userRequestDto) {
         return User.builder()
                 .username(userRequestDto.getUsername())

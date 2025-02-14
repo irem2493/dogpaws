@@ -5,6 +5,7 @@
 <head>
   <link rel="stylesheet" href="/css/ajy/join.css" />
   <link rel="stylesheet" href="/css/ajy/dog_profile.css" />
+  <link rel="stylesheet" href="/css/ajy/matching_select.css" />
   <title>강아지 프로필 등록</title>
 </head>
 <body layout:fragment="content" style="min-height: 100vh">
@@ -18,7 +19,7 @@
           <form id="dogForm" enctype="multipart/form-data">
             <div class="center-profile">
               <div class="profile" id="profileUpload">
-                <img id="profileImagePreview" src="" alt="프로필 이미지" class="profile-img-preview">
+                <img id="profileImagePreview" src="" alt="프로필 이미지" class="profile-img-preview" style="display: none;">
                 <div class="profile-upload-circle">+</div>
                 <input type="file" id="fileInput" name="profileImage" accept="image/*" style="display: none;">
               </div>
@@ -172,16 +173,79 @@
                 <span>Kg</span>
               </div>
             </div>
+            <!-- 교배 매칭 체크박스 -->
+            <div class="matching-header">
+              <input type="checkbox" class="checkbox-basic" id="isMatingAvailable" name="isMatingAvailable" value="Y">
+              <label for="isMatingAvailable">교배 매칭</label>
+            </div>
+
+            <!-- 안내 문구 -->
+            <p class="matching-info">
+              <span class="info-icon">⚠️</span> 선택하지 않아도 강아지 정보를 등록할 수 있습니다.<br>
+              교배 매칭 여부는 추후 마이페이지에서 설정할 수 있습니다.
+            </p>
+
+            <!-- 강아지 이미지 -->
+            <div class="matching-image">
+              <img src="/img/baby_dog.jpg" alt="강아지 세 마리가 바구니 안에 있는 사진">
+            </div>
+
+            <!-- 설명 -->
+            <p class="matching-description">
+              혈통증명서, 예방접종 증명서, 건강기록 증명서를 기준으로 필터링하여
+              더 신뢰할 수 있는 매칭 결과를 제공합니다.
+              이 정보를 통해 최적의 교배 파트너를 찾을 수 있습니다.
+            </p>
+
+            <div id="fileUploadContainer" class="file-upload-container" style="display: none;">
+              <!-- 제목 및 설명 -->
+              <h2>교배 매칭 시, 선택 서류</h2>
+              <p class="document-info">
+                <span class="info-icon">⚠️</span> 교배매칭 선택시 업로드할 수 있습니다.<br>
+                파일을 업로드 하지 않아도 다음으로 넘어갈 수 있습니다.<br>
+                파일을 업로드하는 추후 마이페이지에서 설정할 수 있습니다.<br>
+              </p>
+
+              <!-- 파일 업로드 리스트 -->
+
+              <div class="file-upload">
+                <label>혈통증명서</label>
+                <div class="file-input-group">
+                  <input type="text" id="fileName1" name="fileName1" class="file-name" placeholder="선택한 파일명" readonly style="width: 76%;">
+                  <input type="file" id="fileInput1" name="fileInput1" class="file-input" accept=".pdf, .jpg, .png" style="display: none;">
+                  <button type="button" class="file-button" onclick="openFileDialog('fileInput1', 'fileName1')">파일 찾기</button>
+                </div>
+              </div>
+
+              <div class="file-upload">
+                <label>예방접종 증명서</label>
+                <div class="file-input-group">
+                  <input type="text" id="fileName2" name="fileName2" class="file-name" placeholder="선택한 파일명" readonly style="width: 76%;">
+                  <input type="file" id="fileInput2" name="fileInput2" class="file-input" accept=".pdf, .jpg, .png" style="display: none;">
+                  <button type="button" class="file-button" onclick="openFileDialog('fileInput2','fileName2')">파일 찾기</button>
+                </div>
+              </div>
+
+              <div class="file-upload">
+                <label>건강검진 증명서</label>
+                <div class="file-input-group">
+                  <input type="text" id="fileName3" name="fileName3" class="file-name" placeholder="선택한 파일명" readonly style="width: 76%;">
+                  <input type="file" id="fileInput3" name="fileInput3" class="file-input" accept=".pdf, .jpg, .png" style="display: none;">
+                  <button type="button" class="file-button" onclick="openFileDialog('fileInput3','fileName3')">파일 찾기</button>
+                </div>
+              </div>
+            </div>
+            <div class="button-container">
+              <button id="preButton" type="button">이전</button>
+              <input type="submit" style="width: 510px" value="강아지 등록"/>
+            </div>
           </form>
-          <div class="button-container">
-            <button type="button" id="nextButton" onclick="saveStep1Dog()" style="width: 100%">강아지 등록</button>
-          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-<script src="/js/ajy/dog_profile_step1.js"></script>
+<script src="/js/ajy/dog_profile_register.js"></script>
 
 </body>
 </html>
