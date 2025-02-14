@@ -104,7 +104,7 @@ document.getElementById('step3Form').addEventListener('submit', function(event) 
                 sessionStorage.setItem('nickname', data.body.nickname);
                 alert('로그인 성공!');
 
-                location.href='/dogProfileSelect';
+                location.href='/dog/dogProfileSelect';
             }else {
                 throw new Error("회원가입 실패");
             }
