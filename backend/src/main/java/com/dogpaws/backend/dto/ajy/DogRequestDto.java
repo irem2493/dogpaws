@@ -1,12 +1,14 @@
 package com.dogpaws.backend.dto.ajy;
 
 import com.dogpaws.backend.dto.common.FileDto;
+import com.dogpaws.backend.entity.File;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class DogRequestDto {
@@ -68,5 +70,7 @@ public class DogRequestDto {
     private List<String> activityImageMetadata;  // 각 사진의 정보
 
     private String activityImageFileName;
+
+    Map<MultipartFile, String> fileTypeMap;
 
 }
