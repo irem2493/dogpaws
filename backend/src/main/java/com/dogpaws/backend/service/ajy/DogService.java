@@ -13,6 +13,7 @@ import com.dogpaws.backend.repository.jpa.ajy.DogRepository;
 import com.dogpaws.backend.service.common.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,17 +46,10 @@ public class DogService {
         List<Integer> dogIdList = new ArrayList<>();
 
         List<Dog> dogList = dogRepository.findByUsername(username);
-       /* List<DogPersonal> dogPersonalList = null;
-        List<DogPlay> dogPlayList = null;*/
 
         for (Dog d : dogList) {
             dogIdList.add(d.getDogId());
         }
-/*
-        for (Integer dogId : dogIdList) {
-            dogPersonalList = dogPersonalRepository.findByDogId(dogId);
-            dogPlayList = dogPlayRepository.findByDogId(dogId);
-        }*/
 
         for (Dog d : dogList) {
             DogResponseDto dogDto = new DogResponseDto();
@@ -80,36 +74,6 @@ public class DogService {
             dogDto.setDogIntro(d.getDogIntro());
             dogDto.setPersonalityType(d.getPersonalityType());
             dogDto.setProfileUrl(d.getProfileUrl());
-
-            /*if(dogPersonalList != null){
-                StringBuilder result = new StringBuilder();
-                for(DogPersonal p : dogPersonalList){
-
-                    result.append(p.getDogPersonalGbnCd()).append(",");
-                }
-
-                // 마지막 쉼표 제거
-                if (!result.isEmpty()) {
-                    result.setLength(result.length() - 1);
-                }
-                //System.out.println("강아지 성격 : " + result.toString());
-                dogDto.setSelectedPersonalities(result.toString());
-            }
-
-            if(dogPlayList != null){
-                StringBuilder result = new StringBuilder();
-                for(DogPlay p : dogPlayList){
-
-                    result.append(p.getDogPlayGbnCd()).append(",");
-                }
-
-                // 마지막 쉼표 제거
-                if (!result.isEmpty()) {
-                    result.setLength(result.length() - 1);
-                }
-                //System.out.println("강아지 선호 놀이 : " + result.toString());
-                dogDto.setSelectedPersonalities(result.toString());
-            }*/
 
             // ✅ 각 강아지별 성격 리스트 조회
             List<DogPersonal> dogPersonalList = dogPersonalRepository.findByDogId(d.getDogId());
@@ -201,5 +165,21 @@ public class DogService {
             return dogDto;
         }
         return null;
+    }
+
+    /**
+     * 특정 강아지 삭제 (한 마리 남으면 삭제 불가)
+     */
+    @Transactional
+    public boolean deleteDog(Integer dogId, String username) {
+        List<Dog> userDogs = dogRepository.findByUsername(username);
+
+        // 사용자의 강아지가 한 마리만 남아 있다면 삭제 불가
+        if (userDogs.size() <= 1) {
+            return false;
+        }
+        // 강아지 삭제
+        dogRepository.deleteById(dogId);
+        return true;
     }
 }
