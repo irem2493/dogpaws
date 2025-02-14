@@ -437,7 +437,7 @@ function initializeGenderSelection() {
 // 페이지 로드 시 초기 상태 설정
 initializeGenderSelection();
 
-function saveDog() {
+function saveStep1Dog() {
     const form = document.getElementById("dogForm");
 
     // FormData 객체 생성
