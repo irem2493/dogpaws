@@ -38,4 +38,13 @@ public class DogController {
         return dogService.getDogList(username);
     }
 
+    @GetMapping("/detail/{dogId}")
+    public DogResponseDto getDog(@PathVariable Integer dogId) {
+        System.out.println(dogService.getDog(dogId));
+        return dogService.getDog(dogId);
+    }
+
+   /* @GetMapping("/file/{dogId}")
+    public DogResponseDto getFile(@PathVariable Integer dogId) {}*/
+
 }
