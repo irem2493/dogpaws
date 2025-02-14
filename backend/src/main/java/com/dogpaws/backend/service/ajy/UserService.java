@@ -1,9 +1,9 @@
 package com.dogpaws.backend.service.ajy;
 
+import com.dogpaws.backend.dto.ajy.LocationDto;
 import com.dogpaws.backend.dto.ajy.UserRequestDto;
 import com.dogpaws.backend.entity.ajy.User;
 import com.dogpaws.backend.repository.jpa.ajy.UserRepository;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final LocationService locationService;
     private final PasswordEncoder passwordEncoder;
 
     public User findByUsername(String username) {
@@ -41,6 +42,13 @@ public class UserService {
             user.setEmail(userRequestDto.getEmail());
             user.setPostcode(userRequestDto.getPostcode());
             user.setAddress(userRequestDto.getAddress());
+
+            LocationDto locationDto = locationService.getCoordinatesFromAddress(userRequestDto.getAddress());
+            if (locationDto != null) {
+                user.setLatitude(locationDto.getLatitude());
+                user.setLongitude(locationDto.getLongitude());
+            }
+
             user.setDetailAddress(userRequestDto.getDetailAddress());
             user.setModifyDate(LocalDateTime.now());
 
