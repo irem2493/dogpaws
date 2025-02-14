@@ -186,22 +186,22 @@ public class JoinController {
         session.setAttribute("joinSession", sessionData);
 
         // 1. 파일 데이터를 리스트에 담음
-        List<MultipartFile> files = new ArrayList<>();
+        Map<MultipartFile, String> fileTypeMap = new LinkedHashMap<>();
 
         if (file1 != null && !file1.isEmpty()) {
-            files.add(file1);
+            fileTypeMap.put(file1, "PE");
         }
 
         if (file2 != null && !file2.isEmpty()) {
-            files.add(file2);
+            fileTypeMap.put(file2, "VA");
         }
 
         if (file3 != null && !file3.isEmpty()) {
-            files.add(file3);
+            fileTypeMap.put(file3, "HE");
         }
 
         // 2. 파일 정보를 세션에 저장
-        sessionData.setStep3Data(files);
+        sessionData.setStep3Data(fileTypeMap);
         session.setAttribute("joinSession", sessionData);
 
         joinService.join(sessionData);

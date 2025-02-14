@@ -57,7 +57,7 @@ public class JoinService {
     public void join(JoinSessionDto sessionData) throws IOException {
         UserRequestDto userRequestDto = sessionData.getStep1Data();
         DogRequestDto dogRequestDto = sessionData.getStep2Data();
-        List<MultipartFile> files = sessionData.getStep3Data();
+        Map<MultipartFile, String> fileTypeMap = sessionData.getStep3Data();
 
         User user = createUser(userRequestDto);
 
@@ -69,7 +69,7 @@ public class JoinService {
         dogRepository.save(dog);
 
         System.out.println(dogRequestDto.getActivityImages());
-        System.out.println(files);
+        System.out.println(fileTypeMap);
 
         Optional<Dog> dogId = dogRepository.findTopByOrderByDogIdDesc();
         if (dogId.isPresent()) {
@@ -79,7 +79,7 @@ public class JoinService {
 
             getActiveDogImage(maxDogId,username, dogRequestDto.getActivityImages());
 
-            getMatching(maxDogId, username, files);
+            getMatching(maxDogId, username, fileTypeMap);
         }
     }
 
@@ -120,6 +120,7 @@ public class JoinService {
                 .walkStartTime(dogRequestDto.getWalkStartTime())
                 .walkEndTime(dogRequestDto.getWalkEndTime())
                 .walkDays(dogRequestDto.getWalkDays())
+                .walkTimeYn(dogRequestDto.getWalkTimeYn())
                 .isMatingAvailable(dogRequestDto.getIsMatingAvailable())
                 .dogIntro(dogRequestDto.getDogIntro())
                 .profileUrl(dogRequestDto.getProfileUrl())
@@ -178,13 +179,15 @@ public class JoinService {
         }
     }
 
-    private void getMatching(Integer dogId, String username, List<MultipartFile> filesList) throws IOException {
-        if(filesList != null && !filesList.isEmpty()) {
-            for (MultipartFile file : filesList) {
+    private void getMatching(Integer dogId, String username, Map<MultipartFile, String> filesMap) throws IOException {
+        if(filesMap != null && !filesMap.isEmpty()) {
+            for (Map.Entry<MultipartFile, String> entry : filesMap.entrySet()) {
+                MultipartFile file = entry.getKey();
+                String fileCode = entry.getValue(); // 해당 파일의 구분 코드
                 System.out.println("파일 비었는가: " + file.isEmpty());  // 파일 상태 확인
                 if (!file.isEmpty()) {
                     System.out.println(file);
-                    fileService.saveFile(file, "MF", dogId.toString(), username);
+                    fileService.saveFile(file, fileCode, dogId.toString(), username);
                 }
 
             }

@@ -52,7 +52,7 @@
                         <hr>
                         <div class="modal-content" th:if="${session.dogList != null}">
                             <div th:each="dog : ${session.dogList}" class="dog-profile" onclick="selectDogProfile(this)">
-                                <img th:src="${dog['profile_url']}" alt="강아지 프로필 이미지">
+                                <img th:src="${dog['profile_url']}" alt="강아지 프로필 이미지" onerror="this.src='/img/dog_foot2.png';">
                                 <span th:text="${dog['dog_name']}"></span>
                                 <input type="hidden" th:value="${dog['dog_id']}">
                             </div>

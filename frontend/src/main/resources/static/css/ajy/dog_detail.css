@@ -1,0 +1,116 @@
+/* 전체 컨테이너 스타일 */
+.dog-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+}
+
+/* 타이틀 */
+.dog-container .profile-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* 강아지 프로필 카드 */
+.dog-container .profile-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 20px 0 20px;
+}
+
+/* 강아지 이미지 */
+.dog-container .profile-card .profile-img {
+    width: 250px;
+    height: 150px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+/* 강아지 기본 정보 */
+.dog-container .profile-info {
+    flex-grow: 1;
+}
+
+.dog-container .dog-name {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    gap: 10px;
+    justify-content: space-between;
+    margin-left: 20px;
+}
+
+/* 수정 및 삭제 버튼 */
+.dog-container .edit-btn,
+.dog-container .delete-btn {
+    padding: 5px 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.dog-container .edit-btn {
+    background-color: #ffa500;
+    color: white;
+}
+
+.dog-container .delete-btn {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+/* 강아지 기본 정보 */
+.dog-container .dog-basic-info p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+/* 강아지 소개글 */
+.dog-container .dog-intro {
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.dog-container .dog-intro h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* 성격 유형 & 좋아하는 놀이 */
+.dog-container .dog-section {
+    margin-top: 20px;
+}
+
+.dog-container .dog-section h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* 태그 스타일 */
+.dog-container .dog-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.dog-container .tag {
+    background: #ff8c00;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 16px;
+}
+
+.dog-container .font{
+    font-size: 16px;
+}
