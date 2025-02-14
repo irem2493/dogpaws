@@ -64,8 +64,8 @@ public class DogController {
     }
 
     //강아지 등록
-    @GetMapping("/dogProfileStep1")
-    public String dogProfileRegister(Model model) {
+    @GetMapping("/dogProfileRegister")
+    public String dogProfileStep1(Model model) {
 
         var breedResponse = apiService.fetchData("/api/gubn/breed_code");
         var personalityResponse = apiService.fetchData("/api/gubn/dog_personal_code");
@@ -81,8 +81,9 @@ public class DogController {
         model.addAttribute("personalityList", personalityList);
         model.addAttribute("playList", playList);
 
-        return "/ajy/dog_profile_step1";
+        return "/ajy/dog_profile_register";
     }
+
     
     //마이페이지 -강아지 리스트 요청
     @GetMapping("/mypage/dogList")
@@ -146,5 +147,6 @@ public class DogController {
         }
         return "redirect:/login";
     }
+
 
 }

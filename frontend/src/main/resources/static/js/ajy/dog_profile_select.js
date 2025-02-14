@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
             addProfileItem.classList.add('add-profile');
             addProfileItem.innerHTML = '+';
             addProfileItem.addEventListener('click', function () {
-                location.href="/dogProfileRegister";
+                location.href="/dog/dogProfileRegister";
             });
 
             profileContainer.appendChild(addProfileItem);
