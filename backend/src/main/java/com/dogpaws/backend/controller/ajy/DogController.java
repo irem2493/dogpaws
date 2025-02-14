@@ -22,17 +22,6 @@ public class DogController {
         return dogService.getDogs(username);
     }
 
-    @PostMapping("/{username}")
-    public ApiResponse<?> getStep1(@PathVariable String username, @ModelAttribute DogRegisterRequestDto dogRegisterRequestDto) {
-        dogRegisterRequestDto.setUsername(username);
-
-        System.out.println(dogRegisterRequestDto);
-        
-        //현재 파일 안 옴
-
-        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "강아지 등록 완료");
-    }
-
     @GetMapping("/mypage/dogList/{username}")
     public  List<DogResponseDto> getDogList2(@PathVariable String username) {
         return dogService.getDogList(username);
@@ -44,7 +33,26 @@ public class DogController {
         return dogService.getDog(dogId);
     }
 
-   /* @GetMapping("/file/{dogId}")
-    public DogResponseDto getFile(@PathVariable Integer dogId) {}*/
+    //강아지 정보 삭제
+   @DeleteMapping("/{dogId}/{username}")
+    public ApiResponse<?> deleteDog(@PathVariable("dogId") Integer dogId, @PathVariable("username") String username) {
+        if(dogService.deleteDog(dogId, username)){
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "강아지 삭제 완료");
+        }
+        else{
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "강아지 삭제 실패");
+        }
+   }
+
+    @PostMapping("/{username}")
+    public ApiResponse<?> getStep1(@PathVariable String username, @ModelAttribute DogRegisterRequestDto dogRegisterRequestDto) {
+        dogRegisterRequestDto.setUsername(username);
+
+        System.out.println(dogRegisterRequestDto);
+
+        //현재 파일 안 옴
+
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "강아지 등록 완료");
+    }
 
 }
