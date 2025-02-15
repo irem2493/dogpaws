@@ -32,7 +32,7 @@ public class LocationService {
         try {
             JSONObject json = new JSONObject(response.getBody());
             JSONArray documents = json.getJSONArray("documents");
-            if (documents.length() > 0) {
+            if (!documents.isEmpty()) {
                 JSONObject firstResult = documents.getJSONObject(0);
                 double lat = firstResult.getDouble("y");  // 위도
                 double lng = firstResult.getDouble("x");  // 경도
