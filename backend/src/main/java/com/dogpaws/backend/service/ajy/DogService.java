@@ -17,11 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class DogService {
+    private final UserService userService;
     private final DogRepository dogRepository;
     private final DogPersonalRepository dogPersonalRepository;
     private final DogPlayRepository dogPlayRepository;
@@ -181,5 +183,27 @@ public class DogService {
         // 강아지 삭제
         dogRepository.deleteById(dogId);
         return true;
+    }
+
+    public List<Dog> getNearbyDogs(String username, double distance) {
+        // 1. 사용자 위치 가져오기
+        double[] userLocation = userService.getUserCoordinates(username);
+        if (userLocation.length == 0) {
+            throw new IllegalArgumentException("사용자 위치를 찾을 수 없습니다.");
+        }
+        else{
+            // 2. 위도/경도 추출
+            double latitude = userLocation[0];
+            double longitude = userLocation[1];
+
+            // 3. 사용자가 등록한 강아지 ID 목록 조회
+            List<Integer> userDogIds = dogRepository.findUserDogIdsByUsername(username);
+            if (userDogIds.isEmpty()) {
+                userDogIds = List.of(-1); // 강아지가 없을 경우 오류 방지
+            }
+
+            // 4. 반경 `distance km` 내 강아지 검색 (본인 강아지 제외)
+            return dogRepository.findDogsNearby(latitude, longitude, distance, userDogIds);
+        }
     }
 }

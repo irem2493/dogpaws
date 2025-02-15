@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>근처 강아지 보기</title>
+    <link rel="stylesheet" href="/css/ajy/near_dog_map.css" />
+</head>
+
+<body layout:fragment="content" style="min-height: 100vh">
+<div class="container">
+
+    <div class="distance-container">
+        <input type="hidden" name="username" id="username" th:value="${username}"/>
+
+        <input type="hidden" id="latitude" th:value="${coordinates[0]}"/>
+        <input type="hidden" id="longitude" th:value="${coordinates[1]}"/>
+
+        <!-- 페이지 제목 -->
+        <h2>근처 강아지 보기</h2>
+        <hr>
+
+        <!-- 지도 컨테이너 -->
+        <div class="map-wrapper">
+            <div id="map-container">
+                <div id="kakao-map">
+                    <!-- 거리 설정 슬라이더 -->
+                    <div class="distance-control">
+                        <h3>거리 설정</h3>
+                        <div class="slider-container">
+                            <!-- 거리 값 -->
+                            <span class="slider-label">1Km</span>
+                            <span class="slider-label">3Km</span>
+                            <span class="slider-label">5Km</span>
+
+                            <!-- 슬라이더 바 -->
+                            <div class="slider-track">
+                                <div class="slider-fill"></div>
+                            </div>
+
+                            <!-- 슬라이더 버튼 -->
+                            <div class="slider-thumb">
+                                <img src="/img/dog_foot2.png" alt="paw">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button id="searchButton">내 주변 강아지 보기</button>
+            </div>
+        </div>
+
+        <!-- 강아지 마커 이미지 -->
+        <img id="dogMarkerImage" th:src="${session.dog.profileUrl}" style="display:none;">
+
+    </div>
+
+</div>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8dbf71c1b97b82a68dae0bdb4ede336c"></script>
+<script src="/js/ajy/near_dog_map.js"></script>
+</body>
+</html>

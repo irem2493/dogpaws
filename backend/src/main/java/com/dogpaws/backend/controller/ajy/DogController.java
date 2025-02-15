@@ -1,6 +1,7 @@
 package com.dogpaws.backend.controller.ajy;
 
 import com.dogpaws.backend.dto.ajy.*;
+import com.dogpaws.backend.entity.ajy.Dog;
 import com.dogpaws.backend.service.ajy.DogService;
 import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.service.ajy.JoinService;
@@ -113,5 +114,14 @@ public class DogController {
         }
         joinService.dogRegister(dogRequestDto);
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, dogRequestDto);
+    }
+
+    @GetMapping("/nearby")
+    public ApiResponse<?> getNearbyDogs(
+            @RequestParam String username,
+            @RequestParam(defaultValue = "1") double distance) {
+
+        List<Dog> dogs = dogService.getNearbyDogs(username, distance);
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, dogs);
     }
 }
