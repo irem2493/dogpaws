@@ -5,10 +5,11 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class JoinSessionDto {
     private UserRequestDto step1Data;
     private DogRequestDto step2Data;
-    private List<MultipartFile> step3Data;
+    private Map<MultipartFile, String> step3Data;
 }

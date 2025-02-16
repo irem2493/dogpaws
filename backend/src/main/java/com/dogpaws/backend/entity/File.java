@@ -5,6 +5,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "tbl_file")
+@Setter
 @Getter
 @ToString
 @Builder
