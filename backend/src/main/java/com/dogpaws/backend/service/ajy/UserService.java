@@ -71,7 +71,15 @@ public class UserService {
 
         if(user != null) {
             // 수정할 필드 값 변경
+            user.setPostcode(userRequestDto.getPostcode());
             user.setAddress(userRequestDto.getAddress());
+
+            LocationDto locationDto = locationService.getCoordinatesFromAddress(userRequestDto.getAddress());
+            if (locationDto != null) {
+                user.setLatitude(locationDto.getLatitude());
+                user.setLongitude(locationDto.getLongitude());
+            }
+
             user.setDetailAddress(userRequestDto.getDetailAddress());
             user.setModifyDate(LocalDateTime.now());
 

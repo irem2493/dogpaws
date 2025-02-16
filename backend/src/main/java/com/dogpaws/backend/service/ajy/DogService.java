@@ -197,13 +197,19 @@ public class DogService {
             double longitude = userLocation[1];
 
             // 3. 사용자가 등록한 강아지 ID 목록 조회
-            List<Integer> userDogIds = dogRepository.findUserDogIdsByUsername(username);
-            if (userDogIds.isEmpty()) {
-                userDogIds = List.of(-1); // 강아지가 없을 경우 오류 방지
+            List<Dog> userDogIds = dogRepository.findUserDogIdsByUsername(username);
+            System.out.println(userDogIds);
+            List<Integer> dogIdList = new ArrayList<>();
+            if(userDogIds != null && !userDogIds.isEmpty()) {
+                for(Dog d : userDogIds) {
+                    dogIdList.add(d.getDogId());
+                }
+            }else{
+                dogIdList = List.of(-1);
             }
 
             // 4. 반경 `distance km` 내 강아지 검색 (본인 강아지 제외)
-            return dogRepository.findDogsNearby(latitude, longitude, distance, userDogIds);
+            return dogRepository.findDogsNearby(latitude, longitude, distance, dogIdList);
         }
     }
 }

@@ -111,6 +111,7 @@ public class JoinService {
             userRequestDto.setLongitude(locationDto.getLongitude());
         }
 
+
         return User.builder()
                 .username(userRequestDto.getUsername())
                 .password(userRequestDto.getPassword())
@@ -123,6 +124,7 @@ public class JoinService {
                 .ageGroup(userRequestDto.getAgeGroup())
                 .latitude(userRequestDto.getLatitude())
                 .longitude(userRequestDto.getLongitude())
+                .provider(Optional.ofNullable(userRequestDto.getProvider()).orElse(null)) // provider가 없으면 null
                 .role("ROLE_USER")
                 .status('A')
                 .build();

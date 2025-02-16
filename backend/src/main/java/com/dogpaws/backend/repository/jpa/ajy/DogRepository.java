@@ -14,16 +14,17 @@ public interface DogRepository extends JpaRepository<Dog, Integer> {
     // username을 통해 강아지 정보를 모두 조회
     List<Dog> findByUsername(String username);
 
-    List<Integer> findUserDogIdsByUsername(String username);
+    List<Dog> findUserDogIdsByUsername(String username);
 
     Dog findByDogId(Integer dogId);
 
     @Query(value = "SELECT d.*, " +
-            "(6371 * ACOS(COS(RADIANS(:lat)) * COS(RADIANS(d.latitude)) " +
-            "* COS(RADIANS(d.longitude) - RADIANS(:lng)) " +
-            "+ SIN(RADIANS(:lat)) * SIN(RADIANS(d.latitude)))) AS distance " +
-            "FROM dogs d " +
-            "WHERE d.id NOT IN (:excludedDogIds) " +
+            "(6371 * ACOS(COS(RADIANS(:lat)) * COS(RADIANS(u.latitude)) " +
+            "* COS(RADIANS(u.longitude) - RADIANS(:lng)) " +
+            "+ SIN(RADIANS(:lat)) * SIN(RADIANS(u.latitude)))) AS distance " +
+            "FROM tbl_dogs d " +
+            "JOIN tbl_users u ON d.username = u.username " +  // 🛠 강아지 주인의 위치 정보를 가져옴
+            "WHERE d.dog_id NOT IN (:excludedDogIds) " +
             "HAVING distance <= :distance " +
             "ORDER BY distance", nativeQuery = true)
     List<Dog> findDogsNearby(@Param("lat") double lat,

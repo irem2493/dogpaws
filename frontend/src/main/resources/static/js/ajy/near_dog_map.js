@@ -97,13 +97,14 @@ function initializeMapWithDog(lat, lng, dogImageUrl) {
     // 📌 강아지 프로필과 버튼을 포함하는 HTML 구조
     var content = `
         <div class="custom-marker">
+            <button class="marker-button">내 주변 강아지 보기</button>
+             <div class="marker-badge">+${dogCount}</div>
             <div class="marker-wrapper">
                 <div class="marker-image">
                     <img src="${dogImageUrl}" alt="강아지 프로필">
                 </div>
-                <div class="marker-badge">+${dogCount}</div>
+               
             </div>
-            <button class="marker-button">내 주변 강아지 보기</button>
         </div>
     `;
 

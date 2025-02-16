@@ -36,7 +36,7 @@
 .distance-container #map-container {
     position: relative; /* 지도 내부에 위치 고정 */
     width: 100%;
-    max-width: 900px;
+   /* max-width: 900px;*/
     height: 500px; /* 지도 높이 고정 */
     margin: 20px auto; /* 상하 마진 추가 */
     border: 1px solid #ddd;
@@ -129,18 +129,19 @@
 /* 강아지 개수 배지 (프로필 원 바깥으로 이동) */
 .distance-container .marker-badge {
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: 50px;
+    right: 50px;
     background: red;
     color: white;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
-    width: 25px;
-    height: 25px;
+    width: 28px;
+    height: 28px;
     line-height: 25px;
     text-align: center;
     border-radius: 50%;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    z-index: 2;
 }
 
 /* 버튼 스타일 */
@@ -153,7 +154,7 @@
     border-radius: 20px;
     cursor: pointer;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-    margin-top: 5px; /* 버튼과 프로필 간격 조정 */
+    margin: 10px; /* 버튼과 프로필 간격 조정 */
 }
 
 .distance-container .marker-button:hover {
@@ -171,6 +172,7 @@
     box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
     text-align: center;
     width: 180px;
+    z-index: 2;
 }
 
 /* 제목 스타일 */
