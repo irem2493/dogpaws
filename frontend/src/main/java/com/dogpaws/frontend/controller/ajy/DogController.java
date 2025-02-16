@@ -148,5 +148,39 @@ public class DogController {
         return "redirect:/login";
     }
 
+    @GetMapping("/dogEidt/{dogId}")
+    public String dogEidt(@PathVariable("dogId") Integer dogId, Model model, HttpSession session) {
+        var dogResponse = apiService.fetchData("/api/dog/detail/" + dogId);
+        var dog = dogResponse.getBody();
 
+        var breedResponse = apiService.fetchData("/api/gubn/breed_code");
+        var breedList = breedResponse.getBody();
+
+        var personalityResponse = apiService.fetchData("/api/gubn/dog_personal_code");
+        var playResponse = apiService.fetchData("/api/gubn/dog_play_code");
+        var dogTypeResponse = apiService.fetchData("/api/gubn/dog_type_code");
+
+        var personalityList = personalityResponse.getBody();
+        var playList = playResponse.getBody();
+        var dogTypeList = dogTypeResponse.getBody();
+
+        UserDto user = SessionUtil.getUser(session);
+
+        if(user != null){
+            model.addAttribute("user", user.getUsername());
+        }
+
+        if(dog != null){
+            System.out.println("강아지 상세정보 : " + dog);
+
+            model.addAttribute("dog", dog);
+            model.addAttribute("breedList", breedList);
+            model.addAttribute("personalityList", personalityList);
+            model.addAttribute("playList", playList);
+            model.addAttribute("dogTypeList", dogTypeList);
+
+            return "/ajy/dog_profile_register";
+        }
+        return "redirect:/login";
+    }
 }
