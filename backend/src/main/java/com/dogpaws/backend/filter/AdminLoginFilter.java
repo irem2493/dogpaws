@@ -36,8 +36,7 @@ public class AdminLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final TokenService tokenService;
     private final ObjectMapper objectMapper;
 
-    private final long ADMIN_TOKEN_EXPIRE_TIME = 60 * 60 * 24 * 1000L;
-    private final int ADMIN_COOKIE_EXPIRE_TIME = 60 * 60 * 24;
+    private final int ADMIN_COOKIE_EXPIRE_TIME = 60 * 60 * 12; //  JWTUtil.generateAccessToken 의 시간과 동일하게 설정
 
     public AdminLoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, TokenService tokenService) {
         this.authenticationManager = authenticationManager;
@@ -48,7 +47,7 @@ public class AdminLoginFilter extends UsernamePasswordAuthenticationFilter {
                 .registerModule(new JavaTimeModule())
                 .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         //관리자 로그인 URL 설정
-        setFilterProcessesUrl("/api/admin/login");
+        setFilterProcessesUrl("/api/admin/auth/login");
     }
 
     @Override
@@ -100,14 +99,24 @@ public class AdminLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         tokenService.saveRefreshToken(username, refreshToken);
 
-//        response.setHeader("Authorization", "Bearer " + acessToken); //헤더 노출 X -> 쿠키로 대체
+        response.setHeader("Authorization", "Bearer " + acessToken);
 
-        //AccessToken 을 HttpOnly 쿠키로 설정
-        Cookie accessTokenCookie = new Cookie("accessToken", acessToken);
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(true);
-        accessTokenCookie.setPath("/");
-        response.addCookie(accessTokenCookie);
+        //refreshToken 을 HttpOnly 쿠키로 설정
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(ADMIN_COOKIE_EXPIRE_TIME);
+        response.addCookie(refreshTokenCookie);
+
+        log.info("RefreshToken 쿠키 설정 - 이름: {}, 값: {}, HttpOnly: {}, Secure: {}, Path: {}",
+                refreshTokenCookie.getName(),
+                refreshTokenCookie.getValue(),
+                refreshTokenCookie.isHttpOnly(),
+                refreshTokenCookie.getSecure(),
+                refreshTokenCookie.getPath()
+        );
+
 
         AdminInfoDto adminInfo = AdminInfoDto.builder()
                 .username(username)
