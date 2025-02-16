@@ -69,6 +69,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             });
         }
+
+        //수정 시 필요
+        var gender = document.getElementById('gender').value;
+        if (gender === 'M') {
+            setGender('M', document.querySelector(".gender-select button:nth-child(1)"));
+        } else if (gender === 'F') {
+            setGender('F', document.querySelector(".gender-select button:nth-child(2)"));
+        }
     });
 
     // 외부 클릭 시 드롭다운 닫기

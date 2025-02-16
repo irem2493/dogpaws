@@ -114,4 +114,9 @@ public class DogController {
         joinService.dogRegister(dogRequestDto);
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, dogRequestDto);
     }
+
+    /*/@PutMapping("/dog-edit")
+    public ApiResponse<?> updateDog(@RequestBody DogRequestDto dogRequestDto) {
+
+    }*/
 }
