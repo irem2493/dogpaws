@@ -1,14 +1,12 @@
-package com.dogpaws.backend.dto.ajy;
+package com.dogpaws.frontend.dto.ajy;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Data
-public class DogRegisterRequestDto {
+public class DogResponseDto {
     private String username;  // 사용자 ID (외래키)
+
+    private Integer dogId;
 
     private String dogName;  // 강아지 이름
 
@@ -42,29 +40,7 @@ public class DogRegisterRequestDto {
 
     private String profileUrl;  // 강아지 프로필 이미지 URL
 
-    private String fileOldName;  // 원본 파일 이름
-
-    private String fileNewName;  // 저장된 파일 이름
-
-    private String fileExt;  // 파일 확장자
-
-    private Long fileSize;  //파일 크기
-
-    @JsonIgnore
-    private MultipartFile profileImage;
-
     private String selectedPersonalities;
 
     private String selectedPlays;
-
-    // 활동 사진 리스트 (최대 6개)
-    @JsonIgnore
-    private List<MultipartFile> activityImages;  // 활동 사진 리스트
-
-    // 활동 사진 메타데이터 리스트
-    private List<String> activityImageMetadata;  // 각 사진의 정보
-
-    private String activityImageFileName;
-
-    private List<MultipartFile> matchingSelectFileList;
 }

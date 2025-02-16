@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+      layout:decorate="~{layout/layout-mypage}">
 <head>
     <link rel="stylesheet" href="/css/ajy/mypage/doglist.css" />
 
@@ -10,29 +10,7 @@
 <body layout:fragment="content" style="min-height: 100vh">
 <div class="container">
     <div class="doglist-box">
-        <div class="sidebar">
-            <div class="sidebar-container">
-                <div class="sidebar-header">
-                    <img src="/img/icon/pet.svg" alt="로고" class="logo" />
-                    <p>마이페이지</p>
-                </div>
-                <hr />
-                <ul class="sidebar-menu">
-                    <li><a href="/editUserPassword" >개인정보 관리</a></li>
-                    <li><a href="/mypage/dogList" class="active">반려견 프로필 관리</a></li>
-                    <li><a href="#">좋아요 목록</a></li>
-                    <li><a href="#">작성한 게시글 보기</a></li>
-                    <li><a href="#">일정 관리</a></li>
-                    <li><a href="#">스토어</a></li>
-                    <li>
-                        <ul>
-                            <li><a href="#">장바구니</a></li>
-                            <li><a href="#">주문 · 배송</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
+
         <div class="doglist-container">
             <h1 class="title">반려견 프로필 관리</h1>
             <hr>
@@ -42,7 +20,7 @@
                 <div th:each="dog : ${dogList}" class="profile-card">
                     <!-- 반려견 이미지 -->
                     <!-- 반려견 이미지 -->
-                    <img th:src="${dog.profile_url}" alt="반려견 이미지" class="profile-img">
+                    <a th:href="@{/dog/detail/{dogId}(dogId=${dog.dog_id})}"><img th:src="${dog.profile_url}" alt="반려견 이미지" class="profile-img" onerror="this.src='/img/dog_foot2.png';"></a>
 
                     <div class="profile-info">
                         <!-- 반려견 이름, 품종 변환 -->
@@ -96,13 +74,20 @@
 
                     <!-- 수정 및 삭제 버튼 -->
                     <div class="profile-actions">
-                        <button class="btn-b" style="width: 85px; height: 35px;">수정</button>
-                        <button class="btn-delete">삭제</button>
+                        <button type="button" class="btn-b" style="width: 85px; height: 35px;">수정</button>
+
+                        <button type="button" class="btn-delete"
+                                th:disabled="${#lists.size(dogList) == 1}"
+                                th:attr="data-dogid=${dog.dog_id}, data-username=${dog.username}"
+                                onclick="confirmDelete(this)">
+                            삭제
+                        </button>
                     </div>
+
                 </div>
                 <!-- 추가 버튼 (강아지가 5마리 이상이면 숨김) -->
-                <div class="profile-actions" th:if="${#lists.size(dogList) < 5}">
-                    <button type="button" class="plus-button">
+                <div class="profile-actions" th:if="${#lists.size(dogList) < 5}" style="margin-bottom: 80px">
+                    <button type="button" class="plus-button" onclick="location.href='/dog/dogProfileRegister'">
                         <span class="plus-icon">+</span>
                     </button>
                 </div>
@@ -111,5 +96,6 @@
         </div>
     </div>
 </div>
+<script src="/js/ajy/mypage/doglist.js"></script>
 </body>
 </html>

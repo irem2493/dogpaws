@@ -13,16 +13,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
 @Controller
+@RequestMapping("/dog")
 public class DogController {
 
     private final ApiRequestService apiRequestService;
@@ -65,8 +63,9 @@ public class DogController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
+    //강아지 등록
     @GetMapping("/dogProfileRegister")
-    public String dogProfileRegister(Model model) {
+    public String dogProfileStep1(Model model) {
 
         var breedResponse = apiService.fetchData("/api/gubn/breed_code");
         var personalityResponse = apiService.fetchData("/api/gubn/dog_personal_code");
@@ -84,6 +83,7 @@ public class DogController {
 
         return "/ajy/dog_profile_register";
     }
+
     
     //마이페이지 -강아지 리스트 요청
     @GetMapping("/mypage/dogList")
@@ -101,7 +101,7 @@ public class DogController {
             var personalityList = personalityResponse.getBody();
             var playList = playResponse.getBody();
 
-            System.out.println("dogList Mypage : " + dogList);
+            //System.out.println("dogList Mypage : " + dogList);
             model.addAttribute("dogList", dogList);
             model.addAttribute("breedList", breedList);
             model.addAttribute("personalityList", personalityList);
@@ -110,4 +110,43 @@ public class DogController {
         }
         return "redirect:/login";
     }
+
+    //강아지 상세 정보
+    @GetMapping("/detail/{dogId}")
+    public String detail(@PathVariable("dogId") Integer dogId, Model model, HttpSession session) {
+        var dogResponse = apiService.fetchData("/api/dog/detail/" + dogId);
+        var dog = dogResponse.getBody();
+
+        var breedResponse = apiService.fetchData("/api/gubn/breed_code");
+        var breedList = breedResponse.getBody();
+
+        var personalityResponse = apiService.fetchData("/api/gubn/dog_personal_code");
+        var playResponse = apiService.fetchData("/api/gubn/dog_play_code");
+        var dogTypeResponse = apiService.fetchData("/api/gubn/dog_type_code");
+
+        var personalityList = personalityResponse.getBody();
+        var playList = playResponse.getBody();
+        var dogTypeList = dogTypeResponse.getBody();
+
+        UserDto user = SessionUtil.getUser(session);
+
+        if(user != null){
+            model.addAttribute("user", user.getUsername());
+        }
+
+        if(dog != null){
+            System.out.println("강아지 상세정보 : " + dog);
+
+            model.addAttribute("dog", dog);
+            model.addAttribute("breedList", breedList);
+            model.addAttribute("personalityList", personalityList);
+            model.addAttribute("playList", playList);
+            model.addAttribute("dogTypeList", dogTypeList);
+
+            return "/ajy/dog_detail";
+        }
+        return "redirect:/login";
+    }
+
+
 }

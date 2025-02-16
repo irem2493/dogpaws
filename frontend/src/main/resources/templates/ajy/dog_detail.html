@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <link rel="stylesheet" href="/css/ajy/dog_detail.css" />
+
+    <title>강아지 상세 정보</title>
+</head>
+<body layout:fragment="content" style="min-height: 100vh">
+<div class="container">
+    <div class="dog-container">
+        <h1 class="profile-title">프로필</h1>
+        <hr>
+
+        <h2 class="dog-name">
+            <span>
+                <span th:text="${dog.dog_name}"></span>
+                <th:block th:if="${user == dog.username}">
+                    <button class="btn-b" style="width: 85px; height: 35px;">수정</button>
+                    <button type="button" class="btn-delete"
+                            th:disabled="${#lists.size(session.dogList) == 1}"
+                            th:attr="data-dogid=${dog.dog_id}, data-username=${dog.username}"
+                            onclick="confirmDelete(this)">
+                            삭제
+                    </button>
+                </th:block>
+            </span>
+            <span>
+                <button class="btn-b" style="width: 100px; height: 35px;">1:1 채팅</button>
+                <button class="btn-b" style="width: 100px; height: 35px;">그룹채팅</button>
+            </span>
+        </h2>
+        <div class="profile-card">
+            <!-- 강아지 이미지 -->
+            <img th:src="${dog.profile_url}" alt="반려견 이미지" class="profile-img" onerror="this.src='/img/dog_foot2.png';">
+
+            <!-- 기본 정보 -->
+            <div class="profile-info">
+
+                <div class="dog-basic-info" >
+                    <p>
+                        <div class="dog-filter" style="font-size: 18px">
+                            <img src="/img/icon/dog-filter/dog.svg" alt="dog-icon">
+                            견종
+                        </div>
+                        <span th:each="breed : ${breedList}"
+                              th:if="${breed['gubn_code'] == dog.breed}"
+                              th:text="${breed['gubn_name']}"
+                              class="btn-d"
+                              style="margin-right: 10px">
+                        </span>
+                        <span th:if="${dog.is_mix == 'Y'}" class="btn-d" >믹스</span>
+                    </p>
+                    <p style="margin-bottom: 10px">
+                        <div class="dog-filter-calendar"  style="margin-right: 20px"
+                             th:if="${dog.birth_year != null and dog.birth_month != null and
+                            not #strings.isEmpty(dog.birth_year) and not #strings.isEmpty(dog.birth_year.trim()) and
+                            not #strings.isEmpty(dog.birth_month) and not #strings.isEmpty(dog.birth_month.trim())}"
+                        >
+                            <img src="/img/icon/dog-filter/birth.svg" alt="calendar-icon">
+
+                                <span style="font-size: 18px; color:black; margin-right: 10px">생년월</span>
+                                <span class="btn-d">
+                                    <span th:text="${dog.birth_year}"></span>년 <span th:text="${dog.birth_month}"></span>월
+                                </span>
+                        </div>
+                        <span th:text="${dog.gender == 'M' ? '♂' : '♀'}" style="font-size: 18px"></span>
+                        <span th:text="${dog.gender == 'M' ? '남' : '여'}" style="font-size: 18px" class="btn-d"></span>
+                        <span th:if="${dog.is_neutered == 'Y'}" class="btn-d"> 중성화</span>
+                    </p>
+
+                    <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 20px">
+                        <div th:if="${dog.weight != null and dog.weight != ''}" style="display: flex; align-items: center;">
+                            <div class="dog-filter">
+                                <img src="/img/icon/dog-filter/weight.svg" alt="weight-icon">
+                                <span style="font-size: 18px; color:black; margin-right: 10px"> 체중</span>
+                            </div>
+                            <span th:if="${dog.weight != null and dog.weight != ''}"
+                                  th:text="${dog.weight} + 'kg'" class="btn-d" style="margin-right: 20px">
+                            </span>
+                        </div>
+                        <span th:if="${dog.personality_type != null}">
+                            <div class="dog-filter">
+                                <img src="/img/icon/dog-filter/foot.svg" alt="foot-icon">
+                                <span style="font-size: 18px; color:black; margin-right: 10px">견BTI</span>
+                            </div>
+
+                            <span th:each="dogType : ${dogTypeList}"
+                                  th:if="${dogType['gubn_code'] == dog.personality_type}"
+                                  th:text="${dogType['gubn_name']}"
+                                  class="btn-d"
+                                  style="margin-right: 10px">
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 강아지 소개글 -->
+        <div class="dog-intro" th:if="${dog.dog_intro != null and not #strings.isEmpty(dog.dog_intro) and not #strings.isEmpty(dog.dog_intro.trim())}">
+            <div class="dog-filter" style="margin-bottom: 10px">
+                <img src="/img/icon/dog-filter/foot.svg" alt="foot-icon">
+                <span style="font-size: 18px; color:black;" >강아지 소개글</span>
+            </div>
+            <p th:text="${dog.dog_intro}"></p>
+        </div>
+
+        <!-- 성격 유형 -->
+        <!-- 성격 유형 변환 -->
+        <th:block th:if="${dog.selected_personalities != null}">
+            <div class="dog-filter" style="margin-bottom: 10px">
+                <img src="/img/icon/dog-filter/bone.svg" alt="bone-icon">
+                <span style="font-size: 18px; color:black;" >성격 유형</span>
+            </div>
+            <div class="traits" style="margin-bottom: 10px">
+                    <span >
+                        <span th:each="trait : ${#strings.arraySplit(dog.selected_personalities, ',')}"  class="btn-d" style="margin-right: 8px">
+                            <span   th:each="personality : ${personalityList}"
+                                    th:if="${personality['gubn_code'] == trait}"
+                                    th:text="${personality['gubn_name']}"
+                            >
+                            </span>
+                        </span>
+                    </span>
+            </div>
+        </th:block>
+        <!-- 좋아하는 놀이 변환 -->
+        <th:block th:if="${dog.selected_plays != null}">
+            <div class="dog-filter" style="margin-bottom: 10px">
+                <img src="/img/icon/dog-filter/puzzle.svg" alt="puzzle-icon">
+                <span style="font-size: 18px; color:black;" >좋아하는 놀이</span>
+            </div>
+            <div class="likes">
+                    <span th:each="play : ${#strings.arraySplit(dog.selected_plays, ',')}" class="btn-d" style="margin-right: 8px">
+                        <span th:each="play_item : ${playList}"
+                              th:if="${play_item['gubn_code'] == play}"
+                              th:text="${play_item['gubn_name']}"
+                        >
+
+                        </span>
+                    </span>
+            </div>
+        </th:block>
+
+        <!-- 산책 시간 -->
+        <div class="dog-section" th:if="${dog.walk_days != null and not #strings.isEmpty(dog.walk_days) and not #strings.isEmpty(dog.walk_days.trim())}">
+            <div class="dog-filter" style="margin-bottom: 10px">
+                <img src="/img/icon/dog-filter/clock.svg" alt="clock-icon">
+                <span style="font-size: 18px; color:black;" >산책 시간</span>
+            </div>
+            <p>
+               <span th:text="${dog.walk_days}" class="btn-d"></span>
+                <span th:if="${dog.walk_time_yn == 'N'}"
+                      th:text="${dog.walk_start_time + ' - ' + dog.walk_end_time}" class="btn-d"></span>
+            </p>
+        </div>
+
+        <div class="dog-section" th:if="${user == dog.username and dog.pe_file != null or dog.va_file != null or dog.he_file != null}">
+            <div class="dog-filter">
+                <img src="/img/icon/dog-filter/dog.svg" alt="dog-icon">
+                <span style="font-size: 18px; color:black;" >강아지 교배 서류</span>
+            </div>
+            <div th:if="${dog.pe_file != null}">
+                <p>
+                    <strong>혈통 증명서:</strong>
+                    <a href="#"
+                       th:text="${dog.pe_file.file_old_name}"
+                       th:data-url="${dog.pe_file.file_url}"
+                       th:data-name="${dog.pe_file.file_old_name}"
+                       onclick="confirmDownload(this)">
+                    </a>
+                </p>
+            </div>
+            <div th:if="${dog.va_file != null}">
+                <p>
+                    <strong>예방접종 증명서:</strong>
+                    <a href="#"
+                       th:text="${dog.va_file.file_old_name}"
+                       th:data-url="${dog.va_file.file_url}"
+                       th:data-name="${dog.va_file.file_old_name}"
+                       onclick="confirmDownload(this)">
+                    </a>
+                </p>
+            </div>
+            <div th:if="${dog.he_file != null}">
+                <p>
+                    <strong>건강검진 증명서:</strong>
+                    <a href="#"
+                       th:text="${dog.he_file.file_old_name}"
+                       th:data-url="${dog.he_file.file_url}"
+                       th:data-name="${dog.he_file.file_old_name}"
+                       onclick="confirmDownload(this)">
+                    </a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<script>
+    function confirmDownload(element) {
+        let fileUrl = element.getAttribute("data-url");
+        window.open(fileUrl, "_blank"); // 새 탭에서 다운로드
+    }
+</script>
+<script src="/js/ajy/mypage/doglist.js"></script>
+</body>
+</html>
