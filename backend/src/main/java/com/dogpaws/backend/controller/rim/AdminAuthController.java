@@ -62,7 +62,7 @@ public class AdminAuthController {
     /**
      * 관리자 로그아웃
      */
-    @PostMapping("logout")
+    @PostMapping("/logout")
     public ResponseEntity<ApiResponse<?>> logout(@CookieValue(name = "refreshToken", required = false)String refreshToken) {
         if(refreshToken == null) {
             return ResponseEntity.badRequest()

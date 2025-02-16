@@ -3,16 +3,97 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout-admin}">
 <head>
-    <title>관리자 메인페이지</title>
-    <!--    <link rel="stylesheet" th:href="@{/css/admin/login.css}">-->
+    <title>관리자</title>
 </head>
-<body layout:fragment="content" style="min-height: 100vh">
+<body layout:fragment="content">
 <div class="container">
-    <div th:fragment="content">
+    <div class="admin-container">
+        <div class="nav-path">홈 > 스토어 관리 > 상품 등록</div>
+        <div class="pw-title">상품등록</div>
+        <form class="productRegisterForm" id="productRegisterForm">
+            <!-- 카테고리 섹션 -->
+            <div class="category-section">
+                <select name="mainCategory" id="mainCategory">
+                    <option value="">대분류 선택</option>
+                    <option value="F">사료</option>
+                    <option value="N">간식</option>
+                    <option value="T">장난감</option>
+                </select>
 
-        <h2>관리자 메인 페이지</h2>
+                <select name="subCategory" id="subCategory" style="display: none;">
+                    <option value="">소분류 선택</option>
+                    <option value="D">건식 사료</option>
+                    <option value="W">습식 사료</option>
+                </select>
+            </div>
 
+            <!-- 공통 필드 -->
+            <div id="commonFields">
+                <div class="basic-info-section">
+                    <input type="text" id="productName" placeholder="상품명" required>
+                    <input type="number" id="price" placeholder="판매가" required>
+                    <input type="number" id="stockQuantity" placeholder="초기재고량" required>
+                    <input type="text" id="origin" placeholder="원산지">
+                    <input type="text" id="size" placeholder="크기">
+                    <input type="text" id="weight" placeholder="무게">
+                </div>
+            </div>
+
+            <!-- 사료/간식 전용 필드 -->
+            <div id="foodFields" style="display: none;">
+                <div class="food-info-section">
+                    <input type="date" id="expirationDate" placeholder="유통기한">
+                    <input type="text" id="storageInfo" placeholder="보관방법">
+                </div>
+            </div>
+
+            <!-- 장난감 전용 필드 -->
+            <div id="toyFields" style="display: none;">
+                <div class="toy-info-section">
+                    <input type="text" id="color" placeholder="색상">
+                </div>
+            </div>
+
+            <!-- 이미지 섹션 -->
+            <div class="image-section">
+                <div class="thumbnail-upload">
+                    <p>상품 썸네일</p>
+                    <input type="file" id="thumbnailImage" accept="image/*">
+                    <div id="thumbnailPreview" class="image-preview"></div>
+                </div>
+            </div>
+
+            <!-- 옵션 섹션 -->
+            <div class="options-section">
+                <p>옵션</p>
+                <div id="optionList">
+                    <!-- 옵션 아이템들이 여기에 추가됨 -->
+                    <button type="button" id="addOption">옵션 추가</button>
+                </div>
+            </div>
+
+            <!-- 상품 설명 섹션 -->
+            <div class="description-section">
+                <textarea id="description" placeholder="상품 설명" required></textarea>
+                <div class="detail-image-upload">
+                    <p>상품 상세 이미지</p>
+                    <input type="file" id="detailImage" accept="image/*">
+                    <div id="detailPreview" class="image-preview"></div>
+                </div>
+            </div>
+
+            <!-- 상태 섹션 -->
+            <div class="status-section">
+                <select id="status" required>
+                    <option value="O">판매중</option>
+                    <option value="D">판매대기</option>
+                </select>
+            </div>
+
+            <button type="submit">상품 등록</button>
+        </form>
     </div>
 </div>
+<script src="/js/rim/admin_product_register.js"></script>
 </body>
 </html>
