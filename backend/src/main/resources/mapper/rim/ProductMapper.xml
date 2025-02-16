@@ -4,7 +4,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dogpaws.backend.repository.dao.rim.ProductDao">
 
-    <select id="getProducts" resultType="com.dogpaws.backend.dto.rim.ProductListDto">
+    <select id="searchProducts" resultType="com.dogpaws.backend.dto.rim.ProductListDto">
         SELECT
         p.product_id,
         p.name,
@@ -18,8 +18,14 @@
         WHERE po.product_id = p.product_id) as option_count
         FROM tbl_products p
         WHERE 1=1
+        <if test="status != null and status != ''">
+            AND p.status = #{status}
+        </if>
         <if test="mainCategory != null and mainCategory != ''">
             AND p.main_category = #{mainCategory}
+        </if>
+        <if test="subCategory != null and subCategory != ''">
+            AND p.sub_category = #{subCategory}
         </if>
         <if test="searchKeyword != null and searchKeyword != ''">
             AND (
@@ -27,21 +33,34 @@
             OR p.description LIKE CONCAT('%', #{searchKeyword}, '%')
             )
         </if>
-        ORDER BY p.created_at DESC
+        <choose>
+            <when test="sortBy != null and sortBy != ''">
+                ORDER BY p.${sortBy} ${sortDirection}
+            </when>
+            <otherwise>
+                ORDER BY p.created_at DESC
+            </otherwise>
+        </choose>
         LIMIT #{pageSize} OFFSET #{offset}
     </select>
 
     <select id="getTotalCount" resultType="int">
         SELECT COUNT(*)
-        FROM tbl_products
+        FROM tbl_products p
         WHERE 1=1
+        <if test="status != null and status != ''">
+            AND p.status = #{status}
+        </if>
         <if test="mainCategory != null and mainCategory != ''">
-            AND main_category = #{mainCategory}
+            AND p.main_category = #{mainCategory}
+        </if>
+        <if test="subCategory != null and subCategory != ''">
+            AND p.sub_category = #{subCategory}
         </if>
         <if test="searchKeyword != null and searchKeyword != ''">
             AND (
-            name LIKE CONCAT('%', #{searchKeyword}, '%')
-            OR description LIKE CONCAT('%', #{searchKeyword}, '%')
+            p.name LIKE CONCAT('%', #{searchKeyword}, '%')
+            OR p.description LIKE CONCAT('%', #{searchKeyword}, '%')
             )
         </if>
     </select>

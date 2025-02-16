@@ -37,9 +37,6 @@ document.addEventListener('DOMContentLoaded', function (){
         }
     });
 
-
-
-
     // 이미지 미리보기 기능
     function setupImagePreview(inputId, previewId) {
         const input = document.getElementById(inputId);
@@ -64,18 +61,93 @@ document.addEventListener('DOMContentLoaded', function (){
     const optionList = document.getElementById('optionList');
     const addOptionBtn = document.getElementById('addOption');
 
-    // 옵션 추가 버튼 클릭 이벤트
+// 옵션 추가 버튼 클릭 이벤트
     addOptionBtn.addEventListener('click', function() {
+        const mainCat = mainCategory.value;
         const optionItem = document.createElement('div');
         optionItem.className = 'option-item';
-        optionItem.innerHTML = `
-            <input type="text" placeholder="옵션명" class="option-name">
-            <input type="number" placeholder="추가금액" class="option-price">
-            <input type="number" placeholder="재고수량" class="option-stock">
-            <button type="button" class="remove-option">삭제</button>
+
+        // 기본 필수 옵션 필드
+        let optionFields = `
+        <div class="option-basic">
+            <input type="text" placeholder="옵션명" class="option-name" required>
+            <input type="number" placeholder="추가금액" class="option-price" required>
+            <input type="number" placeholder="재고수량" class="option-stock" required>
+        </div>
+    `;
+
+        // 추가 옵션 필드 선택 영역
+        optionFields += `<div class="option-additional">
+        <div class="option-selectors">
+            <p>변경할 옵션 선택:</p>`;
+
+        // 카테고리별 선택 가능한 추가 옵션
+        if (mainCat === 'F' || mainCat === 'N') {
+            optionFields += `
+            <label><input type="checkbox" class="option-field-toggle" data-field="expiration-date"> 유통기한</label>
+            <label><input type="checkbox" class="option-field-toggle" data-field="weight"> 무게</label>
+            <label><input type="checkbox" class="option-field-toggle" data-field="storage-info"> 보관방법</label>
+            <label><input type="checkbox" class="option-field-toggle" data-field="manufacturer"> 제조사</label>
+            <label><input type="checkbox" class="option-field-toggle" data-field="origin"> 원산지</label>
         `;
-        optionList.insertBefore(optionItem, addOptionBtn); // 추가 버튼 앞에 새 옵션 추가
+        } else if (mainCat === 'T') {
+            optionFields += `
+            <label><input type="checkbox" class="option-field-toggle" data-field="size"> 크기</label>
+            <label><input type="checkbox" class="option-field-toggle" data-field="color"> 색상</label>
+            <label><input type="checkbox" class="option-field-toggle" data-field="weight"> 무게</label>
+            <label><input type="checkbox" class="option-field-toggle" data-field="material"> 재질</label>
+            <label><input type="checkbox" class="option-field-toggle" data-field="manufacturer"> 제조사</label>
+            <label><input type="checkbox" class="option-field-toggle" data-field="origin"> 원산지</label>
+        `;
+        }
+
+        // 추가 옵션 입력 필드 영역 (처음에는 숨겨져 있음)
+        optionFields += `
+        <div class="option-additional-fields">
+            <div class="option-expiration-date" style="display:none">
+                <input type="date" placeholder="유통기한" class="option-expiration-date-input">
+            </div>
+            <div class="option-weight" style="display:none">
+                <input type="text" placeholder="무게" class="option-weight-input">
+            </div>
+            <div class="option-storage-info" style="display:none">
+                <input type="text" placeholder="보관방법" class="option-storage-info-input">
+            </div>
+            <div class="option-size" style="display:none">
+                <input type="text" placeholder="크기" class="option-size-input">
+            </div>
+            <div class="option-color" style="display:none">
+                <input type="text" placeholder="색상" class="option-color-input">
+            </div>
+            <div class="option-material" style="display:none">
+                <input type="text" placeholder="재질" class="option-material-input">
+            </div>
+            <div class="option-manufacturer" style="display:none">
+                <input type="text" placeholder="제조사" class="option-manufacturer-input">
+            </div>
+            <div class="option-origin" style="display:none">
+                <input type="text" placeholder="원산지" class="option-origin-input">
+            </div>
+        </div>
+    </div>`;
+
+        // 삭제 버튼
+        optionFields += `<button type="button" class="remove-option">삭제</button>`;
+
+        optionItem.innerHTML = optionFields;
+
+        // 체크박스 이벤트 리스너 추가
+        optionItem.querySelectorAll('.option-field-toggle').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const fieldName = this.dataset.field;
+                const fieldContainer = optionItem.querySelector(`.option-${fieldName}`);
+                fieldContainer.style.display = this.checked ? 'block' : 'none';
+            });
+        });
+
+        optionList.insertBefore(optionItem, addOptionBtn);
     });
+
 
     // 옵션 삭제 버튼 클릭 이벤트 (이벤트 위임 사용)
     optionList.addEventListener('click', function(e) {
@@ -105,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function (){
             description: document.getElementById('description').value,
             status: document.getElementById('status').value,
             origin: document.getElementById('origin').value || null,
+            manufacturer: document.getElementById('manufacturer').value,
 
             // 조건부 필드
             expirationDate: (mainCat === 'F' || mainCat === 'N') ? document.getElementById('expirationDate').value || null : null,
@@ -115,15 +188,25 @@ document.addEventListener('DOMContentLoaded', function (){
         };
         console.log('상품 기본 정보:', productData);
 
-        // 옵션 정보
         const options = [];
         document.querySelectorAll('.option-item').forEach(item => {
-            options.push({
+            // 기본 필수 필드
+            const optionData = {
                 optionName: item.querySelector('.option-name').value,
                 optionPrice: parseInt(item.querySelector('.option-price').value),
                 optionStock: parseInt(item.querySelector('.option-stock').value)
+            };
+
+            // 선택된 추가 필드만 데이터 수집
+            item.querySelectorAll('.option-field-toggle:checked').forEach(checkbox => {
+                const fieldName = checkbox.dataset.field;
+                const fieldValue = item.querySelector(`.option-${fieldName}-input`).value;
+                optionData[`option${fieldName.charAt(0).toUpperCase() + fieldName.slice(1).replace(/-\w/g, m => m[1].toUpperCase())}`] = fieldValue;
             });
+
+            options.push(optionData);
         });
+
         console.log('옵션 정보:', options);
 
         // JSON 문자열로 변환하여 FormData에 추가

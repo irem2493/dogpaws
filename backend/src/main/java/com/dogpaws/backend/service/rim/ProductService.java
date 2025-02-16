@@ -52,6 +52,7 @@ public class ProductService {
                 .description(productDto.getDescription())
                 .status(productDto.getStatus())
                 .mainCategory(productDto.getMainCategory())
+                .manufacturer(productDto.getManufacturer())
                 //nullable
                 .subCategory(productDto.getSubCategory())
                 .material(productDto.getMaterial())
@@ -72,6 +73,15 @@ public class ProductService {
                             .optionName(optionDto.getOptionName())
                             .optionPrice(optionDto.getOptionPrice())
                             .optionStock(optionDto.getOptionStock())
+                            // 추가된 옵션 필드들
+                            .optionSize(optionDto.getOptionSize())
+                            .optionColor(optionDto.getOptionColor())
+                            .optionWeight(optionDto.getOptionWeight())
+                            .optionMaterial(optionDto.getOptionMaterial())
+                            .optionExpirationDate(StringUtil.stringToLocalDate(optionDto.getOptionExpirationDate()))
+                            .optionStorageInfo(optionDto.getOptionStorageInfo())
+                            .optionManufacturer(optionDto.getOptionManufacturer())
+                            .optionOrigin(optionDto.getOptionOrigin())
                             .build())
                     .collect(Collectors.toList());
             productOptionRepository.saveAll(productOptions);  // 옵션 저장 추가
@@ -120,19 +130,34 @@ public class ProductService {
      * 상품 목록 조회 (MyBatis + JPA 페이징)
      */
     @Transactional(readOnly = true)
-    public Page<ProductListDto> getProducts(ProductSearchDto productSearchDto){
-        int totalCount = productDao.getTotalCount(productSearchDto);
+    public Page<ProductListDto> getProducts(String category, int page, int size) {
+        ProductSearchDto searchDto = new ProductSearchDto();
+        searchDto.setMainCategory(category);
+        searchDto.setPage(page + 1);
+        searchDto.setPageSize(size);
+        searchDto.setStatus("O"); // 판매중인 상품만 조회
 
-        List<ProductListDto> productList = productDao.getProducts(productSearchDto);
+        return searchProducts(searchDto);
+    }
 
-        return new PageImpl<>(
-                productList,
-                PageRequest.of(
-                        productSearchDto.getPage() - 1,
-                        productSearchDto.getPageSize()
-                ),
-                totalCount
-        );
+    public Page<ProductListDto> searchProducts(ProductSearchDto searchDto) {
+        // offset 계산
+        searchDto.setOffset((searchDto.getPage() - 1) * searchDto.getPageSize());
+
+        try {
+            // 데이터 조회
+            List<ProductListDto> content = productDao.searchProducts(searchDto);
+            int total = productDao.getTotalCount(searchDto);
+
+            // Page 객체 생성 및 반환
+            return new PageImpl<>(content,
+                    PageRequest.of(searchDto.getPage() - 1, searchDto.getPageSize()),
+                    total);
+
+        } catch (Exception e) {
+            log.error("상품 검색 중 오류 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("상품 검색 실패", e);
+        }
     }
 
     /**
@@ -220,7 +245,17 @@ public class ProductService {
                 .optionName(productOptionDto.getOptionName())
                 .optionPrice(productOptionDto.getOptionPrice())
                 .optionStock(productOptionDto.getOptionStock())
+                // 추가 필드
+                .optionSize(productOptionDto.getOptionSize())
+                .optionColor(productOptionDto.getOptionColor())
+                .optionWeight(productOptionDto.getOptionWeight())
+                .optionMaterial(productOptionDto.getOptionMaterial())
+                .optionExpirationDate(StringUtil.stringToLocalDate(productOptionDto.getOptionExpirationDate()))
+                .optionStorageInfo(productOptionDto.getOptionStorageInfo())
+                .optionManufacturer(productOptionDto.getOptionManufacturer())
+                .optionOrigin(productOptionDto.getOptionOrigin())
                 .build();
+
         log.info("product id : {}, 옵션 추가 성공 , 옵션 이름 : {}", productId, productOption.getOptionName());
         productOptionRepository.save(productOption);
     }
@@ -261,10 +296,25 @@ public class ProductService {
 
     private ProductOptionDto convertToOptionDto(ProductOption productOption) {
         ProductOptionDto productOptionDto = new ProductOptionDto();
+        // 기존 필드
         productOptionDto.setOptionId(productOption.getOptionId());
         productOptionDto.setOptionName(productOption.getOptionName());
         productOptionDto.setOptionPrice(productOption.getOptionPrice());
         productOptionDto.setOptionStock(productOption.getOptionStock());
+
+        // 추가 필드
+        productOptionDto.setOptionSize(productOption.getOptionSize());
+        productOptionDto.setOptionColor(productOption.getOptionColor());
+        productOptionDto.setOptionWeight(productOption.getOptionWeight());
+        productOptionDto.setOptionMaterial(productOption.getOptionMaterial());
+        productOptionDto.setOptionExpirationDate(
+                productOption.getOptionExpirationDate() != null ?
+                        productOption.getOptionExpirationDate().toString() : null
+        );
+        productOptionDto.setOptionStorageInfo(productOption.getOptionStorageInfo());
+        productOptionDto.setOptionManufacturer(productOption.getOptionManufacturer());
+        productOptionDto.setOptionOrigin(productOption.getOptionOrigin());
+
         return productOptionDto;
     }
 }
