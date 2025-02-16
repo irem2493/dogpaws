@@ -72,6 +72,9 @@ public class Product {
     @Column(length = 50)
     private String weight;
 
+    @Column(length = 100)
+    private String manufacturer;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductOption> options = new ArrayList<>();
 
@@ -92,7 +95,7 @@ public class Product {
                    String description, String status, String mainCategory,
                    String subCategory, String material, String origin,
                    LocalDate expirationDate, String color, String weight,
-                   String size, String storageInfo) {
+                   String size, String storageInfo, String manufacturer) {
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;
@@ -107,6 +110,7 @@ public class Product {
         this.weight = weight;
         this.size = size;
         this.storageInfo = storageInfo;
+        this.manufacturer = manufacturer;
     }
 
     public void update(String name, Integer price,

@@ -10,8 +10,9 @@ import java.util.Map;
 
 @Mapper
 public interface ProductDao {
-    // 상품 목록 조회 (검색 조건 적용)
-    List<ProductListDto> getProducts(ProductSearchDto searchDto);
-    // 전체 건수 조회 (페이징용)
+    // 상품 검색 (페이징, 검색 조건 적용)
+    List<ProductListDto> searchProducts(ProductSearchDto searchDto);
+
+    // 검색 조건에 맞는 전체 건수 조회
     int getTotalCount(ProductSearchDto searchDto);
 }

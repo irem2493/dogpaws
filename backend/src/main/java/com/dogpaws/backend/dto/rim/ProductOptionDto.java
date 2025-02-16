@@ -13,4 +13,12 @@ public class ProductOptionDto {
     private Integer optionStock;     // 옵션 재고수량
     private LocalDateTime createAt;  // 생성일시
     private LocalDateTime updateAt;  // 수정일시
+    private String optionSize;
+    private String optionColor;
+    private String optionWeight;
+    private String optionMaterial;
+    private String optionExpirationDate;
+    private String optionStorageInfo;
+    private String optionManufacturer;
+    private String optionOrigin;
 }

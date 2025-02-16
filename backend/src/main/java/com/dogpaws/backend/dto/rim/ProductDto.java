@@ -27,6 +27,40 @@ public class ProductDto {
     private String subCategory;         // 소분류 (사료만: D:건식, W:습식)
     private String storageInfo;         // 보관방법
     private String weight;              // 무게
+    private String manufacturer;
 
     private List<ProductOptionDto> options;  // 상품 옵션 목록
+
+    // 판매 상태 enum
+    public enum Status {
+        ON_SALE("O"),      // 판매중
+        SOLD_OUT("S"),     // 품절
+        DISCONTINUED("D");  // 판매중지
+        
+        private final String code;
+        
+        Status(String code) {
+            this.code = code;
+        }
+        
+        public String getCode() {
+            return code;
+        }
+    }
+    // 카테고리 enum
+    public enum Category {
+        FOOD("F"),         // 사료
+        SNACK("N"),        // 간식
+        TOY("T");          // 장난감
+        
+        private final String code;
+        
+        Category(String code) {
+            this.code = code;
+        }
+        
+        public String getCode() {
+            return code;
+        }
+    }
 }

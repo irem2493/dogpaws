@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -31,6 +32,30 @@ public class ProductOption {
     @Column(name = "option_stock")
     private Integer optionStock;
 
+    @Column(name = "option_size")
+    private String optionSize;
+
+    @Column(name = "option_color") 
+    private String optionColor;
+
+    @Column(name = "option_weight")
+    private String optionWeight;
+
+    @Column(name = "option_material")
+    private String optionMaterial;
+
+    @Column(name = "option_expiration_date")
+    private LocalDate optionExpirationDate;
+
+    @Column(name = "option_storage_info")
+    private String optionStorageInfo;
+
+    @Column(name = "option_manufacturer")
+    private String optionManufacturer;
+
+    @Column(name = "option_origin")
+    private String optionOrigin;
+
     @Column(name = "create_at")
     private LocalDateTime createdAt;
 
@@ -50,11 +75,27 @@ public class ProductOption {
 
     @Builder
     public ProductOption(Product product, String optionName,
-                         Integer optionPrice, Integer optionStock) {
+                         Integer optionPrice, Integer optionStock,
+                         String optionSize,
+                         String optionColor,
+                         String optionWeight,
+                         String optionMaterial,
+                         LocalDate optionExpirationDate,
+                         String optionStorageInfo,
+                         String optionManufacturer,
+                         String optionOrigin) {
         this.product = product;
         this.optionName = optionName;
         this.optionPrice = optionPrice;
         this.optionStock = optionStock;
+        this.optionSize = optionSize;
+        this.optionColor = optionColor;
+        this.optionWeight = optionWeight;
+        this.optionMaterial = optionMaterial;
+        this.optionExpirationDate = optionExpirationDate;
+        this.optionStorageInfo = optionStorageInfo;
+        this.optionManufacturer = optionManufacturer;
+        this.optionOrigin = optionOrigin;
     }
 
     // 재고 수정 메서드
