@@ -27,7 +27,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
             alert('로그인 성공!');
 
           if (response.body.role === 'ROLE_USER') {
-                location.href = '/dogProfileSelect';
+                location.href = '/dog/dogProfileSelect';
             } else {
                 throw new Error('올바르지 않은 역할');
             }

@@ -56,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     document.getElementById('isNeutered').checked = false;
                 }
 
-
                 if (dog.walk_time_yn === 'Y') {
                     document.getElementById('walkTimeYn').checked = true;
                     updateWalkInputs();
