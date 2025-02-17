@@ -52,7 +52,7 @@ public class CartItem {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateQuantity(int quantity) {
-        this.quantity = quantity;
+    public void updateQuantity(int newQuantity) {
+        this.quantity = newQuantity;
     }
 }

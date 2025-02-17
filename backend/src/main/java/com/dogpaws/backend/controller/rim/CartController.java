@@ -1,5 +1,6 @@
 package com.dogpaws.backend.controller.rim;
 
+import com.dogpaws.backend.dto.rim.request.CartAddResponse;
 import com.dogpaws.backend.dto.rim.request.CartRequestDto;
 import com.dogpaws.backend.dto.rim.request.CartResponseDto;
 import com.dogpaws.backend.global.common.ApiResponse;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -23,7 +25,7 @@ public class CartController {
 
     // 장바구니 담기
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> addToCart(
+    public ResponseEntity<ApiResponse<CartAddResponse>> addToCart(
             @RequestBody CartRequestDto requestDto
     ) {
         log.info("=== Cart Add Request ===");
@@ -32,11 +34,15 @@ public class CartController {
         log.info("Quantity: {}", requestDto.getQuantity());
         log.info("Options: {}", requestDto.getOptions());
 
-        cartService.addToCart(requestDto.getUsername(), requestDto);
+        boolean isUpdated = cartService.addToCart(requestDto.getUsername(), requestDto);
 
-        return ResponseEntity.ok(
-                new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "장바구니에 추가되었습니다.")
-        );
+
+        CartAddResponse response = CartAddResponse.builder()
+                .message(isUpdated ? "장바구니의 기존 상품 수량이 변경되었습니다." : "장바구니에 새로운 상품이 추가되었습니다.")
+                .updated(isUpdated)
+                .build();
+
+        return ResponseEntity.ok(new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, response));
     }
 
     // 장바구니 목록 조회
