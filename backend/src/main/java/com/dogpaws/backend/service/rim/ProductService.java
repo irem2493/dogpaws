@@ -120,7 +120,7 @@ public class ProductService {
     /**
      * 제품 상세 조회 (JPA)
      */
-    public ProductDto getProduct(Integer productId) {
+    public ProductDto getProduct(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
         return convertProductToProductDto(product);
@@ -165,7 +165,7 @@ public class ProductService {
      * TODO : 재고관리 로직
      */
     @Transactional
-    public void updateProduct(Integer productId, ProductDto productDto, MultipartFile thumbnailImage, MultipartFile detailImage, String userId) throws IOException {
+    public void updateProduct(Long productId, ProductDto productDto, MultipartFile thumbnailImage, MultipartFile detailImage, String userId) throws IOException {
         Product product = productRepository.findById(productId)
                 .orElseThrow(()-> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
@@ -222,7 +222,7 @@ public class ProductService {
     /**
      * 상품 삭제 (JPA)
      */
-    public void deleteProduct(Integer productId) {
+    public void deleteProduct(Long productId) {
         productRepository.deleteById(productId);
         log.info("productId : {}  삭제 성공", productId);
     }
@@ -230,7 +230,7 @@ public class ProductService {
     /**
      * 옵션 추가 (JPA)
      */
-    public void addProductOption(Integer productId, ProductOptionDto productOptionDto) {
+    public void addProductOption(Long productId, ProductOptionDto productOptionDto) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다"));
 

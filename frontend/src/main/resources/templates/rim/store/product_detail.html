@@ -107,10 +107,10 @@
         <div class="col-md-6">
             <img th:src="${product.image_url}" alt="상품 상세 이미지" class="product-detail-image">
         </div>
-
         <!-- 상품 정보 -->
         <div class="col-md-6 product-info">
             <div class="manufacturer" th:text="${product.manufacturer}">제조사</div>
+            <input type="hidden" id="productId" th:value="${product.product_id}">
             <h2 class="product-name" th:text="${product.name}">상품명</h2>
             <div class="price" th:text="${#numbers.formatInteger(product.price, 0, 'COMMA') + '원'}">가격</div>
 

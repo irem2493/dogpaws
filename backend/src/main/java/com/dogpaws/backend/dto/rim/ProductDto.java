@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 public class ProductDto {
-    private Integer productId;          // 상품 ID
+    private Long productId;          // 상품 ID
     private String name;                // 상품명
     private Integer price;              // 가격
     private Integer stockQuantity;      // 재고 수량

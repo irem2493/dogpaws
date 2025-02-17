@@ -19,7 +19,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/{productId}")
-    public ApiResponse<ProductDto> getProduct(@PathVariable Integer productId) {
+    public ApiResponse<ProductDto> getProduct(@PathVariable Long productId) {
         log.info("상품 상세 조회 요청: productId={}", productId);
 
         try {
