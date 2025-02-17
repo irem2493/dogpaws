@@ -1,6 +1,7 @@
 package com.dogpaws.backend.repository.dao.rim;
 
 import com.dogpaws.backend.dto.rim.CartItemParam;
+import com.dogpaws.backend.dto.rim.request.CartListResponseDto;
 import com.dogpaws.backend.dto.rim.request.CartRequestDto;
 import com.dogpaws.backend.dto.rim.request.CartResponseDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -28,8 +29,7 @@ public interface CartDao {
     CartItemParam findCartItemByProductId(@Param("username") String username,
                                           @Param("productId") Long productId);
 
-    List<CartResponseDto> findCartItemsByUsername(String username);
-
+    List<CartListResponseDto> findCartItemsByUsername(@Param("username") String username);
 
 
     // 장바구니 아이템 옵션 수량 업데이트

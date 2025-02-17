@@ -1,4 +1,4 @@
-package com.dogpaws.frontend.dto.rim;
+package com.dogpaws.backend.dto.rim;
 
 import lombok.Getter;
 import lombok.Setter;
