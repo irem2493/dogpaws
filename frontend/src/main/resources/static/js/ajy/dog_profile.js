@@ -224,15 +224,21 @@ document.addEventListener("DOMContentLoaded", function() {
     document.querySelector("#preButton").addEventListener("click", function () {
         // 이동할 페이지 URL 설정 (예: nextpage.html)
 
-        api.post('/api/join/social/provider')
+        api.get('/api/join/social/provider', {}, { withCredentials: true })
             .then(data => {
                 console.log('세션 데이터:', data);
 
                 // 응답 JSON에서 사용자 정보를 가져옴
                 const provider = data.body?.body;
 
-                if (provider) window.location.href = "/socialJoin";
-                else window.location.href = "/join";
+                if (provider === '소셜 제공자 정보 없음') {
+                    console.log('일반 회원가입으로 이동');
+                    window.location.href = "/join";
+                }
+                else {
+                    console.log('소셜 회원가입으로 이동');
+                    window.location.href = "/socialJoin";
+                }
             })
             .catch(error => {
                 console.error('세션 데이터 로드 오류:', error);
