@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const isMatingAvailable = document.getElementById('isMatingAvailable');
     const fileUploadContainer = document.getElementById('fileUploadContainer');
 
+    const walkDays = document.getElementById('walkDays').value;
+
     if (!isMatingAvailable || !fileUploadContainer) {
         console.error("체크박스 또는 파일 업로드 컨테이너를 찾을 수 없습니다.");
         return;
@@ -68,6 +70,14 @@ document.addEventListener("DOMContentLoaded", function() {
                     selectBox.classList.remove('active');
                 }
             });
+        }
+
+        //수정 시 필요
+        var gender = document.getElementById('gender').value;
+        if (gender === 'M') {
+            setGender('M', document.querySelector(".gender-select button:nth-child(1)"));
+        } else if (gender === 'F') {
+            setGender('F', document.querySelector(".gender-select button:nth-child(2)"));
         }
     });
 
@@ -161,26 +171,53 @@ document.addEventListener("DOMContentLoaded", function() {
             endTimeInput.classList.remove('disabled-input');
         }
     }
+// 페이지 로드 시 초기 상태 설정
+    initializeGender();
+
+    document.querySelectorAll(".checkbox-basic[data-category='personality']:checked").forEach(checkbox => {
+        selectOption(checkbox);
+    });
+
+    document.querySelectorAll(".checkbox-basic[data-category='play']:checked").forEach(checkbox => {
+        selectOption2(checkbox);
+    });
+
+    // ✅ 저장된 값이 있으면 체크박스 업데이트 실행
+    updateCheckboxesFromSavedDays(walkDays);
 
 });
 
 // 연도 및 월 옵션 추가
 const selectBox_year = document.getElementById('birthYear');
+const selectedYear = selectBox_year.getAttribute("data-selected");  // 기존 값 가져오기
 for (let year = 1990; year <= 2025; year++) {
     let option = document.createElement('option');
     option.value = year;
     option.textContent = year;
     option.classList.add('select-box-option');
+
+    // 기존 값이 있다면 선택
+    if (selectedYear && selectedYear == year) {
+        option.selected = true;
+    }
+
     selectBox_year.appendChild(option);
 }
 
 const selectBox_month = document.getElementById('birthMonth');
+const selectedMonth = selectBox_month.getAttribute("data-selected");  // 기존 값 가져오기
 for (let i = 1; i <= 12; i++) {
     let option = document.createElement('option');
     let month = i.toString().padStart(2, '0');
     option.value = month;
     option.textContent = month;
     option.classList.add('select-box-option');
+
+// 기존 값이 있다면 선택
+    if (selectedMonth && selectedMonth == month) {
+        option.selected = true;
+    }
+
     selectBox_month.appendChild(option);
 }
 
@@ -213,12 +250,19 @@ document.addEventListener('click', function(event) {
 
 function selectOption(checkbox) {
     const selectedContainer = document.getElementById('selectedOptions');
+
+    // 🛑 중복 추가 방지 (이미 추가된 경우 무시)
+    if (document.querySelector(`#selectedOptions input[value="${checkbox.value}"]`)) {
+        return;
+    }
+
     if (checkbox.checked) {
         if (selectedContainer.childElementCount >= 5) {
             alert('최대 5개까지 선택 가능합니다.');
             checkbox.checked = false;
             return;
         }
+
         const selectedDiv = document.createElement("div");
         selectedDiv.classList.add("selected-option");
 
@@ -229,10 +273,10 @@ function selectOption(checkbox) {
         const hiddenInput = document.createElement("input");
         hiddenInput.type = "hidden";
         hiddenInput.name = "selectedPersonalities"; // 서버로 전송될 필드 이름
-        hiddenInput.value = checkbox.value; // AC, AG 등의 코드 값이 들어감
+        hiddenInput.value = checkbox.value;
 
-        selectedDiv.textContent = displayText; // 사용자에게는 '활발함' 등의 값이 보임
-        selectedDiv.appendChild(hiddenInput); // 숨겨진 input 추가
+        selectedDiv.textContent = displayText; // 사용자에게 보일 값
+        selectedDiv.appendChild(hiddenInput);  // 숨겨진 input 추가
 
         const removeBtn = document.createElement("span");
         removeBtn.textContent = " ✖";
@@ -244,13 +288,6 @@ function selectOption(checkbox) {
 
         selectedDiv.appendChild(removeBtn);
         selectedContainer.appendChild(selectedDiv);
-    } else {
-        const selectedOptions = document.querySelectorAll('.selected-option');
-        selectedOptions.forEach(option => {
-            if (option.textContent.includes(checkbox.value)) {
-                selectedContainer.removeChild(option);
-            }
-        });
     }
 }
 
@@ -300,12 +337,19 @@ function clearInput2() {
 // 옵션 선택 처리
 function selectOption2(checkbox) {
     const selectedContainer = document.getElementById('selectedOptions2');
+
+    // 🛑 중복 추가 방지 (이미 추가된 경우 무시)
+    if (document.querySelector(`#selectedOptions2 input[value="${checkbox.value}"]`)) {
+        return;
+    }
+
     if (checkbox.checked) {
         if (selectedContainer.childElementCount >= 5) {
             alert('최대 5개까지 선택 가능합니다.');
             checkbox.checked = false;
             return;
         }
+
         const selectedDiv = document.createElement("div");
         selectedDiv.classList.add("selected-option");
 
@@ -316,14 +360,14 @@ function selectOption2(checkbox) {
         const hiddenInput = document.createElement("input");
         hiddenInput.type = "hidden";
         hiddenInput.name = "selectedPlays"; // 서버로 전송될 필드 이름
-        hiddenInput.value = checkbox.value; // AC, AG 등의 코드 값이 들어감
+        hiddenInput.value = checkbox.value;
 
-        selectedDiv.textContent = displayText; // 사용자에게는 '활발함' 등의 값이 보임
-        selectedDiv.appendChild(hiddenInput); // 숨겨진 input 추가
+        selectedDiv.textContent = displayText; // 사용자에게 보일 값
+        selectedDiv.appendChild(hiddenInput);  // 숨겨진 input 추가
 
-        const removeBtn = document.createElement('span');
-        removeBtn.textContent = ' ✖';
-        removeBtn.style.cursor = 'pointer';
+        const removeBtn = document.createElement("span");
+        removeBtn.textContent = " ✖";
+        removeBtn.style.cursor = "pointer";
         removeBtn.onclick = function () {
             selectedContainer.removeChild(selectedDiv);
             checkbox.checked = false;
@@ -331,13 +375,6 @@ function selectOption2(checkbox) {
 
         selectedDiv.appendChild(removeBtn);
         selectedContainer.appendChild(selectedDiv);
-    } else {
-        const selectedOptions = document.querySelectorAll('.selected-option');
-        selectedOptions.forEach(option => {
-            if (option.textContent.includes(checkbox.value)) {
-                selectedContainer.removeChild(option);
-            }
-        });
     }
 }
 
@@ -411,27 +448,23 @@ function setGender(value, btn) {
     document.getElementById('gender').value = value;
 
     // 모든 버튼에서 active 클래스 제거
-    const buttons = document.querySelectorAll('.gender-select button');
-    buttons.forEach(button => button.classList.remove('active'));
+    document.querySelectorAll('.gender-select button').forEach(button => button.classList.remove('active'));
 
     // 클릭된 버튼에 active 클래스 추가
     btn.classList.add('active');
 }
 
-function initializeGenderSelection() {
-    const genderValue = document.getElementById('gender').value;
-
-    // 초기 값에 따라 active 클래스 추가
+// ✅ 2️⃣ 페이지가 로드될 때 기존 성별 값을 찾아서 버튼을 활성화하는 함수
+function initializeGender() {
+    const genderValue = document.getElementById('gender').value;  // 현재 hidden input 값 가져오기
     if (genderValue) {
-        const button = document.querySelector(`.gender-select button[onclick="setGender('${genderValue}', this)"]`);
-        if (button) {
-            button.classList.add('active');
+        // 해당 성별 버튼을 찾아서 활성화
+        const selectedButton = document.querySelector(`.gender-select button[data-gender="${genderValue}"]`);
+        if (selectedButton) {
+            selectedButton.classList.add('active');
         }
     }
 }
-
-// 페이지 로드 시 초기 상태 설정
-initializeGenderSelection();
 
 
 
@@ -493,7 +526,7 @@ function saveDog() {
 
     const username = sessionStorage.getItem('username');
     // fetch로 FormData 전송
-    api.post('/api/dog/' + username, formData, )
+    api.put('/api/dog/' + username, formData, )
         .then(data => {
             console.log('Response Data:', data);  // 응답 데이터 출력
 
@@ -512,110 +545,39 @@ function saveDog() {
 
 }
 
-// 체크박스를 업데이트하는 함수
+// ✅ 기존 저장된 요일 값을 가져와 체크박스 업데이트
 function updateCheckboxesFromSavedDays(savedDays) {
-    console.log('저장된 요일 값:', savedDays);
+    if (!savedDays || savedDays.trim() === '') {
+        console.log('저장된 요일 값이 없습니다.');
+        return;
+    }
 
-    // 세션에서 가져온 값을 배열로 변환
+    console.log('✅ 저장된 요일 값:', savedDays);
+
+    // 저장된 요일 값을 배열로 변환 (예: "월,화,수" → ["월", "화", "수"])
     const savedDaysArray = savedDays.split(',').map(day => day.trim());
 
-    // 각 체크박스 요소 가져오기
+    // 모든 요일 체크박스 가져오기 (전체 선택 제외)
     const dayCheckboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]:not(#all-days)');
 
-    // 각 요일에 해당하는 체크박스 상태 업데이트
+    // 각 요일 체크박스 상태 업데이트
     dayCheckboxes.forEach(checkbox => {
-        checkbox.checked = savedDaysArray.includes(checkbox.id);
+        if (savedDaysArray.includes(checkbox.id)) {
+            checkbox.checked = true;
+        } else {
+            checkbox.checked = false;
+        }
     });
 
-    // 전체 체크박스 상태 업데이트
+    // ✅ 전체 선택 박스(#all-days) 상태 업데이트
     const allCheckbox = document.getElementById('all-days');
-    const allChecked = Array.from(dayCheckboxes).every(cb => cb.checked);
-    allCheckbox.checked = allChecked;
+    if (allCheckbox) {
+        const allChecked = Array.from(dayCheckboxes).every(cb => cb.checked);
+        allCheckbox.checked = allChecked;
+    }
 }
 
-// 선택된 옵션을 표시하는 함수
-function showSelectedOptions(selectedValues) {
-    const selectedContainer = document.getElementById('selectedOptions');
-    const valuesArray = selectedValues.split(',').map(value => value.trim());
 
-    valuesArray.forEach(value => {
-        const checkbox = document.querySelector(`input[type="checkbox"][value="${value}"]`);
-
-        if (checkbox) {
-            checkbox.checked = true;
-
-            // 사용자에게 선택된 옵션 표시
-            const selectedDiv = document.createElement("div");
-            selectedDiv.classList.add("selected-option");
-
-            // ✅ 사용자에게 보여줄 값 (gubn_name)
-            const displayText = checkbox.getAttribute("data-name");
-
-            // ✅ 실제로 DB에 저장할 값 (gubn_code)
-            const hiddenInput = document.createElement("input");
-            hiddenInput.type = "hidden";
-            hiddenInput.name = "selectedPersonalities"; // 서버로 전송될 필드 이름
-            hiddenInput.value = value; // AC, AG 등의 코드 값이 들어감
-
-            selectedDiv.textContent = displayText; // 사용자에게는 '활발함' 등의 값이 보임
-            selectedDiv.appendChild(hiddenInput); // 숨겨진 input 추가
-
-            // ✖ 버튼 추가
-            const removeBtn = document.createElement("span");
-            removeBtn.textContent = " ✖";
-            removeBtn.style.cursor = "pointer";
-            removeBtn.onclick = function () {
-                selectedContainer.removeChild(selectedDiv);
-                checkbox.checked = false;
-            };
-
-            selectedDiv.appendChild(removeBtn);
-            selectedContainer.appendChild(selectedDiv);
-        }
-    });
-}
-
-// 선택된 옵션을 표시하는 함수
-function showSelectedPlayOptions(selectedValues) {
-    const selectedContainer = document.getElementById('selectedOptions2');
-    const valuesArray = selectedValues.split(',').map(value => value.trim());
-
-    valuesArray.forEach(value => {
-        const checkbox = document.querySelector(`input[type="checkbox"][value="${value}"]`);
-
-        if (checkbox) {
-            checkbox.checked = true;
-
-            // 사용자에게 선택된 옵션 표시
-            const selectedDiv = document.createElement("div");
-            selectedDiv.classList.add("selected-option");
-
-            // ✅ 사용자에게 보여줄 값 (gubn_name)
-            const displayText = checkbox.getAttribute("data-name");
-
-            // ✅ 실제로 DB에 저장할 값 (gubn_code)
-            const hiddenInput = document.createElement("input");
-            hiddenInput.type = "hidden";
-            hiddenInput.name = "selectedPlays"; // 서버로 전송될 필드 이름
-            hiddenInput.value = value; // WA, SW 등의 코드 값이 들어감
-
-            selectedDiv.textContent = displayText; // 사용자에게는 '산책하기' 등의 값이 보임
-            selectedDiv.appendChild(hiddenInput); // 숨겨진 input 추가
-
-            // ✖ 버튼 추가
-            const removeBtn = document.createElement('span');
-            removeBtn.textContent = ' ✖';
-            removeBtn.style.cursor = 'pointer';
-            removeBtn.onclick = function () {
-                selectedContainer.removeChild(selectedDiv);
-                checkbox.checked = false;
-            };
-
-            selectedDiv.appendChild(removeBtn);
-            selectedContainer.appendChild(selectedDiv);
-        }
-    });
-}
 
 // 파일 찾기 버튼 클릭 시 파일 선택창 열기
 function openFileDialog(inputId, fileNameInputId) {

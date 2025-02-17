@@ -161,3 +161,7 @@
     border: 1px solid #aaa; /* 테두리 색 변경 */
     opacity: 0.6; /* 흐리게 */
 }
+
+.doglist-container a{
+    text-decoration: none; color: #E17400;
+}

@@ -42,7 +42,7 @@
                 <!-- 로그인 상태 -->
                 <span th:if="${session.user != null}" class="profile-dropdown"  style="cursor: pointer;">
                     <span th:text="${session.dog != null and session.dog.dogName != null ? session.dog.dogName + ' 님' :
-                                    (session.user != null and session.user.username != null ? session.user.username + '님' : 'Guest')}"></span>
+                                    (session.user != null and session.user.nickname != null ? session.user.nickname + '님' : 'Guest')}"></span>
                     <img src="/img/icon/button/down-sign.svg" alt="dropdown img" style="width: 12px; height: 12px"/>
                     <!--<button id="logoutButton">로그아웃</button>-->
 

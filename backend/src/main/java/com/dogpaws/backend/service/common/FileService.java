@@ -61,4 +61,17 @@ public class FileService {
         return file;
     }
 
+    public void deleteFileByDogIdAndFileCode(Integer dogId, String fileCode) {
+        File existingFile = fileRepository.findFileByFileRefNoAndFileGubnCode(dogId.toString(), fileCode);
+
+        if (existingFile != null) {
+            fileRepository.delete(existingFile);
+                System.out.println("기존 파일 삭제: " + existingFile.getFileOldName());
+
+        } else {
+            System.out.println("삭제할 파일 없음 (dogId: " + dogId + ", fileCode: " + fileCode + ")");
+        }
+    }
+
+
 }
