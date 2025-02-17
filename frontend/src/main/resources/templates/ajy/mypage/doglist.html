@@ -74,7 +74,11 @@
 
                     <!-- 수정 및 삭제 버튼 -->
                     <div class="profile-actions">
-                        <button type="button" class="btn-b" style="width: 85px; height: 35px;">수정</button>
+                        <button type="button" class="btn-b" style="width: 85px; height: 35px;">
+                            <a th:href="@{/dog/dogEidt/{dogId}(dogId=${dog.dog_id})}">
+                                수정
+                            </a>
+                        </button>
 
                         <button type="button" class="btn-delete"
                                 th:disabled="${#lists.size(dogList) == 1}"

@@ -36,7 +36,6 @@ public class DogService {
             DogDto dogDto = new DogDto();
             dogDto.setDogId(d.getDogId());
             dogDto.setDogName(d.getDogName());
-            dogDto.setDogName(d.getDogName());
             dogDto.setProfileUrl(d.getProfileUrl());
             dogDtoList.add(dogDto);
         }
@@ -65,6 +64,7 @@ public class DogService {
             dogDto.setGender(d.getGender());
             dogDto.setIsNeutered(d.getIsNeutered());
             dogDto.setWeight(d.getWeight());
+            dogDto.setIsMatingAvailable(d.getIsMatingAvailable());
             dogDto.setWalkDays(d.getWalkDays());
 
             dogDto.setWalkTimeYn(d.getWalkTimeYn());
@@ -104,6 +104,8 @@ public class DogService {
     public DogResponseDto getDog(Integer dogId) {
         Dog dog = dogRepository.findByDogId(dogId);
 
+        System.out.println(dog);
+
         if (dog != null) {
             DogResponseDto dogDto = new DogResponseDto();
             dogDto.setUsername(dog.getUsername());
@@ -116,6 +118,7 @@ public class DogService {
             dogDto.setGender(dog.getGender());
             dogDto.setIsNeutered(dog.getIsNeutered());
             dogDto.setWeight(dog.getWeight());
+            dogDto.setIsMatingAvailable(dog.getIsMatingAvailable());
             dogDto.setWalkDays(dog.getWalkDays());
 
             dogDto.setWalkTimeYn(dog.getWalkTimeYn());

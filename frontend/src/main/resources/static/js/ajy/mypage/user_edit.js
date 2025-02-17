@@ -87,7 +87,7 @@ document.getElementById('editForm').addEventListener('submit', function(event) {
             // 응답의 body.body가 '1단계 저장 완료'인지 확인
             if (data.body?.body === '개인정보 수정 완료') {
                 alert("개인정보 수정 완료");
-                location.href="/editUserPassword"
+                location.href="/editUserPassword";
             } else {
                 alert("개인정보 수정 실패");
             }
