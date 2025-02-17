@@ -10,5 +10,5 @@ public interface DogPersonalRepository extends JpaRepository<DogPersonal, Intege
 
     // dogId을 통해 강아지 성격 정보를 모두 조회
     List<DogPersonal> findByDogId(Integer dogId);
-
+    void deleteByDogId(Integer dogId);
 }
