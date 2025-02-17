@@ -65,6 +65,16 @@ public class ProductService {
         Product finalProduct = productRepository.save(product);
         log.info("생성된 product ID: {}", finalProduct.getProductId());
 
+        // 기본 옵션 생성 및 저장
+        ProductOption baseOption = ProductOption.builder()
+                .product(finalProduct)
+                .optionName(finalProduct.getName() + " (기본)")
+                .optionPrice(0)
+                .optionStock(finalProduct.getStockQuantity())
+                .isBaseOption(true)
+                .build();
+        productOptionRepository.save(baseOption);
+
         if(optionDtos != null && !optionDtos.isEmpty()) {
             log.info("  {} 개 상품 옵션 생성중 ", optionDtos.size());
             List<ProductOption> productOptions = optionDtos.stream()
@@ -301,6 +311,7 @@ public class ProductService {
         productOptionDto.setOptionName(productOption.getOptionName());
         productOptionDto.setOptionPrice(productOption.getOptionPrice());
         productOptionDto.setOptionStock(productOption.getOptionStock());
+        productOptionDto.setBaseOption(productOption.isBaseOption());
 
         // 추가 필드
         productOptionDto.setOptionSize(productOption.getOptionSize());

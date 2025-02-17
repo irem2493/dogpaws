@@ -21,4 +21,13 @@ public class ProductOptionDto {
     private String optionStorageInfo;
     private String optionManufacturer;
     private String optionOrigin;
+    private boolean isBaseOption;
+
+    public boolean isBaseOption() {
+        return isBaseOption;
+    }
+
+    public void setBaseOption(boolean baseOption) {
+        this.isBaseOption = baseOption;
+    }
 }

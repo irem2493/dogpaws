@@ -8,18 +8,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 기본 가격
     const basePrice = parseInt(document.querySelector('.price').textContent.replace(/[^0-9]/g, ''));
+    const productName = document.querySelector('.product-name').textContent;
+
+
+    // 기본 옵션 자동 선택 및 화면에 추가
+    const baseOption = optionSelect.querySelector('option[data-is-base="true"]');
+    if (baseOption) {
+        const optionId = baseOption.value;
+        const optionName = baseOption.getAttribute('data-name');
+        const optionPrice = parseInt(baseOption.getAttribute('data-price'));
+        const totalOptionPrice = basePrice + optionPrice;
+
+        // 기본 옵션을 selectedItems에 추가
+        selectedItems.set(optionId, {
+            name: optionName,
+            price: optionPrice,
+            quantity: 1,
+            isBase: true
+        });
+
+        // 화면에 기본 옵션 추가
+        addSelectedOption(optionId, optionName, totalOptionPrice);
+        updateTotalPrice();
+    }
+
 
     // 옵션 선택 시
     optionSelect.addEventListener('change', function() {
         if (!this.value) return;
 
-        if (selectedItems.has(this.value)) {
+        const selectedOption = this.options[this.selectedIndex];
+        const optionId = selectedOption.value;
+        const isBaseOption = optionId === baseOptionId;
+
+        if (selectedItems.has(optionId) ||
+            (isBaseOption && Array.from(selectedItems.values()).some(item => item.isBase))) {
             alert('이미 선택된 옵션입니다.');
+            this.selectedIndex = 0;
             return;
         }
 
-        const selectedOption = this.options[this.selectedIndex];
-        const optionId = selectedOption.value;
         const optionName = selectedOption.getAttribute('data-name');
         const optionPrice = parseInt(selectedOption.getAttribute('data-price'));
         const totalOptionPrice = basePrice + optionPrice; // 기본 가격 + 옵션 가격
@@ -114,11 +142,11 @@ document.addEventListener('DOMContentLoaded', function() {
             let totalQuantity = 0;  // 전체 수량 계산
 
             selectedItems.forEach((item, optionId) => {
-                totalQuantity += item.quantity;  // 각 옵션의 수량을 합산
                 options.push({
                     optionId: parseInt(optionId),
-                    quantity: item.quantity      // 각 옵션의 개별 수량
+                    quantity: item.quantity
                 });
+                totalQuantity += item.quantity;
             });
 
             // CartRequestDto 형식에 맞게 데이터 구성
