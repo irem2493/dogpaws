@@ -2,116 +2,117 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout-mypage}">
-<head>
-  <title>장바구니 목록</title>
-  <style>
-    .cart-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
 
-    .select-all {
-      margin-bottom: 20px;
-    }
-
-    .cart-item {
-      display: flex;
-      align-items: center;
-      padding: 20px;
-      border-bottom: 1px solid #eee;
-    }
-
-    .cart-item img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      margin-right: 20px;
-    }
-
-    .item-info {
-      flex: 1;
-    }
-
-    .quantity-control {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .quantity-control button {
-      width: 30px;
-      height: 30px;
-      border: 1px solid #ddd;
-      background: #fff;
-      cursor: pointer;
-    }
-
-    .quantity-control input {
-      width: 50px;
-      text-align: center;
-    }
-
-    .order-summary {
-      margin-top: 30px;
-      padding: 20px;
-      background: #f8f8f8;
-    }
-
-    .order-button {
-      width: 100%;
-      padding: 15px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body layout:fragment="content">
-<div class="container">
-<div class="cart-container" style="min-height: 100vh;">
-
-  <div class="select-all">
-    <input type="checkbox" id="selectAll">
-    <label for="selectAll">전체선택</label>
-  </div>
-  <!-- 장바구니 목록 -->
-  <div class="cart-items">
-    <div th:each="item : ${body}" class="cart-item">
-        <input type="checkbox" class="item-checkbox" th:value="${item.cart_item_id}">
-        <img th:src="${item.product_image}" alt="상품이미지">
-        <div class="item-info">
-          <h3 th:text="${item.product_name}">상품명</h3>
-          <div th:each="option : ${item.options}" class="option-info">
-            <span th:text="${option.option_name}">옵션명</span>
-            <div class="quantity-control">
-              <button class="decrease">-</button>
-              <input type="number" th:value="${option.quantity}" readonly>
-              <button class="increase">+</button>
-            </div>
-            <span th:text="${#numbers.formatInteger(option.option_price * option.quantity, 0, 'COMMA') + '원'}">가격</span>
-          </div>
+<div layout:fragment="content">
+    <div class="container mt-5">
+        <!-- 장바구니가 비어있는 경우 -->
+        <div th:if="${cartSummary == null || cartSummary.cartItems.empty}" class="text-center">
+            <h3>장바구니가 비어있습니다.</h3>
         </div>
-        <div class="item-total" th:text="${#numbers.formatInteger(item.total_price, 0, 'COMMA') + '원'}">총 금액</div>
-        <button class="delete-item" th:data-item-id="${item.cart_item_id}">X</button>
-      </div>
-    </div>
 
-    <!-- 주문 정보 -->
-    <div class="order-summary">
-      <div class="price-info">
-        <div>총 상품금액: <span id="totalProductPrice">0원</span></div>
-        <div>배송비: <span>3,000원</span></div>
-        <div>주문금액: <span id="totalOrderPrice">0원</span></div>
-      </div>
-      <button id="orderButton" class="btn-orange" style="width: 100%; background-color: #EF7E06">
-        총 <span id="totalItemCount">0</span>개 구매하기
-      </button>
+        <!-- 장바구니에 상품이 있는 경우 -->
+        <div th:if="${cartSummary != null && !cartSummary.cartItems.empty}">
+            <!-- 전체 선택 체크박스 -->
+            <div class="mb-3">
+                <input type="checkbox" id="selectAll" class="form-check-input">
+                <label for="selectAll" class="form-check-label">전체 선택</label>
+            </div>
+
+            <!-- 상품 목록 -->
+            <div th:each="item : ${cartSummary.cartItems}" class="card mb-3">
+                <div class="row g-0">
+                    <!-- 상품 이미지 -->
+                    <div class="col-md-2">
+                        <img th:src="${item.imageUrl}" class="img-fluid rounded-start" alt="상품 이미지">
+                    </div>
+
+                    <!-- 상품 정보 -->
+                    <div class="col-md-10">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${item.productName}">상품명</h5>
+                            <p class="card-text">기본 가격: <span th:text="${#numbers.formatInteger(item.productPrice, 0, 'COMMA')}">0</span>원</p>
+
+                            <!-- 옵션 목록 -->
+                            <div th:each="option : ${item.cartOptions}" class="mb-2">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <span th:text="${option.optionName}">옵션명</span>
+                                        <span th:if="${option.optionPrice > 0}">
+                                            (+ <span th:text="${#numbers.formatInteger(option.optionPrice, 0, 'COMMA')}">0</span>원)
+                                        </span>
+                                    </div>
+
+                                    <!-- 수량 조절 -->
+                                    <div class="col-auto">
+                                        <div class="input-group">
+                                            <button class="btn btn-outline-secondary btn-sm"
+                                                    th:onclick="'decreaseQuantity(' + ${option.cartItemId} + ')'">-</button>
+                                            <input type="number" class="form-control form-control-sm text-center"
+                                                   style="width: 60px;"
+                                                   th:value="${option.quantity}" readonly>
+                                            <button class="btn btn-outline-secondary btn-sm"
+                                                    th:onclick="'increaseQuantity(' + ${option.cartItemId} + ')'">+</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- 옵션별 금액 -->
+                                    <div class="col-auto">
+                                        <span th:text="${#numbers.formatInteger((item.productPrice + option.optionPrice) * option.quantity, 0, 'COMMA')}">0</span>원
+                                    </div>
+
+                                    <!-- 삭제 버튼 -->
+                                    <div class="col-auto">
+                                        <button class="btn btn-danger btn-sm"
+                                                th:onclick="'removeCartItem(' + ${option.cartItemId} + ')'">X</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 주문 요약 정보 -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <p>총 상품금액: <span th:text="${#numbers.formatInteger(cartSummary.totalProductPrice, 0, 'COMMA')}">0</span>원</p>
+                            <p>배송비: <span th:text="${#numbers.formatInteger(cartSummary.deliveryFee, 0, 'COMMA')}">0</span>원</p>
+                            <h4>총 주문금액: <span th:text="${#numbers.formatInteger(cartSummary.totalOrderPrice, 0, 'COMMA')}">0</span>원</h4>
+                            <p>총 <span th:text="${cartSummary.totalQuantity}">0</span>개</p>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-primary" onclick="proceedToOrder()">구매하기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
-  </div>
+    <!-- JavaScript -->
+    <script th:inline="javascript">
+        function increaseQuantity(cartItemId) {
+            // TODO: 수량 증가 API 호출
+        }
+
+        function decreaseQuantity(cartItemId) {
+            // TODO: 수량 감소 API 호출
+        }
+
+        function removeCartItem(cartItemId) {
+            // TODO: 상품 삭제 API 호출
+        }
+
+        function proceedToOrder() {
+            // TODO: 주문 페이지로 이동
+        }
+
+        // 전체 선택 체크박스 이벤트
+        document.getElementById('selectAll').addEventListener('change', function() {
+            // TODO: 전체 선택/해제 처리
+        });
+    </script>
 </div>
-<script src="/js/rim/cart_list.js"></script>
-</body>
 </html>
