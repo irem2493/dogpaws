@@ -136,8 +136,10 @@ public class CartService {
                     .sum();
 
             return CartResponseDto.builder()
+                    .productId(cartItem.getProduct().getProductId())
                     .cartItemId(cartItem.getCartItemId())
                     .productName(cartItem.getProduct().getName())
+                    .productImage(cartItem.getProduct().getImageUrl())
                     .basePrice(cartItem.getProduct().getPrice())
                     .quantity(cartItem.getQuantity())
                     .options(optionInfos)
