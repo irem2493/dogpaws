@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,7 +67,7 @@ public class MatchingService {
     }
 
     //친구매칭 리스트 (1단계)
-    public List<DogCandidateDto> getCandidateDogs(int dogId, String username) {
+    public List<DogCandidateDto> getCandidateDogs(int dogId, String username, String matchType) {
         /*
         for(MatchDto matchDto : matchList){
             matchDto.setMatchedCriteriaList(StringUtil.splitToList(matchDto.getMatchedCriteria()));
@@ -75,7 +76,7 @@ public class MatchingService {
             }
         }
          */
-        return dogMatchDao.getDogFriendMatchList(dogId, username);
+        return dogMatchDao.getDogFriendMatchList(dogId, username, matchType);
     }
 
     // 매칭 점수 계산 (2단계)
@@ -138,39 +139,34 @@ public class MatchingService {
     }
 
     // 매칭 기준 문자열 계산 (어떤 조건이 일치했는지 나열)
-    public String calculateMatchedCriteria(DogCandidateDto candidate, MatchingCriteriaDto criteria) {
-        StringBuilder sb = new StringBuilder();
+    public List<String> calculateMatchedCriteria(DogCandidateDto candidate, MatchingCriteriaDto criteria) {
+        List<String> matchedCriteriaList = new ArrayList<>();
 
         if (candidate.getBreed().equals(criteria.getBreedGbnCd())) {
-            sb.append("품종");
+            matchedCriteriaList.add("품종");
         }
 
         if (candidate.getIsMix().equals(criteria.getIsMix())) {
-            if (sb.length() > 0) sb.append(",");
-            sb.append("믹스여부");
+            matchedCriteriaList.add("믹스여부");
         }
 
         if (("U".equals(criteria.getWeightCategory()) && candidate.getWeight() >= criteria.getWeight() - 1) ||
                 ("D".equals(criteria.getWeightCategory()) && candidate.getWeight() <= criteria.getWeight() + 1)) {
-            if (sb.length() > 0) sb.append(",");
-            sb.append("체중");
+            matchedCriteriaList.add("체중");
         }
 
         if (candidate.getPersonalityType() != null && candidate.getPersonalityType().equals(criteria.getDogTypeCodeGbnCd())) {
-            if (sb.length() > 0) sb.append(",");
-            sb.append("성격유형");
+            matchedCriteriaList.add("성격유형");
         }
 
         int personalCount = dogMatchDao.countPersonalMatches(candidate.getDogId(), criteria.getDogPersonalGbnCds());
         if (personalCount > 0) {
-            if (sb.length() > 0) sb.append(",");
-            sb.append("성격");
+            matchedCriteriaList.add("성격");
         }
 
         int playCount = dogMatchDao.countPlayMatches(candidate.getDogId(), criteria.getDogPlayGbnCds());
         if (playCount > 0) {
-            if (sb.length() > 0) sb.append(",");
-            sb.append("놀이");
+            matchedCriteriaList.add("놀이");
         }
 
         if (candidate.getWalkStartTime() != null && criteria.getWalkStartTime() != null &&
@@ -178,39 +174,35 @@ public class MatchingService {
             long diffStart = Math.abs(Duration.between(candidate.getWalkStartTime(), criteria.getWalkStartTime()).toMinutes());
             long diffEnd = Math.abs(Duration.between(candidate.getWalkEndTime(), criteria.getWalkEndTime()).toMinutes());
             if (diffStart <= 60 || diffEnd <= 60) {
-                if (sb.length() > 0) sb.append(",");
-                sb.append("산책시간");
+                matchedCriteriaList.add("산책시간");
             }
         }
 
         if (candidate.getWalkDays() != null && !candidate.getWalkDays().trim().isEmpty()) {
             int daysCount = candidate.getWalkDays().split(",").length;
             if (daysCount > 0) {
-                if (sb.length() > 0) sb.append(",");
-                sb.append("산책요일");
+                matchedCriteriaList.add("산책요일");
             }
         }
 
-        return sb.toString();
+        return matchedCriteriaList;
     }
 
     // 최종 후보군 반환: 지역 일치 우선 정렬 + 매칭 점수 내림차순 + 난수 섞기
-    public List<DogCandidateDto> getFinalMatchingCandidates(int dogId, String username) {
+    public List<DogCandidateDto> getFinalMatchingCandidates(int dogId, String username, String matchType) {
 
         //매칭필터 가져오기
         MatchingCriteriaDto criteria = dogMatchDao.getMatchingCriteria(dogId, username);
 
         // 1단계: DB에서 후보 목록 가져오기
-        List<DogCandidateDto> candidates = getCandidateDogs(dogId, username);
+        List<DogCandidateDto> candidates = getCandidateDogs(dogId, username, matchType);
 
         // 2단계: 각 후보에 대해 매칭 점수와 매칭 기준 계산
         for (DogCandidateDto candidate : candidates) {
             int score = calculateMatchScore(candidate, criteria);
             candidate.setMatchScore(score);
-
-            String criteriaStr = calculateMatchedCriteria(candidate, criteria);
-            candidate.setMatchedCriteria(criteriaStr);
-            System.out.println("최종 백엔드 candidate: " + candidate);
+            List<String> criteriaList = calculateMatchedCriteria(candidate, criteria);
+            candidate.setMatchedCriteriaList(criteriaList);
         }
 
         // 지역 일치 여부: candidate.getDogRegion()와 candidate.getUserRegion() 비교 (같으면 우선순위 높게)
@@ -233,8 +225,6 @@ public class MatchingService {
                 })
                 .limit(20)  // 상위 20건만 선택
                 .collect(Collectors.toList());
-
-
         return sortedCandidates;
     }
 

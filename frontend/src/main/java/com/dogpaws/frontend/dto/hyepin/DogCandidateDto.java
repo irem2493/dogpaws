@@ -1,4 +1,4 @@
-package com.dogpaws.backend.dto.hyepin;
+package com.dogpaws.frontend.dto.hyepin;
 
 import lombok.Data;
 
@@ -31,7 +31,7 @@ public class DogCandidateDto {
     private String dogRegion;
     private String userRegion; // DB에서 받아온 사용자 지역 코드 (비교용)
     private List<String> matchedCriteriaList; //매칭 일치조건 리스트
-
+    
     private boolean liked; //좋아요 여부
 
     // 후처리 결과
