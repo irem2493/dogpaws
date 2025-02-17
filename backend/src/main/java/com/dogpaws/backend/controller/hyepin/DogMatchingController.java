@@ -1,7 +1,9 @@
 package com.dogpaws.backend.controller.hyepin;
 
+import com.dogpaws.backend.dto.hyepin.DogCandidateDto;
 import com.dogpaws.backend.dto.hyepin.FilterDto;
 import com.dogpaws.backend.dto.hyepin.MatchDto;
+import com.dogpaws.backend.dto.hyepin.MatchingCriteriaDto;
 import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.service.common.LikeService;
 import com.dogpaws.backend.service.hyepin.MatchingService;
@@ -66,13 +68,13 @@ public class DogMatchingController {
 
     //친구매칭 가져오기
     @GetMapping
-    public List<MatchDto> getDogFriendMatchList(@RequestParam("dogId") int dogId,
+    public List<DogCandidateDto> getDogFriendMatchList(@RequestParam("dogId") int dogId,
                                                 @RequestParam("username") String username) throws IOException {
         log.info("여기는 백 컨트롤러 getDogFriendMatchList / dogId 값: {}", dogId);
         log.info("여기는 백 컨트롤러 getDogFriendMatchList / username: {}", username);
-        List<MatchDto> matchList = matchingService.getDogFriendMatchList(dogId, username);
+        List<DogCandidateDto> matchList = matchingService.getFinalMatchingCandidates(dogId, username);
         //getDogFriendMatchList 좋아요 리스트 받아오기
-        matchList = likeService.getMatcingLike(username, matchList, 'F');
+        //matchList = likeService.getMatcingLike(username, matchList, 'F');
         log.info("여기는 백 컨트롤러 getDogFriendMatchList / matchList 값: {}", matchList);
         return matchList;
     }

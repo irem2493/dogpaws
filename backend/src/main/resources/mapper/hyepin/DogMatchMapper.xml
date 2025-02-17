@@ -126,92 +126,195 @@
         GROUP BY dm.dog_id;
     </select>
 
-    <select id="getDogFriendMatchList" resultType="com.dogpaws.backend.dto.hyepin.MatchDto">
-        -- 강아지 매칭 리스트
+    <select id="getDogFriendMatchList" resultType="com.dogpaws.backend.dto.hyepin.DogCandidateDto">
         SELECT
-        d.*,
-        -- 품종 한글명 가져오기
-        (SELECT g.gubn_name
-        FROM tbl_gubn g
-        WHERE g.group_code = 'breed_code'
-        AND g.gubn_code = d.breed
-        LIMIT 1) AS breed_name,
-
-        -- 사용자 주소 가져오기
-        (SELECT u.address
-        FROM tbl_users u
-        WHERE u.username = d.username
-        LIMIT 1) AS address,
-
-        -- 지역 코드 추출 (주소 앞 2글자)
+        d.dog_id,
+        d.username,
+        d.breed,
+        d.is_mix,
+        d.weight,
+        d.personality_type,
+        d.walk_start_time,
+        d.walk_end_time,
+        d.walk_days,
+        (SELECT u.address FROM tbl_users u WHERE u.username = d.username LIMIT 1) AS address,
         LEFT((SELECT u.address FROM tbl_users u WHERE u.username = d.username LIMIT 1), 2) AS dog_region,
-        LEFT((SELECT u.address FROM tbl_users u WHERE u.username = #{username} LIMIT 1), 2) AS user_region,
-
-        -- 매칭 점수 계산
-        (7 * (CASE WHEN m.weight_category = 'U' AND d.weight >= m.weight - 1 THEN 1 ELSE 0 END)
-        + 7 * (CASE WHEN d.personality_type = m.dog_type_code_gbn_cd THEN 1 ELSE 0 END)
-        + 2 * (SELECT COUNT(*) FROM tbl_dog_personal p
-        WHERE p.dog_id = d.dog_id
-        AND p.dog_personal_gbn_cd IN (m.dog_personal_gbn_cd_1, m.dog_personal_gbn_cd_2,
-        m.dog_personal_gbn_cd_3, m.dog_personal_gbn_cd_4,
-        m.dog_personal_gbn_cd_5))
-        + 2 * (SELECT COUNT(*) FROM tbl_dog_play pl
-        WHERE pl.dog_id = d.dog_id
-        AND pl.dog_play_gbn_cd IN (m.dog_play_gbn_cd_1, m.dog_play_gbn_cd_2,
-        m.dog_play_gbn_cd_3, m.dog_play_gbn_cd_4,
-        m.dog_play_gbn_cd_5))
-        + 10 * (CASE WHEN d.walk_start_time = m.walk_start_time AND d.walk_end_time = m.walk_end_time THEN 1 ELSE 0 END)
-        + COALESCE(LENGTH(d.walk_days) - LENGTH(REPLACE(d.walk_days, ',', '')) + 1, 0)
-        + CASE
-        WHEN ABS(TIMESTAMPDIFF(MINUTE, d.walk_start_time, m.walk_start_time)) &lt;= 30 THEN 10
-        WHEN ABS(TIMESTAMPDIFF(MINUTE, d.walk_start_time, m.walk_start_time)) &lt;= 60 THEN 5
-        ELSE 0
-        END
-        + CASE
-        WHEN ABS(TIMESTAMPDIFF(MINUTE, d.walk_end_time, m.walk_end_time)) &lt;= 30 THEN 10
-        WHEN ABS(TIMESTAMPDIFF(MINUTE, d.walk_end_time, m.walk_end_time)) &lt;= 60 THEN 5
-        ELSE 0
-        END
-        ) AS match_score,
-
-        -- 매칭된 기준을 문자열로 연결
-        CONCAT(
-        CASE WHEN d.breed = m.breed_gbn_cd THEN '품종' ELSE '' END,
-        CASE WHEN d.is_mix = m.is_mix THEN ',믹스여부' ELSE '' END,
-        CASE WHEN m.weight_category = 'U' AND d.weight >= m.weight - 1 THEN ',체중'
-        WHEN m.weight_category = 'D' AND d.weight &lt;= m.weight + 1 THEN ',체중'
-        ELSE '' END,
-        CASE WHEN d.personality_type = m.dog_type_code_gbn_cd THEN ',성격유형' ELSE '' END,
-        CASE WHEN (SELECT COUNT(*) FROM tbl_dog_personal p
-        WHERE p.dog_id = d.dog_id
-        AND p.dog_personal_gbn_cd IN (m.dog_personal_gbn_cd_1, m.dog_personal_gbn_cd_2,
-        m.dog_personal_gbn_cd_3, m.dog_personal_gbn_cd_4,
-        m.dog_personal_gbn_cd_5)) > 0 THEN ',성격' ELSE '' END,
-        CASE WHEN (SELECT COUNT(*) FROM tbl_dog_play pl
-        WHERE pl.dog_id = d.dog_id
-        AND pl.dog_play_gbn_cd IN (m.dog_play_gbn_cd_1, m.dog_play_gbn_cd_2,
-        m.dog_play_gbn_cd_3, m.dog_play_gbn_cd_4,
-        m.dog_play_gbn_cd_5)) > 0 THEN ',놀이' ELSE '' END,
-        CASE WHEN (ABS(TIMESTAMPDIFF(MINUTE, d.walk_start_time, m.walk_start_time)) &lt;= 60 OR
-        ABS(TIMESTAMPDIFF(MINUTE, d.walk_end_time, m.walk_end_time)) &lt;= 60)
-        THEN ',산책시간' ELSE '' END,
-        CASE WHEN (LENGTH(d.walk_days) - LENGTH(REPLACE(d.walk_days, ',', '')) + 1) > 0 THEN ',산책요일' ELSE '' END
-        ) AS matched_criteria
-
-        FROM tbl_dogs d
-        JOIN tbl_dog_match m ON m.dog_id = #{dogId} -- 강아지 ID
-        WHERE (d.breed = m.breed_gbn_cd OR m.breed_gbn_cd IS NULL)
-        AND (m.is_mix = 'N' AND d.is_mix = 'N' OR m.is_mix = 'Y')
-        AND d.username &lt;&gt; #{username}
+        LEFT((SELECT u.address FROM tbl_users u WHERE u.username = #{username} LIMIT 1), 2) AS user_region
+        FROM tbl_dogs d,
+        (SELECT * FROM tbl_dog_match WHERE dog_id = #{dogId}) m
+        WHERE d.username &lt;&gt; #{username}
+        -- 품종 필터: 후보 강아지의 품종과 현재 강아지의 필터 값이 일치하거나, 필터가 설정되지 않은 경우
+        AND (d.breed = m.breed_gbn_cd OR m.breed_gbn_cd IS NULL)
+        -- 믹스 여부 필터: 현재 강아지의 필터가 'N'이면 후보도 'N', 아니면 'Y'인 경우 모두 허용
+        AND (
+        (m.is_mix = 'N' AND d.is_mix = 'N')
+        OR m.is_mix = 'Y'
+        )
+        -- 지역 필터: 후보 강아지의 주소 앞 2글자와 현재 사용자의 주소 앞 2글자가 동일한 경우 우선 처리
         ORDER BY
-        -- 같은 지역 강아지를 우선 정렬 (1이면 같은 지역, 0이면 다른 지역)
+        -- 같은 지역이면 1, 아니면 0을 부여하여 내림차순 정렬하면, 같은 지역이 우선으로 오고 그 다음에 다른 지역들이 무작위로 정렬됩니다.
         (CASE
         WHEN LEFT((SELECT u.address FROM tbl_users u WHERE u.username = d.username LIMIT 1), 2) =
         LEFT((SELECT u.address FROM tbl_users u WHERE u.username = #{username} LIMIT 1), 2)
-        THEN 1 ELSE 0 END) DESC,
-        match_score DESC,
+        THEN 1
+        ELSE 0
+        END) DESC,
         RAND()
-        LIMIT 20;
-
     </select>
+
+    <select id="countPersonalMatches" resultType="int" parameterType="map">
+        SELECT COALESCE((
+        SELECT
+        (
+        <choose>
+            <when test="personalCodes != null and personalCodes.size() > 0">
+                (CASE WHEN dog_personal_gbn_cd_1 IN
+                <foreach collection="personalCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+                THEN 1 ELSE 0 END)
+            </when>
+            <otherwise>0</otherwise>
+        </choose>
+        +
+        <choose>
+            <when test="personalCodes != null and personalCodes.size() > 0">
+                (CASE WHEN dog_personal_gbn_cd_2 IN
+                <foreach collection="personalCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+                THEN 1 ELSE 0 END)
+            </when>
+            <otherwise>0</otherwise>
+        </choose>
+        +
+        <choose>
+            <when test="personalCodes != null and personalCodes.size() > 0">
+                (CASE WHEN dog_personal_gbn_cd_3 IN
+                <foreach collection="personalCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+                THEN 1 ELSE 0 END)
+            </when>
+            <otherwise>0</otherwise>
+        </choose>
+        +
+        <choose>
+            <when test="personalCodes != null and personalCodes.size() > 0">
+                (CASE WHEN dog_personal_gbn_cd_4 IN
+                <foreach collection="personalCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+                THEN 1 ELSE 0 END)
+            </when>
+            <otherwise>0</otherwise>
+        </choose>
+        +
+        <choose>
+            <when test="personalCodes != null and personalCodes.size() > 0">
+                (CASE WHEN dog_personal_gbn_cd_5 IN
+                <foreach collection="personalCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+                THEN 1 ELSE 0 END)
+            </when>
+            <otherwise>0</otherwise>
+        </choose>
+        ) AS personalMatchCount
+        FROM tbl_dog_match
+        WHERE dog_id = #{dogId}
+        ), 0)
+    </select>
+
+    <select id="countPlayMatches" resultType="int" parameterType="map">
+        SELECT COALESCE((
+        SELECT
+        (
+        <choose>
+            <when test="playCodes != null and playCodes.size() > 0">
+                (CASE WHEN dog_play_gbn_cd_1 IN
+                <foreach collection="playCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+                THEN 1 ELSE 0 END)
+            </when>
+            <otherwise>0</otherwise>
+        </choose>
+        +
+        <choose>
+            <when test="playCodes != null and playCodes.size() > 0">
+                (CASE WHEN dog_play_gbn_cd_2 IN
+                <foreach collection="playCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+                THEN 1 ELSE 0 END)
+            </when>
+            <otherwise>0</otherwise>
+        </choose>
+        +
+        <choose>
+            <when test="playCodes != null and playCodes.size() > 0">
+                (CASE WHEN dog_play_gbn_cd_3 IN
+                <foreach collection="playCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+                THEN 1 ELSE 0 END)
+            </when>
+            <otherwise>0</otherwise>
+        </choose>
+        +
+        <choose>
+            <when test="playCodes != null and playCodes.size() > 0">
+                (CASE WHEN dog_play_gbn_cd_4 IN
+                <foreach collection="playCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+                THEN 1 ELSE 0 END)
+            </when>
+            <otherwise>0</otherwise>
+        </choose>
+        +
+        <choose>
+            <when test="playCodes != null and playCodes.size() > 0">
+                (CASE WHEN dog_play_gbn_cd_5 IN
+                <foreach collection="playCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+                THEN 1 ELSE 0 END)
+            </when>
+            <otherwise>0</otherwise>
+        </choose>
+        ) AS playMatchCount
+        FROM tbl_dog_match
+        WHERE dog_id = #{dogId}
+        ), 0)
+    </select>
+
+
+    <select id="getMatchingCriteria" resultType="com.dogpaws.backend.dto.hyepin.MatchingCriteriaDto" parameterType="map">
+        SELECT
+        m.dog_id,
+        m.is_mix,
+        m.breed_gbn_cd,
+        m.weight,
+        m.weight_category,
+        m.dog_type_code_gbn_cd,
+        m.dog_personal_gbn_cd_1,
+        m.dog_personal_gbn_cd_2,
+        m.dog_personal_gbn_cd_3,
+        m.dog_personal_gbn_cd_4,
+        m.dog_personal_gbn_cd_5,
+        m.dog_play_gbn_cd_1,
+        m.dog_play_gbn_cd_2,
+        m.dog_play_gbn_cd_3,
+        m.dog_play_gbn_cd_4,
+        m.dog_play_gbn_cd_5,
+        m.walk_start_time,
+        m.walk_end_time
+        FROM tbl_dog_match m
+        INNER JOIN tbl_dogs d ON m.dog_id = d.dog_id
+        WHERE m.dog_id = #{dogId}
+        AND d.username = #{username}
+    </select>
+
 </mapper>
