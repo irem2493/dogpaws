@@ -70,7 +70,7 @@ public class DogController {
                                    @RequestParam(value = "fileInput2", required = false) MultipartFile file2,
                                    @RequestParam(value = "fileInput3", required = false) MultipartFile file3,
                                    HttpSession session) throws IOException {
-        log.info("여기는 백 컨트롤러 dogStep1 / dogRequestDto 값: {}", dogRequestDto);
+        log.info("여기는 백 컨트롤러 registerDog / dogRequestDto 값: {}", dogRequestDto);
         dogRequestDto.setUsername(username);
 
         // 이미지 처리
@@ -115,8 +115,55 @@ public class DogController {
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, dogRequestDto);
     }
 
-    /*/@PutMapping("/dog-edit")
-    public ApiResponse<?> updateDog(@RequestBody DogRequestDto dogRequestDto) {
+    @PutMapping("/{username}")
+    public ApiResponse<?> updateDog(@PathVariable String username,
+                                    @ModelAttribute DogRequestDto dogRequestDto,
+                                    @RequestParam(value = "fileInput1", required = false) MultipartFile file1,
+                                    @RequestParam(value = "fileInput2", required = false) MultipartFile file2,
+                                    @RequestParam(value = "fileInput3", required = false) MultipartFile file3,
+                                    HttpSession session) throws IOException {
+        log.info("여기는 백 컨트롤러 updateDog / dogRequestDto 값: {}", dogRequestDto);
+        dogRequestDto.setUsername(username);
 
-    }*/
+        // 이미지 처리
+        MultipartFile profileImage = dogRequestDto.getProfileImage();
+
+        if (!profileImage.isEmpty()) {
+            String originalFilename = profileImage.getOriginalFilename();
+            String fileExt = joinService.getFileExtension(originalFilename);
+            Long fileSize = profileImage.getSize();
+            String fileNameWithoutExt = originalFilename.substring(0, originalFilename.lastIndexOf('.'));
+            String newFileName = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+
+            // 파일 저장
+            Path targetPath = Paths.get(uploadDir, newFileName + fileExt);
+            Files.copy(profileImage.getInputStream(), targetPath);
+
+            // 세션에 저장할 파일 정보 (경로만 저장)
+            dogRequestDto.setFileOldName(fileNameWithoutExt);
+            dogRequestDto.setFileNewName(newFileName);
+            dogRequestDto.setFileSize(fileSize);
+            dogRequestDto.setFileExt(fileExt);
+            dogRequestDto.setProfileUrl(fileDir + newFileName + fileExt);
+
+            // 1. 파일 데이터를 리스트에 담음
+            Map<MultipartFile, String> fileTypeMap = new LinkedHashMap<>();
+
+            if (file1 != null && !file1.isEmpty()) {
+                fileTypeMap.put(file1, "PE");
+            }
+
+            if (file2 != null && !file2.isEmpty()) {
+                fileTypeMap.put(file2, "VA");
+            }
+
+            if (file3 != null && !file3.isEmpty()) {
+                fileTypeMap.put(file3, "HE");
+            }
+
+            dogRequestDto.setFileTypeMap(fileTypeMap);
+        }
+        joinService.dogUpdate(dogRequestDto);
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, dogRequestDto);
+    }
 }
