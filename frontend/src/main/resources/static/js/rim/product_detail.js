@@ -135,13 +135,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await api.post('/api/cart', requestData);
 
             if (response.status === 'SUCCESS') {
-                alert('장바구니에 추가되었습니다.');
+                alert(response.body.body.message);
                 // 선택된 옵션 초기화
                 selectedItems.clear();
                 selectedOptions.innerHTML = '';
                 updateTotalPrice();
             } else {
-                throw new Error(response.body || '장바구니 추가 실패');
+                alert('장바구니 추가에 실패했습니다.');
             }
         } catch (error) {
             console.error('장바구니 추가 실패:', error);

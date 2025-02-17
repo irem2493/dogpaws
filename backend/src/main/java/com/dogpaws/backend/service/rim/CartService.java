@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +26,7 @@ public class CartService {
 
 
     @Transactional
-    public void addToCart(String username, CartRequestDto requestDto) {
+    public boolean addToCart(String username, CartRequestDto requestDto) {
         // 장바구니 조회 또는 생성
         Cart cart = cartRepository.findByUsername(username)
                 .orElseGet(() -> cartRepository.save(new Cart(username)));
@@ -34,20 +35,64 @@ public class CartService {
         Product product = productRepository.findById(requestDto.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다."));
 
-        // 장바구니 상품 생성
-        CartItem cartItem = CartItem.builder()
-                .cart(cart)
-                .product(product)
-                .quantity(requestDto.getQuantity())
-                .isBaseProduct(requestDto.isBaseProduct() ? "Y" : "N")
-                .build();
+        // 이미 장바구니에 같은 상품의 같은 옵션이 있는지 확인
+        List<CartItem> existingCartItems = cartItemRepository.findByCartAndProduct(cart, product);
+        boolean isUpdated = false;  // 업데이트 여부 추적
 
-        cartItemRepository.save(cartItem);
+        if (!existingCartItems.isEmpty()) {
+            for (CartRequestDto.CartOptionDto newOption : requestDto.getOptions()) {
+                boolean optionExists = false;
 
-        // 옵션이 있는 경우 옵션 추가
-        if (requestDto.getOptions() != null && !requestDto.getOptions().isEmpty()) {
+                // 옵션 엔티티 조회
+                ProductOption productOption = productOptionRepository
+                        .findById(newOption.getOptionId())
+                        .orElseThrow(() -> new EntityNotFoundException("옵션을 찾을 수 없습니다."));
+
+                for (CartItem existingItem : existingCartItems) {
+                    // ProductOption 엔티티로 찾도록 수정
+                    Optional<CartItemOption> existingOption = cartItemOptionRepository
+                            .findByCartItemAndOption(existingItem, productOption);
+
+                    if (existingOption.isPresent()) {
+                        CartItemOption cartItemOption = existingOption.get();
+                        cartItemOption.updateQuantity(cartItemOption.getQuantity() + newOption.getQuantity());
+                        optionExists = true;
+                        isUpdated = true;
+                        break;
+                    }
+                }
+
+                if (!optionExists) {
+                    // 새로운 CartItem과 CartItemOption 생성
+                    CartItem newCartItem = CartItem.builder()
+                            .cart(cart)
+                            .product(product)
+                            .quantity(1)
+                            .isBaseProduct("N")
+                            .build();
+                    cartItemRepository.save(newCartItem);
+
+                    CartItemOption newCartItemOption = CartItemOption.builder()
+                            .cartItem(newCartItem)
+                            .option(productOption)
+                            .quantity(newOption.getQuantity())
+                            .build();
+                    cartItemOptionRepository.save(newCartItemOption);
+                }
+            }
+        } else {
+            // 장바구니에 없는 새로운 상품인 경우 기존 로직대로 처리
+            CartItem cartItem = CartItem.builder()
+                    .cart(cart)
+                    .product(product)
+                    .quantity(1)
+                    .isBaseProduct("N")
+                    .build();
+            cartItemRepository.save(cartItem);
+
             for (CartRequestDto.CartOptionDto optionDto : requestDto.getOptions()) {
-                ProductOption productOption = productOptionRepository.findById(optionDto.getOptionId())
+                ProductOption productOption = productOptionRepository
+                        .findById(optionDto.getOptionId())
                         .orElseThrow(() -> new EntityNotFoundException("옵션을 찾을 수 없습니다."));
 
                 CartItemOption cartItemOption = CartItemOption.builder()
@@ -55,10 +100,10 @@ public class CartService {
                         .option(productOption)
                         .quantity(optionDto.getQuantity())
                         .build();
-
                 cartItemOptionRepository.save(cartItemOption);
             }
         }
+        return isUpdated;
     }
 
     public List<CartResponseDto> getCartItems(String username) {
