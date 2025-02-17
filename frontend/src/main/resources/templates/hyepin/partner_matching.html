@@ -5,6 +5,7 @@
 <head>
     <title>Title</title>
     <link rel="stylesheet" href="/css/hyepin/matching.css">
+    <link rel="stylesheet" href="/css/hyepin/partner-matching.css">
 </head>
 <body layout:fragment="content" style="min-height: 100vh">
 <div class="container">  <!-- 컨테이너 div.. 지우지 마세요 !-->
@@ -19,7 +20,7 @@
 
 
     <div class="row">
-        <div class="pw-title col-12">친구 매칭</div>
+        <div class="pw-title col-12">교배 매칭</div>
     </div>
 
     <!-- 필터 구분 영역 -->
@@ -35,7 +36,7 @@
         </div>
         <div class="dog-filter" style="gap: 5px;">
             <div>
-                <img src="/img/icon/dog-filter/liking.svg" alt="dog-icon"> 이런 친구가 좋아요!
+                <img src="/img/icon/dog-filter/liking.svg" alt="dog-icon"> 이런 짝이 좋아요!
             </div>
             <div>
                 <img src="/img/icon/button/caret.svg" alt="dog-icon" style="cursor: pointer" id="cardIcon"
@@ -310,14 +311,14 @@
 
     <!-- 스와이프 -->
     <div class="row" style="display: flex; margin-top: 10px; justify-content: flex-end;">
-        <img class="col-md-3 col-sm-6 swipe-img" src="/img/swipe.svg" alt="dog-icon">
+        <img class="col-md-3 col-sm-6 swipe-img" src="/img/partner_swipe.svg" alt="dog-icon">
     </div>
 
     <!-- 매칭 영역 -->
     <div class="row matching-container" id="matchingContainer">
         <!-- 왼쪽 화살표 -->
         <div class="matching-arrow col-1 d-flex flex-column justify-content-center align-items-center" id="prev">
-            <img src="/img/icon/left-btn.svg" alt="left-btn-icon">
+            <img src="/img/icon/partner-left-btn.svg" alt="left-btn-icon">
         </div>
 
         <!-- 카드 컨테이너 -->
@@ -326,7 +327,7 @@
 
         <!-- 오른쪽 화살표 -->
         <div class="matching-arrow col-1 d-flex flex-column justify-content-center align-items-center" id="next">
-            <img src="/img/icon/right-btn.svg" alt="right-btn-icon">
+            <img src="/img/icon/partner-right-btn.svg" alt="right-btn-icon">
         </div>
     </div> <!-- 매칭 영역 -->
 
@@ -425,12 +426,12 @@
 
 
 </div> <!-- 컨테이너 div.. 지우지 마세요 !-->
-<script src="/js/hyepin/friendMatching/form.js"></script>
-<script src="/js/hyepin/friendMatching/filter.js"></script>
-<script src="/js/hyepin/friendMatching/matching_card.js"></script>
-<script src="/js/hyepin/friendMatching/swipe.js"></script>
-<script src="/js/hyepin/friendMatching/toggle.js"></script>
-<script type="module"  src="/js/hyepin/friendMatching/chat.js"></script>
-<script src="/js/hyepin/friendMatching/declaration.js"></script>
+<script src="/js/hyepin/partnerMatching/partner_form.js"></script>
+<script src="/js/hyepin/partnerMatching/partner_filter.js"></script>
+<script src="/js/hyepin/partnerMatching/partner_matching_card.js"></script>
+<script src="/js/hyepin/partnerMatching/partner_swipe.js"></script>
+<script src="/js/hyepin/partnerMatching/partner_toggle.js"></script>
+<script type="module"  src="/js/hyepin/partnerMatching/partner_chat.js"></script>
+<script src="/js/hyepin/partnerMatching/partner_declaration.js"></script>
 </body>
 </html>

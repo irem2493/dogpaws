@@ -2,9 +2,11 @@ package com.dogpaws.backend.service.hyepin;
 
 import com.dogpaws.backend.dto.hyepin.FilterDto;
 import com.dogpaws.backend.dto.hyepin.MatchDto;
+import com.dogpaws.backend.repository.dao.common.AlarmDao;
 import com.dogpaws.backend.repository.dao.hyepin.DogMatchDao;
 import com.dogpaws.backend.utils.DefaultUtil;
 import com.dogpaws.backend.utils.StringUtil;
+import com.dogpaws.frontend.dto.hyepin.AlarmDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import java.util.List;
 public class MatchingService {
 
     private final DogMatchDao dogMatchDao;
+    private final AlarmDao alarmDao;
 
     //강아지 Id, 매칭 타입에 따른 매칭필터 받아오기
     public FilterDto getFilterBydogId(int dogId, char matchType) {
@@ -69,6 +72,12 @@ public class MatchingService {
             }
         }
         return matchList;
+    }
+
+    //그룹채팅 초대
+    public int inviteChatRoom(AlarmDto alarmDto){
+        int result = alarmDao.insertAlarm(alarmDto);
+        return result;
     }
 
 

@@ -8,5 +8,5 @@ import java.util.List;
 @Mapper
 public interface DeclarationDao {
 
-    public int insertDeclaration(DeclarationDto declarationDto);
+    public Integer insertDeclaration(DeclarationDto declarationDto);
 }

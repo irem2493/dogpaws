@@ -1,0 +1,34 @@
+.pw-title{
+    border-bottom: 2px solid #FF4B63;
+}
+
+.card-bottom{
+    background-color: #FBEEEE;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 20px 0px 20px ;
+}
+
+.icon-container{
+    background-color: #FFEDD8;
+}
+
+
+.matching-card-side {
+    border: 1px #FF4B63 solid;
+}
+
+.matching-card {
+    border: 1px #FF4B63 solid;
+}
+
+.documents-container{
+    display: flex;
+    gap: 10px;
+}
+
+.documents-item{
+    font-size: 13px;
+}
