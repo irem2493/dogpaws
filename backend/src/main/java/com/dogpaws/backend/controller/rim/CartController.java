@@ -34,7 +34,7 @@ public class CartController {
         log.info("Quantity: {}", requestDto.getQuantity());
         log.info("Options: {}", requestDto.getOptions());
 
-        boolean isUpdated = cartService.addToCart(requestDto.getUsername(), requestDto);
+        boolean isUpdated = cartService.addCart(requestDto.getUsername(), requestDto);
 
 
         CartAddResponse response = CartAddResponse.builder()

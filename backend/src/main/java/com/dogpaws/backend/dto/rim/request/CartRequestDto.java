@@ -1,10 +1,7 @@
 package com.dogpaws.backend.dto.rim.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -24,5 +21,11 @@ public class CartRequestDto {
         @JsonProperty("optionId")
         private Long optionId;
         private int quantity;
+
+        @Builder
+        public CartOptionDto(Long optionId, int quantity) {
+            this.optionId = optionId;
+            this.quantity = quantity;
+        }
     }
 }

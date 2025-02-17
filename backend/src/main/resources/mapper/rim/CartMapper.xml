@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dogpaws.backend.repository.dao.rim.CartDao">
+
+    <!-- 기존 장바구니 확인 -->
+    <select id="checkExistingCart" resultType="boolean">
+        SELECT EXISTS (
+        SELECT 1 FROM tbl_cart
+        WHERE username = #{username}
+        )
+    </select>
+
+
+    <!-- 동일한 상품/옵션 조합 찾기 -->
+    <select id="findExistingCartItem" resultMap="cartItemParamMap">
+        SELECT
+        c.cart_item_id,
+        c.product_id,
+        c.username
+        FROM tbl_cart c
+        JOIN tbl_cart_item_options cio ON c.cart_item_id = cio.cart_item_id
+        WHERE c.username = #{username}
+        AND c.product_id = #{productId}
+        AND cio.option_id = #{optionId}
+        LIMIT 1
+    </select>
+
+
+    <resultMap id="cartItemParamMap" type="com.dogpaws.backend.dto.rim.CartItemParam">
+        <id property="cartItemId" column="cart_item_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="username" column="username"/>
+    </resultMap>
+
+    <!-- 장바구니 아이템 옵션 수량 업데이트 -->
+    <update id="updateCartItemOptionQuantity">
+        UPDATE tbl_cart_item_options
+        SET quantity = quantity + #{quantity},
+        updated_at = NOW()
+        WHERE cart_item_id = #{cartItemId}
+        AND option_id = #{optionId}
+    </update>
+
+    <!-- 장바구니 아이템 생성 -->
+    <insert id="insertCartItem" parameterType="com.dogpaws.backend.dto.rim.CartItemParam"
+            useGeneratedKeys="true" keyProperty="cartItemId">
+        INSERT INTO tbl_cart (
+        username,
+        product_id,
+        created_at,
+        updated_at
+        ) VALUES (
+        #{username},
+        #{productId},
+        NOW(),
+        NOW()
+        )
+    </insert>
+
+    <!-- 장바구니 아이템 옵션 추가 -->
+    <insert id="insertCartItemOptions">
+        INSERT INTO tbl_cart_item_options (
+        cart_item_id,
+        option_id,
+        quantity,
+        created_at,
+        updated_at
+        )
+        VALUES
+        <foreach collection="options" item="option" separator=",">
+            (
+            #{cartItemId},
+            #{option.optionId},
+            #{option.quantity},
+            NOW(),
+            NOW()
+            )
+        </foreach>
+    </insert>
+
+    <!-- 상품 ID로 장바구니 아이템 찾기 -->
+    <select id="findCartItemByProductId" resultMap="cartItemParamMap">
+        SELECT
+        cart_item_id,
+        product_id,
+        username
+        FROM tbl_cart
+        WHERE username = #{username}
+        AND product_id = #{productId}
+        LIMIT 1
+    </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <select id="findCartItemsByUsername" resultMap="CartResultMap">
+        SELECT
+            c.cart_id,
+            ci.cart_item_id,
+            p.product_id,
+            p.name as product_name,
+            p.price as product_price,
+            p.image_url,
+            ci.quantity as base_quantity,
+            po.option_id,
+            po.option_name,
+            po.option_price,
+            cio.quantity as option_quantity
+        FROM tbl_cart c
+        LEFT JOIN tbl_cart_items ci ON c.cart_id = ci.cart_id
+        LEFT JOIN tbl_products p ON ci.product_id = p.product_id
+        LEFT JOIN tbl_cart_item_options cio ON ci.cart_item_id = cio.cart_item_id
+        LEFT JOIN tbl_product_options po ON cio.option_id = po.option_id
+        WHERE c.username = #{username}
+    </select>
+
+    <resultMap id="CartResultMap" type="com.dogpaws.backend.dto.rim.request.CartResponseDto">
+        <id property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="productPrice" column="product_price"/>
+        <result property="productImage" column="image_url"/>
+        <result property="baseQuantity" column="base_quantity"/>
+        <collection property="options" ofType="com.dogpaws.backend.dto.rim.ProductOptionDto">
+            <id property="optionId" column="option_id"/>
+            <result property="optionName" column="option_name"/>
+            <result property="optionPrice" column="option_price"/>
+            <result property="quantity" column="option_quantity"/>
+        </collection>
+    </resultMap>
+
+</mapper>
