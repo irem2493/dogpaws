@@ -48,9 +48,9 @@ public class CartController {
     // 장바구니 목록 조회
     @GetMapping
     public ResponseEntity<ApiResponse<List<CartResponseDto>>> getCartItems(
-            @AuthenticationPrincipal UserDetails userDetails
+            @RequestParam String username
     ) {
-        List<CartResponseDto> cartItems = cartService.getCartItems(userDetails.getUsername());
+        List<CartResponseDto> cartItems = cartService.getCartItems(username);
         return ResponseEntity.ok(
                 new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, cartItems)
         );

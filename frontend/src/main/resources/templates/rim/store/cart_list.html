@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout-mypage}">
+<head>
+  <title>장바구니 목록</title>
+  <style>
+    .cart-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .select-all {
+      margin-bottom: 20px;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .cart-item img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      margin-right: 20px;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .quantity-control button {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #ddd;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .quantity-control input {
+      width: 50px;
+      text-align: center;
+    }
+
+    .order-summary {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8f8f8;
+    }
+
+    .order-button {
+      width: 100%;
+      padding: 15px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body layout:fragment="content">
+<div class="container">
+<div class="cart-container" style="min-height: 100vh;">
+
+  <div class="select-all">
+    <input type="checkbox" id="selectAll">
+    <label for="selectAll">전체선택</label>
+  </div>
+  <!-- 장바구니 목록 -->
+  <div class="cart-items">
+    <div th:each="item : ${body}" class="cart-item">
+        <input type="checkbox" class="item-checkbox" th:value="${item.cart_item_id}">
+        <img th:src="${item.product_image}" alt="상품이미지">
+        <div class="item-info">
+          <h3 th:text="${item.product_name}">상품명</h3>
+          <div th:each="option : ${item.options}" class="option-info">
+            <span th:text="${option.option_name}">옵션명</span>
+            <div class="quantity-control">
+              <button class="decrease">-</button>
+              <input type="number" th:value="${option.quantity}" readonly>
+              <button class="increase">+</button>
+            </div>
+            <span th:text="${#numbers.formatInteger(option.option_price * option.quantity, 0, 'COMMA') + '원'}">가격</span>
+          </div>
+        </div>
+        <div class="item-total" th:text="${#numbers.formatInteger(item.total_price, 0, 'COMMA') + '원'}">총 금액</div>
+        <button class="delete-item" th:data-item-id="${item.cart_item_id}">X</button>
+      </div>
+    </div>
+
+    <!-- 주문 정보 -->
+    <div class="order-summary">
+      <div class="price-info">
+        <div>총 상품금액: <span id="totalProductPrice">0원</span></div>
+        <div>배송비: <span>3,000원</span></div>
+        <div>주문금액: <span id="totalOrderPrice">0원</span></div>
+      </div>
+      <button id="orderButton" class="btn-orange" style="width: 100%; background-color: #EF7E06">
+        총 <span id="totalItemCount">0</span>개 구매하기
+      </button>
+    </div>
+  </div>
+</div>
+<script src="/js/rim/cart_list.js"></script>
+</body>
+</html>
