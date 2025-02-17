@@ -16,7 +16,7 @@ let startIndex = 0;   // 현재 시작 인덱스
 const dogId = sessionDogId.value;
 const username = sessionUsername.value;
 // 컨트롤러에서 matchList 데이터 가져오기
-api.get('/api/matching?dogId=' + dogId + '&username=' + username)
+api.get('/api/matching?dogId=' + dogId + '&username=' + username + '&matchType=F')
     .then(data => {
         matchList = [...matchList, ...data.body];
         console.log('match loaded:', matchList);

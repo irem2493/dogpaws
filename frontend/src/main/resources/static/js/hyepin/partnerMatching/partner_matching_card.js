@@ -18,7 +18,7 @@ const dogId = 1;
 //const username = sessionUsername.value;
 const username = "chlchl";
 // 컨트롤러에서 matchList 데이터 가져오기
-api.get('/api/matching?dogId=' + dogId + '&username=' + username)
+api.get('/api/matching?dogId=' + dogId + '&username=' + username + '&matchType=P')
     .then(data => {
         matchList = [...matchList, ...data.body];
         console.log('match loaded:', matchList);

@@ -69,12 +69,14 @@ public class DogMatchingController {
     //친구매칭 가져오기
     @GetMapping
     public List<DogCandidateDto> getDogFriendMatchList(@RequestParam("dogId") int dogId,
-                                                @RequestParam("username") String username) throws IOException {
+                                                @RequestParam("username") String username,
+                                                @RequestParam("matchType") String matchType) throws IOException {
         log.info("여기는 백 컨트롤러 getDogFriendMatchList / dogId 값: {}", dogId);
         log.info("여기는 백 컨트롤러 getDogFriendMatchList / username: {}", username);
-        List<DogCandidateDto> matchList = matchingService.getFinalMatchingCandidates(dogId, username);
+        log.info("여기는 백 컨트롤러 getDogFriendMatchList / matchType: {}", matchType);
+        List<DogCandidateDto> matchList = matchingService.getFinalMatchingCandidates(dogId, username, matchType);
         //getDogFriendMatchList 좋아요 리스트 받아오기
-        //matchList = likeService.getMatcingLike(username, matchList, 'F');
+        matchList = likeService.getMatcingLike(username, matchList, 'F');
         log.info("여기는 백 컨트롤러 getDogFriendMatchList / matchList 값: {}", matchList);
         return matchList;
     }
