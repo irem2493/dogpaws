@@ -62,6 +62,9 @@ public class ProductOption {
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
+    private boolean isBaseOption = false;  // 기본 옵션 여부
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -83,7 +86,7 @@ public class ProductOption {
                          LocalDate optionExpirationDate,
                          String optionStorageInfo,
                          String optionManufacturer,
-                         String optionOrigin) {
+                         String optionOrigin, boolean isBaseOption) {
         this.product = product;
         this.optionName = optionName;
         this.optionPrice = optionPrice;
@@ -96,6 +99,7 @@ public class ProductOption {
         this.optionStorageInfo = optionStorageInfo;
         this.optionManufacturer = optionManufacturer;
         this.optionOrigin = optionOrigin;
+        this.isBaseOption = isBaseOption;
     }
 
     // 재고 수정 메서드

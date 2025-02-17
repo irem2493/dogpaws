@@ -49,7 +49,7 @@ public class CartService {
                         .orElseThrow(() -> new EntityNotFoundException("옵션을 찾을 수 없습니다."));
 
                 for (CartItem existingItem : existingCartItems) {
-                    // ProductOption 엔티티로 찾도록 수정
+                    // ProductOption 엔티티로 찾도록
                     Optional<CartItemOption> existingOption = cartItemOptionRepository
                             .findByCartItemAndOption(existingItem, productOption);
 

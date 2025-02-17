@@ -119,16 +119,19 @@
             </div>
 
             <!-- 옵션 선택 -->
-            <div class="option-select">
+            <div th:with="baseOption=${product.options.?[base_option].get(0)}">
+                <input type="hidden" id="baseOptionId" th:value="${IsbaseOption?.option_id}">
                 <select id="productOption" class="form-select">
-                    <option value="">옵션을 선택하세요</option>
-                    <option th:each="option : ${product.options}"
-                            th:value="${option.option_id}"
-                            th:data-name="${option.option_name}"
-                            th:data-price="${option.option_price}"
-                            th:text="${option.option_name + ' (+' + #numbers.formatInteger(option.option_price, 0, 'COMMA') + '원)'}">
-                        옵션명 (+가격)
-                    </option>
+                    <option value="">선택하세요</option>
+                    <th:block th:each="option : ${product.options}">
+                        <option
+                                th:value="${option.option_id}"
+                                th:data-name="${option.option_name}"
+                                th:data-price="${option.option_price}"
+                                th:data-is-base="${option.base_option}"
+                                th:text="${option.option_name + ' (+' + #numbers.formatInteger(option.option_price, 0, 'COMMA') + '원)'}">
+                        </option>
+                    </th:block>
                 </select>
             </div>
 
