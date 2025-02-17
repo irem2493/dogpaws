@@ -5,6 +5,7 @@ import com.dogpaws.backend.dto.hyepin.MatchDto;
 import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.service.common.LikeService;
 import com.dogpaws.backend.service.hyepin.MatchingService;
+import com.dogpaws.frontend.dto.hyepin.AlarmDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -76,5 +77,14 @@ public class DogMatchingController {
         return matchList;
     }
 
-
+    @PostMapping("/chat-room")
+    public ApiResponse<String> inviteChatRoom(@ModelAttribute AlarmDto alarmDto) throws IOException {
+        log.info("여기는 백 컨트롤러 inviteChatRoom / alarmDto 값: {}", alarmDto);
+        int result = matchingService.inviteChatRoom(alarmDto);
+        if (result == 1) {
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "그룹 초대 성공");
+        } else {
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "그룹 초대 실패");
+        }
+    }
 }
