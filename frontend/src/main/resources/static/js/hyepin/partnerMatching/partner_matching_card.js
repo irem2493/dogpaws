@@ -13,10 +13,12 @@ let matchList = [{
 }];  // 빈 객체로 초기화;  // 데이터를 저장할 배열
 let startIndex = 0;   // 현재 시작 인덱스
 
-const dogId = sessionDogId.value;
-const username = sessionUsername.value;
+//const dogId = sessionDogId.value;
+const dogId = 1;
+//const username = sessionUsername.value;
+const username = "chlchl";
 // 컨트롤러에서 matchList 데이터 가져오기
-api.get('/api/matching?dogId=' + dogId + '&username=' + username + '&matchType=F')
+api.get('/api/matching?dogId=' + dogId + '&username=' + username + '&matchType=P')
     .then(data => {
         matchList = [...matchList, ...data.body];
         console.log('match loaded:', matchList);
@@ -90,18 +92,23 @@ function updateCards() {
                     position: absolute; 
                     ${index === 1 ? 'top: 8px;' : 'top: 5px;'} 
                     ${index === 1 ? 'right: 8px;' : 'right: 5px;'} 
-                    min-width: 5%; padding: 10px 5px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.6);
+                    min-width: 5%; padding: 10px 5px; border-radius: 10px; background-color: #FBEEEE;
                     display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center;">
                     ${iconHtml}
                 </div>
             </div>
             ${index === 1 ?
-            '<div class="card-center" style="font-size: 20px; height: 28%;">' :
+            '<div class="card-center" style="font-size: 18px; height: 28%;">' :
             '<div class="card-center" style="font-size: 14px; height: 28%;">'
         }
                 <div style="${index === 1 ? 'line-height: 1.8;' : 'line-height: 1.5;'}">${dog.dog_name} ${dog.breed_name !== '' ? `| ${dog.breed_name}` : ''} ${dog.is_mix === 'N' ? '(순종)' : dog.is_mix === "" ? "" : '(믹스)'}</div>
                 <div style="${index === 1 ? 'line-height: 1.8;' : 'line-height: 1.2;'}">${dog.gender === "M" ? '남' : dog.gender === "" ? '' : '여'} ${dog.is_neutered === "Y" ? '(중성화 O)' : dog.is_neutered === "" ? "" : '(중성화 X)'}</div>
                 <div style="line-height: 1.8; color: #5e5e5e; font-size: 0.8em; text-align: center; ${index === 1 ? 'width: 100%' : 'width: 80%'}">${dog.address != null ? dog.address : '지정된 산책로가 없습니다.'}</div>
+                <div class="documents-container">
+                    <div class="documents-item"><img src="/img/icon/check.svg" alt="check-icon"> 혈통서</div>
+                    <div class="documents-item"><img src="/img/icon/check.svg" alt="check-icon"> 예방접종 증명서</div>
+                    <div class="documents-item"><img src="/img/icon/check.svg" alt="check-icon"> 건강기록 증명서</div>
+                </div>
             </div>
             
             ${index === 1 ?
@@ -110,15 +117,15 @@ function updateCards() {
         }
                <div class="card-bottom-items">
             ${index === 1 ?
-            `<img id="likeIcon" src="${dogLiked ? '/img/icon/like-push.svg' : '/img/icon/like.svg'}" alt="like-icon" data-target="${dogId}" onclick="likeToggle(this)">` :
-            `<img src="${dogLiked ? '/img/icon/like-push.svg' : '/img/icon/like.svg'}" alt="like-icon">`
+            `<img id="likeIcon" src="${dogLiked ? '/img/icon/mating-push.svg' : '/img/icon/mating.svg'}" alt="mating-icon" data-target="${dogId}" onclick="likeToggle(this)">` :
+            `<img src="${dogLiked ? '/img/icon/mating-push.svg' : '/img/icon/mating.svg'}" alt="mating-icon">`
         }
                 </div>
                 <div class="card-bottom-items">
-                    <img src="/img/icon/messege.svg" alt="messege-icon" data-dog-id="${dogId}" data-username="${username}" onclick="chatForm(this)">
+                    <img src="/img/icon/partner-messege.svg" alt="messege-icon" data-dog-id="${dogId}" data-username="${username}" onclick="chatForm(this)">
                 </div>
                 <div class="card-bottom-items">
-                    <img src="/img/icon/wechat-logo.svg" alt="wechat-logo-icon" data-dog-id="${dogId}" data-username="${username}" onclick="openModal('groupChat'); getGroupChatRoom(this)">
+                    <img src="/img/icon/partner-wechat-logo.svg" alt="wechat-logo-icon" data-dog-id="${dogId}" data-username="${username}" onclick="openModal('groupChat'); getGroupChatRoom(this)">
                 </div>
                 <div class="card-bottom-items">
                     <img src="/img/icon/alarm-warning-line.svg" alt="alarm-warning-line-icon" data-target="${dogId}" onclick="openModal('declarationForm'); declarationForm(this)">

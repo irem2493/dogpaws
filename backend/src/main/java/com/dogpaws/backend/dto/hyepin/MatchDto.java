@@ -29,6 +29,10 @@ public class MatchDto {
     private String matchedCriteria; // 매칭 일치조건 , 형식 문자열
     private List<String> matchedCriteriaList; //매칭 일치조건 리스트
 
+    private String bloodTestCertified;  // 혈통서 증명서 여부 (Y/N)
+    private String vaccinationCertified;  // 예방접종 증명서 여부 (Y/N)
+    private String healthRecordCertified;  // 건강기록 증명서 여부 (Y/N)
+
     private boolean liked; //좋아요 여부
 
 }
