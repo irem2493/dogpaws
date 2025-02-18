@@ -163,159 +163,50 @@
         RAND()
     </select>
 
-    <select id="countPersonalMatches" resultType="int" parameterType="map">
-        SELECT COALESCE((
-        SELECT
-        (
-        <choose>
-            <when test="personalCodes != null and personalCodes.size() > 0">
-                (CASE WHEN dog_personal_gbn_cd_1 IN
-                <foreach collection="personalCodes" item="code" open="(" separator="," close=")">
-                    #{code}
-                </foreach>
-                THEN 1 ELSE 0 END)
-            </when>
-            <otherwise>0</otherwise>
-        </choose>
-        +
-        <choose>
-            <when test="personalCodes != null and personalCodes.size() > 0">
-                (CASE WHEN dog_personal_gbn_cd_2 IN
-                <foreach collection="personalCodes" item="code" open="(" separator="," close=")">
-                    #{code}
-                </foreach>
-                THEN 1 ELSE 0 END)
-            </when>
-            <otherwise>0</otherwise>
-        </choose>
-        +
-        <choose>
-            <when test="personalCodes != null and personalCodes.size() > 0">
-                (CASE WHEN dog_personal_gbn_cd_3 IN
-                <foreach collection="personalCodes" item="code" open="(" separator="," close=")">
-                    #{code}
-                </foreach>
-                THEN 1 ELSE 0 END)
-            </when>
-            <otherwise>0</otherwise>
-        </choose>
-        +
-        <choose>
-            <when test="personalCodes != null and personalCodes.size() > 0">
-                (CASE WHEN dog_personal_gbn_cd_4 IN
-                <foreach collection="personalCodes" item="code" open="(" separator="," close=")">
-                    #{code}
-                </foreach>
-                THEN 1 ELSE 0 END)
-            </when>
-            <otherwise>0</otherwise>
-        </choose>
-        +
-        <choose>
-            <when test="personalCodes != null and personalCodes.size() > 0">
-                (CASE WHEN dog_personal_gbn_cd_5 IN
-                <foreach collection="personalCodes" item="code" open="(" separator="," close=")">
-                    #{code}
-                </foreach>
-                THEN 1 ELSE 0 END)
-            </when>
-            <otherwise>0</otherwise>
-        </choose>
-        ) AS personalMatchCount
-        FROM tbl_dog_match
-        WHERE dog_id = #{dogId}
-        ), 0)
-    </select>
-
-    <select id="countPlayMatches" resultType="int" parameterType="map">
-        SELECT COALESCE((
-        SELECT
-        (
-        <choose>
-            <when test="playCodes != null and playCodes.size() > 0">
-                (CASE WHEN dog_play_gbn_cd_1 IN
-                <foreach collection="playCodes" item="code" open="(" separator="," close=")">
-                    #{code}
-                </foreach>
-                THEN 1 ELSE 0 END)
-            </when>
-            <otherwise>0</otherwise>
-        </choose>
-        +
-        <choose>
-            <when test="playCodes != null and playCodes.size() > 0">
-                (CASE WHEN dog_play_gbn_cd_2 IN
-                <foreach collection="playCodes" item="code" open="(" separator="," close=")">
-                    #{code}
-                </foreach>
-                THEN 1 ELSE 0 END)
-            </when>
-            <otherwise>0</otherwise>
-        </choose>
-        +
-        <choose>
-            <when test="playCodes != null and playCodes.size() > 0">
-                (CASE WHEN dog_play_gbn_cd_3 IN
-                <foreach collection="playCodes" item="code" open="(" separator="," close=")">
-                    #{code}
-                </foreach>
-                THEN 1 ELSE 0 END)
-            </when>
-            <otherwise>0</otherwise>
-        </choose>
-        +
-        <choose>
-            <when test="playCodes != null and playCodes.size() > 0">
-                (CASE WHEN dog_play_gbn_cd_4 IN
-                <foreach collection="playCodes" item="code" open="(" separator="," close=")">
-                    #{code}
-                </foreach>
-                THEN 1 ELSE 0 END)
-            </when>
-            <otherwise>0</otherwise>
-        </choose>
-        +
-        <choose>
-            <when test="playCodes != null and playCodes.size() > 0">
-                (CASE WHEN dog_play_gbn_cd_5 IN
-                <foreach collection="playCodes" item="code" open="(" separator="," close=")">
-                    #{code}
-                </foreach>
-                THEN 1 ELSE 0 END)
-            </when>
-            <otherwise>0</otherwise>
-        </choose>
-        ) AS playMatchCount
-        FROM tbl_dog_match
-        WHERE dog_id = #{dogId}
-        ), 0)
-    </select>
-
-
     <select id="getMatchingCriteria" resultType="com.dogpaws.backend.dto.hyepin.MatchingCriteriaDto" parameterType="map">
+        -- 매칭 필터 가져오기
         SELECT
         m.dog_id,
         m.is_mix,
         m.breed_gbn_cd,
         m.weight,
         m.weight_category,
+        m.walk_days,
         m.dog_type_code_gbn_cd,
-        m.dog_personal_gbn_cd_1,
-        m.dog_personal_gbn_cd_2,
-        m.dog_personal_gbn_cd_3,
-        m.dog_personal_gbn_cd_4,
-        m.dog_personal_gbn_cd_5,
-        m.dog_play_gbn_cd_1,
-        m.dog_play_gbn_cd_2,
-        m.dog_play_gbn_cd_3,
-        m.dog_play_gbn_cd_4,
-        m.dog_play_gbn_cd_5,
+        m.blood_test_certified,
+        m.vaccination_certified,
+        m.health_record_certified,
+        CONCAT_WS(',', m.dog_personal_gbn_cd_1, m.dog_personal_gbn_cd_2, m.dog_personal_gbn_cd_3, m.dog_personal_gbn_cd_4, m.dog_personal_gbn_cd_5) AS dogPersonalGbnCds,
+        CONCAT_WS(',', m.dog_play_gbn_cd_1, m.dog_play_gbn_cd_2, m.dog_play_gbn_cd_3, m.dog_play_gbn_cd_4, m.dog_play_gbn_cd_5) AS dogPlayGbnCds,
         m.walk_start_time,
         m.walk_end_time
         FROM tbl_dog_match m
         INNER JOIN tbl_dogs d ON m.dog_id = d.dog_id
         WHERE m.dog_id = #{dogId}
         AND d.username = #{username}
+        AND m.match_type = #{matchType}
     </select>
+
+    <select id="countPersonalMatches" resultType="int" parameterType="map">
+        SELECT COUNT(*)
+        FROM tbl_dog_personal
+        WHERE dog_id = #{dogId}
+        AND UPPER(TRIM(dog_personal_gbn_cd)) IN
+        <foreach collection="dogPersonalGbnCdsList" item="code" open="(" separator="," close=")">
+            UPPER(TRIM(#{code}))
+        </foreach>
+    </select>
+
+    <select id="countPlayMatches" resultType="int" parameterType="map">
+        SELECT COUNT(*)
+        FROM tbl_dog_play
+        WHERE dog_id = #{dogId}
+        AND UPPER(TRIM(dog_play_gbn_cd)) IN
+        <foreach collection="dogPlayGbnCdsList" item="code" open="(" separator="," close=")">
+            UPPER(TRIM(#{code}))
+        </foreach>
+    </select>
+
+
 
 </mapper>

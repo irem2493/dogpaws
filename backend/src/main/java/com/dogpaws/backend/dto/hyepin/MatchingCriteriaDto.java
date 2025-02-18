@@ -20,6 +20,7 @@ public class MatchingCriteriaDto {
     private String gender;  // 성별 (M/F)
     private String isNeutered;  // 중성화 여부 (Y/N)
     private Integer weight;  // 체중
+    private String weightCategory; // 'U' (이상) 또는 'D' (이하)
     private LocalTime walkStartTime;  // 산책 시작 시간
     private LocalTime walkEndTime;  // 산책 종료 시간
     private String walkTimeYn;  // 산책 시간 선택 여부 (Y/N)
@@ -39,11 +40,13 @@ public class MatchingCriteriaDto {
     private boolean liked; //좋아요 여부
 
     private String breedGbnCd;
-    private String weightCategory; // 'U' (이상) 또는 'D' (이하)
     private String dogTypeCodeGbnCd;
 
-    // tbl_dog_personal 조건 코드 목록 (예: 성격 코드 1~5)
-    private List<String> dogPersonalGbnCds;
-    // tbl_dog_play 조건 코드 목록 (예: 놀이 코드 1~5)
-    private List<String> dogPlayGbnCds;
+    //문자열
+    private String dogPersonalGbnCds;
+    private String dogPlayGbnCds;
+
+    //리스트
+    private List<String> dogPersonalGbnCdsList;
+    private List<String> dogPlayGbnCdsList;
 }
