@@ -9,7 +9,7 @@ function filterToggle(element) {
             console.log("filterBox.style.display == none");
             filterBox.style.display = "block";
             const dogId = sessionDogId.value;
-            const matchType = 'F';
+            const matchType = 'P';
             api.get('/api/matching/filter?dogId=' + dogId + '&matchType=' + matchType)
                 .then(data => {
                     filter = data.body;  // body 속성의 배열을 할당

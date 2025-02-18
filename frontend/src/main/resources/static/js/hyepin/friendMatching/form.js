@@ -40,7 +40,7 @@ function addSelectedOption(checkbox, container, selectedOptions) {
     const optionDiv = document.createElement("div");
     optionDiv.classList.add("selected-option");
     optionDiv.setAttribute("id", "selected-" + value);
-    optionDiv.innerHTML = `${name} <span class="remove-option" data-value="${value}">| ✖</span>`;
+    optionDiv.innerHTML = `${name} <span class="remove-option" data-value="${value}">| <img src="/img/icon/x-basic.svg" alt="x-circle-icon"></span>`;
 
     container.appendChild(optionDiv);
 

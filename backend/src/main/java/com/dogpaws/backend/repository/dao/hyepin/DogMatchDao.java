@@ -17,7 +17,9 @@ public interface DogMatchDao {
     public Integer deleteFilter(@Param("dogId") int dogId, @Param("matchType") char matchType);
     
     //매칭 (친구)
-    public List<DogCandidateDto> getDogFriendMatchList(@Param("dogId") int dogId, @Param("username") String username, @Param("matchType") String matchType);
+    public List<DogCandidateDto> getDogMatchList(@Param("dogId") int dogId, @Param("username") String username, @Param("matchType") String matchType,
+                                                 @Param("bloodTestCertified") String bloodTestCertified, @Param("vaccinationCertified") String vaccinationCertified,
+                                                 @Param("healthRecordCertified") String healthRecordCertified);
     public MatchingCriteriaDto getMatchingCriteria(@Param("dogId") int dogId, @Param("username") String username, @Param("matchType") String matchType);
     public Integer countPersonalMatches(@Param("dogId") int dogId, @Param("dogPersonalGbnCdsList") List<String> dogPersonalGbnCdsList);
     public Integer countPlayMatches(@Param("dogId") int dogId, @Param("dogPlayGbnCdsList") List<String> dogPlayGbnCdsList);
