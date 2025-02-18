@@ -4,14 +4,12 @@ import com.dogpaws.frontend.dto.ajy.UserDto;
 import com.dogpaws.frontend.dto.rim.CartSummaryResponseDto;
 import com.dogpaws.frontend.global.ApiResponse;
 import com.dogpaws.frontend.service.ApiRequestService;
-import com.dogpaws.frontend.utils.SessionUtil;
 import com.dogpaws.frontend.utils.TokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.util.URLEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +21,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/cart")
 @Controller
-public class CartController {
+public class CartViewController {
 
     private final ApiRequestService apiRequestService;
     private final ObjectMapper objectMapper;

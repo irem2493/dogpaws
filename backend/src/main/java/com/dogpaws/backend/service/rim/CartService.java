@@ -136,4 +136,30 @@ public class CartService {
         }
     }
 
+    /**
+     * 선택된 장바구니 아이템 조회
+     */
+    public CartSummaryResponseDto getSelectedCartItems(String username, List<Long> cartItemIds) {
+        // 선택된 장바구니 아이템만 조회
+        List<CartListResponseDto> selectedItems =
+                cartDao.findSelectedCartItems(username, cartItemIds);
+
+        // 선택된 상품의 총 금액 계산
+        int totalProductPrice = selectedItems.stream()
+                .mapToInt(CartListResponseDto::getTotalPrice)
+                .sum();
+
+        // 선택된 상품의 총 수량 계산
+        int totalQuantity = selectedItems.stream()
+                .mapToInt(CartListResponseDto::getTotalQuantity)
+                .sum();
+
+        return CartSummaryResponseDto.builder()
+                .cartItems(selectedItems)
+                .totalProductPrice(totalProductPrice)
+                .deliveryFee(DELIVERY_FEE)
+                .totalOrderPrice(totalProductPrice + DELIVERY_FEE)
+                .totalQuantity(totalQuantity)
+                .build();
+    }
 }

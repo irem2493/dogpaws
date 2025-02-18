@@ -43,6 +43,11 @@ public interface CartDao {
                          @Param("cartItemIds") List<Long> cartItemIds);
 
 
+    // 선택된 장바구니 아이템 조회
+    List<CartListResponseDto> findSelectedCartItems(
+            @Param("username") String username,
+            @Param("cartItemIds") List<Long> cartItemIds
+    );
 
 
 

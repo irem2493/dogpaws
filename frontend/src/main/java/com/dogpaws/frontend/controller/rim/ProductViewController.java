@@ -16,7 +16,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/products")
 @RequiredArgsConstructor
-public class ProductController {
+public class ProductViewController {
 
     private final ApiRequestService apiRequestService;
     private static final String PRODUCT_API_PATH = "/api/products";

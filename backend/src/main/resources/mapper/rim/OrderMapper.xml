@@ -5,7 +5,7 @@
 <mapper namespace="com.dogpaws.backend.repository.dao.rim.OrderDao">
 
     <!-- 주문 생성 -->
-    <insert id="insertOrder" parameterType="OrderDto" useGeneratedKeys="true" keyProperty="orderId">
+    <insert id="insertOrder" parameterType="com.dogpaws.backend.dto.rim.OrderDto" useGeneratedKeys="true" keyProperty="orderId">
         INSERT INTO tbl_orders (
             ql_id,
             username,
@@ -37,7 +37,7 @@
         )
 </insert>
     <!-- 주문 상품 추가 -->
-    <insert id="insertOrderItem" parameterType="OrderItemDto" useGeneratedKeys="true" keyProperty="orderItemId">
+    <insert id="insertOrderItem" parameterType="com.dogpaws.backend.dto.rim.OrderItemDto" useGeneratedKeys="true" keyProperty="orderItemId">
         INSERT INTO tbl_order_items (
         ql_id,
         product_id,
@@ -51,7 +51,7 @@
         )
     </insert>
     <!-- 주문 상품 옵션 추가 -->
-    <insert id="insertOrderItemOption" parameterType="OrderItemOptionDto">
+    <insert id="insertOrderItemOption" parameterType="com.dogpaws.backend.dto.rim.OrderItemOptionDto">
         INSERT INTO tbl_order_item_options (
         order_item_id,
         option_name,
@@ -76,7 +76,7 @@
     </select>
 
     <!-- 주문 결과 매핑 -->
-    <resultMap id="orderResultMap" type="OrderDto">
+    <resultMap id="orderResultMap" type="com.dogpaws.backend.dto.rim.OrderDto">
         <id property="orderId" column="order_id"/>
         <result property="qlId" column="ql_id"/>
         <result property="paymentKey" column="payment_key"/>
@@ -94,14 +94,14 @@
         <result property="shippingMemo" column="shipping_memo"/>
         <result property="orderStatus" column="order_status"/>
 
-        <collection property="orderItems" ofType="OrderItemDto">
+        <collection property="orderItems" ofType="com.dogpaws.backend.dto.rim.OrderItemDto">
             <id property="orderItemId" column="order_item_id"/>
             <result property="qlId" column="ql_id"/>
             <result property="productId" column="product_id"/>
             <result property="amount" column="amount"/>
             <result property="itemPrice" column="item_price"/>
 
-            <collection property="options" ofType="OrderItemOptionDto">
+            <collection property="options" ofType="com.dogpaws.backend.dto.rim.OrderItemOptionDto">
                 <id property="optionId" column="option_id"/>
                 <result property="orderItemId" column="order_item_id"/>
                 <result property="optionName" column="option_name"/>

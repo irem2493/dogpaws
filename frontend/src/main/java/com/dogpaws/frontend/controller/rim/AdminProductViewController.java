@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequestMapping("/admin/product")
 @Controller
-public class AdminProductController {
+public class AdminProductViewController {
     @GetMapping("/regist")
     public String productRegistView() {
         return "rim/admin/admin_product_register";
