@@ -58,41 +58,6 @@ public class CartController {
 
 
 
-
-
-
-
-
-
-
-
-
-    // 장바구니 상품 삭제
-    @DeleteMapping("/{cartItemId}")
-    public ResponseEntity<ApiResponse<String>> removeCartItem(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long cartItemId
-    ) {
-        cartService.removeCartItem(userDetails.getUsername(), cartItemId);
-        return ResponseEntity.ok(
-                new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "장바구니 상품이 삭제되었습니다.")
-        );
-    }
-
-    // 장바구니 상품 수량 수정
-    @PatchMapping("/{cartItemId}/quantity")
-    public ResponseEntity<ApiResponse<String>> updateCartItemQuantity(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long cartItemId,
-            @RequestParam int quantity
-    ) {
-        cartService.updateCartItemQuantity(userDetails.getUsername(), cartItemId, quantity);
-        return ResponseEntity.ok(
-                new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "수량이 변경되었습니다.")
-        );
-    }
-
-    // 예외 처리
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleException(Exception e) {
         return ResponseEntity.badRequest().body(

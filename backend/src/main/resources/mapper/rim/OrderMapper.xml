@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dogpaws.backend.repository.dao.rim.OrderDao">
+
+    <!-- 주문 생성 -->
+    <insert id="insertOrder" parameterType="OrderDto" useGeneratedKeys="true" keyProperty="orderId">
+        INSERT INTO tbl_orders (
+            ql_id,
+            username,
+            total_price,
+            orderer_name,
+            orderer_phone,
+            shipping_zipcode,
+            shipping_address1,
+            shipping_address2,
+            shipping_extra_address,
+            receiver_name,
+            receiver_phone,
+            shipping_memo,
+            order_status
+        ) VALUES (
+            #{qlId},
+            #{username},
+            #{totalPrice},
+            #{ordererName},
+            #{ordererPhone},
+            #{shippingZipcode},
+            #{shippingAddress1},
+            #{shippingAddress2},
+            #{shippingExtraAddress},
+            #{receiverName},
+            #{receiverPhone},
+            #{shippingMemo},
+            #{orderStatus}
+        )
+</insert>
+    <!-- 주문 상품 추가 -->
+    <insert id="insertOrderItem" parameterType="OrderItemDto" useGeneratedKeys="true" keyProperty="orderItemId">
+        INSERT INTO tbl_order_items (
+        ql_id,
+        product_id,
+        amount,
+        item_price
+        ) VALUES (
+        #{qlId},
+        #{productId},
+        #{amount},
+        #{itemPrice}
+        )
+    </insert>
+    <!-- 주문 상품 옵션 추가 -->
+    <insert id="insertOrderItemOption" parameterType="OrderItemOptionDto">
+        INSERT INTO tbl_order_item_options (
+        order_item_id,
+        option_name,
+        option_price
+        ) VALUES (
+        #{orderItemId},
+        #{optionName},
+        #{optionPrice}
+        )
+    </insert>
+
+    <!-- 주문 조회 -->
+    <select id="selectOrderByQlId" resultMap="orderResultMap">
+        SELECT
+        o.*,
+        oi.*,
+        oio.*
+        FROM tbl_orders o
+        LEFT JOIN tbl_order_items oi ON o.ql_id = oi.ql_id
+        LEFT JOIN tbl_order_item_options oio ON oi.order_item_id = oio.order_item_id
+        WHERE o.ql_id = #{qlId}
+    </select>
+
+    <!-- 주문 결과 매핑 -->
+    <resultMap id="orderResultMap" type="OrderDto">
+        <id property="orderId" column="order_id"/>
+        <result property="qlId" column="ql_id"/>
+        <result property="paymentKey" column="payment_key"/>
+        <result property="username" column="username"/>
+        <result property="totalPrice" column="total_price"/>
+        <result property="orderDate" column="order_date"/>
+        <result property="ordererName" column="orderer_name"/>
+        <result property="ordererPhone" column="orderer_phone"/>
+        <result property="shippingZipcode" column="shipping_zipcode"/>
+        <result property="shippingAddress1" column="shipping_address1"/>
+        <result property="shippingAddress2" column="shipping_address2"/>
+        <result property="shippingExtraAddress" column="shipping_extra_address"/>
+        <result property="receiverName" column="receiver_name"/>
+        <result property="receiverPhone" column="receiver_phone"/>
+        <result property="shippingMemo" column="shipping_memo"/>
+        <result property="orderStatus" column="order_status"/>
+
+        <collection property="orderItems" ofType="OrderItemDto">
+            <id property="orderItemId" column="order_item_id"/>
+            <result property="qlId" column="ql_id"/>
+            <result property="productId" column="product_id"/>
+            <result property="amount" column="amount"/>
+            <result property="itemPrice" column="item_price"/>
+
+            <collection property="options" ofType="OrderItemOptionDto">
+                <id property="optionId" column="option_id"/>
+                <result property="orderItemId" column="order_item_id"/>
+                <result property="optionName" column="option_name"/>
+                <result property="optionPrice" column="option_price"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+
+    <!-- 주문 상태 업데이트 -->
+    <update id="updateOrderStatus">
+        UPDATE tbl_orders
+        SET order_status = #{status}
+        WHERE ql_id = #{qlId}
+    </update>
+
+    <!-- 결제키 업데이트 -->
+    <update id="updatePaymentKey">
+        UPDATE tbl_orders
+        SET payment_key = #{paymentKey},
+        order_status = 'PAID'
+        WHERE ql_id = #{qlId}
+    </update>
+
+</mapper>
