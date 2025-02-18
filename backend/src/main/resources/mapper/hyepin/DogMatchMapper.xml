@@ -130,20 +130,24 @@
         -- 강아지 매칭 리스트
         SELECT
         d.*,
-        -- breed 한글명 가져오기 (단일 행 보장)
+        -- 품종 한글명 가져오기
         (SELECT g.gubn_name
         FROM tbl_gubn g
         WHERE g.group_code = 'breed_code'
         AND g.gubn_code = d.breed
         LIMIT 1) AS breed_name,
 
-        -- 사용자 주소 가져오기 (단일 행 보장)
+        -- 사용자 주소 가져오기
         (SELECT u.address
         FROM tbl_users u
         WHERE u.username = d.username
         LIMIT 1) AS address,
 
-        -- 최종 match_score 계산
+        -- 지역 코드 추출 (주소 앞 2글자)
+        LEFT((SELECT u.address FROM tbl_users u WHERE u.username = d.username LIMIT 1), 2) AS dog_region,
+        LEFT((SELECT u.address FROM tbl_users u WHERE u.username = #{username} LIMIT 1), 2) AS user_region,
+
+        -- 매칭 점수 계산
         (7 * (CASE WHEN m.weight_category = 'U' AND d.weight >= m.weight - 1 THEN 1 ELSE 0 END)
         + 7 * (CASE WHEN d.personality_type = m.dog_type_code_gbn_cd THEN 1 ELSE 0 END)
         + 2 * (SELECT COUNT(*) FROM tbl_dog_personal p
@@ -170,6 +174,7 @@
         END
         ) AS match_score,
 
+        -- 매칭된 기준을 문자열로 연결
         CONCAT(
         CASE WHEN d.breed = m.breed_gbn_cd THEN '품종' ELSE '' END,
         CASE WHEN d.is_mix = m.is_mix THEN ',믹스여부' ELSE '' END,
@@ -198,7 +203,15 @@
         WHERE (d.breed = m.breed_gbn_cd OR m.breed_gbn_cd IS NULL)
         AND (m.is_mix = 'N' AND d.is_mix = 'N' OR m.is_mix = 'Y')
         AND d.username &lt;&gt; #{username}
-        ORDER BY match_score DESC, RAND()
+        ORDER BY
+        -- 같은 지역 강아지를 우선 정렬 (1이면 같은 지역, 0이면 다른 지역)
+        (CASE
+        WHEN LEFT((SELECT u.address FROM tbl_users u WHERE u.username = d.username LIMIT 1), 2) =
+        LEFT((SELECT u.address FROM tbl_users u WHERE u.username = #{username} LIMIT 1), 2)
+        THEN 1 ELSE 0 END) DESC,
+        match_score DESC,
+        RAND()
         LIMIT 20;
+
     </select>
 </mapper>

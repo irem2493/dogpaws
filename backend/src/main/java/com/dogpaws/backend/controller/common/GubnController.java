@@ -3,10 +3,7 @@ package com.dogpaws.backend.controller.common;
 import com.dogpaws.backend.dto.common.GubnDto;
 import com.dogpaws.backend.service.common.GubnService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,5 +22,10 @@ public class GubnController {
     @GetMapping("/{groupCode}")
     public List<GubnDto> getGubnList(@PathVariable String groupCode) {
         return gubnService.getGubnList(groupCode);
+    }
+
+    @GetMapping("/gubnCode")
+    public GubnDto getGubn(@RequestParam("groupCode") String groupCode, @RequestParam("gubnCode") String gubnCode) {
+        return gubnService.getGubn(groupCode, gubnCode);
     }
 }

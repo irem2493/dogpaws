@@ -251,9 +251,4 @@ function messageForm(element) {
     }
 }
 
-//신고 폼 열기
-function declarationForm() {
-
-}
-
 

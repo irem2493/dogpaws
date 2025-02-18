@@ -2,9 +2,8 @@ package com.dogpaws.backend.service.ajy;
 
 import com.dogpaws.backend.dto.ajy.DogRequestDto;
 import com.dogpaws.backend.dto.ajy.JoinSessionDto;
+import com.dogpaws.backend.dto.ajy.LocationDto;
 import com.dogpaws.backend.dto.ajy.UserRequestDto;
-import com.dogpaws.backend.dto.common.FileDto;
-import com.dogpaws.backend.entity.File;
 import com.dogpaws.backend.entity.ajy.Dog;
 import com.dogpaws.backend.entity.ajy.DogPersonal;
 import com.dogpaws.backend.entity.ajy.DogPlay;
@@ -40,6 +39,7 @@ public class JoinService {
     private final DogPersonalRepository dogPersonalRepository;
     private final DogPlayRepository dogPlayRepository;
     private final FileService fileService;
+    private final LocationService locationService;
 
     public String duplicateCheck(String username) {
         return userRepository.findByUsername(username) != null ? "중복됨" : "사용 가능";
@@ -57,7 +57,7 @@ public class JoinService {
     public void join(JoinSessionDto sessionData) throws IOException {
         UserRequestDto userRequestDto = sessionData.getStep1Data();
         DogRequestDto dogRequestDto = sessionData.getStep2Data();
-        List<MultipartFile> files = sessionData.getStep3Data();
+        Map<MultipartFile, String> fileTypeMap = sessionData.getStep3Data();
 
         User user = createUser(userRequestDto);
 
@@ -69,7 +69,7 @@ public class JoinService {
         dogRepository.save(dog);
 
         System.out.println(dogRequestDto.getActivityImages());
-        System.out.println(files);
+        System.out.println(fileTypeMap);
 
         Optional<Dog> dogId = dogRepository.findTopByOrderByDogIdDesc();
         if (dogId.isPresent()) {
@@ -79,11 +79,61 @@ public class JoinService {
 
             getActiveDogImage(maxDogId,username, dogRequestDto.getActivityImages());
 
-            getMatching(maxDogId, username, files);
+            getMatching(maxDogId, username, fileTypeMap);
         }
     }
 
+    //강아지 등록
+    @Transactional
+    public void dogRegister(DogRequestDto dogRequestDto) throws IOException {
+
+        Dog dog = createDog(dogRequestDto);
+        dogRepository.save(dog);
+
+        System.out.println(dogRequestDto.getActivityImages());
+
+        Optional<Dog> dogId = dogRepository.findTopByOrderByDogIdDesc();
+        if (dogId.isPresent()) {
+            Integer maxDogId = dogId.get().getDogId();
+            createDogPersonal(maxDogId, dogRequestDto.getSelectedPersonalities());
+            createDogPlay(maxDogId, dogRequestDto.getSelectedPlays());
+
+            getActiveDogImage(maxDogId,dogRequestDto.getUsername(), dogRequestDto.getActivityImages());
+
+            getMatching(maxDogId, dogRequestDto.getUsername(), dogRequestDto.getFileTypeMap());
+        }
+    }
+
+    //강아지 업데이트
+    @Transactional
+    public void dogUpdate(DogRequestDto dogRequestDto) throws IOException {
+
+        Dog dog = updateDog(dogRequestDto);
+        dogRepository.save(dog);
+
+        System.out.println(dogRequestDto.getActivityImages());
+
+        dogPersonalRepository.deleteByDogId(dog.getDogId());
+        dogPlayRepository.deleteByDogId(dog.getDogId());
+
+        createDogPersonal(dog.getDogId(), dogRequestDto.getSelectedPersonalities());
+        createDogPlay(dog.getDogId(), dogRequestDto.getSelectedPlays());
+
+        getActiveDogImage(dog.getDogId(),dogRequestDto.getUsername(), dogRequestDto.getActivityImages());
+
+        getMatching(dog.getDogId(), dogRequestDto.getUsername(), dogRequestDto.getFileTypeMap());
+
+    }
+
     private User createUser(UserRequestDto userRequestDto) {
+
+        LocationDto locationDto = locationService.getCoordinatesFromAddress(userRequestDto.getAddress());
+        if (locationDto != null) {
+            userRequestDto.setLatitude(locationDto.getLatitude());
+            userRequestDto.setLongitude(locationDto.getLongitude());
+        }
+
+
         return User.builder()
                 .username(userRequestDto.getUsername())
                 .password(userRequestDto.getPassword())
@@ -94,6 +144,9 @@ public class JoinService {
                 .detailAddress(userRequestDto.getDetailAddress())
                 .gender(userRequestDto.getGender())
                 .ageGroup(userRequestDto.getAgeGroup())
+                .latitude(userRequestDto.getLatitude())
+                .longitude(userRequestDto.getLongitude())
+                .provider(Optional.ofNullable(userRequestDto.getProvider()).orElse(null)) // provider가 없으면 null
                 .role("ROLE_USER")
                 .status('A')
                 .build();
@@ -120,6 +173,40 @@ public class JoinService {
                 .walkStartTime(dogRequestDto.getWalkStartTime())
                 .walkEndTime(dogRequestDto.getWalkEndTime())
                 .walkDays(dogRequestDto.getWalkDays())
+                .walkTimeYn(dogRequestDto.getWalkTimeYn())
+                .isMatingAvailable(dogRequestDto.getIsMatingAvailable())
+                .dogIntro(dogRequestDto.getDogIntro())
+                .profileUrl(dogRequestDto.getProfileUrl())
+                .fileOldName(dogRequestDto.getFileOldName())
+                .fileNewName(dogRequestDto.getFileNewName())
+                .fileExt(dogRequestDto.getFileExt())
+                .fileSize(dogRequestDto.getFileSize())
+                .build();
+    }
+
+    private Dog updateDog(DogRequestDto dogRequestDto) {
+        if (dogRequestDto.getWalkTimeYn().equals("N")) {
+            // 포맷 설정
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String formattedTime = LocalDateTime.now().format(formatter);
+            dogRequestDto.setWalkStartTime(formattedTime);  // 포맷된 문자열로 저장
+        }
+
+        return Dog.builder()
+                .username(dogRequestDto.getUsername())
+                .dogId(dogRequestDto.getDogId())
+                .dogName(dogRequestDto.getDogName())
+                .breed(dogRequestDto.getBreed())
+                .isMix(dogRequestDto.getIsMix())
+                .birthYear(dogRequestDto.getBirthYear())
+                .birthMonth(dogRequestDto.getBirthMonth())
+                .gender(dogRequestDto.getGender())
+                .isNeutered(dogRequestDto.getIsNeutered())
+                .weight(dogRequestDto.getWeight())
+                .walkStartTime(dogRequestDto.getWalkStartTime())
+                .walkEndTime(dogRequestDto.getWalkEndTime())
+                .walkDays(dogRequestDto.getWalkDays())
+                .walkTimeYn(dogRequestDto.getWalkTimeYn())
                 .isMatingAvailable(dogRequestDto.getIsMatingAvailable())
                 .dogIntro(dogRequestDto.getDogIntro())
                 .profileUrl(dogRequestDto.getProfileUrl())
@@ -178,13 +265,17 @@ public class JoinService {
         }
     }
 
-    private void getMatching(Integer dogId, String username, List<MultipartFile> filesList) throws IOException {
-        if(filesList != null && !filesList.isEmpty()) {
-            for (MultipartFile file : filesList) {
+    private void getMatching(Integer dogId, String username, Map<MultipartFile, String> filesMap) throws IOException {
+        if(filesMap != null && !filesMap.isEmpty()) {
+            for (Map.Entry<MultipartFile, String> entry : filesMap.entrySet()) {
+                MultipartFile file = entry.getKey();
+                String fileCode = entry.getValue(); // 해당 파일의 구분 코드
                 System.out.println("파일 비었는가: " + file.isEmpty());  // 파일 상태 확인
                 if (!file.isEmpty()) {
+                    fileService.deleteFileByDogIdAndFileCode(dogId, fileCode);
+
                     System.out.println(file);
-                    fileService.saveFile(file, "MF", dogId.toString(), username);
+                    fileService.saveFile(file, fileCode, dogId.toString(), username);
                 }
 
             }

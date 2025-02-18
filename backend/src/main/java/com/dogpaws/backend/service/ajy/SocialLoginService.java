@@ -216,7 +216,7 @@ public class SocialLoginService {
             if(user == null) {
                 UserRequestDto userRequestDto = new UserRequestDto();
                 userRequestDto.setUsername(username);
-                userRequestDto.setProvider("Google");
+                userRequestDto.setProvider("GOOGLE");
                 userRequestDto.setNickname(userInfo.get("name").toString());
                 userRequestDto.setEmail(userInfo.get("email").toString());
 
@@ -372,7 +372,7 @@ public class SocialLoginService {
 
             // ✅ 프론트엔드로 전달할 사용자 정보
             String redirectUrl = String.format(
-                    "http://localhost:2000/dogProfileSelect?accessToken=%s&username=%s&role=%s&nickname=%s",
+                    "http://localhost:2000/dog/dogProfileSelect?accessToken=%s&username=%s&role=%s&nickname=%s",
                     accessToken2,
                     user.getUsername(),
                     "ROLE_USER",

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<aside th:fragment="sidebar" class="sidebar-container-container" style="flex: 1;">
+    <!-- 전체 박스 -->
+    <div class="sidebar">
+        <div class="sidebar-container">
+            <div class="sidebar-header">
+                <img src="/img/icon/pet.svg" alt="로고" class="logo"/>
+                <p>마이페이지</p>
+            </div>
+            <hr/>
+            <ul class="sidebar-menu">
+                <li><a href="#">개인정보 관리</a></li>
+                <li><a href="#">반려견 프로필 관리</a></li>
+                <li><a href="#">좋아요 목록</a></li>
+                <li><a href="#">작성한 게시글 보기</a></li>
+                <li><a href="#" class="active">일정 관리</a></li>
+                <li><a href="#">스토어</a></li>
+                <li>
+                    <ul>
+                        <li><a href="#">장바구니</a></li>
+                        <li><a href="#">주문 · 배송</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- 전체 박스 -->
+</aside>
+</html>

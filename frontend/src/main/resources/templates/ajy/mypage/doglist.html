@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout-mypage}">
+<head>
+    <link rel="stylesheet" href="/css/ajy/mypage/doglist.css" />
+
+    <title>강아지정보 관리</title>
+</head>
+<body layout:fragment="content" style="min-height: 100vh">
+<div class="container">
+    <div class="doglist-box">
+
+        <div class="doglist-container">
+            <h1 class="title">반려견 프로필 관리</h1>
+            <hr>
+            <div class="profile-list">
+                <!-- 반려견 프로필 카드 -->
+                <!-- Thymeleaf 반복문으로 반려견 프로필 동적 생성 -->
+                <div th:each="dog : ${dogList}" class="profile-card">
+                    <!-- 반려견 이미지 -->
+                    <!-- 반려견 이미지 -->
+                    <a th:href="@{/dog/detail/{dogId}(dogId=${dog.dog_id})}"><img th:src="${dog.profile_url}" alt="반려견 이미지" class="profile-img" onerror="this.src='/img/dog_foot2.png';"></a>
+
+                    <div class="profile-info">
+                        <!-- 반려견 이름, 품종 변환 -->
+                        <h2 class="dog-name">
+                            <span th:text="${dog.dog_name}"></span> |
+                            <span th:each="breed : ${breedList}"
+                                  th:if="${breed['gubn_code'] == dog.breed}"
+                                  th:text="${breed['gubn_name']}"></span>
+                            <span th:if="${dog.is_mix == 'Y'}">(믹스)</span>
+                            <span class="gender">
+                        <span th:text="${dog.gender == 'M' ? '♂' : '♀'}"></span>
+                        (<span th:text="${dog.is_neutered == 'Y' ? '중성화 O' : '중성화 X'}"></span>)
+                    </span> 🗓️
+                            <span th:text="${dog.birth_year}"></span>년
+                            <span th:text="${dog.birth_month}"></span>월생
+                        </h2>
+
+                        <!-- 성격 유형 변환 -->
+                        <div class="dog-filter">
+                            <img src="/img/icon/dog-filter/bone.svg" alt="bone-icon">
+                            성격 유형
+                        </div>
+                        <div class="traits">
+                            <span >
+                                <span th:each="trait : ${#strings.arraySplit(dog.selected_personalities, ',')}"  class="btn-d" style="margin-right: 8px">
+                                    <span   th:each="personality : ${personalityList}"
+                                            th:if="${personality['gubn_code'] == trait}"
+                                            th:text="${personality['gubn_name']}"
+                                            >
+
+                                    </span>
+                                </span>
+                            </span>
+                        </div>
+                        <!-- 좋아하는 놀이 변환 -->
+                        <div class="dog-filter">
+                            <img src="/img/icon/dog-filter/puzzle.svg" alt="puzzle-icon">
+                            좋아하는 놀이
+                        </div>
+                        <div class="likes">
+                            <span th:each="play : ${#strings.arraySplit(dog.selected_plays, ',')}" class="btn-d" >
+                                <span th:each="play_item : ${playList}"
+                                      th:if="${play_item['gubn_code'] == play}"
+                                      th:text="${play_item['gubn_name']}"
+                                >
+
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 수정 및 삭제 버튼 -->
+                    <div class="profile-actions">
+                        <button type="button" class="btn-b" style="width: 85px; height: 35px;">
+                            <a th:href="@{/dog/dogEidt/{dogId}(dogId=${dog.dog_id})}">
+                                수정
+                            </a>
+                        </button>
+
+                        <button type="button" class="btn-delete"
+                                th:disabled="${#lists.size(dogList) == 1}"
+                                th:attr="data-dogid=${dog.dog_id}, data-username=${dog.username}"
+                                onclick="confirmDelete(this)">
+                            삭제
+                        </button>
+                    </div>
+
+                </div>
+                <!-- 추가 버튼 (강아지가 5마리 이상이면 숨김) -->
+                <div class="profile-actions" th:if="${#lists.size(dogList) < 5}" style="margin-bottom: 80px">
+                    <button type="button" class="plus-button" onclick="location.href='/dog/dogProfileRegister'">
+                        <span class="plus-icon">+</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/ajy/mypage/doglist.js"></script>
+</body>
+</html>
