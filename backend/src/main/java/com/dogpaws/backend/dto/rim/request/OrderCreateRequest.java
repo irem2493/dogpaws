@@ -13,8 +13,8 @@ public class OrderCreateRequest {
     private int totalPrice;        // 총 결제 금액
 
     // 주문자 정보
-    private String ordererName;    // 주문자명
-    private String ordererPhone;   // 주문자 연락처
+    private String orderName;    // 주문자명
+    private String orderPhone;   // 주문자 연락처
 
     // 배송지 정보
     private String shippingZipcode;      // 우편번호

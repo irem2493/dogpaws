@@ -10,8 +10,8 @@
             ql_id,
             username,
             total_price,
-            orderer_name,
-            orderer_phone,
+            order_name,
+            order_phone,
             shipping_zipcode,
             shipping_address1,
             shipping_address2,
@@ -19,13 +19,14 @@
             receiver_name,
             receiver_phone,
             shipping_memo,
-            order_status
+            order_status,
+            order_date
         ) VALUES (
             #{qlId},
             #{username},
             #{totalPrice},
-            #{ordererName},
-            #{ordererPhone},
+            #{orderName},
+            #{orderPhone},
             #{shippingZipcode},
             #{shippingAddress1},
             #{shippingAddress2},
@@ -33,7 +34,8 @@
             #{receiverName},
             #{receiverPhone},
             #{shippingMemo},
-            #{orderStatus}
+            #{orderStatus},
+            NOW()
         )
 </insert>
     <!-- 주문 상품 추가 -->
@@ -66,9 +68,29 @@
     <!-- 주문 조회 -->
     <select id="selectOrderByQlId" resultMap="orderResultMap">
         SELECT
-        o.*,
-        oi.*,
-        oio.*
+        o.order_id,
+        o.ql_id,
+        o.payment_key,
+        o.username,
+        o.total_price,
+        o.order_name,
+        o.order_phone,
+        o.shipping_zipcode,
+        o.shipping_address1,
+        o.shipping_address2,
+        o.shipping_extra_address,
+        o.shipping_memo,
+        o.receiver_name,
+        o.receiver_phone,
+        o.order_status,
+        o.order_date,
+        oi.order_item_id,
+        oi.product_id,
+        oi.amount,
+        oi.item_price,
+        oio.option_id,
+        oio.option_name,
+        oio.option_price
         FROM tbl_orders o
         LEFT JOIN tbl_order_items oi ON o.ql_id = oi.ql_id
         LEFT JOIN tbl_order_item_options oio ON oi.order_item_id = oio.order_item_id
@@ -82,17 +104,18 @@
         <result property="paymentKey" column="payment_key"/>
         <result property="username" column="username"/>
         <result property="totalPrice" column="total_price"/>
-        <result property="orderDate" column="order_date"/>
-        <result property="ordererName" column="orderer_name"/>
-        <result property="ordererPhone" column="orderer_phone"/>
+        <result property="orderName" column="order_name"/>
+        <result property="orderPhone" column="order_phone"/>
         <result property="shippingZipcode" column="shipping_zipcode"/>
         <result property="shippingAddress1" column="shipping_address1"/>
         <result property="shippingAddress2" column="shipping_address2"/>
+        <result property="orderDate" column="order_date" jdbcType="TIMESTAMP" javaType="java.time.LocalDateTime"/>
         <result property="shippingExtraAddress" column="shipping_extra_address"/>
+        <result property="shippingMemo" column="shipping_memo"/>
         <result property="receiverName" column="receiver_name"/>
         <result property="receiverPhone" column="receiver_phone"/>
-        <result property="shippingMemo" column="shipping_memo"/>
-        <result property="orderStatus" column="order_status"/>
+        <result property="orderStatus" column="order_status"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
 
         <collection property="orderItems" ofType="com.dogpaws.backend.dto.rim.OrderItemDto">
             <id property="orderItemId" column="order_item_id"/>
@@ -109,6 +132,13 @@
             </collection>
         </collection>
     </resultMap>
+
+    <!-- 주문번호 존재 여부 확인 -->
+    <select id="existsByQlId" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM tbl_orders
+        WHERE ql_id = #{qlId}
+    </select>
 
 
     <!-- 주문 상태 업데이트 -->

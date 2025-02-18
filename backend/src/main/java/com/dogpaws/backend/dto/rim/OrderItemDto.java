@@ -3,6 +3,7 @@ package com.dogpaws.backend.dto.rim;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -10,11 +11,22 @@ import java.util.List;
 @Setter
 @Builder
 public class OrderItemDto {
-    private Long orderItemId;      // 주문 상품 ID
-    private String qlId;           // 주문번호
-    private Long productId;        // 상품 ID
-    private String productName;    // 상품명
-    private int amount;            // 수량
-    private int itemPrice;         // 상품 가격
-    private List<OrderItemOptionDto> options; // 상품 옵션 목록
+    @JsonProperty("order_item_id")
+    private Long orderItemId;      
+    
+    @JsonProperty("ql_id")
+    private String qlId;           
+    
+    @JsonProperty("product_id")
+    private Long productId;        
+    
+    @JsonProperty("product_name")
+    private String productName;    
+    
+    private int amount;            
+    
+    @JsonProperty("item_price")
+    private int itemPrice;         
+    
+    private List<OrderItemOptionDto> options;
 }

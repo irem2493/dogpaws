@@ -10,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartListResponseDto {
+    private Long cartItemId;
     private Long productId;
     private String productName;
     private int productPrice;
