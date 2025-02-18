@@ -1,6 +1,7 @@
 package com.dogpaws.backend.controller.ajy;
 
 import com.dogpaws.backend.dto.ajy.*;
+import com.dogpaws.backend.entity.ajy.Dog;
 import com.dogpaws.backend.service.ajy.DogService;
 import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.service.ajy.JoinService;
@@ -70,7 +71,7 @@ public class DogController {
                                    @RequestParam(value = "fileInput2", required = false) MultipartFile file2,
                                    @RequestParam(value = "fileInput3", required = false) MultipartFile file3,
                                    HttpSession session) throws IOException {
-        log.info("여기는 백 컨트롤러 registerDog / dogRequestDto 값: {}", dogRequestDto);
+        log.info("여기는 백 컨트롤러 dogStep1 / dogRequestDto 값: {}", dogRequestDto);
         dogRequestDto.setUsername(username);
 
         // 이미지 처리
@@ -165,5 +166,11 @@ public class DogController {
         }
         joinService.dogUpdate(dogRequestDto);
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, dogRequestDto);
+    }
+
+    @GetMapping("/nearbyDog/{username}")
+    public ApiResponse<?> getNearbyDogs(@PathVariable String username) {
+        List<DogLocationDto> dogs = dogService.getNearbyDogs(username);
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, dogs);
     }
 }
