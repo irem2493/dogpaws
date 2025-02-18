@@ -17,4 +17,8 @@ public class GubnService {
     public List<GubnDto> getGubnList(String groupCode) {
         return gubnDao.getGubnList(groupCode);
     }
+
+    public GubnDto getGubn(String groupCode, String gubnCode) {
+        return gubnDao.getGubn(groupCode, gubnCode);
+    }
 }

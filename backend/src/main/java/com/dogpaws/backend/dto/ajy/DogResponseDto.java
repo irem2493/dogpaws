@@ -1,10 +1,13 @@
 package com.dogpaws.backend.dto.ajy;
 
+import com.dogpaws.backend.entity.File;
 import lombok.Data;
 
 @Data
 public class DogResponseDto {
     private String username;  // 사용자 ID (외래키)
+
+    private Integer dogId;
 
     private String dogName;  // 강아지 이름
 
@@ -41,4 +44,8 @@ public class DogResponseDto {
     private String selectedPersonalities;
 
     private String selectedPlays;
+
+    private File peFile;    //혈통증명서
+    private File vaFile;    //예방접종증명서
+    private File heFile;    //건강검진증명서
 }

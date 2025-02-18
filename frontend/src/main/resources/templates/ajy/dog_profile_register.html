@@ -12,21 +12,28 @@
 <div class="container">
   <div class="join-container">
     <div class="container_box">
-      <div class="header">강아지 프로필 등록</div>
+      <div class="header" th:text="${dog != null and dog.dog_id != null ? '강아지 프로필 수정' : '강아지 프로필 등록'}"></div>
       <div class="form-container" style="justify-content: center;'">
 
         <div class="form-fields">
           <form id="dogForm" enctype="multipart/form-data">
+
+            <input type="hidden" name="dogId" id="dogId" th:value="${dog != null ? dog.dog_id : ''}"/>
+
             <div class="center-profile">
               <div class="profile" id="profileUpload">
-                <img id="profileImagePreview" src="" alt="프로필 이미지" class="profile-img-preview">
-                <div class="profile-upload-circle">+</div>
+                <img id="profileImagePreview"
+                     th:src="${dog != null and dog.profile_url != null ? dog.profile_url : ''}"
+                     alt="프로필 이미지" class="profile-img-preview"
+                     th:style="${dog != null and dog.profile_url != null} ? 'display: block;' : 'display: none;'">
+                <div class="profile-upload-circle"
+                     th:style="${dog != null and dog.profile_url != null} ? 'display: none;' : 'display: flex;'">+</div>
                 <input type="file" id="fileInput" name="profileImage" accept="image/*" style="display: none;">
               </div>
             </div>
 
             <label for="dogName"><span class="required">*</span> 강아지 이름</label>
-            <input type="text" id="dogName" name="dogName" placeholder="강아지 이름를 입력하세요 ">
+            <input type="text" id="dogName" name="dogName" placeholder="강아지 이름를 입력하세요 " th:value="${dog != null ? dog.dog_name : ''}">
 
             <label for="breedSelect"><span class="required">*</span>품종</label>
             <div class="flex-box">
@@ -34,21 +41,24 @@
                 <option value="" disabled selected>품종을 선택하세요</option>
                 <option th:each="breed : ${breedList}"
                         th:value="${breed['gubn_code']}"
-                        th:text="${breed['gubn_name']}">
+                        th:text="${breed['gubn_name']}"
+                        th:selected="${dog != null and breed['gubn_code'] == dog.breed}">
                 </option>
               </select>
-              <input type="checkbox" class="checkbox-basic" id="mixBreed" name="isMix" style="margin-right: 5px; " value="Y">믹스
+              <input type="checkbox" class="checkbox-basic" id="mixBreed" name="isMix" style="margin-right: 5px; " value="Y" th:checked="${dog != null and #strings.equals(dog.is_mix, 'Y')} ">믹스
             </div>
 
             <div class="form-row">
               <div class="form-group_profile">
                 <label for="birthYear">생년월</label>
                 <div class="flex-box">
-                  <select id="birthYear" class="select-a" style="width: 200px; margin-right: 10px" name="birthYear">
+                  <select id="birthYear" class="select-a" style="width: 200px; margin-right: 10px" name="birthYear"
+                          th:attr="data-selected=${dog != null ? dog.birth_year : ''}">
                     <option value="" >연도 선택</option>
                   </select>
 
-                  <select id="birthMonth" class="select-a" style="width: 150px" name="birthMonth">
+                  <select id="birthMonth" class="select-a" style="width: 150px" name="birthMonth"
+                          th:attr="data-selected=${dog != null ? dog.birth_month : ''}">
                     <option value="" >월 선택</option>
                   </select>
                 </div>
@@ -61,10 +71,11 @@
 
                   <!-- ✅ hidden input 추가 -->
                   <div class="gender-select">
-                    <input type="hidden" name="gender" id="gender" />
+                    <input type="hidden" name="gender" id="gender" th:value="${dog != null ? dog.gender : ''}"/>
 
                     <button
                             type="button"
+                            data-gender="M"
                             onclick="setGender('M', this)"
                     >
                       남자
@@ -72,6 +83,7 @@
 
                     <button
                             type="button"
+                            data-gender="F"
                             onclick="setGender('F', this)"
                     >
                       여자
@@ -81,14 +93,14 @@
               </div>
               <div class="form-group1">
                 <div class="flex-box" style="margin-top: 30px">
-                  <input type="checkbox" class="checkbox-basic" id="isNeutered" name="isNeutered" value="Y">중성화
+                  <input type="checkbox" class="checkbox-basic" id="isNeutered" name="isNeutered" value="Y" th:checked="${dog != null and #strings.equals(dog.is_neutered, 'Y')}">중성화
                 </div>
               </div>
 
             </div>
 
             <label for="dogIntro"> 강아지 소개글</label>
-            <textarea id="dogIntro" placeholder="강아지 소개글을 입력하세요" rows="4" cols="50" name="dogIntro"></textarea>
+            <textarea id="dogIntro" placeholder="강아지 소개글을 입력하세요" rows="4" cols="50" name="dogIntro" th:text="${dog != null ? dog.dog_intro : ''}"></textarea>
 
             <div class="personality-container">
               <div class="label">강아지 성격(최대 5개 선택 가능)</div>
@@ -97,13 +109,23 @@
                 <span onclick="clearInput()"><img src="/img/icon/search.svg" alt="search-icon"></span>
               </div>
               <div class="dropdown" id="dropdown" style="display: none;">
-                <div th:if="${personalityList != null}" th:each="personality : ${personalityList}" class="option">
-                  <input type="checkbox" class="checkbox-basic"
-                         th:id="'option' + ${personality['gubn_code']}"
-                         th:value="${personality['gubn_code']}"
-                         th:attr="data-name=${personality['gubn_name']}"
-                         onclick="selectOption(this)">
-                  <label th:for="'option' + ${personality['gubn_code']}" th:text="${personality['gubn_name']}"></label>
+                <div th:if="${personalityList != null}"
+                     th:each="personality : ${personalityList}"
+                     class="option">
+
+                  <!-- selected_personalities를 ,로 분리하여 리스트화 -->
+                  <th:block th:with="selectedList=${dog != null and dog.selected_personalities != null ?  #strings.arraySplit(dog.selected_personalities, ',') : personalityList}">
+
+                    <input type="checkbox" class="checkbox-basic"
+                           th:id="'option' + ${personality['gubn_code']}"
+                           th:value="${personality['gubn_code']}"
+                           th:attr="data-name=${personality['gubn_name']}, data-category='personality'"
+                           th:checked="${#lists.contains(selectedList, personality['gubn_code'])}"
+                          onclick="selectOption(this)">
+
+                    <label th:for="'option' + ${personality['gubn_code']}" th:text="${personality['gubn_name']}"></label>
+
+                  </th:block>
                 </div>
               </div>
               <div class="selected-options" id="selectedOptions"></div>
@@ -117,18 +139,24 @@
               </div>
               <div class="dropdown" id="dropdown2" style="display: none;">
                 <div th:if="${playList != null}" th:each="play : ${playList}" class="option">
-                  <input type="checkbox" class="checkbox-basic"
-                         th:id="'option' + ${play['gubn_code']}"
-                         th:value="${play['gubn_code']}"
-                         th:attr="data-name=${play['gubn_name']}"
-                         onclick="selectOption2(this)">
-                  <label th:for="'option' + ${play['gubn_code']}" th:text="${play['gubn_name']}"></label>
+                  <!-- ✅ 기존 선택된 항목 리스트를 가져오기 -->
+                  <th:block th:with="selectedList=${dog != null and dog.selected_plays != null ? #strings.arraySplit(dog.selected_plays, ','): playList}">
+                    <input type="checkbox" class="checkbox-basic"
+                           th:id="'option' + ${play['gubn_code']}"
+                           th:value="${play['gubn_code']}"
+                           th:attr="data-name=${play['gubn_name']}, data-category='play'"
+                           th:checked="${#lists.contains(selectedList, play['gubn_code'])}"
+                    onclick="selectOption2(this)">
+                    <label th:for="'option' + ${play['gubn_code']}" th:text="${play['gubn_name']}"></label>
+                  </th:block>
                 </div>
               </div>
               <div class="selected-options" id="selectedOptions2"></div>
             </div>
 
             <div class="form-group">
+              <input type="hidden" name="walkDays" id="walkDays" th:value="${dog != null ? dog.walk_days : ''}"/>
+
               <label class="label">산책 요일</label>
               <div class="checkbox-group">
                 <input type="checkbox" class="checkbox-basic" id="all-days">
@@ -159,105 +187,89 @@
 
             <div class="form-group">
               <label class="label">산책 시작 시간</label><br>
-              <input  class="input-a" type="time" placeholder="산책 시작 시간" id="walkStartTime" name="walkStartTime" style="width:40%">
-              <input  class="input-a" type="time" placeholder="산책 종료 시간" id="walkEndTime" name="walkEndTime" style="width:40%">
+              <input  class="input-a" type="time" placeholder="산책 시작 시간" id="walkStartTime" name="walkStartTime" style="width:40%" th:value="${dog != null ? dog.walk_start_time : '' }">
+              <input  class="input-a" type="time" placeholder="산책 종료 시간" id="walkEndTime" name="walkEndTime" style="width:40%" th:value="${dog != null ? dog.walk_end_time : '' }">
 
-              <input type="checkbox" class="checkbox-basic" id="walkTimeYn" name="walkTimeYn" value="Y">
+              <input type="checkbox" class="checkbox-basic" id="walkTimeYn" name="walkTimeYn" value="Y" th:checked="${dog != null and #strings.equals(dog.walk_time_yn, 'Y')}">
               <label for="walkTimeYn">상관없음</label>
             </div>
 
             <div class="form-group">
               <label class="label">체중</label>
               <div class="weight-input">
-                <input type="text" id="weight" name="weight" placeholder="체중을 입력하세요" style="width: 95%">
+                <input type="text" id="weight" name="weight" placeholder="체중을 입력하세요" style="width: 95%" th:value="${dog != null ? dog.weight : ''}">
                 <span>Kg</span>
               </div>
             </div>
+            <!-- 교배 매칭 체크박스 -->
+            <div class="matching-header">
+              <input type="checkbox" class="checkbox-basic" id="isMatingAvailable" name="isMatingAvailable" value="Y"
+                     th:checked="${dog != null and dog['is_mating_available'] != null and #strings.equals(dog['is_mating_available'].toString(), 'Y')}">
 
-            <div class="form-group">
-              <label class="label">활동 사진</label>
-              <div class="photo-upload">
-                <input type="file" id="activityImages" name="activityImages" multiple accept="image/*" style="display: none;" onchange="updateFileList()">
-                <input type="text" id="activityImageFileName" name="activityImageFileName" placeholder="파일을 선택하세요" readonly style="width: 75%">
-                <button type="button" id="addPhotoButton">+ 사진 추가</button>
-                <div id="photoPreview" class="photo-preview">
-                  <!- 미리보기 이미지가 여기에 표시됩니다 ->
-                </div>
-                <p class="photo-info">
-                  <span class="warning-icon">⚠️</span> 강아지 사진은 최대 6개 등록 가능합니다.
-                </p>
-              </div>
-              <div class="photo-preview">
+              <label for="isMatingAvailable">교배 매칭</label>
+            </div>
 
-              </div>
+            <!-- 안내 문구 -->
+            <p class="matching-info">
+              <span class="info-icon">⚠️</span> 선택하지 않아도 강아지 정보를 등록할 수 있습니다.<br>
+              교배 매칭 여부는 추후 마이페이지에서 설정할 수 있습니다.
+            </p>
 
-              <!-- 교배 매칭 체크박스 -->
-              <div class="matching-header">
-                <input type="checkbox" class="checkbox-basic" id="isMatingAvailable" name="isMatingAvailable" value="Y">
-                <label for="isMatingAvailable">교배 매칭</label>
-              </div>
+            <!-- 강아지 이미지 -->
+            <div class="matching-image">
+              <img src="/img/baby_dog.jpg" alt="강아지 세 마리가 바구니 안에 있는 사진">
+            </div>
 
-              <!-- 안내 문구 -->
-              <p class="matching-info">
-                <span class="info-icon">⚠️</span> 선택하지 않아도 다음으로 넘어갈 수 있습니다.<br>
-                교배 매칭 여부는 추후 마이페이지에서 설정할 수 있습니다.
+            <!-- 설명 -->
+            <p class="matching-description">
+              혈통증명서, 예방접종 증명서, 건강기록 증명서를 기준으로 필터링하여
+              더 신뢰할 수 있는 매칭 결과를 제공합니다.
+              이 정보를 통해 최적의 교배 파트너를 찾을 수 있습니다.
+            </p>
+
+            <div id="fileUploadContainer" class="file-upload-container" style="display: none;">
+              <!-- 제목 및 설명 -->
+              <h2>교배 매칭 시, 선택 서류</h2>
+              <p class="document-info">
+                <span class="info-icon">⚠️</span> 교배매칭 선택시 업로드할 수 있습니다.<br>
+                파일을 업로드 하지 않아도 다음으로 넘어갈 수 있습니다.<br>
+                파일을 업로드하는 추후 마이페이지에서 설정할 수 있습니다.<br>
               </p>
 
-              <!-- 강아지 이미지 -->
-              <div class="matching-image">
-                <img src="/img/baby_dog.jpg" alt="강아지 세 마리가 바구니 안에 있는 사진">
+              <!-- 파일 업로드 리스트 -->
+
+              <div class="file-upload">
+                <label>혈통증명서</label>
+                <div class="file-input-group">
+                  <input type="text" id="fileName1" name="fileName1" class="file-name" placeholder="선택한 파일명" readonly style="width: 76%;" th:value="${dog != null and dog.pe_file != null ? dog.pe_file.file_old_name: ''}">
+                  <input type="file" id="fileInput1" name="fileInput1" class="file-input" accept=".pdf, .jpg, .png" style="display: none;">
+                  <button type="button" class="file-button" onclick="openFileDialog('fileInput1', 'fileName1')">파일 찾기</button>
+                </div>
               </div>
 
-              <!-- 설명 -->
-              <p class="matching-description">
-                혈통증명서, 예방접종 증명서, 건강기록 증명서를 기준으로 필터링하여
-                더 신뢰할 수 있는 매칭 결과를 제공합니다.
-                이 정보를 통해 최적의 교배 파트너를 찾을 수 있습니다.
-              </p>
-
-              <div id="fileUploadContainer" class="file-upload-container" style="display: none;">
-                <!-- 제목 및 설명 -->
-                <h2>교배 매칭 시, 선택 서류</h2>
-                <p class="document-info">
-                  <span class="info-icon">⚠️</span> 교배매칭 선택시 업로드할 수 있습니다.<br>
-                  파일을 업로드 하지 않아도 다음으로 넘어갈 수 있습니다.<br>
-                  파일을 업로드하는 추후 마이페이지에서 설정할 수 있습니다.<br>
-                </p>
-
-                <!-- 파일 업로드 리스트 -->
-
-                <div class="file-upload">
-                  <label>혈통증명서</label>
-                  <div class="file-input-group">
-                    <input type="text" id="fileName1" name="fileName1" class="file-name" placeholder="선택한 파일명" readonly style="width: 76%;">
-                    <input type="file" id="fileInput1" name="fileInput1" class="file-input" accept=".pdf, .jpg, .png" style="display: none;">
-                    <button type="button" class="file-button" onclick="openFileDialog('fileInput1', 'fileName1')">파일 찾기</button>
-                  </div>
+              <div class="file-upload">
+                <label>예방접종 증명서</label>
+                <div class="file-input-group">
+                  <input type="text" id="fileName2" name="fileName2" class="file-name" placeholder="선택한 파일명" readonly style="width: 76%;" th:value="${dog != null and dog.va_file != null ? dog.va_file.file_old_name:  ''}">
+                  <input type="file" id="fileInput2" name="fileInput2" class="file-input" accept=".pdf, .jpg, .png" style="display: none;">
+                  <button type="button" class="file-button" onclick="openFileDialog('fileInput2','fileName2')">파일 찾기</button>
                 </div>
+              </div>
 
-                <div class="file-upload">
-                  <label>예방접종 증명서</label>
-                  <div class="file-input-group">
-                    <input type="text" id="fileName2" name="fileName2" class="file-name" placeholder="선택한 파일명" readonly style="width: 76%;">
-                    <input type="file" id="fileInput2" name="fileInput2" class="file-input" accept=".pdf, .jpg, .png" style="display: none;">
-                    <button type="button" class="file-button" onclick="openFileDialog('fileInput2','fileName2')">파일 찾기</button>
-                  </div>
-                </div>
-
-                <div class="file-upload">
-                  <label>건강검진 증명서</label>
-                  <div class="file-input-group">
-                    <input type="text" id="fileName3" name="fileName3" class="file-name" placeholder="선택한 파일명" readonly style="width: 76%;">
-                    <input type="file" id="fileInput3" name="fileInput3" class="file-input" accept=".pdf, .jpg, .png" style="display: none;">
-                    <button type="button" class="file-button" onclick="openFileDialog('fileInput3','fileName3')">파일 찾기</button>
-                  </div>
+              <div class="file-upload">
+                <label>건강검진 증명서</label>
+                <div class="file-input-group">
+                  <input type="text" id="fileName3" name="fileName3" class="file-name" placeholder="선택한 파일명" readonly style="width: 76%;" th:value="${dog != null and dog.he_file != null ? dog.he_file.file_old_name: ''}">
+                  <input type="file" id="fileInput3" name="fileInput3" class="file-input" accept=".pdf, .jpg, .png" style="display: none;">
+                  <button type="button" class="file-button" onclick="openFileDialog('fileInput3','fileName3')">파일 찾기</button>
                 </div>
               </div>
             </div>
+            <div class="button-container">
+              <input type="submit" style="width: 100%" th:attr="value=${dog != null and dog.dog_id != null ? '강아지 수정' : '강아지 등록'}"/>
+
+            </div>
           </form>
-          <div class="button-container">
-            <button type="button" id="nextButton" onclick="saveDog()" style="width: 100%">강아지 등록</button>
-          </div>
         </div>
       </div>
     </div>

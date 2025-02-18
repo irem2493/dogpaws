@@ -48,7 +48,7 @@ public class JoinController {
 
     @PostMapping("/step1")
     public ApiResponse<?> step1(@ModelAttribute UserRequestDto userRequestDto, HttpSession session) throws IOException {
-        //log.info("여기는 백 컨트롤러 step1 / userRequestDto 값: {}", userRequestDto);
+        log.info("여기는 백 컨트롤러 step1 / userRequestDto 값: {}", userRequestDto);
 
         String encryptedPassword = passwordEncoder.encode(userRequestDto.getPassword());
         userRequestDto.setPassword(encryptedPassword);
@@ -59,6 +59,8 @@ public class JoinController {
             sessionData = new JoinSessionDto();
         }
         sessionData.setStep1Data(userRequestDto);
+
+        System.out.println(sessionData.getStep1Data());
         session.setAttribute("joinSession", sessionData);
 
 
@@ -122,7 +124,6 @@ public class JoinController {
 
             // 세션에 저장할 파일 정보 (경로만 저장)
 
-
             dogRequestDto.setFileOldName(fileNameWithoutExt);
             dogRequestDto.setFileNewName(newFileName);
             dogRequestDto.setFileSize(fileSize);
@@ -158,8 +159,6 @@ public class JoinController {
 
         log.info("세션에서 2단계 데이터 반환: {}", step2Data);
 
-
-
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, step2Data);
     }
 
@@ -186,22 +185,22 @@ public class JoinController {
         session.setAttribute("joinSession", sessionData);
 
         // 1. 파일 데이터를 리스트에 담음
-        List<MultipartFile> files = new ArrayList<>();
+        Map<MultipartFile, String> fileTypeMap = new LinkedHashMap<>();
 
         if (file1 != null && !file1.isEmpty()) {
-            files.add(file1);
+            fileTypeMap.put(file1, "PE");
         }
 
         if (file2 != null && !file2.isEmpty()) {
-            files.add(file2);
+            fileTypeMap.put(file2, "VA");
         }
 
         if (file3 != null && !file3.isEmpty()) {
-            files.add(file3);
+            fileTypeMap.put(file3, "HE");
         }
 
         // 2. 파일 정보를 세션에 저장
-        sessionData.setStep3Data(files);
+        sessionData.setStep3Data(fileTypeMap);
         session.setAttribute("joinSession", sessionData);
 
         joinService.join(sessionData);
@@ -284,7 +283,6 @@ public class JoinController {
             return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "저장된 데이터 없음");
         }
 
-
         // 1단계 데이터 반환
         UserRequestDto step1Data = sessionData.getStep1Data();
 
@@ -319,14 +317,17 @@ public class JoinController {
 
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, step1Data);
     }
-    
-    @PostMapping("/social/provider")
-    public ApiResponse<?> getSocialProvider(@ModelAttribute UserRequestDto userRequestDto, HttpSession session) throws IOException {
-        if(session.getAttribute("provider") != null) {
+
+    @GetMapping("/social/provider")
+    public ApiResponse<?> getSocialProvider(HttpServletRequest request) {
+        HttpSession session = request.getSession(false); // ✅ 기존 세션만 가져오고, 없으면 null 반환
+
+        if (session != null && session.getAttribute("provider") != null) {
             String provider = (String) session.getAttribute("provider");
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, provider);
         }
-        
-        else return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "소셜 제공자 정보 없음");
+
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "소셜 제공자 정보 없음");
     }
+
 }

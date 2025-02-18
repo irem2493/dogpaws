@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+      layout:decorate="~{layout/layout-mypage}">
 <head>
     <title>Title</title>
     <link rel="stylesheet" href="/css/hyepin/calendar.css">
@@ -18,38 +18,10 @@
         <input type="hidden" id="sessionUsername" th:value="${session.user.username}">
     </th:block>
 
-    <div style="display:flex;">
-        <div style="flex: 1;" class="sidebar-container">
-            <div class="sidebar">
-                <div class="sidebar-container">
-                    <div class="sidebar-header">
-                        <img src="/img/icon/pet.svg" alt="로고" class="logo"/>
-                        <p>마이페이지</p>
-                    </div>
-                    <hr/>
-                    <ul class="sidebar-menu">
-                        <li><a href="#">개인정보 관리</a></li>
-                        <li><a href="#">반려견 프로필 관리</a></li>
-                        <li><a href="#">좋아요 목록</a></li>
-                        <li><a href="#">작성한 게시글 보기</a></li>
-                        <li><a href="#" class="active">일정 관리</a></li>
-                        <li><a href="#">스토어</a></li>
-                        <li>
-                            <ul>
-                                <li><a href="#">장바구니</a></li>
-                                <li><a href="#">주문 · 배송</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-
-        <div style="flex: 2;">
-            <!-- FullCalendar -->
-            <div id="calendar"></div>
-        </div>
+    <!-- 캘린더 -->
+    <div style="flex: 2;">
+        <!-- FullCalendar -->
+        <div id="calendar"></div>
     </div>
 
     <!-- 일정 추가 폼 모달 -->
@@ -134,6 +106,7 @@
         </form>
     </div>
 
+    <!-- 채팅방으로 공유 모달창 -->
     <div class="pawsModal" id="shareForm" style="display: none;">
         <h2 class="pawsModal-title">일정 공유</h2>
         <button class="pawsModal-close" onclick="closeModal(this)"></button>
@@ -146,7 +119,7 @@
         <div class="pawsModal-footer">
             <button class="pawsModal-confirm" onclick="calendarShare()">공유하기</button>
         </div>
-    </div>
+    </div>  <!-- 채팅방으로 공유 모달창 -->
 
 </div> <!-- 컨테이너 !-->
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+      layout:decorate="~{layout/layout-mypage}">
 <head>
     <link rel="stylesheet" href="/css/ajy/login.css" />
 
@@ -10,29 +10,6 @@
 <body layout:fragment="content" style="min-height: 100vh">
 <div class="container">
     <div class="edit-container">
-        <div class="sidebar">
-            <div class="sidebar-container">
-                <div class="sidebar-header">
-                    <img src="/img/icon/pet.svg" alt="로고" class="logo" />
-                    <p>마이페이지</p>
-                </div>
-                <hr />
-                <ul class="sidebar-menu">
-                    <li><a href="#" class="active">개인정보 관리</a></li>
-                    <li><a href="#">반려견 프로필 관리</a></li>
-                    <li><a href="#">좋아요 목록</a></li>
-                    <li><a href="#">작성한 게시글 보기</a></li>
-                    <li><a href="#">일정 관리</a></li>
-                    <li><a href="#">스토어</a></li>
-                    <li>
-                        <ul>
-                            <li><a href="#">장바구니</a></li>
-                            <li><a href="#">주문 · 배송</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
 
         <div class="login-container" style="max-width: 450px">
             <h1>개인정보 관리</h1>
@@ -57,6 +34,6 @@
     </div>
 
 </div>
-<script src="/js/ajy/user_edit_email.js"></script>
+<script src="/js/ajy/mypage/user_edit_email.js"></script>
 </body>
 </html>
