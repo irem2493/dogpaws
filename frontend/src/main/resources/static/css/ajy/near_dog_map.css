@@ -1,0 +1,251 @@
+/* `distance-container` 내부에서 모든 요소 정리 */
+.distance-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 20px 0;
+}
+
+/* 제목 스타일 */
+.distance-container h2 {
+    margin-top: 20px;
+    display: block;
+    text-align: center;
+    width: 100%;
+}
+
+/* 거리 슬라이더 컨테이너 */
+.distance-container .slider-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+/* 지도 컨테이너 */
+.distance-container .map-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* 지도 컨테이너 크기 설정 */
+.distance-container #map-container {
+    position: relative; /* 지도 내부에 위치 고정 */
+    width: 100%;
+   /* max-width: 900px;*/
+    height: 500px; /* 지도 높이 고정 */
+    margin: 20px auto; /* 상하 마진 추가 */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background: white;
+}
+
+/* 지도 크기 설정 */
+.distance-container #kakao-map {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 450px;
+    border-radius: 10px;
+}
+
+/* 내 주변 강아지 보기 버튼을 지도 위에 배치 */
+.distance-container #searchButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ff5a5f;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 2;
+}
+
+/* 강아지 리스트 */
+.distance-container .dog-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+/* 강아지 리스트 항목 */
+.distance-container .dog-item {
+    display: flex;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 10px;
+    width: 80%;
+    margin: 5px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+/* 강아지 이미지 스타일 */
+.distance-container .dog-item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+
+.distance-container .custom-marker {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+/* 마커 이미지 (프로필) */
+.distance-container .marker-wrapper {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    border: 3px solid white;
+}
+
+.distance-container .marker-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* 강아지 개수 배지 (프로필 원 바깥으로 이동) */
+.distance-container .marker-badge {
+    position: relative;
+    top: -90px;
+    right: -20px;
+    background: red;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    width: 28px;
+    height: 28px;
+    line-height: 25px;
+    text-align: center;
+    border-radius: 50%;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+}
+
+/* 버튼 스타일 */
+.distance-container .marker-button {
+    background-color: #ff5a5f;
+    color: white;
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    margin: 10px; /* 버튼과 프로필 간격 조정 */
+}
+
+.distance-container .marker-button:hover {
+    background-color: #ff3b3f;
+}
+
+/* 거리 설정 박스 */
+.distance-container .distance-control {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 15px 20px 20px 20px;
+    border-radius: 12px;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 180px;
+    z-index: 2;
+}
+
+/* 제목 스타일 */
+.distance-container .distance-control h3 {
+    margin: 0 0 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* 슬라이더 전체 컨테이너 */
+.distance-container .slider-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px;
+    cursor: pointer; /* 클릭 가능하게 변경 */
+}
+
+/* 거리 단위 (1Km, 3Km, 5Km) */
+.distance-container .slider-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #444;
+    position: absolute;
+    bottom: -20px;
+    cursor: pointer;
+}
+
+/* 각 위치에 맞게 정렬 */
+.distance-container .slider-label:nth-child(1) { left: 0%; transform: translateX(-50%); }
+.distance-container .slider-label:nth-child(2) { left: 50%; transform: translateX(-50%); }
+.distance-container .slider-label:nth-child(3) { left: 100%; transform: translateX(-50%); }
+
+/* 슬라이더 바 */
+.distance-container .slider-track {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    width: 80%;
+    height: 4px;
+    background: #ffa500;
+    border-radius: 2px;
+    transform: translateY(-50%);
+    cursor: pointer; /* 클릭 가능하게 변경 */
+}
+
+/* 슬라이더가 움직이는 부분 */
+.distance-container .slider-fill {
+    position: absolute;
+    height: 100%;
+    width: 20%;
+    background: #ff5a5f;
+    border-radius: 2px;
+}
+
+/* 슬라이더 버튼 (발바닥 아이콘) */
+.distance-container .slider-thumb {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: left 0.3s ease-in-out; /* 자연스러운 이동 애니메이션 */
+}
+
+/* 발바닥 이미지 */
+.distance-container .slider-thumb img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
