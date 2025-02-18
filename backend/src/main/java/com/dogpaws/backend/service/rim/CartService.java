@@ -82,7 +82,6 @@ public class CartService {
         return exist;
     }
 
-
     public CartSummaryResponseDto getCartSummary(String username) {
         // 1. 장바구니 목록 조회
         List<CartListResponseDto> cartItems = cartDao.findCartItemsByUsername(username);
@@ -116,6 +115,25 @@ public class CartService {
                 .build();
     }
 
+    /**
+     * 주문 완료 후 장바구니 비우기
+     */
+    @Transactional
+    public void clearCartAfterOrder(String username, List<Long> cartItemIds) {
+        try {
+            if (cartItemIds == null || cartItemIds.isEmpty()) {
+                log.warn("장바구니 아이템이 없습니다. username: {}", username);
+                return;
+            }
 
+            // 장바구니 아이템 삭제
+            cartDao.deleteCartItems(username, cartItemIds);
+            log.info("장바구니 비우기 완료. username: {}, items: {}", username, cartItemIds);
+
+        } catch (Exception e) {
+            log.error("장바구니 비우기 실패: {}", e.getMessage(), e);
+            throw new RuntimeException("장바구니 비우기 중 오류가 발생했습니다.");
+        }
+    }
 
 }

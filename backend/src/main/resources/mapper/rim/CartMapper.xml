@@ -128,4 +128,14 @@
         </collection>
     </resultMap>
 
+    <!-- 결제 완료 후 카트 비우기 -->
+    <delete id="deleteCartItems">
+        DELETE FROM tbl_cart
+        WHERE username = #{username}
+        AND cart_item_id IN
+        <foreach item="itemId" collection="cartItemIds" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+    </delete>
+
 </mapper>

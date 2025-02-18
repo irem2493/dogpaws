@@ -11,6 +11,9 @@ import java.util.List;
 @Setter
 @ToString
 public class CartItemDto {
+    @JsonProperty("cart_item_id")
+    private Long cartItemId;
+
     @JsonProperty("product_id")
     private Long productId;
 

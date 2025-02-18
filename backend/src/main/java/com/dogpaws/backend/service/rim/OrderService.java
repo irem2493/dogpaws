@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -19,6 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class OrderService {
 
     private final OrderDao orderDao;
+    private final CartService cartService;
 
 
     /**
@@ -50,6 +52,11 @@ public class OrderService {
                 .orderDate(LocalDateTime.now())
                 .build();
 
+        // CartItemDto에서 직접 cartItemId 추출(장바구니 비우기)
+        List<Long> cartItemIds = request.getCartItems().stream()
+                .map(CartItemDto::getCartItemId)
+                .collect(Collectors.toList());
+
         // 주문 정보 저장
         orderDao.insertOrder(order);
 
@@ -75,6 +82,9 @@ public class OrderService {
                 orderDao.insertOrderItemOption(orderItemOption);
             }
         }
+
+        // 장바구니 비우기
+        cartService.clearCartAfterOrder(request.getUsername(), cartItemIds);
 
         return orderDao.selectOrderByQlId(orderNumber);
     }
@@ -104,32 +114,6 @@ public class OrderService {
     }
 
     /**
-     * 주문 상태 업데이트
-     */
-    @Transactional
-    public void updateOrderStatus(String qlId, String status) {
-        OrderDto order = orderDao.selectOrderByQlId(qlId);
-        if (order == null) {
-            throw new IllegalArgumentException("주문을 찾을 수 없습니다: " + qlId);
-        }
-
-        orderDao.updateOrderStatus(qlId, status);
-    }
-
-    /**
-     * 결제 완료 처리
-     */
-    @Transactional
-    public void completePayment(String qlId, String paymentKey) {
-        OrderDto order = orderDao.selectOrderByQlId(qlId);
-        if (order == null) {
-            throw new IllegalArgumentException("주문을 찾을 수 없습니다: " + qlId);
-        }
-
-        orderDao.updatePaymentKey(qlId, paymentKey);
-    }
-
-    /**
      * 주문 취소
      */
     @Transactional
@@ -145,6 +129,7 @@ public class OrderService {
 
         orderDao.cancelOrder(qlId, reason);
     }
+
 
     /**
      * 사용자의 주문 통계
