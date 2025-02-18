@@ -60,42 +60,6 @@ public class OrderController {
     }
 
     /**
-     * 주문 상태 업데이트
-     */
-    @PutMapping("/{qlId}/status")
-    public ApiResponse<?> updateOrderStatus(
-            @PathVariable String qlId,
-            @RequestParam String status) {
-        try {
-            orderService.updateOrderStatus(qlId, status);
-            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS,
-                    Map.of("message", "주문 상태가 업데이트되었습니다."));
-        } catch (IllegalArgumentException e) {
-            log.error("주문 상태 업데이트 실패: {}", e.getMessage());
-            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR,
-                    Map.of("message", e.getMessage()));
-        }
-    }
-
-    /**
-     * 결제 완료 처리
-     */
-    @PutMapping("/{qlId}/payment")
-    public ApiResponse<?> completePayment(
-            @PathVariable String qlId,
-            @RequestParam String paymentKey) {
-        try {
-            orderService.completePayment(qlId, paymentKey);
-            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS,
-                    Map.of("message", "결제가 완료되었습니다."));
-        } catch (Exception e) {
-            log.error("결제 완료 처리 실패: {}", e.getMessage(), e);
-            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR,
-                    Map.of("message", "결제 처리 실패"));
-        }
-    }
-
-    /**
      * 주문 취소
      */
     @PostMapping("/{qlId}/cancel")

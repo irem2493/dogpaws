@@ -38,6 +38,14 @@ public interface CartDao {
                                       @Param("quantity") int quantity);
 
 
+    // 장바구니 아이템 삭제 (결제 완료 후 카트 비우기)
+    void deleteCartItems(@Param("username") String username,
+                         @Param("cartItemIds") List<Long> cartItemIds);
+
+
+
+
+
     boolean checkExistingCart(@Param("username") String username);
 
 }

@@ -6,7 +6,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -16,7 +19,7 @@ public class OrderDto {
     private String qlId;            // 주문번호
     private String paymentKey;      // 결제 키
     private String username;        // 사용자 ID
-    private int totalPrice;         // 총 결제 금액
+    private Integer totalPrice;         // 총 결제 금액
     private LocalDateTime orderDate; // 주문 일시
 
     // 주문자 정보
@@ -39,4 +42,5 @@ public class OrderDto {
 
     // 주문 상품 목록
     private List<OrderItemDto> orderItems;
+
 }
