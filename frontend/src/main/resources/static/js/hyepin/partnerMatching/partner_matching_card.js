@@ -63,6 +63,8 @@ function updateCards() {
                 switch (criteria) {
                     case '품종':
                         return '<img src="/img/icon/dog-filter/dog.svg" alt="dog-icon" title="견종이 일치해요!">';
+                    case '서류':
+                        return '<img src="/img/icon/dog-filter/document.svg" alt="document-icon" style="max-width: 18px; height: auto;" title="서류가 일치해요!">';
                     case '체중':
                         return '<img src="/img/icon/dog-filter/weight.svg" alt="weight-icon" style="max-width: 18px; height: auto;" title="선호하는 체중대와 맞아요!">';
                     case '성격유형':
@@ -105,9 +107,9 @@ function updateCards() {
                 <div style="${index === 1 ? 'line-height: 1.8;' : 'line-height: 1.2;'}">${dog.gender === "M" ? '남' : dog.gender === "" ? '' : '여'} ${dog.is_neutered === "Y" ? '(중성화 O)' : dog.is_neutered === "" ? "" : '(중성화 X)'}</div>
                 <div style="line-height: 1.8; color: #5e5e5e; font-size: 0.8em; text-align: center; ${index === 1 ? 'width: 100%' : 'width: 80%'}">${dog.address != null ? dog.address : '지정된 산책로가 없습니다.'}</div>
                 <div class="documents-container">
-                    <div class="documents-item"><img src="/img/icon/check.svg" alt="check-icon"> 혈통서</div>
-                    <div class="documents-item"><img src="/img/icon/check.svg" alt="check-icon"> 예방접종 증명서</div>
-                    <div class="documents-item"><img src="/img/icon/check.svg" alt="check-icon"> 건강기록 증명서</div>
+                    ${dog.blood_test_certified === "Y"? `<div class="documents-item"><img src="/img/icon/check.svg" alt="check-icon"> 혈통서</div>`: ""}
+                    ${dog.vaccination_certified === "Y"? `<div class="documents-item"><img src="/img/icon/check.svg" alt="check-icon"> 예방접종 증명서</div>`: ""}
+                    ${dog.health_record_certified === "Y"? `<div class="documents-item"><img src="/img/icon/check.svg" alt="check-icon"> 건강기록 증명서</div>`: ""}
                 </div>
             </div>
             

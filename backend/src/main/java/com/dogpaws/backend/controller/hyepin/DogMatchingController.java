@@ -76,7 +76,7 @@ public class DogMatchingController {
         log.info("여기는 백 컨트롤러 getDogFriendMatchList / matchType: {}", matchType);
         List<DogCandidateDto> matchList = matchingService.getFinalMatchingCandidates(dogId, username, matchType);
         //getDogFriendMatchList 좋아요 리스트 받아오기
-        matchList = likeService.getMatcingLike(username, matchList, 'F');
+        matchList = likeService.getMatcingLike(username, matchList, matchType.charAt(0));
         log.info("여기는 백 컨트롤러 getDogFriendMatchList / matchList 값: {}", matchList);
         return matchList;
     }
