@@ -104,14 +104,18 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // 선택된 요일 값들을 업데이트하는 함수
     function updateSelectedDays() {
+        // 체크된 요일들만 배열로 만듦
         selectedDays = Array.from(dayCheckboxes)
             .filter(checkbox => checkbox.checked)
             .map(checkbox => checkbox.id);
 
-        // hidden input에 값 설정
+        // 기존 값 덮어쓰고 선택된 요일만 저장
         hiddenDaysInput.value = selectedDays.join(',');
+
+        // 콘솔에 확인
         console.log('선택된 요일:', hiddenDaysInput.value);
     }
+
 
 // 전체 체크박스 클릭 이벤트
     allCheckbox.addEventListener('change', function () {
@@ -563,9 +567,9 @@ function updateCheckboxesFromSavedDays(savedDays) {
     // 각 요일 체크박스 상태 업데이트
     dayCheckboxes.forEach(checkbox => {
         if (savedDaysArray.includes(checkbox.id)) {
-            checkbox.checked = true;
+            checkbox.checked = true;  // 체크된 상태로 설정
         } else {
-            checkbox.checked = false;
+            checkbox.checked = false; // 체크 해제 상태로 설정
         }
     });
 
@@ -573,11 +577,9 @@ function updateCheckboxesFromSavedDays(savedDays) {
     const allCheckbox = document.getElementById('all-days');
     if (allCheckbox) {
         const allChecked = Array.from(dayCheckboxes).every(cb => cb.checked);
-        allCheckbox.checked = allChecked;
+        allCheckbox.checked = allChecked;  // 모든 요일이 체크되었는지 확인
     }
 }
-
-
 
 // 파일 찾기 버튼 클릭 시 파일 선택창 열기
 function openFileDialog(inputId, fileNameInputId) {

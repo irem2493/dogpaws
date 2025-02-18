@@ -2,9 +2,8 @@ package com.dogpaws.backend.service.ajy;
 
 import com.dogpaws.backend.dto.ajy.DogRequestDto;
 import com.dogpaws.backend.dto.ajy.JoinSessionDto;
+import com.dogpaws.backend.dto.ajy.LocationDto;
 import com.dogpaws.backend.dto.ajy.UserRequestDto;
-import com.dogpaws.backend.dto.common.FileDto;
-import com.dogpaws.backend.entity.File;
 import com.dogpaws.backend.entity.ajy.Dog;
 import com.dogpaws.backend.entity.ajy.DogPersonal;
 import com.dogpaws.backend.entity.ajy.DogPlay;
@@ -40,6 +39,7 @@ public class JoinService {
     private final DogPersonalRepository dogPersonalRepository;
     private final DogPlayRepository dogPlayRepository;
     private final FileService fileService;
+    private final LocationService locationService;
 
     public String duplicateCheck(String username) {
         return userRepository.findByUsername(username) != null ? "중복됨" : "사용 가능";
@@ -126,6 +126,14 @@ public class JoinService {
     }
 
     private User createUser(UserRequestDto userRequestDto) {
+
+        LocationDto locationDto = locationService.getCoordinatesFromAddress(userRequestDto.getAddress());
+        if (locationDto != null) {
+            userRequestDto.setLatitude(locationDto.getLatitude());
+            userRequestDto.setLongitude(locationDto.getLongitude());
+        }
+
+
         return User.builder()
                 .username(userRequestDto.getUsername())
                 .password(userRequestDto.getPassword())
@@ -136,6 +144,9 @@ public class JoinService {
                 .detailAddress(userRequestDto.getDetailAddress())
                 .gender(userRequestDto.getGender())
                 .ageGroup(userRequestDto.getAgeGroup())
+                .latitude(userRequestDto.getLatitude())
+                .longitude(userRequestDto.getLongitude())
+                .provider(Optional.ofNullable(userRequestDto.getProvider()).orElse(null)) // provider가 없으면 null
                 .role("ROLE_USER")
                 .status('A')
                 .build();

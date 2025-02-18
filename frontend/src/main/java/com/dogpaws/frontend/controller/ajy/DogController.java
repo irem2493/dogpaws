@@ -163,7 +163,6 @@ public class DogController {
         var personalityList = personalityResponse.getBody();
         var playList = playResponse.getBody();
         var dogTypeList = dogTypeResponse.getBody();
-
         UserDto user = SessionUtil.getUser(session);
 
         if(user != null){
@@ -183,4 +182,26 @@ public class DogController {
         }
         return "redirect:/login";
     }
+
+    @GetMapping("/nearbyDogMap")
+    public String nearbyDogMap(Model model, HttpSession session) {
+        UserDto user = SessionUtil.getUser(session);
+        if(user != null){
+            var locationResponse = apiService.fetchData("/api/user/location/" + user.getUsername());
+            var coordinates = locationResponse.getBody();
+
+            System.out.println(coordinates);
+
+            if(session.getAttribute("dog") != null){
+                model.addAttribute("coordinates", coordinates);
+                model.addAttribute("username", user.getUsername());
+                return "/ajy/near_dog_map";
+            }
+
+            else return "redirect:/dog/dogProfileSelect";
+        }
+        return "redirect:/login";
+    }
+
+
 }
