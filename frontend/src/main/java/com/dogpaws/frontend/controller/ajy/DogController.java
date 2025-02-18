@@ -163,6 +163,26 @@ public class DogController {
         var personalityList = personalityResponse.getBody();
         var playList = playResponse.getBody();
         var dogTypeList = dogTypeResponse.getBody();
+        UserDto user = SessionUtil.getUser(session);
+
+        if(user != null){
+            model.addAttribute("user", user.getUsername());
+        }
+
+        if(dog != null){
+            System.out.println("강아지 상세정보 : " + dog);
+
+            model.addAttribute("dog", dog);
+            model.addAttribute("breedList", breedList);
+            model.addAttribute("personalityList", personalityList);
+            model.addAttribute("playList", playList);
+            model.addAttribute("dogTypeList", dogTypeList);
+
+            return "/ajy/dog_profile_register";
+        }
+        return "redirect:/login";
+    }
+
     @GetMapping("/nearbyDogMap")
     public String nearbyDogMap(Model model, HttpSession session) {
         UserDto user = SessionUtil.getUser(session);
@@ -183,23 +203,5 @@ public class DogController {
         return "redirect:/login";
     }
 
-        UserDto user = SessionUtil.getUser(session);
 
-        if(user != null){
-            model.addAttribute("user", user.getUsername());
-        }
-
-        if(dog != null){
-            System.out.println("강아지 상세정보 : " + dog);
-
-            model.addAttribute("dog", dog);
-            model.addAttribute("breedList", breedList);
-            model.addAttribute("personalityList", personalityList);
-            model.addAttribute("playList", playList);
-            model.addAttribute("dogTypeList", dogTypeList);
-
-            return "/ajy/dog_profile_register";
-        }
-        return "redirect:/login";
-    }
 }

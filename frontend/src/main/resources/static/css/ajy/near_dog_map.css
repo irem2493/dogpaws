@@ -128,9 +128,9 @@
 
 /* 강아지 개수 배지 (프로필 원 바깥으로 이동) */
 .distance-container .marker-badge {
-    position: absolute;
-    top: 50px;
-    right: 50px;
+    position: relative;
+    top: -90px;
+    right: -20px;
     background: red;
     color: white;
     font-size: 14px;
@@ -248,3 +248,4 @@
     height: 100%;
     border-radius: 50%;
 }
+
