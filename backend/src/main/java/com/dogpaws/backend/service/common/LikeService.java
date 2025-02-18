@@ -1,5 +1,6 @@
 package com.dogpaws.backend.service.common;
 
+import com.dogpaws.backend.dto.hyepin.DogCandidateDto;
 import com.dogpaws.backend.dto.hyepin.MatchDto;
 import com.dogpaws.backend.repository.dao.common.LikeDao;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +30,8 @@ public class LikeService {
     }
 
 
-    public List<MatchDto> getMatcingLike (String username, List<MatchDto> matchList, char likeCode) {
-        for (MatchDto m : matchList) {
+    public List<DogCandidateDto> getMatcingLike (String username, List<DogCandidateDto> matchList, char likeCode) {
+        for (DogCandidateDto m : matchList) {
             int check = likeDao.checkLike(username, likeCode, m.getDogId());
             if (check == 0) {
                 m.setLiked(false);
