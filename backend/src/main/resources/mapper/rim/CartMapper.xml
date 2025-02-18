@@ -138,4 +138,29 @@
         </foreach>
     </delete>
 
+    <!-- 선택된 장바구니 목록 보여주기 -->
+    <select id="findSelectedCartItems" resultMap="CartResultMap">
+        SELECT DISTINCT
+        c.cart_item_id,
+        c.product_id,
+        p.name as product_name,
+        p.price as product_price,
+        p.image_url,
+        po.option_id,
+        po.option_name,
+        po.option_price,
+        cio.quantity as option_quantity,
+        c.username
+        FROM tbl_cart c
+        INNER JOIN tbl_products p ON c.product_id = p.product_id
+        INNER JOIN tbl_cart_item_options cio ON c.cart_item_id = cio.cart_item_id
+        INNER JOIN tbl_product_options po ON cio.option_id = po.option_id
+        WHERE c.username = #{username}
+        AND c.cart_item_id IN
+        <foreach item="itemId" collection="cartItemIds" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+        ORDER BY c.product_id, po.option_id
+    </select>
+
 </mapper>

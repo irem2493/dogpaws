@@ -55,8 +55,21 @@ public class CartController {
         return cartSummary;
     }
 
-
-
+    // 선택된 장바구니 목록 조회
+    @GetMapping("/selected")
+    public ApiResponse<?> getSelectedCartItems(
+            @RequestParam String username,
+            @RequestParam List<Long> cartItemIds) {
+        try {
+            CartSummaryResponseDto selectedItems =
+                    cartService.getSelectedCartItems(username, cartItemIds);
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, selectedItems);
+        } catch (Exception e) {
+            log.error("선택 상품 조회 실패: {}", e.getMessage(), e);
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR,
+                    Map.of("message", "선택 상품 조회에 실패했습니다."));
+        }
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleException(Exception e) {

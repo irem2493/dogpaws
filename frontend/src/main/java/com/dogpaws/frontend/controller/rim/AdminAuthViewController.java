@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Slf4j
 @RequestMapping("/admin/login")
 @Controller
-public class AdminAuthController {
+public class AdminAuthViewController {
     @GetMapping
     public String amdinLoginView(Model model) {
         log.info("관리자 페이지 요쳥");

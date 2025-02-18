@@ -2,9 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout-mypage}">
-
+<title>장바구니 목록</title>
 <div layout:fragment="content">
     <div class="container mt-5">
+
         <!-- 장바구니가 비어있는 경우 -->
         <div th:if="${cartSummary == null || cartSummary.cartItems.empty}" class="text-center">
             <h3>장바구니가 비어있습니다.</h3>
@@ -12,87 +13,137 @@
 
         <!-- 장바구니에 상품이 있는 경우 -->
         <div th:if="${cartSummary != null && !cartSummary.cartItems.empty}">
-            <!-- 전체 선택 체크박스 -->
-            <div class="mb-3">
-                <input type="checkbox" id="selectAll" class="form-check-input">
-                <label for="selectAll" class="form-check-label">전체 선택</label>
-            </div>
+            <form th:action="@{/orders/create}" method="get">
+                <!-- 전체 선택 체크박스 -->
+                <div class="mb-3">
+                    <input type="checkbox" id="selectAll" class="form-check-input">
+                    <label for="selectAll" class="form-check-label">전체 선택</label>
+                </div>
 
-            <!-- 상품 목록 -->
-            <div th:each="item : ${cartSummary.cartItems}" class="card mb-3">
-                <div class="row g-0">
-                    <!-- 상품 이미지 -->
-                    <div class="col-md-2">
-                        <img th:src="${item.imageUrl}" class="img-fluid rounded-start" alt="상품 이미지">
-                    </div>
+                <!-- 장바구니 목록 -->
+                <!-- 상품 목록 -->
+                <div th:each="item : ${cartSummary.cartItems}" class="card mb-3">
+                    <div class="row g-0">
+                        <!-- 상품 선택 체크박스 -->
+                        <div class="col-md-1 d-flex align-items-center justify-content-center">
+                            <input type="checkbox" name="cartItemIds"
+                                   th:value="${item.cartOptions[0].cartItemId}"
+                                   class="form-check-input item-checkbox">
+                        </div>
+                        <!-- 상품 이미지 -->
+                        <div class="col-md-2">
+                            <img th:src="${item.imageUrl}" class="img-fluid rounded-start" alt="상품 이미지">
+                        </div>
 
-                    <!-- 상품 정보 -->
-                    <div class="col-md-10">
-                        <div class="card-body">
-                            <h5 class="card-title" th:text="${item.productName}">상품명</h5>
-                            <p class="card-text">기본 가격: <span th:text="${#numbers.formatInteger(item.productPrice, 0, 'COMMA')}">0</span>원</p>
+                        <!-- 상품 정보 -->
+                        <div class="col-md-10">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${item.productName}">상품명</h5>
+                                <p class="card-text">기본 가격: <span
+                                        th:text="${#numbers.formatInteger(item.productPrice, 0, 'COMMA')}">0</span>원</p>
 
-                            <!-- 옵션 목록 -->
-                            <div th:each="option : ${item.cartOptions}" class="mb-2">
-                                <div class="row align-items-center">
-                                    <div class="col">
-                                        <span th:text="${option.optionName}">옵션명</span>
-                                        <span th:if="${option.optionPrice > 0}">
-                                            (+ <span th:text="${#numbers.formatInteger(option.optionPrice, 0, 'COMMA')}">0</span>원)
+                                <!-- 옵션 목록 -->
+                                <div th:each="option : ${item.cartOptions}" class="mb-2">
+                                    <div class="row align-items-center">
+                                        <div class="col">
+                                            <span th:text="${option.optionName}">옵션명</span>
+                                            <span th:if="${option.optionPrice > 0}">
+                                            (+ <span
+                                                    th:text="${#numbers.formatInteger(option.optionPrice, 0, 'COMMA')}">0</span>원)
                                         </span>
-                                    </div>
-
-                                    <!-- 수량 조절 -->
-                                    <div class="col-auto">
-                                        <div class="input-group">
-                                            <button class="btn btn-outline-secondary btn-sm"
-                                                    th:onclick="'decreaseQuantity(' + ${option.cartItemId} + ')'">-</button>
-                                            <input type="number" class="form-control form-control-sm text-center"
-                                                   style="width: 60px;"
-                                                   th:value="${option.quantity}" readonly>
-                                            <button class="btn btn-outline-secondary btn-sm"
-                                                    th:onclick="'increaseQuantity(' + ${option.cartItemId} + ')'">+</button>
                                         </div>
-                                    </div>
 
-                                    <!-- 옵션별 금액 -->
-                                    <div class="col-auto">
-                                        <span th:text="${#numbers.formatInteger((item.productPrice + option.optionPrice) * option.quantity, 0, 'COMMA')}">0</span>원
-                                    </div>
+                                        <!-- 수량 조절 -->
+                                        <div class="col-auto">
+                                            <div class="input-group">
+                                                <button class="btn btn-outline-secondary btn-sm"
+                                                        th:onclick="'decreaseQuantity(' + ${option.cartItemId} + ')'">-
+                                                </button>
+                                                <input type="number" class="form-control form-control-sm text-center"
+                                                       style="width: 60px;"
+                                                       th:value="${option.quantity}" readonly>
+                                                <button class="btn btn-outline-secondary btn-sm"
+                                                        th:onclick="'increaseQuantity(' + ${option.cartItemId} + ')'">+
+                                                </button>
+                                            </div>
+                                        </div>
 
-                                    <!-- 삭제 버튼 -->
-                                    <div class="col-auto">
-                                        <button class="btn btn-danger btn-sm"
-                                                th:onclick="'removeCartItem(' + ${option.cartItemId} + ')'">X</button>
+                                        <!-- 옵션별 금액 -->
+                                        <div class="col-auto">
+                                            <span th:text="${#numbers.formatInteger((item.productPrice + option.optionPrice) * option.quantity, 0, 'COMMA')}">0</span>원
+                                        </div>
+
+                                        <!-- 삭제 버튼 -->
+                                        <div class="col-auto">
+                                            <button class="btn btn-danger btn-sm"
+                                                    th:onclick="'removeCartItem(' + ${option.cartItemId} + ')'">X
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- 주문 요약 정보 -->
-            <div class="card mt-4">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <p>총 상품금액: <span th:text="${#numbers.formatInteger(cartSummary.totalProductPrice, 0, 'COMMA')}">0</span>원</p>
-                            <p>배송비: <span th:text="${#numbers.formatInteger(cartSummary.deliveryFee, 0, 'COMMA')}">0</span>원</p>
-                            <h4>총 주문금액: <span th:text="${#numbers.formatInteger(cartSummary.totalOrderPrice, 0, 'COMMA')}">0</span>원</h4>
-                            <p>총 <span th:text="${cartSummary.totalQuantity}">0</span>개</p>
-                        </div>
-                        <div class="col-auto">
-                            <button class="btn btn-primary" onclick="proceedToOrder()">구매하기</button>
+                <!-- 주문 요약 정보 -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <p>총 상품금액: <span
+                                        th:text="${#numbers.formatInteger(cartSummary.totalProductPrice, 0, 'COMMA')}">0</span>원
+                                </p>
+                                <p>배송비: <span
+                                        th:text="${#numbers.formatInteger(cartSummary.deliveryFee, 0, 'COMMA')}">0</span>원
+                                </p>
+                                <h4>총 주문금액: <span
+                                        th:text="${#numbers.formatInteger(cartSummary.totalOrderPrice, 0, 'COMMA')}">0</span>원
+                                </h4>
+                                <p>총 <span th:text="${cartSummary.totalQuantity}">0</span>개</p>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary" onclick="return validateOrder()">구매하기
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
 
     </div>
     <!-- JavaScript -->
     <script th:inline="javascript">
+
+        // 전체 선택 체크박스 이벤트
+        document.getElementById('selectAll').addEventListener('change', function () {
+            const checkboxes = document.getElementsByClassName('item-checkbox');
+            for (let checkbox of checkboxes) {
+                checkbox.checked = this.checked;
+            }
+        });
+
+        // 개별 체크박스 이벤트 - 전체 선택 상태 업데이트
+        const itemCheckboxes = document.getElementsByClassName('item-checkbox');
+        for (let checkbox of itemCheckboxes) {
+            checkbox.addEventListener('change', function () {
+                const selectAll = document.getElementById('selectAll');
+                const allChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
+                selectAll.checked = allChecked;
+            });
+        }
+
+        // 주문 전 유효성 검사
+        function validateOrder() {
+            const checkedItems = document.querySelectorAll('input[name="cartItemIds"]:checked');
+            if (checkedItems.length === 0) {
+                alert('주문할 상품을 선택해주세요.');
+                return false;
+            }
+            return true;
+        }
+
+
         // TODO : 장바구니 상품별 상태변경 모달
 
         function proceedToOrder() {
@@ -100,7 +151,7 @@
         }
 
         // 전체 선택 체크박스 이벤트
-        document.getElementById('selectAll').addEventListener('change', function() {
+        document.getElementById('selectAll').addEventListener('change', function () {
             // TODO: 전체 선택/해제 처리
         });
     </script>
