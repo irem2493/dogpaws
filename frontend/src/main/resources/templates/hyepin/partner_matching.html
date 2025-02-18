@@ -82,9 +82,9 @@
                         <img src="/img/icon/dog-filter/document.svg" alt="document-icon"> 등록 서류
                     </div>
                     <div>
-                        <label> <input type="checkbox" class="checkbox-basic red" name="bloodTestCertified" id="bloodTestCertified">혈통서</label>
-                        <label> <input type="checkbox" class="checkbox-basic red" name="vaccinationCertified" id="vaccinationCertified">예방접종 증명서</label>
-                        <label> <input type="checkbox" class="checkbox-basic red" name="healthRecordCertified" id="healthRecordCertified">건강기록 증명서</label>
+                        <label> <input type="checkbox" class="checkbox-basic red" name="bloodTestCertified" id="bloodTestCertified" value="Y">혈통서</label>
+                        <label> <input type="checkbox" class="checkbox-basic red" name="vaccinationCertified" id="vaccinationCertified" value="Y">예방접종 증명서</label>
+                        <label> <input type="checkbox" class="checkbox-basic red" name="healthRecordCertified" id="healthRecordCertified" value="Y">건강기록 증명서</label>
                     </div>
                 </div>
 
@@ -276,7 +276,7 @@
                         <div class="d-flex flex-wrap" style="gap: 5px;">
                             <div class="filter-card">
                                 <th:block th:each="walkDay : ${filter.walk_day_list}">
-                                    <span style="margin-right: 5px;">[[${walkDay.substring(0,1)}]]</span>
+                                    <span style="margin-right: 5px;">[[${(walkDay != null and walkDay.length() > 0) ? walkDay.substring(0,1) : ''}]]</span>
                                 </th:block>
                                 <span>
                                     <th:block th:if="${filter.str_walk_start_time == '' && filter.str_walk_end_time != ''}">
@@ -297,22 +297,24 @@
                 </th:block>
 
                 <th:block th:if="${filter.blood_test_certified != null || filter.vaccination_certified != null || filter.health_record_certified != null}">
-                    <div class="row">
-                        <div class="dog-filter">
-                            <img src="/img/icon/dog-filter/document.svg" alt="document-icon">  등록 서류
+                    <th:block th:if="${filter.blood_test_certified == 'Y' || filter.vaccination_certified == 'Y' || filter.health_record_certified == 'Y'}">
+                        <div class="row">
+                            <div class="dog-filter">
+                                <img src="/img/icon/dog-filter/document.svg" width="15px;" alt="document-icon">  등록 서류
+                            </div>
+                            <div class="d-flex flex-wrap" style="gap: 5px;">
+                                <th:block th:if="${filter.blood_test_certified == 'Y'}">
+                                    <div class="filter-card">혈통서</div>
+                                </th:block>
+                                <th:block th:if="${filter.vaccination_certified  == 'Y'}">
+                                    <div class="filter-card">예방접종 증명서</div>
+                                </th:block>
+                                <th:block th:if="${filter.health_record_certified  == 'Y'}">
+                                    <div class="filter-card">건강기록 증명서</div>
+                                </th:block>
+                            </div>
                         </div>
-                        <div class="d-flex flex-wrap" style="gap: 5px;">
-                            <th:block th:if="${filter.blood_test_certified == 'Y'}">
-                                <div class="filter-card">혈통서</div>
-                            </th:block>
-                            <th:block th:if="${filter.vaccination_certified  == 'Y'}">
-                                <div class="filter-card">예방접종 증명서</div>
-                            </th:block>
-                            <th:block th:if="${filter.health_record_certified  == 'Y'}">
-                                <div class="filter-card">건강기록 증명서</div>
-                            </th:block>
-                        </div>
-                    </div>
+                    </th:block>
                 </th:block>
 
                 <th:block th:if="${filter.dog_personal_list != null and not #lists.isEmpty(filter.dog_personal_list)}">
