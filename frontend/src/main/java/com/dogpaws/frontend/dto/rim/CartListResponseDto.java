@@ -13,6 +13,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartListResponseDto {
+
+    @JsonProperty("cart_item_id")
+    private Long cartItemId;
+
     @JsonProperty("product_id")
     private Long productId;
 

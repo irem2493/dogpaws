@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartSummaryResponseDto {
+
     @JsonProperty("cart_items")
     private List<CartListResponseDto> cartItems;
 

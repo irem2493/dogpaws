@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout-mypage}">
 <head>
-    <title>개인정보 관리</title>
+    <title>주문서 작성</title>
     <meta charset="utf-8" />
     <script src="https://js.tosspayments.com/v2/standard"></script>
 </head>
@@ -52,12 +52,12 @@
                 <div class="card-header">주문자 정보</div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label for="ordererName" class="form-label">주문자명</label>
-                        <input type="text" class="form-control" id="ordererName" name="ordererName" required>
+                        <label for="orderName" class="form-label">주문자명</label>
+                        <input type="text" class="form-control" id="orderName" name="orderName" required>
                     </div>
                     <div class="mb-3">
-                        <label for="ordererPhone" class="form-label">연락처</label>
-                        <input type="tel" class="form-control" id="ordererPhone" name="ordererPhone" required>
+                        <label for="orderPhone" class="form-label">연락처</label>
+                        <input type="tel" class="form-control" id="orderPhone" name="orderPhone" required>
                     </div>
                 </div>
             </div>
@@ -86,6 +86,26 @@
                     <div class="mb-3">
                         <label for="shippingMemo" class="form-label">배송 메모</label>
                         <input type="text" class="form-control" id="shippingMemo" name="shippingMemo">
+                    </div>
+                </div>
+            </div>
+            <!-- 수령인 정보 -->
+            <div class="card mb-4">
+                <div class="card-header">수령인 정보</div>
+                <div class="card-body">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="sameAsOrderer">
+                        <label class="form-check-label" for="sameAsOrderer">
+                            주문자 정보와 동일
+                        </label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="receiverName" class="form-label">수령인 이름</label>
+                        <input type="text" class="form-control" id="receiverName" name="receiverName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="receiverPhone" class="form-label">수령인 연락처</label>
+                        <input type="tel" class="form-control" id="receiverPhone" name="receiverPhone" required>
                     </div>
                 </div>
             </div>
@@ -130,6 +150,11 @@
     // 결제 금액을 Thymeleaf에서 JavaScript 변수로 전달
     const totalAmount = [[${selectedItems.totalOrderPrice}]];
     console.log('totalAmount : ', totalAmount);
+    const cartItemsData = [[${selectedItems.cartItems}]];  // 변수명 변경
+
+    console.log('totalAmount:', totalAmount);
+    console.log('cartItemsData:', cartItemsData);  // 데이터 확인용 로그
+
 </script>
 <script src="/js/rim/order_create.js"></script>
 </body>

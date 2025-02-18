@@ -29,18 +29,34 @@ public class OrderService {
     @Transactional
     public OrderDto createOrder(OrderCreateRequest request) {
         // 주문번호 생성
-        String orderNumber;
+        String tossOrderId;
         do {
-            orderNumber = generateOrderNumber();
-        } while (orderDao.existsByQlId(orderNumber));
+            tossOrderId = generateOrderNumber();
+        } while (orderDao.existsByQlId(tossOrderId));
 
         // OrderDto 생성
+        log.info("=== OrderDto 필드 디버깅 ===");
+        log.info("qlId: {}", tossOrderId);
+        log.info("username: {}", request.getUsername());
+        log.info("totalPrice: {}", request.getTotalPrice());
+        log.info("ordererName: {}", request.getOrderName());
+        log.info("ordererPhone: {}", request.getOrderPhone());
+        log.info("shippingZipcode: {}", request.getShippingZipcode());
+        log.info("shippingAddress1: {}", request.getShippingAddress1());
+        log.info("shippingAddress2: {}", request.getShippingAddress2());
+        log.info("shippingExtraAddress: {}", request.getShippingExtraAddress());
+        log.info("receiverName: {}", request.getReceiverName());
+        log.info("receiverPhone: {}", request.getReceiverPhone());
+        log.info("shippingMemo: {}", request.getShippingMemo());
+        log.info("orderStatus: {}", OrderStatus.READY);
+        log.info("orderDate: {}", LocalDateTime.now());
+
         OrderDto order = OrderDto.builder()
-                .qlId(orderNumber)
+                .qlId(tossOrderId)
                 .username(request.getUsername())
                 .totalPrice(request.getTotalPrice())
-                .ordererName(request.getOrdererName())
-                .ordererPhone(request.getOrdererPhone())
+                .orderName(request.getOrderName())
+                .orderPhone(request.getOrderPhone())
                 .shippingZipcode(request.getShippingZipcode())
                 .shippingAddress1(request.getShippingAddress1())
                 .shippingAddress2(request.getShippingAddress2())
@@ -49,27 +65,42 @@ public class OrderService {
                 .receiverPhone(request.getReceiverPhone())
                 .shippingMemo(request.getShippingMemo())
                 .orderStatus(OrderStatus.READY)
-                .orderDate(LocalDateTime.now())
                 .build();
 
-        // CartItemDto에서 직접 cartItemId 추출(장바구니 비우기)
-        List<Long> cartItemIds = request.getCartItems().stream()
-                .map(CartItemDto::getCartItemId)
-                .collect(Collectors.toList());
+
+
+        // 상세 디버깅 로그 추가
+        log.info("=== 주문 생성 요청 상세 정보 ===");
+        log.info("username: {}", request.getUsername());
+        log.info("totalPrice: {}", request.getTotalPrice());
+        log.info("orderName: {}", request.getOrderName());
+        log.info("orderPhone: {}", request.getOrderPhone());
+        log.info("shippingZipcode: {}", request.getShippingZipcode());
+        log.info("shippingAddress1: {}", request.getShippingAddress1());
+        log.info("shippingAddress2: {}", request.getShippingAddress2());
+        log.info("shippingMemo: {}", request.getShippingMemo());
+        log.info("cartItems: {}", request.getCartItems());
+
+        if (request.getCartItems() == null) {
+            log.error("cartItems is null!");
+            throw new IllegalArgumentException("장바구니 아이템 정보가 없습니다.");
+        }
 
         // 주문 정보 저장
         orderDao.insertOrder(order);
+        log.info("주문정보 저장 완료");
 
         // 주문 상품 정보 저장
         for (CartItemDto cartItem : request.getCartItems()) {
             OrderItemDto orderItem = OrderItemDto.builder()
-                    .qlId(orderNumber)
+                    .qlId(tossOrderId)
                     .productId(cartItem.getProductId())
                     .amount(cartItem.getTotalQuantity())
                     .itemPrice(cartItem.getTotalPrice())
                     .build();
 
             orderDao.insertOrderItem(orderItem);
+            log.info("주문 상품정보 저장 완료");
 
             // 주문 상품 옵션 정보 저장
             for (CartOptionDto option : cartItem.getCartOptions()) {
@@ -80,14 +111,22 @@ public class OrderService {
                         .build();
 
                 orderDao.insertOrderItemOption(orderItemOption);
+                log.info("주문 상품정보 옵션 저장 완료");
             }
         }
 
         // 장바구니 비우기
+        List<Long> cartItemIds = request.getCartItems().stream()
+                .map(CartItemDto::getCartItemId)
+                .collect(Collectors.toList());
+
         cartService.clearCartAfterOrder(request.getUsername(), cartItemIds);
 
-        return orderDao.selectOrderByQlId(orderNumber);
+        log.info("기존 장바구니 비우기 완료");
+
+        return order;
     }
+
     /**
      * 주문번호 생성
      */
