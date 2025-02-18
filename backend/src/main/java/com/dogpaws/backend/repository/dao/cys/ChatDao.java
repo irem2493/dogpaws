@@ -1,5 +1,6 @@
 package com.dogpaws.backend.repository.dao.cys;
 
+import com.dogpaws.backend.dto.cys.CalendarSharedDto;
 import com.dogpaws.backend.dto.cys.DogResponseDto;
 import com.dogpaws.backend.dto.hyepin.CalendarDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -14,5 +15,10 @@ import java.util.List;
 public interface ChatDao {
     public DogResponseDto getChatProfile(@Param("id") int id);
     public int insertCalendar(@Param("calenderDto") CalendarDto calendarDto);
+
+    CalendarDto getCalendar(@Param("calendarId") int calenderId);
+
+    void sharedSchedule(@Param("sharedDto") CalendarSharedDto sharedDto);
+    void updateSharedYN(@Param("calendarId") int calenderId);
 }
 

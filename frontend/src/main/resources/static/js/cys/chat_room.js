@@ -1,5 +1,5 @@
 import {db} from '/js/cys/firebase-config.js';  // 절대 경로 적용
-import {collection, doc, updateDoc, getDoc, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, getDocs}
+import {collection, doc, updateDoc, getDoc, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, getDocs, limit}
     from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
 
@@ -71,7 +71,7 @@ async function subscribeToNotifications() {
                 })
                 .then(response => {
                     chatProfiles = response.body;
-                    console.log("응답 데이터jjjjj:", chatProfiles);
+                    console.log("응답 데이터 chatProfiles:", chatProfiles);
 
                     chatCategory(currentFilterStatus);
                 })
@@ -80,6 +80,28 @@ async function subscribeToNotifications() {
 
     } catch (error) {
         console.error("채팅방 목록 가져오기 실패:", error);
+    }
+}
+
+async function openLatestChatRoom() {
+    const q = query(collection(db, "chatRooms"), where('participants', 'array-contains', currentDogId), orderBy("lastMessage.timestamp", "desc"), limit(1)); // 최신순 정렬 + 1개만 가져옴
+
+    try {
+        const querySnapshot = await getDocs(q);
+        if(!querySnapshot.empty){
+            const latestRoom = querySnapshot.docs[0];
+            const latestRoomId = latestRoom.id;
+
+            console.log("가장최근 채팅방 : "+ latestRoomId);
+            room(latestRoomId);
+        }else{
+            console.log("참여중인 채팅방이 없습니다.");
+        }
+
+
+
+    } catch (error) {
+        console.log("채팅방 불러오기 실패 : ", error);
     }
 }
 
@@ -180,6 +202,7 @@ window.room = function (roomId) {
     subscribeToMessages(roomId);
 }
 
+
 // 실시간 메시지 구독
 function subscribeToMessages(roomId) {
     const q = query(collection(db, "chatRooms", roomId, "messages"), orderBy("timestamp"));
@@ -191,9 +214,55 @@ function subscribeToMessages(roomId) {
         chatMain.innerHTML = ''; // 기존 메시지 초기화
 
         snapshot.forEach((doc) => {
-            // console.log("문서 ID:", doc.id, "데이터:", doc.data());
+            console.log("문서 ID:", doc.id, "데이터:", doc.data());
             const message = doc.data();
+            // const messageId = doc.id;
+
+            // // ✅ timestamp 확인 후 변환 (Optional Chaining)
+            // const timestamp = message.timestamp?.seconds
+            //     ? new Date(message.timestamp.seconds * 1000)
+            //     : null;
+            //
+            // if (!timestamp) {
+            //     console.warn("⚠️ timestamp가 없음:", message);
+            //     return;  // timestamp가 없으면 다음 메시지로 넘어감
+            // }
+            //
+            //
+            // // ✅ 날짜 메시지 변환 (YYYY-MM-DD)
+            // const dateMessage = timestamp.toISOString().split('T')[0]; // "2025-02-17"
+            // console.log('dateMessage:'+dateMessage);
+            //
+            //
+            const options = { year: "numeric", month: "long", day: "numeric", weekday: "long" };
+            const inputDateMessage = new Date(message.timestamp.seconds*1000).toLocaleDateString("ko-KR",options);
+            //
+            //
             const messageDiv = document.createElement('div');
+            //
+            // //클라이언트
+            // if(lastMessageDate !== dateMessage){
+            //
+            //     lastMessageDate = dateMessage;
+            //
+            //     const dateChat = {
+            //         sender : "system",
+            //         nickname : "system",
+            //         status : "system",
+            //         timestamp : serverTimestamp(),
+            //         text : inputDateMessage
+            //     }
+            //
+            //     addDoc(collection(db, "chatRooms", roomId, "messages"), dateChat);
+            //
+            // }
+
+            if(message.status === 'system'){
+                messageDiv.className = "system-notice";
+                messageDiv.innerHTML =`${message.text}`;
+                chatMain.appendChild(messageDiv);
+                return;
+            }
 
             //일정 공유 채팅
             if(message.status === 'S'){
@@ -208,11 +277,11 @@ function subscribeToMessages(roomId) {
                                     <img src="/img/icon/CalendarCheck.svg" alt="일정 아이콘">
                                 </div>
                                 <div class="schedule-info">
+                                    <p class="schedule-time">${formatDateTime(message.calendarStartDate)}</p>
                                     <p class="schedule-name">${message.calendarTitle}</p>
-                                    <p class="schedule-time">시간 <span>${message.calendarStartDate} ~ ${message.calendarEndDate}</span></p>
                                 </div>
                             </div>
-                            <button class="schedule-btn">일정 보기</button>
+                            <button class="schedule-btn"  data-schedule-id="${message.id}" onclick="scheduleDetail(this)">일정 보기</button>
                         </div>
                     `;
                 } else {
@@ -229,11 +298,11 @@ function subscribeToMessages(roomId) {
                                         <img src="/img/icon/CalendarCheck.svg" alt="일정 아이콘">
                                     </div>
                                     <div class="schedule-info">
+                                        <p class="schedule-time">${formatDateTime(message.calendarStartDate)}</p>
                                         <p class="schedule-name">${message.calendarTitle}</p>
-                                        <p class="schedule-time">시간 <span>${message.calendarStartDate} ~ ${message.calendarEndDate}</span></p>
                                     </div>
                                 </div>
-                                <button class="schedule-btn">일정 보기</button>
+                                <button class="schedule-btn" data-schedule-id="${message.id}" onclick="scheduleDetail(this)">일정 보기</button>
                             </div>
                         </div>
                         <p class="message-time">${formatTime(message.timestamp)}</p>
@@ -278,9 +347,16 @@ function subscribeToMessages(roomId) {
 
 // 함수 호출 (페이지 로드 시 실행)
 window.onload = function () {
+    openLatestChatRoom();
     subscribeToNotifications();
 }
 
+document.querySelector('.chat-input').addEventListener('keydown', function (e){
+    if (e.key === 'Enter'){
+        e.preventDefault();
+        sendMessage(selectedRoomId);
+    }
+})
 
 // 메시지 보내기
 async function sendMessage(selectedRoomId) {
@@ -332,11 +408,29 @@ function formatTime(timestamp) {
     return "알 수 없음";
 }
 
+function formatDateTime(dateTimeStr) {
+    if (!dateTimeStr) return ""; // null 또는 undefined 처리
+
+    const date = new Date(dateTimeStr);
+    if (isNaN(date.getTime())) return ""; // 유효하지 않은 날짜 처리
+
+    const options = {
+        month: "long", // '2월'로 출력 (short: '2월', long: '2월')
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true, // 오전/오후 형식 사용
+    };
+
+    return date.toLocaleString("ko-KR", options);
+}
+
 /////////////////////////////// 일정 /////////////////////////////\
 
 const schedulesBtn = document.querySelector("#add-calender-icon");
-const scheduleModal = document.querySelector(".modal-all");
+const scheduleModal = document.querySelector("#modalForm-all");
 const closeModal = document.querySelector('.close-btn');
+const detailModal = document.querySelector("#detailModal-all");
 
 schedulesBtn.addEventListener('click', function (event){
     event.stopPropagation(); // 클릭 이벤트 전파 방지!
@@ -401,9 +495,11 @@ window.goSchedule = function (){
         }
     })
         .then(async response => {
-            console.log("응답 데이터jjjjj:", response);
+            console.log("응답 데이터 schedule:", response);
+            const calendarId = response.body;
 
             const NewSchedule = {
+                id: calendarId,
                 sender: currentDogId,
                 nickname: currentUserNickname,
                 text: "일정이 공유되었습니다.",
@@ -411,7 +507,7 @@ window.goSchedule = function (){
                 calendarStartDate: calendarStartDate,
                 calendarEndDate: calendarEndDate,
                 timestamp: serverTimestamp(),
-                status : 'S'
+                status: 'S'
             };
 
             await addDoc(collection(db, "chatRooms", selectedRoomId, "messages"), NewSchedule);
@@ -423,4 +519,138 @@ window.goSchedule = function (){
 
         })
         .catch(error => console.error(error));
+}
+
+//일정 상세
+    const sharedBtn = document.querySelector('#shared-btn');
+
+window.scheduleDetail = function (button){
+    const detailClose = document.querySelector("#close-btn");
+    detailModal.style.display = "flex";
+
+
+    detailClose.addEventListener('click', function (){
+        detailModal.style.display = 'none';
+    });
+
+    const messageId = button.getAttribute("data-message-id");
+    const calendarId = button.getAttribute("data-schedule-id");
+
+    console.log("일정Id : "+ calendarId);
+
+    sharedBtn.setAttribute("data-calendar-id", calendarId);
+    // sharedBtn.setAttribute("data-message-id", messageId);
+
+    api.get('/api/chat/schedule', { calendarId : calendarId })
+        .then(async response => {
+            const calendarDto = response.body;
+            console.log("dto title : "+ calendarDto.calendar_title);
+            console.log("dto username : "+ calendarDto.username);
+            console.log("dto currentUser : "+ currentUser);
+
+            if (calendarDto.username === currentUser){
+                sharedBtn.style.display = 'none';
+            }else{
+                sharedBtn.style.display = 'flex';
+            }
+            
+            if (calendarDto.calendar_type === 'W'){
+                document.querySelector('#detailType').value = '산책';
+            }else if(calendarDto.calendar_type === 'P'){
+                document.querySelector('#detailType').value = '놀이';
+            }else if(calendarDto.calendar_type === 'M'){
+                document.querySelector('#detailType').value = '교배';
+            }
+
+            document.querySelector('#detailTitle').value = calendarDto.calendar_title;
+            document.querySelector('#detailStartDate').value = calendarDto.calendar_start_date;
+            document.querySelector('#detailEndDate').value = calendarDto.calendar_end_date;
+            document.querySelector('#detailAddress').value = calendarDto.address;
+            document.querySelector('#detailDescription').value = calendarDto.calendar_description;
+
+
+        })
+        .catch(error => console.error(error));
+}
+
+//공유 일정 추가
+window.sharedCalendar = function (button){
+
+    detailModal.style.display = 'none';
+
+    const calendarId = button.getAttribute("data-calendar-id");
+    // const messageId = button.getAttribute("data-message-id");
+    console.log("캘린더 id / "+calendarId);
+    // console.log("메시지 아이디 : "+ messageId);
+
+    api.post('/api/chat/shared-schedule', {
+        calendarId: calendarId,
+        username: currentUser,
+        roomId: selectedRoomId,
+        dogId: currentDogId
+    })
+        .then(async data => {
+            console.log(data);
+            alert("일정에 추가되었습니다.")
+
+            // await updateDoc(doc(db, "chatRooms", selectedRoomId, "messages", messageId), { sharedStatus: 'Y'})
+            // const updated = await getDoc(doc(db, "chatRooms", selectedRoomId, "messages", messageId));
+            //
+            // const getData = updated.data();
+            //
+            // //일정 추가됐는지 firebase에 상태 저장할까? 해야함.
+            //
+            // if ( getData.sharedStatus === 'Y'){
+            //     sharedBtn.style.backgroundColor = 'green';
+            //     sharedBtn.preventDefault();
+            //         alert("이미 추가된 일정입니다.");
+            // }
+
+        })
+        .catch(error => console.error(error));
+
+}
+
+// 파일 업로드
+document.querySelector('#file-icon')
+    .addEventListener('click', function (){
+    document.querySelector('#mediaUpload').click();
+});
+
+window.fileUpload = function (){
+
+    const fileInput = document.querySelector('#mediaUpload');
+    const files = fileInput.files;
+    const roomId = selectedRoomId;
+    const dogId = currentDogId;
+
+    const formData = new FormData();
+
+    formData.append("roomId", roomId);
+    formData.append("dogId", dogId);
+
+    for (let i = 0 ; i <files.length ; i++){
+        formData.append("files", files[i]);
+    }
+
+    try{
+        api.post('/api/chat/fileUpload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then(async response => {
+                console.log("응답 데이터 fileUrl:", response);
+                // const fileUrl = response.body.fileUrls;
+
+
+
+            })
+            .catch(error => console.error(error));
+
+
+    }catch{
+        console.error("파일 업로드 실패:", error);
+    }
+
 }

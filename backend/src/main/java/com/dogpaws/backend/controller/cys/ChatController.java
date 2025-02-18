@@ -1,11 +1,14 @@
 package com.dogpaws.backend.controller.cys;
 
+import com.dogpaws.backend.dto.cys.CalendarSharedDto;
 import com.dogpaws.backend.dto.cys.DogResponseDto;
 import com.dogpaws.backend.dto.hyepin.CalendarDto;
-import com.dogpaws.backend.global.common.ApiResponse;
+import com.dogpaws.backend.service.ajy.DogService;
+import com.dogpaws.backend.service.common.FileService;
 import com.dogpaws.backend.service.cys.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,6 +25,9 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
+    @Autowired
+    private FileService fileService;
+
     @PostMapping("/profile")
     public List<DogResponseDto> profile(@RequestBody Map<String, List<Integer>> requestData) {
         List<Integer> otherParticipants = requestData.get("otherParticipants");
@@ -32,13 +38,47 @@ public class ChatController {
     }
 
     @PostMapping("/schedule")
-    public ApiResponse<String> registSchedule(@ModelAttribute CalendarDto calendarDto) throws IOException {
-        int result = chatService.insertSchedule(calendarDto);
-        if (result == 1) {
-            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "일정 등록 성공");
-        } else {
-            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "일정 등록 실패");
+    public int registSchedule(@ModelAttribute CalendarDto calendarDto) throws IOException {
+        int calendarId = chatService.insertSchedule(calendarDto);
+        System.out.println("컨트롤러 id : "+calendarId);
+        return calendarId;
+    }
+
+    @GetMapping("/schedule")
+    public CalendarDto getSchedule(@RequestParam("calendarId") int calendarId) throws IOException {
+        CalendarDto dto = chatService.getSchedule(calendarId);
+        System.out.println("받은 id : "+calendarId);
+        return dto;
+    }
+
+    @PostMapping("/shared-schedule")
+    public void sharedSchedule(@RequestBody Map<String, String> requestData) throws IOException {
+        String calendarId = requestData.get("calendarId");
+        String username = requestData.get("username");
+        String roomId = requestData.get("roomId");
+        String dogId = requestData.get("dogId");
+
+        CalendarSharedDto sharedDto = new CalendarSharedDto();
+        sharedDto.setCalendarId(Integer.parseInt(calendarId));
+        sharedDto.setRoomId(roomId);
+        sharedDto.setDogId(dogId);
+        sharedDto.setUsername(username);
+
+        chatService.sharedSchedule(sharedDto);
+    }
+
+    @PostMapping("/fileUpload")
+    public Map<String,Object> fileUpload(@RequestParam("files") MultipartFile[] files
+                                        , @RequestParam("dogId") String dogId
+                                        , @RequestParam("roomId") String roomId) throws IOException {
+
+        List<String> fileUrlList = new ArrayList<>();
+
+        for(MultipartFile file : files){
+            fileService.saveFile(file, "CH", roomId, dogId);
         }
+
+        return null;
     }
 
 }

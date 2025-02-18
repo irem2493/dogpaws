@@ -28,15 +28,7 @@
                 </div>
             </div>
             <div class="chat-list">
-                <div class="chat-one">
-                    <div class="">
-                        <img src="/img/견BTI임시프로필.jpg" width="50" class="profile-img-2" alt="프로필">
-                    </div>
-                    <div class="pre-chat-content">
-                        <div class="pre-chat-with">경림냥</div>
-                        <div class="last-chat">오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉오늘 저녁에 머먹었엉</div>
-                    </div>
-                </div>
+
             </div>
             <!--        <div class="create-chat">그룹 채팅방 만들기</div>-->
         </div>
@@ -46,8 +38,8 @@
     <!-- 2번 페이지 : 채팅 -->
     <main class="page" id="page2">
 
-        <!--      일정  모달창-->
-        <div class="modal-all" style="display: none">
+        <!--      일정 등록 모달창 완-->
+        <div class="modal-all" id="modalForm-all" style="display: none">
             <div class="Modal" id="scheduleModal">
 
                 <div class="title">
@@ -105,12 +97,68 @@
                 </div>
             </div>
         </div>
-        <!-- 일정모달창 완-->
+        <!-- 일정 등록 모달창 완-->
+<!--        일정 상세 모달-->
+        <div class="modal-all" id="detailModal-all" style="display: none">
+            <div class="Modal">
+
+                <div class="title">
+                    <p style="font-weight: bold;">일정 상세</p>
+                    <div class="close-btn" id="close-btn" style="cursor: pointer"><img  src="/img/icon/modal/modal-delete.svg" alt="" width="15"></div>
+                </div>
+
+                <div class="content">
+                    <div class="division-box">
+                        <span>일정 구분</span>
+                        <input type="text" id="detailType" style="width: 70px; height: 35px;" readonly>
+                    </div>
+
+                    <div class=detail-box>
+                        <div class="title-box">
+                            <div class="orange-box" style="background-color: #FE904B; width: 5px; height: 35px;"></div>
+                            <input type="text" id="detailTitle"
+                                   style="height: 35px; width: 250px;" readonly>
+                        </div>
+                        <div class="date-box">
+                            <div class="date-icon" >
+                                <img src="/img/icon/modal/scheduleModal.svg" alt="">
+                            </div>
+                            <div class="date-content">
+                                <div class="start-date">
+                                    <input type="datetime-local" id="detailStartDate" style="width: 247px; height: 30px;" readonly>
+                                </div>
+                                <div class="end-date">
+                                    <input type="datetime-local" id="detailEndDate" style="width: 247px; height: 30px;" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="location-box">
+                            <div class="location-icon" ><img src="/img/icon/modal/locationModal.svg" alt="">
+                            </div>
+                            <div class="location-content">
+                            </div>
+                            <input type="text" id="detailAddress" style="width: 250px; height: 30px;" readonly>
+                        </div>
+                        <div class="schedule-content-box">
+                            <p>일정내용</p>
+                            <textarea name="" id="detailDescription"
+                                      style="width: 325px; height: 120px; resize: none; padding: 10px;" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <button class="modal-btn" id="shared-btn"  onclick="sharedCalendar(this)" style="width: 90px; color: white; margin-right: 30px;">일정 추가</button>
+                </div>
+            </div>
+        </div>
+<!--        일정 상세 모달 완-->
 
         <div class="chat-main">
 
         </div>
         <div class="input-box">
+            <input type="file" id="mediaUpload" accept="image/*" style="display: none;" multiple>
             <input type="text" class="chat-input" placeholder="채팅을 입력하세요">
             <div class="icon">
                 <img src="/img/icon/add-calender.svg" id="add-calender-icon" width="16" style="cursor: pointer" alt="">
