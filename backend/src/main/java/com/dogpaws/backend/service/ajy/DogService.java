@@ -1,6 +1,7 @@
 package com.dogpaws.backend.service.ajy;
 
 import com.dogpaws.backend.dto.ajy.DogDto;
+import com.dogpaws.backend.dto.ajy.DogLocationDto;
 import com.dogpaws.backend.dto.ajy.DogResponseDto;
 import com.dogpaws.backend.dto.common.FileDto;
 import com.dogpaws.backend.entity.File;
@@ -188,31 +189,26 @@ public class DogService {
         return true;
     }
 
-    public List<Dog> getNearbyDogs(String username, double distance) {
-        // 1. 사용자 위치 가져오기
-        double[] userLocation = userService.getUserCoordinates(username);
-        if (userLocation.length == 0) {
-            throw new IllegalArgumentException("사용자 위치를 찾을 수 없습니다.");
-        }
-        else{
-            // 2. 위도/경도 추출
-            double latitude = userLocation[0];
-            double longitude = userLocation[1];
+    public List<DogLocationDto> getNearbyDogs(String username) {
+        List<Object[]> results = dogRepository.findNearbyDogs(username);
+        List<DogLocationDto> dogList = new ArrayList<>();
 
-            // 3. 사용자가 등록한 강아지 ID 목록 조회
-            List<Dog> userDogIds = dogRepository.findUserDogIdsByUsername(username);
-            System.out.println(userDogIds);
-            List<Integer> dogIdList = new ArrayList<>();
-            if(userDogIds != null && !userDogIds.isEmpty()) {
-                for(Dog d : userDogIds) {
-                    dogIdList.add(d.getDogId());
-                }
-            }else{
-                dogIdList = List.of(-1);
-            }
+        for (Object[] row : results) {
+            DogLocationDto dto = new DogLocationDto();
 
-            // 4. 반경 `distance km` 내 강아지 검색 (본인 강아지 제외)
-            return dogRepository.findDogsNearby(latitude, longitude, distance, dogIdList);
+            dto.setDogId((row[0] != null) ? ((Number) row[0]).intValue() : 0);  // 강아지 ID
+            dto.setUsername((row[1] != null) ? row[1].toString() : "");          // 강아지 이름
+            dto.setDogName((row[2] != null) ? row[2].toString() : "");          // 강아지 이름
+            dto.setProfileUrl((row[17] != null) ? row[17].toString() : "");       // 프로필 URL
+            dto.setLatitude((row[25] != null) ? ((Number) row[25]).doubleValue() : 0.0);  // 위도
+            dto.setLongitude((row[26] != null) ? ((Number) row[26]).doubleValue() : 0.0); // 경도
+
+            System.out.println(dto);
+
+            dogList.add(dto);  // 변환된 DTO 리스트에 추가
         }
+
+        return dogList;  // 최종 리스트 반환
     }
+
 }

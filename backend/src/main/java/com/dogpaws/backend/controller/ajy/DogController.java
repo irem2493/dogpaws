@@ -168,12 +168,9 @@ public class DogController {
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, dogRequestDto);
     }
 
-    @GetMapping("/nearby")
-    public ApiResponse<?> getNearbyDogs(
-            @RequestParam String username,
-            @RequestParam(defaultValue = "1") double distance) {
-
-        List<Dog> dogs = dogService.getNearbyDogs(username, distance);
+    @GetMapping("/nearbyDog/{username}")
+    public ApiResponse<?> getNearbyDogs(@PathVariable String username) {
+        List<DogLocationDto> dogs = dogService.getNearbyDogs(username);
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, dogs);
     }
 }
