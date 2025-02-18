@@ -216,7 +216,7 @@ public class SocialLoginService {
             if(user == null) {
                 UserRequestDto userRequestDto = new UserRequestDto();
                 userRequestDto.setUsername(username);
-                userRequestDto.setProvider("Google");
+                userRequestDto.setProvider("GOOGLE");
                 userRequestDto.setNickname(userInfo.get("name").toString());
                 userRequestDto.setEmail(userInfo.get("email").toString());
 

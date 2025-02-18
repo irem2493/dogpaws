@@ -15,6 +15,8 @@ public class DogRequestDto {
 
     private String username;  // 사용자 ID (외래키)
 
+    private Integer dogId;
+
     private String dogName;  // 강아지 이름
 
     private String breed;  // 품종

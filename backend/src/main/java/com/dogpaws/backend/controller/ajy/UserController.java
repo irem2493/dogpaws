@@ -9,6 +9,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
@@ -79,4 +81,11 @@ public class UserController {
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "회원탈퇴 완료");
         else return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
     }
+
+    @GetMapping("/location/{username}")
+    public  double[] getUserLocation(@PathVariable("username") String username) {
+        double[] location = userService.getUserCoordinates(username);
+        return location;
+    }
+
 }
