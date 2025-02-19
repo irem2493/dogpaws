@@ -166,4 +166,65 @@ public class CartService {
                 .totalQuantity(totalQuantity)
                 .build();
     }
+
+    /**
+     * 선택된 장바구니 아이템 삭제
+     */
+    @Transactional
+    public void deleteSelectedItems(List<Long> cartItemIds) {
+        try {
+            if (cartItemIds == null || cartItemIds.isEmpty()) {
+                throw new IllegalArgumentException("삭제할 상품이 선택되지 않았습니다.");
+            }
+
+            // 먼저 옵션 삭제 후 카트 아이템 삭제
+            cartDao.deleteCartItemOptions(null, cartItemIds);  // username은 null로 전달 (이미 cartItemIds로 식별)
+            cartDao.deleteCartItems(null, cartItemIds);
+
+            log.info("장바구니 아이템 삭제 완료. items: {}", cartItemIds);
+        } catch (Exception e) {
+            log.error("장바구니 아이템 삭제 실패: {}", e.getMessage(), e);
+            throw new RuntimeException("장바구니 아이템 삭제 중 오류가 발생했습니다.");
+        }
+    }
+    /**
+     * 장바구니 옵션 수량 업데이트
+     * @throws IllegalArgumentException 수량이 1 미만인 경우
+     */
+    @Transactional
+    public void updateCartOptionQuantity(Long cartItemId, Long optionId, int quantity) {
+        if (quantity < 1) {
+            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+        }
+        cartDao.updateCartOptionQuantity(cartItemId, optionId, quantity);
+    }
+
+    /**
+     * 장바구니 옵션 삭제
+     * 최소 1개의 옵션은 유지되어야 함
+     */
+    @Transactional
+    public void deleteCartOption(Long cartItemId, Long optionId) {
+        try {
+            // 현재 옵션 개수 확인
+            int currentOptions = cartDao.countRemainingOptions(cartItemId);
+            
+            // 현재 옵션이 1개이면 삭제 불가
+            if (currentOptions <= 1) {
+                throw new IllegalStateException("최소 1개의 옵션은 유지되어야 합니다.");
+            }
+
+            // 옵션 삭제
+            cartDao.deleteCartOption(cartItemId, optionId);
+            
+            log.info("장바구니 옵션 삭제 완료. cartItemId: {}, optionId: {}", cartItemId, optionId);
+        } catch (IllegalStateException e) {
+            log.warn("장바구니 옵션 삭제 실패: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("장바구니 옵션 삭제 실패: {}", e.getMessage(), e);
+            throw new RuntimeException("장바구니 옵션 삭제 중 오류가 발생했습니다.");
+        }
+    }
+
 }

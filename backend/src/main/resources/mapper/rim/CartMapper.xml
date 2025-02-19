@@ -133,6 +133,29 @@
         </collection>
     </resultMap>
 
+    <!-- 선택된 장바구니 아이템 삭제 -->
+    <delete id="deleteSelectedItems">
+        DELETE FROM tbl_cart_item_options
+        WHERE cart_item_id IN
+        <foreach item="itemId" collection="cartItemIds" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>;
+
+        DELETE FROM tbl_cart
+        WHERE cart_item_id IN
+        <foreach item="itemId" collection="cartItemIds" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+    </delete>
+
+    <!-- 장바구니 옵션 수량 업데이트 -->
+    <update id="updateCartOptionQuantity">
+        UPDATE tbl_cart_item_options
+        SET quantity = #{quantity}
+        WHERE cart_item_id = #{cartItemId}
+        AND option_id = #{optionId}
+    </update>
+
     <!-- 장바구니 옵션 삭제 -->
     <delete id="deleteCartItemOptions">
         DELETE FROM tbl_cart_item_options
@@ -155,6 +178,26 @@
         <foreach item="itemId" collection="cartItemIds" open="(" separator="," close=")">
             #{itemId}
         </foreach>
+    </delete>
+
+    <!-- 장바구니 옵션 삭제 -->
+    <delete id="deleteCartOption">
+        DELETE FROM tbl_cart_item_options
+        WHERE cart_item_id = #{cartItemId}
+        AND option_id = #{optionId}
+    </delete>
+
+    <!-- 장바구니 아이템의 남은 옵션 개수 조회 -->
+    <select id="countRemainingOptions" resultType="int">
+        SELECT COUNT(*)
+        FROM tbl_cart_item_options
+        WHERE cart_item_id = #{cartItemId}
+    </select>
+
+    <!-- 장바구니 아이템 삭제 (옵션이 없는 경우) -->
+    <delete id="deleteEmptyCartItem">
+        DELETE FROM tbl_cart
+        WHERE cart_item_id = #{cartItemId}
     </delete>
 
     <!-- 선택된 장바구니 목록 보여주기 -->

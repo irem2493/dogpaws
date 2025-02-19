@@ -47,8 +47,25 @@ public interface CartDao {
             @Param("cartItemIds") List<Long> cartItemIds
     );
 
+    void deleteSelectedItems(@Param("cartItemIds") List<Long> cartItemIds);
 
+    void updateCartOptionQuantity(
+            @Param("cartItemId") Long cartItemId,
+            @Param("optionId") Long optionId,
+            @Param("quantity") int quantity
+    );
 
     boolean checkExistingCart(@Param("username") String username);
+
+    void deleteCartOption(
+            @Param("cartItemId") Long cartItemId,
+            @Param("optionId") Long optionId
+    );
+
+    // 장바구니 아이템의 남은 옵션 개수 조회
+    int countRemainingOptions(@Param("cartItemId") Long cartItemId);
+
+    // 장바구니 아이템 삭제 (옵션이 없는 경우)
+    void deleteEmptyCartItem(@Param("cartItemId") Long cartItemId);
 
 }

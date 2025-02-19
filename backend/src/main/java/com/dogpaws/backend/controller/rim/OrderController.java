@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -95,16 +96,31 @@ public class OrderController {
 
 
     /**
-     * 사용자의 주문 목록 조회
+     * 사용자의 주문 목록 조회 (페이징)
      */
     @GetMapping("/user/{username}")
-    public ApiResponse<?> getUserOrders(@PathVariable String username) {
+    public ApiResponse<?> getUserOrders(
+            @PathVariable String username,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
         try {
-            List<com.dogpaws.backend.dto.rim.OrderDto> orders = orderService.getUserOrders(username);
-            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, orders);
+            // 전체 주문 수 조회
+            int totalOrders = orderService.getUserOrdersCount(username);
+
+            // 페이징된 주문 목록 조회
+            List<OrderDto> orders = orderService.getUserOrdersWithPaging(username, page, size);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("content", orders);
+            response.put("totalElements", totalOrders);
+            response.put("totalPages", (int) Math.ceil((double) totalOrders / size));
+            response.put("currentPage", page);
+            response.put("size", size);
+
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, response);
         } catch (Exception e) {
             log.error("사용자 주문 목록 조회 실패: {}", e.getMessage(), e);
-            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR,  Map.of("message","주문 조회 실패."));
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, Map.of("message","주문 조회 실패."));
         }
     }
 

@@ -5,19 +5,25 @@ import com.dogpaws.frontend.dto.rim.*;
 import com.dogpaws.frontend.global.ApiResponse;
 import com.dogpaws.frontend.service.ApiRequestService;
 import com.dogpaws.frontend.utils.TokenUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.cloud.PageImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -153,6 +159,95 @@ public class OrderViewController {
         } catch (Exception e) {
             log.error("결제 완료 처리 중 오류 발생: {}", e.getMessage(), e);
             return "redirect:/error";
+        }
+    }
+
+
+    @GetMapping("/list")
+    public String orderListView(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model,
+            HttpSession session
+    ) {
+        try {
+            UserDto user = (UserDto) session.getAttribute("user");
+            if (user == null) {
+                return "redirect:/login";
+            }
+
+            // 파라미터 맵 생성
+            Map<String, String> params = new HashMap<>();
+            params.put("page", String.valueOf(page));
+            params.put("size", String.valueOf(size));
+
+            // API 호출
+            String path = "/api/order/user/" + user.getUsername();
+            ApiResponse<?> response = apiRequestService.fetchData(path, params, false);
+
+            log.info("orderListView response > {}", response);
+
+            if (response.getStatus() == ApiResponse.ApiStatus.SUCCESS) {
+                // API 응답을 Map으로 변환
+                Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+                Map<String, Object> data = (Map<String, Object>) responseBody.get("body");
+
+                // content를 OrderDto 리스트로 변환
+                List<OrderDto> orders = objectMapper.convertValue(
+                        data.get("content"),
+                        new TypeReference<List<OrderDto>>() {}
+                );
+
+                // 페이징 정보 추출
+                int totalPages = (int) data.get("totalPages");
+                long totalElements = ((Number) data.get("totalElements")).longValue();
+
+                model.addAttribute("orders", orders);
+                model.addAttribute("currentPage", page);
+                model.addAttribute("totalPages", totalPages);
+                model.addAttribute("totalElements", totalElements);
+
+                return "rim/store/order_list";
+            } else {
+                throw new RuntimeException("주문 목록 조회 실패");
+            }
+        } catch (Exception e) {
+            log.error("주문 목록 조회 중 오류 발생: {}", e.getMessage());
+            throw new RuntimeException("주문 목록 조회 실패", e);
+        }
+    }
+
+
+
+    @GetMapping("/detail/{qlId}")
+    public String orderDetailView(
+            @PathVariable String qlId,
+            Model model,
+            HttpSession session
+    ) {
+        try {
+            UserDto user = (UserDto) session.getAttribute("user");
+            if (user == null) {
+                return "redirect:/login";
+            }
+
+            // API 호출
+            ApiResponse<?> response = apiRequestService.fetchData("/api/order/" + qlId, null, false);
+
+            log.info("orderDetailView response > {}", response);
+
+            if (response.getStatus() == ApiResponse.ApiStatus.SUCCESS) {
+                Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+                OrderDto order = objectMapper.convertValue(responseBody.get("body"), OrderDto.class);
+
+                model.addAttribute("order", order);
+                return "rim/store/order_detail";
+            } else {
+                throw new RuntimeException("주문 상세 조회 실패");
+            }
+        } catch (Exception e) {
+            log.error("주문 상세 조회 중 오류 발생: {}", e.getMessage());
+            throw new RuntimeException("주문 상세 조회 실패", e);
         }
     }
 

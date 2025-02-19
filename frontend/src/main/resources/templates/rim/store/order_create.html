@@ -145,25 +145,25 @@
 
                             <!-- 옵션 목록 -->
                             <div class="mt-3">
-                                <!-- 기본 상품 (첫 번째 옵션) -->
                                 <div th:each="option, status : ${item.cartOptions}" class="mb-2">
                                     <div class="row align-items-center">
                                         <div class="col-md-6">
                                             <span th:text="${option.optionName}" class="text-muted">옵션명</span>
+                                            <!-- 기본 옵션 표시 -->
+                                            <span th:if="${status.first}" class="text-muted">
+                    (<span th:text="${#numbers.formatInteger(item.productPrice, 0, 'COMMA')}">0</span>원)
+                </span>
+                                            <!-- 추가 옵션일 경우 추가금 표시 -->
+                                            <span th:if="${!status.first && option.optionPrice > 0}" class="text-muted">
+                    (+<span th:text="${#numbers.formatInteger(option.optionPrice, 0, 'COMMA')}">0</span>원)
+                </span>
                                         </div>
-                                        <div class="col-md-2 text-center">
+                                        <div class="col-md-3 text-center">
                                             수량: <span th:text="${option.quantity}">0</span>개
                                         </div>
-                                        <div class="col-md-4 text-end">
-                                            <!-- 첫 번째 옵션은 상품 가격, 나머지는 옵션 가격 -->
-                                            <span th:if="${status.index == 0}">
-                                        <span th:text="${#numbers.formatInteger(item.productPrice, 0, 'COMMA')}">0</span>원
-                                    </span>
-                                            <span th:unless="${status.index == 0}">
-                                        <span th:if="${option.optionPrice > 0}">
-                                            (+<span th:text="${#numbers.formatInteger(option.optionPrice, 0, 'COMMA')}">0</span>원)
-                                        </span>
-                                    </span>
+                                        <div class="col-md-3 text-end">
+                                            <!-- 옵션별 총 금액 -->
+                                            <span th:text="${#numbers.formatInteger((item.productPrice + option.optionPrice) * option.quantity, 0, 'COMMA')}">0</span>원
                                         </div>
                                     </div>
                                 </div>
