@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dogpaws.backend.repository.dao.cys.MainDao">
+    <select id="getDogById" resultType="com.dogpaws.backend.dto.cys.DogDto">
+        SELECT d.dog_id, d.dog_name, gb.gubn_name AS breed, d.is_mix, d.dog_intro, gp.gubn_name AS personality_type, d.profile_url
+        FROM tbl_dogs d
+        LEFT JOIN tbl_gubn gb ON gb.gubn_code = d.breed
+        AND gb.group_code = 'breed_code'
+        LEFT JOIN tbl_gubn gp ON gp.gubn_code = d.personality_type
+        AND gp.group_code = 'dog_type_code'
+        WHERE dog_id = #{dogId}
+    </select>
+</mapper>
