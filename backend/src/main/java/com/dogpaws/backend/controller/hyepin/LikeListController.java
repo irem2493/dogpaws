@@ -1,6 +1,8 @@
 package com.dogpaws.backend.controller.hyepin;
 
 import com.dogpaws.backend.dto.hyepin.FilterDto;
+import com.dogpaws.backend.dto.hyepin.LikeDogDto;
+import com.dogpaws.backend.repository.dao.hyepin.LikeDogDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/like")
@@ -16,12 +19,16 @@ import java.io.IOException;
 @Slf4j
 public class LikeListController {
 
+    private final LikeDogDao likeDogDao;
+
     //좋아요 리스트 가져오기
     @GetMapping
-    public FilterDto getLikeList(@RequestParam("dogId") int dogId,
-                                 @RequestParam("likeType") String likeType) throws IOException {
-        log.info("여기는 백 컨트롤러 getLikeList / dogId 값: {}", dogId);
-        log.info("여기는 백 컨트롤러 getLikeList / likeType 값: {}", likeType);
-        return null;
+    public List<LikeDogDto> getLikeList(@RequestParam("myDogId") int myDogId,
+                                 @RequestParam("likeCode") String likeCode) throws IOException {
+        log.info("여기는 백 컨트롤러 getLikeList / dogId 값: {}", myDogId);
+        log.info("여기는 백 컨트롤러 getLikeList / likeCode 값: {}", likeCode);
+        List<LikeDogDto> likeDogDtoList = likeDogDao.getLikeList(myDogId, likeCode);
+        log.info("여기는 백 컨트롤러 getLikeList / likeDogDto 값: {}", likeDogDtoList);
+        return likeDogDtoList;
     }
 }

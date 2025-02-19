@@ -5,11 +5,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     const contentContainer = document.querySelector(".like-list-container-content");
 
     const sessionDogId = document.getElementById("sessionDogId");
-    //const dogId = sessionDogId.value;
-    const dogId = 1;
+    //const myDogId = sessionDogId.value;
+    const myDogId = 1;
 
-    async function fetchListData(likeType) {
-        api.get('/api/like?dogId=' + dogId + '&likeType=' + likeType)
+    async function fetchListData(likeCode) {
+        api.get('/api/like?myDogId=' + myDogId + '&likeCode=' + likeCode)
             .then(data => {
                 likeList = data.body;  // body 속성의 배열을 할당
                 console.log('likeList loaded:', likeList);  // 배열 확인
