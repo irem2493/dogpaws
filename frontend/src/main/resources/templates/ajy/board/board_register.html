@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <link rel="stylesheet" href="/css/ajy/board/board_register.css" />
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.2.0/ckeditor5.css">
+    <title>게시판</title>
+</head>
+<body layout:fragment="content" style="min-height: 100vh">
+<div class="container">
+    <div class="board-container">
+        <!-- 상단 메뉴 -->
+        <div th:replace="~{ajy/board/board_header :: boardHeader}"></div>
+
+        <!-- 게시글 입력 -->
+        <form id="boardForm">
+
+            <input type="hidden" name="username" id="username" th:value="${username}"/>
+            <input type="hidden" name="nickname" id="nickname" th:value="${nickname}"/>
+            <input type="hidden" name="category" id="category" th:value="${category}"/>
+            <input type="text" name="title" id="title" class="title-input" placeholder="제목을 입력하세요">
+            <div class="main-container">
+                <div class="editor-container editor-container_classic-editor" id="editor-container">
+                    <div class="editor-container__editor">
+                        <div id="editor"></div>
+                    </div>
+                </div>
+            </div>
+            <input type="submit" class="btn-submit" value="게시글 저장"/>
+
+        </form>
+    </div>
+    <script src="https://cdn.ckeditor.com/ckeditor5/44.2.0/ckeditor5.umd.js" crossorigin></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/44.2.0/translations/ko.umd.js" crossorigin></script>
+    <script src="https://cdn.ckbox.io/ckbox/2.6.1/ckbox.js" crossorigin></script>
+    <script src="/js/ajy/board/board_register.js"></script>
+</div>
+</body>
+</html>
