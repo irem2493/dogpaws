@@ -25,7 +25,7 @@ public class LikeController {
     @PostMapping("/toggle")
     public ApiResponse<String> toggleLike(@ModelAttribute LikeDto likeDto) {
         log.info("toggleLike {}", likeDto);
-        int result = likeService.toggleLike(likeDto.getUsername(), likeDto.getLikeCode(), likeDto.getDogId());
+        int result = likeService.toggleLike(likeDto.getMyDogId(), likeDto.getLikeCode(), likeDto.getDogId());
         if(result == 1) {
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "성공");
         }else {

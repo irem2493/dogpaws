@@ -17,22 +17,22 @@ public class LikeService {
 
     private final LikeDao likeDao;
 
-    public int toggleLike(String username, char likeCode, int dogId) {
-        Integer isCheck = likeDao.checkLike(username, likeCode, dogId);
+    public int toggleLike(int myDogId, char likeCode, int dogId) {
+        Integer isCheck = likeDao.checkLike(myDogId, likeCode, dogId);
         int result = 0;
         if (isCheck != null && isCheck > 0) {
-            result = likeDao.deleteLike(username, likeCode, dogId);
+            result = likeDao.deleteLike(myDogId, likeCode, dogId);
             return result;
         } else {
-            result = likeDao.insertLike(username, likeCode, dogId);
+            result = likeDao.insertLike(myDogId, likeCode, dogId);
             return result;
         }
     }
 
 
-    public List<DogCandidateDto> getMatcingLike (String username, List<DogCandidateDto> matchList, char likeCode) {
+    public List<DogCandidateDto> getMatcingLike (int myDogId, List<DogCandidateDto> matchList, char likeCode) {
         for (DogCandidateDto m : matchList) {
-            int check = likeDao.checkLike(username, likeCode, m.getDogId());
+            int check = likeDao.checkLike(myDogId, likeCode, m.getDogId());
             if (check == 0) {
                 m.setLiked(false);
             }else if(check == 1){
