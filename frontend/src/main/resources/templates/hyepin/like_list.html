@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout-mypage}">
+<head>
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/hyepin/like_list.css">
+</head>
+<body layout:fragment="content">
+<div class="container">  <!-- 컨테이너 div.. 지우지 마세요 !-->
+    <!-- 여기서부터 작성하시면 됩니다. !-->
+
+    <div class="like-list-container">
+
+        <!-- 토글 영역 -->
+        <div class="like-list-container-top">
+            <div class="title-s" id="friend-tab">친구후보</div>
+            <div class="title-s" id="mating-tab">교배후보</div>
+        </div>
+
+        <!-- 컨텐트 영역 -->
+        <div class="like-list-container-content">
+
+            <!-- 웹 영역 -->
+            <div class="content-item-container-web-box">
+                <div class="content-item-container-web">
+                    <div class="item-profile">강아지 프로필 사진</div>
+                    <div>
+                        <div class="content-item">
+                            <div class="item-name">뭉이</div>
+                            <div class="item-breed">| 진돗개 <span class="item-mix">(믹스)</span></div>
+                            <div class="item-gender">| 남 <span class="item-neutered">(중성화 O)</span></div>
+                            <div class="item-birth">생년월일 (생년/월 따로)</div>
+                        </div>
+                        <div>성격 유형</div>
+                        <div class="item-personal">성격 유형 리스트</div>
+                        <div>좋아하는 놀이</div>
+                        <div class="item-play">좋아하는 놀이 리스트</div>
+                    </div>
+                    <div class="item-like">좋아요</div>
+                </div>
+                <hr class="custom-hr">
+            </div>
+
+
+
+            <!-- 모바일 영역 -->
+            <div class="like-list-container-content-mobile">
+                <div>
+                    <div class="content-item-container">
+                        <div class="item-profile">강아지 프로필 사진</div>
+                        <div>
+                            <div class="content-item">
+                                <div class="item-name">뭉이</div>
+                                <div class="item-breed">| 진돗개 <span class="item-mix">(믹스)</span></div>
+                            </div>
+                            <div>
+                                <div class="item-gender">| 남 <span class="item-neutered">(중성화 O)</span></div>
+                            </div>
+                            <div class="item-birth">생년월일</div>
+                        </div>
+                        <div class="item-like">좋아요</div>
+                    </div>
+                    <div>성격 유형</div>
+                    <div class="item-personal">성격 유형 리스트</div>
+                    <div>좋아하는 놀이</div>
+                    <div class="item-play-mobile">좋아하는 놀이 리스트</div>
+                </div>
+                <hr class="custom-hr">
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+
+
+</div> <!-- 컨테이너 div.. 지우지 마세요 !-->
+</body>
+</html>

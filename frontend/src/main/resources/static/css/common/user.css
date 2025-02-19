@@ -18,7 +18,7 @@ body {
 }
 
 /* 모바일 화면에서 박스를 보이게 설정 */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     .header-container-mobile {
         display: block;
         top: 0;          /* 화면 상단에 위치 */
