@@ -1,0 +1,42 @@
+/* 테이블 전체 스타일 */
+.board-container table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+}
+
+/* 테이블 헤더 스타일 */
+.board-container thead {
+    background-color: #f8e3c0; /* 연한 베이지색 */
+}
+.board-container th {
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+}
+
+/* 테이블 본문 스타일 */
+.board-container td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 홀수 행 스타일 (가독성 향상) */
+.board-container tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+/* 마우스 오버 효과 */
+.board-container tbody tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+.board-container .btn-b{
+    float: right;
+}
+
+.board-container .btn-b:hover{
+    background: #FFA03A;
+    color: black;
+}

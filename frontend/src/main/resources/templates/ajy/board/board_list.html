@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <link rel="stylesheet" href="/css/ajy/board/board_register.css" />
+    <link rel="stylesheet" href="/css/ajy/board/board_list.css" />
+    <title>게시판</title>
+</head>
+<body layout:fragment="content" style="min-height: 100vh">
+<div class="container">
+    <div class="board-container">
+        <!-- 상단 메뉴 -->
+        <div th:replace="~{ajy/board/board_header :: boardHeader}"></div>
+
+        <th:block th:if="${user != null}">
+            <button class="btn-b" style="width: 95px; height: 35px; margin-bottom: 10px"
+                    th:data-url="@{/board/boardRegister/{category}(category=${category})}"
+                    onclick="window.location.href = this.getAttribute('data-url')">작성</button>
+
+        </th:block>
+
+        <table style="margin-bottom: 80px">
+            <thead>
+                <tr>
+                    <th>글번호</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>조회수</th>
+                    <th>작성일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${boardList.size() > 0}" th:each="board : ${boardList}">
+                    <td th:text="${board.board_id}"></td>
+                    <td th:text="${board.title}"></td>
+                    <td th:text="${board.nickname}"></td>
+                    <td th:text="${board.view_count}"></td>
+                    <td th:text="${#strings.replace(board.created_at, 'T', ' ')}"></td>
+                </tr>
+
+                <tr th:if="${boardList.size() == 0}">
+                    <td colspan="5" style="text-align: center">게시글이 없습니다</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
