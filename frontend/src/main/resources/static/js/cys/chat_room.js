@@ -4,6 +4,7 @@ import {
     collection,
     doc,
     getDocs,
+    getDoc,
     limit,
     onSnapshot,
     orderBy,
@@ -29,7 +30,6 @@ const group = document.querySelector('#group');
 
 const oneOnOneCategory = document.querySelector(".one-on-one");
 const groupCategory = document.querySelector(".group");
-const detailTitle = document.querySelector('.detail-title');
 
 const chatRooms = [];
 let otherParticipants = [];
@@ -213,6 +213,7 @@ window.room = function (roomId) {
     selectedRoomId = roomId;
     console.log(selectedRoomId);
     subscribeToMessages(roomId);
+    detailProfile();
     detailPageMedia(roomId);
     detailPageCalendar();
 }
@@ -695,6 +696,26 @@ window.fileUpload = function (){
 //상세정보 페이지
     
 //이름 불러오기
+window.detailProfile = async function () {
+
+    const roomSnap = await getDoc(doc(db, 'chatRooms', selectedRoomId));
+    const participants = roomSnap.data().participants;
+    console.log('상대 id//'+participants);
+
+    const otherDogId = participants.find(id => id !== currentDogId);
+    const profileUrl = getProfileById(otherDogId);
+    const profile = document.querySelector('.profile');
+
+    profile.innerHTML = '';
+    profile.innerHTML = `
+        <img src="${profileUrl}" class="profile-img-3" alt="">
+    `
+    const detailUserName = document.querySelector('.detail-title');
+    const profileNickName = getNicknameById(otherDogId);
+
+    detailUserName.innerText = '';
+    detailUserName.innerText = `${profileNickName}`;
+}
 
 //미디어
 window.detailPageMedia = function (roomId){
@@ -819,6 +840,7 @@ window.detailPageCalendar = function (){
                     todayBtn.innerHTML = `
                         <button class="today-btn">오늘</button>
                     `;
+
 
                 }
 
