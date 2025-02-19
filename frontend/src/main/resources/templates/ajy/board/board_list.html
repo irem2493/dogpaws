@@ -31,9 +31,10 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:if="${boardList.size() > 0}" th:each="board : ${boardList}">
-                    <td th:text="${board.board_id}"></td>
-                    <td th:text="${board.title}"></td>
+                <tr th:if="${boardList.size() > 0}" th:each="board, stat : ${boardList}">
+                    <input type="hidden" name="boardId" id="boardId" th:value="${board.board_id}"/>
+                    <td th:text="${boardList.size()-stat.index}"></td>
+                    <td><a th:href="@{/board/boardDetail/{boardId}/{category}(boardId=${board.board_id}, category=${category})}">[[${board.title}]]</a></td>
                     <td th:text="${board.nickname}"></td>
                     <td th:text="${board.view_count}"></td>
                     <td th:text="${#strings.replace(board.created_at, 'T', ' ')}"></td>
