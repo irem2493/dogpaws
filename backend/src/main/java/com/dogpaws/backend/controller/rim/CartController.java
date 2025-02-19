@@ -125,31 +125,59 @@ public ResponseEntity<ApiResponse<?>> updateCartOptionQuantity(
     }
 }
 
-// 장바구니 옵션 삭제
-@DeleteMapping("/option/{cartItemId}/{optionId}")
-public ResponseEntity<ApiResponse<?>> deleteCartOption(
-        @PathVariable Long cartItemId,
-        @PathVariable Long optionId) {
-    try {
-        log.info("옵션 삭제 요청 - cartItemId: {}, optionId: {}", cartItemId, optionId);
+    // 장바구니 옵션 삭제
+    @DeleteMapping("/option/{cartItemId}/{optionId}")
+    public ResponseEntity<ApiResponse<?>> deleteCartOption(
+            @PathVariable Long cartItemId,
+            @PathVariable Long optionId) {
+        try {
+            log.info("옵션 삭제 요청 - cartItemId: {}, optionId: {}", cartItemId, optionId);
 
-        cartService.deleteCartOption(cartItemId, optionId);
-        return ResponseEntity.ok(new ApiResponse<>(
-                ApiResponse.ApiStatus.SUCCESS,
-                Map.of("message", "옵션이 삭제되었습니다.")
-        ));
-    } catch (Exception e) {
-        log.error("옵션 삭제 실패: {}", e.getMessage(), e);
-        return ResponseEntity.badRequest().body(new ApiResponse<>(
-                ApiResponse.ApiStatus.ERROR,
-                Map.of("message", "옵션 삭제에 실패했습니다.")
-        ));
+            cartService.deleteCartOption(cartItemId, optionId);
+            return ResponseEntity.ok(new ApiResponse<>(
+                    ApiResponse.ApiStatus.SUCCESS,
+                    Map.of("message", "옵션이 삭제되었습니다.")
+            ));
+        } catch (Exception e) {
+            log.error("옵션 삭제 실패: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse<>(
+                    ApiResponse.ApiStatus.ERROR,
+                    Map.of("message", "옵션 삭제에 실패했습니다.")
+            ));
+        }
     }
-}
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleException(Exception e) {
         return ResponseEntity.badRequest().body(
                 new ApiResponse<>(ApiResponse.ApiStatus.ERROR, e.getMessage())
         );
     }
+
+    //장바구니 옵션 추가
+    @PostMapping("/option/{cartItemId}")
+    public ResponseEntity<ApiResponse<?>> addCartOption(
+            @PathVariable Long cartItemId,
+            @RequestBody Map<String, Object> request
+    ) {
+        try {
+            log.info("옵션 추가 요청 - cartItemId: {}, request: {}", cartItemId, request);
+
+            Long optionId = Long.parseLong(request.get("optionId").toString());
+            int quantity = Integer.parseInt(request.get("quantity").toString());
+
+            cartService.addCartOption(cartItemId, optionId, quantity);
+
+            return ResponseEntity.ok(new ApiResponse<>(
+                    ApiResponse.ApiStatus.SUCCESS,
+                    Map.of("message", "옵션이 추가되었습니다.")
+            ));
+        } catch (Exception e) {
+            log.error("옵션 추가 실패: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse<>(
+                    ApiResponse.ApiStatus.ERROR,
+                    Map.of("message", "옵션 추가에 실패했습니다.")
+            ));
+        }
+    }
 }
+

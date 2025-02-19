@@ -156,6 +156,16 @@
         AND option_id = #{optionId}
     </update>
 
+
+    <select id="isOptionExists" resultType="boolean">
+        SELECT EXISTS (
+        SELECT 1
+        FROM tbl_cart_item_options
+        WHERE cart_item_id = #{cartItemId}
+        AND option_id = #{optionId}
+        )
+    </select>
+
     <!-- 장바구니 옵션 삭제 -->
     <delete id="deleteCartItemOptions">
         DELETE FROM tbl_cart_item_options
@@ -169,6 +179,7 @@
         </foreach>
         )
     </delete>
+
 
     <!-- 장바구니 아이템 삭제 -->
     <delete id="deleteCartItems">

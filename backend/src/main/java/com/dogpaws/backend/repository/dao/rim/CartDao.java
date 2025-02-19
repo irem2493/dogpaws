@@ -47,6 +47,14 @@ public interface CartDao {
             @Param("cartItemIds") List<Long> cartItemIds
     );
 
+    /**
+     * 장바구니 아이템에 해당 옵션이 이미 존재하는지 확인
+     * @param cartItemId 장바구니 아이템 ID
+     * @param optionId 옵션 ID
+     * @return 존재하면 true, 없으면 false
+     */
+    boolean isOptionExists(@Param("cartItemId") Long cartItemId, @Param("optionId") Long optionId);
+
     void deleteSelectedItems(@Param("cartItemIds") List<Long> cartItemIds);
 
     void updateCartOptionQuantity(

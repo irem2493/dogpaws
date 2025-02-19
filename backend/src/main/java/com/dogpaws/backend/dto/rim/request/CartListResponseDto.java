@@ -1,5 +1,6 @@
 package com.dogpaws.backend.dto.rim.request;
 
+import com.dogpaws.backend.dto.rim.ProductOptionDto;
 import lombok.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class CartListResponseDto {
     private int productPrice;
     private String imageUrl;
     private List<CartOptionResponseDto> cartOptions;
+    private List<ProductOptionDto> availableOptions;
 
     // 총 금액 계산 메서드
     public int getTotalPrice() {

@@ -26,4 +26,6 @@ public class CartSummaryResponseDto {
 
     @JsonProperty("total_quantity")
     private int totalQuantity;
+
+
 }
