@@ -1,0 +1,106 @@
+.board-container {
+    margin: auto;
+}
+.board-container .header {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    height: 200px; /* 고정 높이 설정 */
+    overflow: hidden; /* 넘치는 부분 숨김 */
+    border-radius: 8px;
+}
+
+.board-container .header img {
+    width: 100%;
+    height: 100%; /* 부모 요소(200px)에 맞춤 */
+    object-fit: cover; /* 이미지가 찌그러지지 않고 꽉 채우도록 설정 */
+    border-radius: 8px;
+    display: block;
+}
+
+.board-container .header::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1); /* 검은색 반투명 오버레이 */
+    border-radius: 8px;
+}
+
+.board-container .header-text {
+    position: absolute;
+    color: white;
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    z-index: 1;
+}
+
+
+.board-container .menu {
+    display: flex;
+    margin: 10px;
+    border-bottom: 2px solid #ddd;
+    gap: 20px;
+}
+
+.board-container .menu a {
+    text-decoration: none;
+    color: black;
+    padding: 10px 15px;
+}
+
+.board-container .menu a.active {
+    border-bottom: 3px solid orange;
+    font-weight: bold;
+}
+
+.board-container .title-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #bebebe;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.board-container .title-input:focus {
+    border: 1px solid orange;
+    outline: none; /* 기본 브라우저 포커스 스타일 제거 */
+}
+
+.board-container .btn-submit {
+    margin: 10px 0 80px 0;
+    padding: 10px 15px;
+    background: orange;
+    color: white;
+    border: none;
+    cursor: pointer;
+
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+@media print {
+    body {
+        margin: 0 !important;
+    }
+}
+
+.board-container .main-container {
+    width: 100%;
+
+}
+
+.board-container .ck-content {
+    line-height: 1.6;
+    word-break: break-word;
+}
+
+.board-container .editor-container_classic-editor .editor-container__editor {
+    width: 100%;
+}
