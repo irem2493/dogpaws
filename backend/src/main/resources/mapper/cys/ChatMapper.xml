@@ -37,4 +37,27 @@
         SET shared_yn = 'Y'
         WHERE calendar_id = #{calendarId}
     </update>
+
+    <select id="getAllMediaUrl" resultType="String">
+        SELECT file_url
+        FROM tbl_file
+        WHERE file_ref_no= #{roomId}
+        ORDER BY file_no DESC;
+    </select>
+
+    <select id="getSharedCalendar" resultType="com.dogpaws.backend.dto.cys.CalendarSharedResponseDto">
+        SELECT cs.room_id,
+                c.calendar_title,
+                c.calendar_start_date,
+                c.calendar_end_date,
+                c.calendar_id
+        FROM tbl_calendar_shared cs
+        JOIN tbl_calendar c
+        ON c.calendar_id = cs.calendar_id
+        WHERE cs.room_id = #{roomId}
+        AND c.calendar_start_date >= CURRENT_DATE
+        ORDER BY c.calendar_start_date
+        LIMIT 3
+    </select>
+
 </mapper>

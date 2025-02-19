@@ -1,6 +1,7 @@
 package com.dogpaws.backend.service.cys;
 
 import com.dogpaws.backend.dto.cys.CalendarSharedDto;
+import com.dogpaws.backend.dto.cys.CalendarSharedResponseDto;
 import com.dogpaws.backend.dto.cys.DogResponseDto;
 import com.dogpaws.backend.dto.hyepin.CalendarDto;
 import com.dogpaws.backend.repository.dao.cys.ChatDao;
@@ -51,5 +52,14 @@ public class ChatService {
     public void sharedSchedule(CalendarSharedDto sharedDto) {
         chatDao.sharedSchedule(sharedDto);
         chatDao.updateSharedYN(sharedDto.getCalendarId());
+    }
+
+
+    public List<String> getAllMediaUrl(String roomId) {
+        return chatDao.getAllMediaUrl(roomId);
+    }
+
+    public List<CalendarSharedResponseDto> getSharedCalendar(String roomId) {
+        return chatDao.getSharedCalendar(roomId);
     }
 }

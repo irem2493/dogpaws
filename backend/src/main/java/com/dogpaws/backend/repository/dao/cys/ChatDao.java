@@ -1,6 +1,7 @@
 package com.dogpaws.backend.repository.dao.cys;
 
 import com.dogpaws.backend.dto.cys.CalendarSharedDto;
+import com.dogpaws.backend.dto.cys.CalendarSharedResponseDto;
 import com.dogpaws.backend.dto.cys.DogResponseDto;
 import com.dogpaws.backend.dto.hyepin.CalendarDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -20,5 +21,9 @@ public interface ChatDao {
 
     void sharedSchedule(@Param("sharedDto") CalendarSharedDto sharedDto);
     void updateSharedYN(@Param("calendarId") int calenderId);
+
+    List<String> getAllMediaUrl(@Param("roomId") String roomId);
+
+    List<CalendarSharedResponseDto> getSharedCalendar(String roomId);
 }
 
