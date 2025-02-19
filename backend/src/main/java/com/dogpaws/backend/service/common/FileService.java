@@ -37,6 +37,26 @@ public class FileService {
 
     }
 
+    //fileUrl return 값 있는 업로드
+    @Transactional
+    public String saveChatFile(MultipartFile file,
+                         String fileGbnCd,
+                         String fileRefId,
+                         String userId) throws IOException {
+
+        FileDto fileDto = fileUploadUtil.saveFile(file, fileGbnCd, fileRefId, userId);
+
+        try {
+            File fileEntity = modelMapper.map(fileDto, File.class);
+            fileRepository.save(fileEntity);
+        } catch (Exception e) {
+            fileUploadUtil.deleteFile(fileDto.getFileUrl());
+            throw new RuntimeException("파일 데이터 저장 실패: " + e.getMessage(), e);
+        }
+
+        return fileDto.getFileUrl();
+    }
+
     /**
      * 파일 ID로 파일 삭제
      * @param fileId 파일 ID
