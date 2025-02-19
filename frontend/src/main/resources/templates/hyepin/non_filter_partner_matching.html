@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/hyepin/matching.css">
+    <link rel="stylesheet" href="/css/hyepin/partner-matching.css">
+</head>
+<body layout:fragment="content" >
+<div class="container">  <!-- 컨테이너 div.. 지우지 마세요 !-->
+    <!-- 여기서부터 작성하시면 됩니다. !-->
+
+    <!-- 세션에서 유저값 받기 !-->
+    <th:block th:if="${session.user != null && session.dog != null}">
+        <input type="hidden" id="sessionUsername" th:value="${session.user.username}">
+        <input type="hidden" id="sessionDogId" th:value="${session.dog.dogId}">
+        <input type="hidden" id="sessionDogName" th:value="${session.dog.dogName}">
+    </th:block>
+
+    <div class="row">
+        <div class="pw-title col-12">교배 매칭</div>
+    </div>
+
+    <div style="display: flex; gap: 20px; padding: 20px;">
+        <div class="dog-filter" style="gap: 5px;">
+            <div>
+                <img src="/img/icon/dog-filter/filter.svg" alt="dog-icon"> 필터
+            </div>
+            <div>
+                <img src="/img/icon/button/caret.svg" alt="dog-icon" style="cursor: pointer" id="filterIcon">
+            </div>
+        </div>
+        <div class="dog-filter" style="gap: 5px;">
+            <div>
+                <img src="/img/icon/dog-filter/liking.svg" alt="dog-icon"> 이런 짝이 좋아요!
+            </div>
+            <div>
+                <img src="/img/icon/button/caret.svg" alt="dog-icon" style="cursor: pointer" id="cardIcon">
+            </div>
+        </div>
+    </div> <!-- 필터 구분 영역 -->
+
+    <hr class="custom-hr" style="margin-bottom: 20px;">
+
+    <div class="row partner-matching-main-container">
+        <div class="col d-flex flex-column align-items-center justify-content-center">
+            <div class="text-container text-start">
+                <div class="fs-3 fs-md-5">교배매칭이 비활성화 상태입니다.</div>
+                <div class="fs-3 fs-md-5">
+                    매칭 설정을 하고 반려견의 <span style="color: #FF4B63;">운명의 짝</span>을 찾아보세요!
+                </div>
+            </div>
+        </div>
+
+        <div class="col partner-matching-main-item-button d-flex justify-content-center">
+            <img src="/img/mating-setting.svg" alt="교배매칭 활성화 이미지" onclick="partnerMatingActivate()">
+        </div>
+
+        <div class="col-sm-12 col-md partner-matching-main-item-img d-flex justify-content-center">
+            <img src="/img/교배매칭홍보용.jpg"
+                 alt="교배매칭 홍보 증명사진"
+                 class="img-fluid w-100"
+                 style="max-width: 800px; height: auto;">
+        </div>
+    </div>
+</div> <!-- 컨테이너 div.. 지우지 마세요 !-->
+<script src="/js/hyepin/partnerMatching/partner_form.js"></script>
+</body>
+</html>

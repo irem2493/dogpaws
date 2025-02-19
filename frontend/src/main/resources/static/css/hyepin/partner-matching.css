@@ -131,3 +131,25 @@
     user-select: none !important;
     pointer-events: none !important;
 }
+
+.partner-matching-main-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.partner-matching-main-item-text{
+    font-size: 30px;
+}
+
+.partner-matching-main-item-button{
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.partner-matching-main-item-img{
+    border-radius: 10px;
+    margin-bottom: 50px;
+}
+

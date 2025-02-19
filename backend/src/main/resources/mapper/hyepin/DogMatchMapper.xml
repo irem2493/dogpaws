@@ -215,6 +215,11 @@
         </foreach>
     </select>
 
+    <select id="getIsMatingAvailable" resultType="com.dogpaws.backend.dto.ajy.DogResponseDto">
+        -- 교배매칭 활성/비활성 여부
+        SELECT * FROM tbl_dogs
+        WHERE dog_id = #{dogId}
+    </select>
 
 
 </mapper>

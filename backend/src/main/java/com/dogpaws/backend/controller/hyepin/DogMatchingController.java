@@ -1,10 +1,12 @@
 package com.dogpaws.backend.controller.hyepin;
 
+import com.dogpaws.backend.dto.ajy.DogResponseDto;
 import com.dogpaws.backend.dto.hyepin.DogCandidateDto;
 import com.dogpaws.backend.dto.hyepin.FilterDto;
 import com.dogpaws.backend.dto.hyepin.MatchDto;
 import com.dogpaws.backend.dto.hyepin.MatchingCriteriaDto;
 import com.dogpaws.backend.global.common.ApiResponse;
+import com.dogpaws.backend.service.ajy.DogService;
 import com.dogpaws.backend.service.common.LikeService;
 import com.dogpaws.backend.service.hyepin.MatchingService;
 import com.dogpaws.frontend.dto.hyepin.AlarmDto;
@@ -76,7 +78,9 @@ public class DogMatchingController {
         log.info("여기는 백 컨트롤러 getDogFriendMatchList / matchType: {}", matchType);
         List<DogCandidateDto> matchList = matchingService.getFinalMatchingCandidates(dogId, username, matchType);
         //getDogFriendMatchList 좋아요 리스트 받아오기
-        matchList = likeService.getMatcingLike(username, matchList, matchType.charAt(0));
+        if(matchList != null && matchList.size() > 0) {
+            matchList = likeService.getMatcingLike(username, matchList, matchType.charAt(0));
+        }
         log.info("여기는 백 컨트롤러 getDogFriendMatchList / matchList 값: {}", matchList);
         return matchList;
     }
@@ -89,6 +93,18 @@ public class DogMatchingController {
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "그룹 초대 성공");
         } else {
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "그룹 초대 실패");
+        }
+    }
+
+    //강아지 정보로 교배매칭 활성/비활성 체크 .. api 값 넘겨주면 프론트에서 Boolean값 체크
+    @GetMapping("/detail/{dogId}")
+    public Boolean getDog(@PathVariable Integer dogId) {
+        DogResponseDto dog = matchingService.getIsMatingAvailable(dogId);
+        System.out.println("getIsMatingAvailable:" + dog.getIsMatingAvailable());
+        if(dog.getIsMatingAvailable().equals("N")){
+            return false;
+        }else{
+            return true;
         }
     }
 }

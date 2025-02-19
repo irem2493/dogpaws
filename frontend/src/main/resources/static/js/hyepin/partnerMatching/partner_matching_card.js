@@ -3,10 +3,8 @@
 let matchList = [];  // 빈 객체로 초기화;  // 데이터를 저장할 배열
 let startIndex = 0;   // 현재 시작 인덱스
 
-//const dogId = sessionDogId.value;
-const dogId = 1;
-//const username = sessionUsername.value;
-const username = "chlchl";
+const dogId = sessionDogId.value;
+const username = sessionUsername.value;
 // 컨트롤러에서 matchList 데이터 가져오기
 api.get('/api/matching?dogId=' + dogId + '&username=' + username + '&matchType=P')
     .then(data => {

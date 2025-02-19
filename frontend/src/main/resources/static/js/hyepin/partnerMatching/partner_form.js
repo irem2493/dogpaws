@@ -251,6 +251,10 @@ function applyFilter(filter) {
     }
 }
 
-
+//교배매칭 활성화 하러가기
+function partnerMatingActivate(){
+    const dogId = document.getElementById("sessionDogId").value;
+    window.location.href = `/dog/dogEidt/${dogId}`;
+}
 
 
