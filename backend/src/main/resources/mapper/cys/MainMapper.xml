@@ -11,5 +11,6 @@
         LEFT JOIN tbl_gubn gp ON gp.gubn_code = d.personality_type
         AND gp.group_code = 'dog_type_code'
         WHERE dog_id = #{dogId}
+        LIMIT 1
     </select>
 </mapper>
