@@ -1,5 +1,6 @@
 package com.dogpaws.backend.repository.dao.hyepin;
 
+import com.dogpaws.backend.dto.ajy.DogResponseDto;
 import com.dogpaws.backend.dto.hyepin.DogCandidateDto;
 import com.dogpaws.backend.dto.hyepin.FilterDto;
 import com.dogpaws.backend.dto.hyepin.MatchingCriteriaDto;
@@ -23,4 +24,6 @@ public interface DogMatchDao {
     public MatchingCriteriaDto getMatchingCriteria(@Param("dogId") int dogId, @Param("username") String username, @Param("matchType") String matchType);
     public Integer countPersonalMatches(@Param("dogId") int dogId, @Param("dogPersonalGbnCdsList") List<String> dogPersonalGbnCdsList);
     public Integer countPlayMatches(@Param("dogId") int dogId, @Param("dogPlayGbnCdsList") List<String> dogPlayGbnCdsList);
+    public DogResponseDto getIsMatingAvailable(@Param("dogId") int dogId);
+
 }
