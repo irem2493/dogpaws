@@ -11,13 +11,13 @@ function likeToggle(element) {
     const LikeDto = {
         "username": username,
         "dogId": parseInt(dogId), // <-- 숫자로 변환
-        "likeCode": "F".charAt(0) // <-- char 변환
+        "likeCode": "P".charAt(0) // <-- char 변환
     }
 
     const formData = new FormData();
     formData.append("username", username);
     formData.append("dogId", dogId);
-    formData.append("likeCode", "F");
+    formData.append("likeCode", "P");
 
     api.post('/api/likes/toggle', formData, {})
         .then(res => {

@@ -1,5 +1,6 @@
 package com.dogpaws.backend.service.hyepin;
 
+import com.dogpaws.backend.dto.ajy.DogResponseDto;
 import com.dogpaws.backend.dto.hyepin.DogCandidateDto;
 import com.dogpaws.backend.dto.hyepin.FilterDto;
 import com.dogpaws.backend.dto.hyepin.MatchingCriteriaDto;
@@ -68,17 +69,19 @@ public class MatchingService {
         return result;
     }
 
-    //친구매칭 리스트 (1단계)
-    public List<DogCandidateDto> getCandidateDogs(int dogId, String username, String matchType) {
-        /*
-        for(MatchDto matchDto : matchList){
-            matchDto.setMatchedCriteriaList(StringUtil.splitToList(matchDto.getMatchedCriteria()));
-            if(matchDto.getProfileUrl() != null){
-                matchDto.setProfileUrl(matchDto.getProfileUrl().substring(matchDto.getProfileUrl().indexOf("/uploads")));
-            }
-        }
-         */
-        return dogMatchDao.getDogFriendMatchList(dogId, username, matchType);
+    //친구매칭 리스트 (1단계) (필터없는 기본용)
+    public List<DogCandidateDto> getDogDefaultMatchList(int dogId, String matchType) {
+
+        List<DogCandidateDto> DogCandidateDtoList = dogMatchDao.getDogDefaultMatchList(dogId, matchType);
+        log.info("친구매칭 리스트 (1단계) DogCandidateDtoList" + DogCandidateDtoList);
+        return DogCandidateDtoList;
+    }
+
+    //친구매칭 리스트 (1단계) (필터 있음)
+    public List<DogCandidateDto> getCandidateDogs(int dogId, String username, String matchType, String bloodTestCertified, String vaccinationCertified, String healthRecordCertified) {
+        List<DogCandidateDto> DogCandidateDtoList = dogMatchDao.getDogMatchList(dogId, username, matchType, bloodTestCertified, vaccinationCertified, healthRecordCertified);
+        log.info("친구매칭 리스트 (1단계) DogCandidateDtoList" + DogCandidateDtoList);
+        return DogCandidateDtoList;
     }
 
     // 매칭 점수 / 기준 계산 (2단계)
@@ -96,7 +99,15 @@ public class MatchingService {
             matchedCriteriaList.add("품종");
         }
 
-        // 1. 체중 조건
+        //서류 조건
+        if (("Y".equals(criteria.getBloodTestCertified()) && "Y".equals(candidate.getBloodTestCertified())) ||
+                    ("Y".equals(criteria.getVaccinationCertified()) && "Y".equals(candidate.getVaccinationCertified())) ||
+                    ("Y".equals(criteria.getHealthRecordCertified()) && "Y".equals(candidate.getHealthRecordCertified()))) {
+          matchedCriteriaList.add("서류");
+        }
+
+
+        //체중 조건
         if ("U".equals(criteria.getWeightCategory()) && candidate.getWeight() >= criteria.getWeight() - 1) {
             score += 7;
             matchedCriteriaList.add("체중");
@@ -106,30 +117,34 @@ public class MatchingService {
         }
         System.out.println("체중 후 score: " + score);
 
-        // 2. 성격 유형 조건
+        //성격 유형 조건
         if (candidate.getPersonalityType() != null && candidate.getPersonalityType().equals(criteria.getDogTypeCodeGbnCd())) {
             score += 7;
             matchedCriteriaList.add("성격유형");
         }
         System.out.println("성격 유형 후 score: " + score);
 
-        // 3. tbl_dog_personal 조건: 해당 항목 수에 2점씩 부여
-        int personalCount = dogMatchDao.countPersonalMatches(candidate.getDogId(), criteria.getDogPersonalGbnCdsList());
-        if (personalCount > 0) {
-            matchedCriteriaList.add("성격");
+        //tbl_dog_personal 조건: 해당 항목 수에 2점씩 부여
+        if(!criteria.getDogPersonalGbnCdsList().isEmpty()){
+            int personalCount = dogMatchDao.countPersonalMatches(candidate.getDogId(), criteria.getDogPersonalGbnCdsList());
+            if (personalCount > 0) {
+                matchedCriteriaList.add("성격");
+            }
+            score += 2 * personalCount;
+            System.out.println("tbl_dog_personal score: " + score);
         }
-        score += 2 * personalCount;
-        System.out.println("tbl_dog_personal score: " + score);
 
-        // 4. tbl_dog_play 조건: 해당 항목 수에 2점씩 부여
-        int playCount = dogMatchDao.countPlayMatches(candidate.getDogId(), criteria.getDogPlayGbnCdsList());
-        if (playCount > 0) {
-            matchedCriteriaList.add("놀이");
+        if(!criteria.getDogPlayGbnCdsList().isEmpty()){
+            //tbl_dog_play 조건: 해당 항목 수에 2점씩 부여
+            int playCount = dogMatchDao.countPlayMatches(candidate.getDogId(), criteria.getDogPlayGbnCdsList());
+            if (playCount > 0) {
+                matchedCriteriaList.add("놀이");
+            }
+            score += 2 * playCount;
+            System.out.println("tbl_dog_play score: " + score);
         }
-        score += 2 * playCount;
-        System.out.println("tbl_dog_play score: " + score);
 
-        // 5. 산책 시작 시간 차이 (분 단위)
+        //산책 시작 시간 차이 (분 단위)
         if (candidate.getWalkStartTime() != null && criteria.getWalkStartTime() != null) {
             long diffStart = Math.abs(Duration.between(candidate.getWalkStartTime(), criteria.getWalkStartTime()).toMinutes());
             if (diffStart <= 30) {
@@ -142,7 +157,7 @@ public class MatchingService {
         }
         System.out.println("산책 시작 시간 score : " + score);
 
-        // 6. 산책 종료 시간 차이 (분 단위)
+        //산책 종료 시간 차이 (분 단위)
         if (candidate.getWalkEndTime() != null && criteria.getWalkEndTime() != null) {
             long diffEnd = Math.abs(Duration.between(candidate.getWalkEndTime(), criteria.getWalkEndTime()).toMinutes());
             if (diffEnd <= 30) {
@@ -159,23 +174,29 @@ public class MatchingService {
             matchedCriteriaList.add("산책시간");
         }
 
-        // 7. 산책 요일 조건
+        //산책 요일 조건
         List<String> candidateDays = StringUtil.splitToList(candidate.getWalkDays())
                 .stream()
-                .filter(day -> !day.isEmpty())
-                .map(day -> day.substring(0, 1))
+                .filter(day -> day != null && !day.trim().isEmpty()) // null 및 빈 문자열 체크 추가
+                .map(day -> day.length() > 0 ? day.substring(0, 1) : "") // 길이 체크 후 substring 실행
                 .collect(Collectors.toList());
+
         List<String> criteriaDays = StringUtil.splitToList(criteria.getWalkDays())
                 .stream()
-                .filter(day -> !day.isEmpty())
-                .map(day -> day.substring(0, 1))
+                .filter(day -> day != null && !day.trim().isEmpty()) // null 및 빈 문자열 체크 추가
+                .map(day -> day.length() > 0 ? day.substring(0, 1) : "") // 길이 체크 후 substring 실행
                 .collect(Collectors.toList());
+
         Set<String> commonDays = new HashSet<>(candidateDays);
         commonDays.retainAll(criteriaDays);
+
         if (!commonDays.isEmpty()) {
             score += commonDays.size(); // 공통 요일 수 만큼 점수 추가
             matchedCriteriaList.add("산책요일");
+        } else {
+            System.out.println("공통된 산책 요일이 없습니다.");
         }
+
         System.out.println("산책요일 score: " + score);
 
         candidate.setMatchScore(score);
@@ -189,17 +210,33 @@ public class MatchingService {
 
         //매칭필터 가져오기
         MatchingCriteriaDto criteria = dogMatchDao.getMatchingCriteria(dogId, username, matchType);
-        //문자열 잘라서 리스트 넣기
-        criteria.setDogPersonalGbnCdsList(StringUtil.splitToList(criteria.getDogPersonalGbnCds()));
-        criteria.setDogPlayGbnCdsList(StringUtil.splitToList(criteria.getDogPlayGbnCds()));
-        System.out.println("dto 확인@@@@@@@@@@ criteria: " + criteria);
+        //후보리스트 초기화
+        List<DogCandidateDto> candidates;
 
-        // 1단계: DB에서 후보 목록 가져오기
-        List<DogCandidateDto> candidates = getCandidateDogs(dogId, username, matchType);
+        //필터 기준이 없을 때
+        if(criteria == null){
+            //매칭 필터 없을 때 강아지 정보랑 비교하기
+            criteria = dogMatchDao.getDogCriteria(dogId);
+            //문자열 잘라서 리스트 넣기
+            criteria.setDogPersonalGbnCdsList(StringUtil.splitToList(criteria.getDogPersonalGbnCds()));
+            criteria.setDogPlayGbnCdsList(StringUtil.splitToList(criteria.getDogPlayGbnCds()));
+            // 1단계: DB에서 후보 목록 가져오기
+            candidates = getDogDefaultMatchList(dogId, matchType);
+        }else {
+            //문자열 잘라서 리스트 넣기
+            criteria.setDogPersonalGbnCdsList(StringUtil.splitToList(criteria.getDogPersonalGbnCds()));
+            criteria.setDogPlayGbnCdsList(StringUtil.splitToList(criteria.getDogPlayGbnCds()));
+            // 1단계: DB에서 후보 목록 가져오기
+            candidates = getCandidateDogs(dogId, username, matchType, criteria.getBloodTestCertified(), criteria.getVaccinationCertified(), criteria.getHealthRecordCertified());
+        }
+
+        System.out.println("dto 확인@@@@@@@@@@ criteria: " + criteria);
+        System.out.println("dto 확인@@@@@@@@@@ candidates: " + candidates);
 
         // 2단계: 각 후보에 대해 매칭 점수와 매칭 기준 계산
         for (DogCandidateDto candidate : candidates) {
             candidate = calculateMatching(candidate, criteria);
+            System.out.println("candidate: " + candidate);
         }
 
         // 지역 일치 여부: candidate.getDogRegion()와 candidate.getUserRegion() 비교 (같으면 우선순위 높게)
@@ -230,6 +267,13 @@ public class MatchingService {
     public int inviteChatRoom(AlarmDto alarmDto) {
         int result = alarmDao.insertAlarm(alarmDto);
         return result;
+    }
+
+    //교배매칭 활성화 / 비활성화
+    public DogResponseDto getIsMatingAvailable(Integer dogId) {
+        DogResponseDto dog = dogMatchDao.getIsMatingAvailable(dogId);
+        System.out.println("dog 정보: " + dog);
+        return dog;
     }
 
 

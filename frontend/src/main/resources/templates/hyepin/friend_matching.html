@@ -81,8 +81,8 @@
                     </div>
                     <div>
                         <input type="number" class="input-a" name="weight" placeholder="체중을 입력해주세요" style="width: 50%"> Kg
-                        <label> <input type="radio" name="weightCategory" class="radio-round" value="U" checked> 이상</label>
-                        <label><input type="radio" name="weightCategory" class="radio-round" value="D"> 이하</label>
+                        <label> <input type="radio" name="weightCategory" class="radio-basic" value="U" checked> 이상</label>
+                        <label><input type="radio" name="weightCategory" class="radio-basic" value="D"> 이하</label>
                     </div>
                 </div>
 
@@ -162,12 +162,17 @@
                     <div class="dog-filter">
                         <img src="/img/icon/dog-filter/clock.svg" alt="clock-icon"> 산책 시작 시간
                     </div>
-                    <div>
-                        <input class="input-a" name="walkStartTime" type="time" style="width: 40%; padding: 0px 15px 0px 15px;">
-                        <input class="input-a" name="walkEndTime" type="time" style="width: 40%; padding: 0px 15px 0px 15px;">
+                    <div style="margin-bottom: 20px;">
+                        <input class="input-a" name="walkStartTime" type="time" style="width: 45%; padding: 0px 15px 0px 15px;">
+                        <input class="input-a" name="walkEndTime" type="time" style="width: 45%; padding: 0px 15px 0px 15px;">
                     </div>
                     <div>
-                        <div>산책요일 <label> <input type="checkbox" class="checkbox-basic" id="selectAll"> 전체</label></div>
+                        <div>
+                            <div class="dog-filter">
+                                <img src="/img/icon/dog-filter/calendar.svg" alt="calendar-icon"> 산책요일
+                            </div>
+                            <label> <input type="checkbox" class="checkbox-basic" id="selectAll"> 전체</label>
+                        </div>
                     </div>
                     <div>
                         <label> <input type="checkbox" class="checkbox-basic day-checkbox">월요일</label>
@@ -258,7 +263,7 @@
                         <div class="d-flex flex-wrap" style="gap: 5px;">
                             <div class="filter-card">
                                 <th:block th:each="walkDay : ${filter.walk_day_list}">
-                                    <span style="margin-right: 5px;">[[${walkDay}]] </span>
+                                    <span style="margin-right: 5px;">[[${walkDay.substring(0,1)}]]</span>
                                 </th:block>
                                 <span>
                                     <th:block th:if="${filter.str_walk_start_time == '' && filter.str_walk_end_time != ''}">
