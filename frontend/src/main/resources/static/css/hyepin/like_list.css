@@ -46,19 +46,22 @@
 .content-item{
     display: flex;
     gap: 10px;
-    width: 700px;
+    width: 600px;
 }
 
 
 .content-item-container-web{
+    display: flex;
+    justify-content: center;
     padding: 20px;
+    gap: 30px;
 }
 
 .like-list-container-content-mobile{
     display: none;
 }
 
-.content-item-container, .content-item-container-web{
+.content-item-container{
     display: flex;
     gap: 10px;
     justify-content: center;
@@ -88,6 +91,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 200px;
 }
 
 .like-list-container-content-mobile{

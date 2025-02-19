@@ -1,10 +1,12 @@
 document.addEventListener("DOMContentLoaded", async function () {
+
     const friendTab = document.getElementById("friend-tab");
     const matingTab = document.getElementById("mating-tab");
     const contentContainer = document.querySelector(".like-list-container-content");
 
     const sessionDogId = document.getElementById("sessionDogId");
-    const dogId = sessionDogId.value;
+    //const dogId = sessionDogId.value;
+    const dogId = 1;
 
     async function fetchListData(likeType) {
         api.get('/api/like?dogId=' + dogId + '&likeType=' + likeType)
@@ -31,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         selectedTab.classList.add("title-d");
 
         // API 데이터 가져오기
-        const listType = selectedTab === friendTab ? "F" : "P";
+        listType = selectedTab === friendTab ? "F" : "P";
         const listData = await fetchListData(listType);
 
 

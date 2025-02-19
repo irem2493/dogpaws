@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LikeDto {
-    private String username;
+    private int myDogId;
     private int dogId;
     private char likeCode;
 }
