@@ -22,7 +22,7 @@ public class PaymentService {
 
 
     @Transactional
-    public void confirmPayment(String paymentKey, String orderId, Integer amount) {
+    public void confirmPayment(String paymentKey, String qlId, String orderId, Integer amount) {
         try {
             // 1. 주문 정보 검증
             OrderDto order = orderService.getOrder(orderId);
@@ -33,8 +33,7 @@ public class PaymentService {
                     tossPaymentClient.requestPaymentConfirm(paymentKey, orderId, amount);
 
             // 3. 주문 상태 업데이트 및 결제키 저장
-            orderDao.updatePaymentKey(orderId, paymentKey);
-            orderDao.updateOrderStatus(orderId, OrderStatus.PAID.name());
+            orderDao.updateOrderStatus(orderId, OrderStatus.PAID.name(), paymentKey);
 
             log.info("결제 승인 성공: orderId={}, paymentKey={}", orderId, paymentKey);
 

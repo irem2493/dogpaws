@@ -27,7 +27,7 @@ public class ProductDto {
     private String subCategory;         // 소분류 (사료만: D:건식, W:습식)
     private String storageInfo;         // 보관방법
     private String weight;              // 무게
-    private String manufacturer;
+    private String manufacturer; //브랜드
 
     private List<ProductOptionDto> options;  // 상품 옵션 목록
 

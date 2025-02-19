@@ -1,32 +1,21 @@
 package com.dogpaws.backend.dto.rim;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderItemDto {
-    @JsonProperty("order_item_id")
-    private Long orderItemId;      
-    
-    @JsonProperty("ql_id")
-    private String qlId;           
-    
-    @JsonProperty("product_id")
-    private Long productId;        
-    
-    @JsonProperty("product_name")
-    private String productName;    
-    
-    private int amount;            
-    
-    @JsonProperty("item_price")
-    private int itemPrice;         
-    
-    private List<OrderItemOptionDto> options;
+    private Long orderItemId;
+    private String qlId;
+    private Long productId;
+    private String productName;           // 상품명
+    private String manufacturer;             // 브랜드명
+    private String imageUrl;              // 상품 이미지 URL
+    private Integer amount;             // 수량
+    private Integer itemPrice;                // 상품 총 가격
+    private List<OrderItemOptionDto> options; // 주문 옵션 목록
 }

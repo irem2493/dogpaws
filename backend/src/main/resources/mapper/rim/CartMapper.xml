@@ -98,8 +98,10 @@
         c.product_id,
         p.name as product_name,
         p.price as product_price,
+        p.manufacturer,
         p.image_url,
         po.option_id,
+        cio.cart_item_option_id,
         po.option_name,
         po.option_price,
         cio.quantity as option_quantity,
@@ -116,12 +118,14 @@
         <id property="cartItemId" column="cart_item_id"/>
         <id property="productId" column="product_id"/>
         <result property="productName" column="product_name"/>
+        <result property="manufacturer" column="manufacturer"/>
         <result property="productPrice" column="product_price"/>
         <result property="imageUrl" column="image_url"/>
 
         <!-- 옵션 정보 매핑 -->
         <collection property="cartOptions" ofType="com.dogpaws.backend.dto.rim.request.CartOptionResponseDto">
             <id property="cartItemId" column="cart_item_id"/>
+            <id property="cartItemOptionId" column="cart_item_option_id"/>
             <id property="optionId" column="option_id"/>
             <result property="optionName" column="option_name"/>
             <result property="optionPrice" column="option_price"/>
@@ -129,8 +133,8 @@
         </collection>
     </resultMap>
 
-    <!-- 결제 완료 후 카트 비우기 -->
-    <delete id="deleteCartItems">
+    <!-- 장바구니 옵션 삭제 -->
+    <delete id="deleteCartItemOptions">
         DELETE FROM tbl_cart_item_options
         WHERE cart_item_id IN (
         SELECT cart_item_id
@@ -140,8 +144,11 @@
         <foreach item="itemId" collection="cartItemIds" open="(" separator="," close=")">
             #{itemId}
         </foreach>
-        );
+        )
+    </delete>
 
+    <!-- 장바구니 아이템 삭제 -->
+    <delete id="deleteCartItems">
         DELETE FROM tbl_cart
         WHERE username = #{username}
         AND cart_item_id IN
@@ -156,9 +163,11 @@
         c.cart_item_id,
         c.product_id,
         p.name as product_name,
+        p.manufacturer,
         p.price as product_price,
         p.image_url,
         po.option_id,
+        cio.cart_item_option_id,
         po.option_name,
         po.option_price,
         cio.quantity as option_quantity,

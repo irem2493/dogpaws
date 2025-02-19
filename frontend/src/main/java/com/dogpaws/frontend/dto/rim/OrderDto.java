@@ -1,9 +1,10 @@
-package com.dogpaws.backend.dto.rim;
+package com.dogpaws.frontend.dto.rim;
 
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Data
 @Builder
@@ -16,7 +17,7 @@ public class OrderDto {
     private Integer totalPrice;           // 총 주문 금액
     private Integer productPrice;         // 상품 금액
     private Integer deliveryFee;          // 배송비
-    private OrderStatus orderStatus;           // 주문 상태
+    private String  orderStatus;           // 주문 상태
     private LocalDateTime orderDate;      // 주문 일시
 
     // 주문자 정보
@@ -40,6 +41,7 @@ public class OrderDto {
     private String paymentKey;            // 결제 키
     private String paymentStatus;         // 결제 상태
     private LocalDateTime paidAt;         // 결제 완료 시간
+
 
     // 장바구니 상품 id 비우기용
     private List<Long> cartItemIds;

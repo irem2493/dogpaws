@@ -17,6 +17,8 @@ public class CartOptionResponseDto {
     @JsonProperty("option_id")
     private Long optionId;
 
+    private Long CartItemOptionId;
+
     @JsonProperty("option_name")
     private String optionName;
 

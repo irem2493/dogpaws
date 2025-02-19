@@ -1,8 +1,10 @@
 package com.dogpaws.backend.controller.rim;
 
+import com.dogpaws.backend.client.TossPaymentClient;
 import com.dogpaws.backend.dto.rim.OrderDto;
 import com.dogpaws.backend.dto.rim.OrderStatistics;
-import com.dogpaws.backend.dto.rim.request.OrderCreateRequest;
+import com.dogpaws.backend.dto.rim.OrderStatus;
+import com.dogpaws.backend.dto.rim.request.PaymentResponse;
 import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.service.rim.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -20,14 +22,60 @@ public class OrderController {
     private final OrderService orderService;
 
     /**
-     * 주문 생성
+     * 주문 생성 (결제 전)
      */
     @PostMapping
-    public ApiResponse<?> createOrder(@RequestBody OrderCreateRequest request) {
+    public ApiResponse<?> createOrder(@RequestBody OrderDto request) {
         log.info("주문 생성 요청: {}", request);
         OrderDto order = orderService.createOrder(request);
-        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS,order);
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, order);
     }
+
+
+    /**
+     * 결제 성공 처리
+     */
+    @GetMapping("/success")
+    public ApiResponse<?> paymentSuccess(
+            @RequestParam String paymentKey,
+            @RequestParam String qlId,
+            @RequestParam Long amount) {
+
+        log.info("결제 성공 처리: paymentKey={}, orderId={}, amount={}", paymentKey, qlId, amount);
+
+        try {
+            // 주문 상태 업데이트만 수행
+            orderService.updateOrderStatus(qlId, OrderStatus.PAID, paymentKey);
+
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS,
+                    Map.of("qlId", qlId));
+
+        } catch (Exception e) {
+            log.error("주문 상태 업데이트 실패: {}", e.getMessage(), e);
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR,
+                    Map.of("message", "주문 처리 실패"));
+        }
+    }
+
+    /**
+     * 결제 실패 처리
+     */
+    @GetMapping("/fail")
+    public ApiResponse<?> paymentFail(
+            @RequestParam String orderId,
+            @RequestParam String message,
+            @RequestParam String code) {
+
+        log.info("결제 실패 처리: orderId={}, message={}, code={}", orderId, message, code);
+
+        // 결제 실패 시에는 주문 상태를 변경하지 않고 READY 상태 유지
+        // 사용자가 다시 결제를 시도할 수 있음
+        return new ApiResponse<>(ApiResponse.ApiStatus.ERROR,
+                Map.of("message", message,
+                        "code", code,
+                        "orderId", orderId));
+    }
+
     /**
      * 주문 조회
      */
@@ -45,13 +93,14 @@ public class OrderController {
         }
     }
 
+
     /**
      * 사용자의 주문 목록 조회
      */
     @GetMapping("/user/{username}")
     public ApiResponse<?> getUserOrders(@PathVariable String username) {
         try {
-            List<OrderDto> orders = orderService.getUserOrders(username);
+            List<com.dogpaws.backend.dto.rim.OrderDto> orders = orderService.getUserOrders(username);
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, orders);
         } catch (Exception e) {
             log.error("사용자 주문 목록 조회 실패: {}", e.getMessage(), e);

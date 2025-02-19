@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 public class CartOptionResponseDto {
     private Long cartItemId;
+    private Long cartItemOptionId;
     private Long optionId;
     private String optionName;
     private int optionPrice;
