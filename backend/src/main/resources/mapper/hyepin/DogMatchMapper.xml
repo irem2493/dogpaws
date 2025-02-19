@@ -165,7 +165,7 @@
         AND g.gubn_code = d.breed
         CROSS JOIN (SELECT DISTINCT breed_gbn_cd, is_mix
         FROM tbl_dog_match
-        WHERE dog_id = 1 LIMIT 1) m
+        WHERE dog_id = #{dogId} LIMIT 1) m
         WHERE d.username &lt;&gt; #{username}
         -- 품종 필터: 후보 강아지의 품종과 현재 강아지의 필터 값이 일치하거나, 필터가 설정되지 않은 경우
         AND (d.breed = m.breed_gbn_cd OR m.breed_gbn_cd IS NULL)
