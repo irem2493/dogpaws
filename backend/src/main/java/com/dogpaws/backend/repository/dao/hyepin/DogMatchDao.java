@@ -21,6 +21,8 @@ public interface DogMatchDao {
     public List<DogCandidateDto> getDogMatchList(@Param("dogId") int dogId, @Param("username") String username, @Param("matchType") String matchType,
                                                  @Param("bloodTestCertified") String bloodTestCertified, @Param("vaccinationCertified") String vaccinationCertified,
                                                  @Param("healthRecordCertified") String healthRecordCertified);
+    public List<DogCandidateDto> getDogDefaultMatchList(@Param("dogId") int dogId, @Param("matchType") String matchType);
+    public MatchingCriteriaDto getDogCriteria(@Param("dogId") int dogId);
     public MatchingCriteriaDto getMatchingCriteria(@Param("dogId") int dogId, @Param("username") String username, @Param("matchType") String matchType);
     public Integer countPersonalMatches(@Param("dogId") int dogId, @Param("dogPersonalGbnCdsList") List<String> dogPersonalGbnCdsList);
     public Integer countPlayMatches(@Param("dogId") int dogId, @Param("dogPlayGbnCdsList") List<String> dogPlayGbnCdsList);

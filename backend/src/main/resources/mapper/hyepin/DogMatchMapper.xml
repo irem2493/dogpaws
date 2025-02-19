@@ -126,10 +126,35 @@
         GROUP BY dm.dog_id;
     </select>
 
+    <select id="getDogCriteria" resultType="com.dogpaws.backend.dto.hyepin.MatchingCriteriaDto">
+        -- 필터 없을 시 강아지 기본 매칭 기준 가져오기
+        SELECT
+        d.dog_id,
+        d.username,
+        d.is_mix,
+        d.breed AS breed_gbn_cd,
+        d.weight,
+        'U' AS weight_category,
+        d.walk_days,
+        d.personality_type AS dog_type_code_gbn_cd,
+        d.blood_test_certified,
+        d.vaccination_certified,
+        d.health_record_certified,
+        (SELECT GROUP_CONCAT(DISTINCT ps.dog_personal_gbn_cd ORDER BY ps.dog_personal_gbn_cd SEPARATOR ',')
+        FROM tbl_dog_personal ps WHERE ps.dog_id = d.dog_id) AS dogPersonalGbnCds,
+        (SELECT GROUP_CONCAT(DISTINCT pl.dog_play_gbn_cd ORDER BY pl.dog_play_gbn_cd SEPARATOR ',')
+        FROM tbl_dog_play pl WHERE pl.dog_id = d.dog_id) AS dogPlayGbnCds,
+        d.walk_start_time,
+        d.walk_end_time
+        FROM tbl_dogs d
+        WHERE d.dog_id = #{dogId};
+    </select>
+
     <select id="getMatchingCriteria" resultType="com.dogpaws.backend.dto.hyepin.MatchingCriteriaDto" parameterType="map">
         -- 매칭 필터 가져오기
         SELECT
         m.dog_id,
+        d.username,
         m.is_mix,
         m.breed_gbn_cd,
         m.weight,
@@ -151,7 +176,7 @@
     </select>
 
     <select id="getDogMatchList" resultType="com.dogpaws.backend.dto.hyepin.DogCandidateDto">
-        -- 강아지 매칭 리스트
+        -- 강아지 필터 매칭 리스트
         SELECT DISTINCT
         d.dog_id, d.username, d.dog_name, d.breed, g.gubn_name AS breedName, d.is_mix, d.gender, d.is_neutered,
         d.weight, d.personality_type, d.dog_intro, d.personality_type, d.walk_start_time,
@@ -193,6 +218,40 @@
         ELSE 0
         END) DESC,
         RAND()
+    </select>
+
+    <select id="getDogDefaultMatchList" resultType="com.dogpaws.backend.dto.hyepin.DogCandidateDto">
+        -- 매칭 필터 없을 때 기본 매칭 (현재 강아지 정보와 비슷한 강아지 매칭)
+        SELECT DISTINCT
+        d.dog_id, d.username, d.dog_name, d.breed, g.gubn_name AS breedName, d.is_mix, d.gender, d.is_neutered,
+        d.weight, d.personality_type, d.dog_intro, d.walk_start_time,
+        d.walk_end_time, d.walk_days, d.profile_url, d.blood_test_certified, d.vaccination_certified, d.health_record_certified,
+        (SELECT u.address FROM tbl_users u WHERE u.username = d.username LIMIT 1) AS address,
+        LEFT((SELECT u.address FROM tbl_users u WHERE u.username = d.username LIMIT 1), 2) AS dog_region,
+        LEFT((SELECT u.address FROM tbl_users u WHERE u.username = (SELECT username FROM tbl_dogs WHERE dog_id = 1 LIMIT 1)), 2) AS user_region
+        FROM tbl_dogs d
+        JOIN tbl_gubn g
+        ON g.group_code = 'breed_code'
+        AND g.gubn_code = d.breed
+        WHERE d.username &lt;&gt; (SELECT username FROM tbl_dogs WHERE dog_id = #{dogId} LIMIT 1)
+        AND (
+        'P' &lt;&gt; #{matchType}
+        OR (
+        d.is_mating_available = 'Y'
+        AND (
+        (SELECT blood_test_certified FROM tbl_dogs WHERE dog_id = 1 LIMIT 1) = 'N' OR d.blood_test_certified = 'Y')
+        AND (
+        (SELECT vaccination_certified FROM tbl_dogs WHERE dog_id = 1 LIMIT 1) = 'N' OR d.vaccination_certified = 'Y')
+        AND (
+        (SELECT health_record_certified FROM tbl_dogs WHERE dog_id = 1 LIMIT 1) = 'N' OR d.health_record_certified = 'Y')))
+        ORDER BY
+        (CASE
+        WHEN LEFT((SELECT u.address FROM tbl_users u WHERE u.username = d.username LIMIT 1), 2) =
+        LEFT((SELECT u.address FROM tbl_users u WHERE u.username = (SELECT username FROM tbl_dogs WHERE dog_id = 1 LIMIT 1)), 2)
+        THEN 1 ELSE 0
+        END) DESC,
+        RAND();
+
     </select>
 
     <select id="countPersonalMatches" resultType="int" parameterType="map">

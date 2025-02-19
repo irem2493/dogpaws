@@ -69,16 +69,16 @@ public class MatchingService {
         return result;
     }
 
-    //친구매칭 리스트 (1단계)
+    //친구매칭 리스트 (1단계) (필터없는 기본용)
+    public List<DogCandidateDto> getDogDefaultMatchList(int dogId, String matchType) {
+
+        List<DogCandidateDto> DogCandidateDtoList = dogMatchDao.getDogDefaultMatchList(dogId, matchType);
+        log.info("친구매칭 리스트 (1단계) DogCandidateDtoList" + DogCandidateDtoList);
+        return DogCandidateDtoList;
+    }
+
+    //친구매칭 리스트 (1단계) (필터 있음)
     public List<DogCandidateDto> getCandidateDogs(int dogId, String username, String matchType, String bloodTestCertified, String vaccinationCertified, String healthRecordCertified) {
-        /*
-        for(MatchDto matchDto : matchList){
-            matchDto.setMatchedCriteriaList(StringUtil.splitToList(matchDto.getMatchedCriteria()));
-            if(matchDto.getProfileUrl() != null){
-                matchDto.setProfileUrl(matchDto.getProfileUrl().substring(matchDto.getProfileUrl().indexOf("/uploads")));
-            }
-        }
-         */
         List<DogCandidateDto> DogCandidateDtoList = dogMatchDao.getDogMatchList(dogId, username, matchType, bloodTestCertified, vaccinationCertified, healthRecordCertified);
         log.info("친구매칭 리스트 (1단계) DogCandidateDtoList" + DogCandidateDtoList);
         return DogCandidateDtoList;
@@ -206,20 +206,33 @@ public class MatchingService {
 
         //매칭필터 가져오기
         MatchingCriteriaDto criteria = dogMatchDao.getMatchingCriteria(dogId, username, matchType);
+        //후보리스트 초기화
+        List<DogCandidateDto> candidates;
 
-        if(criteria != null){
+        //필터 기준이 없을 때
+        if(criteria == null){
+            //매칭 필터 없을 때 강아지 정보랑 비교하기
+            criteria = dogMatchDao.getDogCriteria(dogId);
             //문자열 잘라서 리스트 넣기
             criteria.setDogPersonalGbnCdsList(StringUtil.splitToList(criteria.getDogPersonalGbnCds()));
             criteria.setDogPlayGbnCdsList(StringUtil.splitToList(criteria.getDogPlayGbnCds()));
-            System.out.println("dto 확인@@@@@@@@@@ criteria: " + criteria);
-
             // 1단계: DB에서 후보 목록 가져오기
-            List<DogCandidateDto> candidates = getCandidateDogs(dogId, username, matchType, criteria.getBloodTestCertified(), criteria.getVaccinationCertified(), criteria.getHealthRecordCertified());
+            candidates = getDogDefaultMatchList(dogId, matchType);
+        }else {
+            //문자열 잘라서 리스트 넣기
+            criteria.setDogPersonalGbnCdsList(StringUtil.splitToList(criteria.getDogPersonalGbnCds()));
+            criteria.setDogPlayGbnCdsList(StringUtil.splitToList(criteria.getDogPlayGbnCds()));
+            // 1단계: DB에서 후보 목록 가져오기
+            candidates = getCandidateDogs(dogId, username, matchType, criteria.getBloodTestCertified(), criteria.getVaccinationCertified(), criteria.getHealthRecordCertified());
+        }
 
-            // 2단계: 각 후보에 대해 매칭 점수와 매칭 기준 계산
-            for (DogCandidateDto candidate : candidates) {
-                candidate = calculateMatching(candidate, criteria);
-                System.out.println("candidate: " + candidate);
+        System.out.println("dto 확인@@@@@@@@@@ criteria: " + criteria);
+        System.out.println("dto 확인@@@@@@@@@@ candidates: " + candidates);
+
+        // 2단계: 각 후보에 대해 매칭 점수와 매칭 기준 계산
+        for (DogCandidateDto candidate : candidates) {
+            candidate = calculateMatching(candidate, criteria);
+            System.out.println("candidate: " + candidate);
         }
 
         // 지역 일치 여부: candidate.getDogRegion()와 candidate.getUserRegion() 비교 (같으면 우선순위 높게)
@@ -243,8 +256,6 @@ public class MatchingService {
                 .limit(20)  // 상위 20건만 선택
                 .collect(Collectors.toList());
         return sortedCandidates;
-        }
-        return null;
     }
 
 
@@ -254,7 +265,7 @@ public class MatchingService {
         return result;
     }
 
-    //
+    //교배매칭 활성화 / 비활성화
     public DogResponseDto getIsMatingAvailable(Integer dogId) {
         DogResponseDto dog = dogMatchDao.getIsMatingAvailable(dogId);
         System.out.println("dog 정보: " + dog);
