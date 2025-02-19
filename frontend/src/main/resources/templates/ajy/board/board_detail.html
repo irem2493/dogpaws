@@ -14,11 +14,13 @@
     <div th:replace="~{ajy/board/board_header :: boardHeader}"></div>
 
     <div style="display: flex; justify-content: space-between; align-items: center;">
+      <input type="hidden" name="boardId" id="boardId" th:value="${boardId}"/>
+      <input type="hidden" name="category" id="category" th:value="${category}"/>
       <div class="post-header" th:text="${board.title}"></div>
       <!-- 수정 및 삭제 버튼 -->
-      <div class="button-group">
-        <button class="btn-b" style="height: 35px; color: black">수정</button>
-        <button class="btn-delete">삭제</button>
+      <div class="button-group" th:if="${user!= null and user.username == board.username}">
+        <button type="button" class="btn-b" style="height: 35px; color: black">수정</button>
+        <button type="button" class="btn-delete" id="deleteBoardBtn">삭제</button>
       </div>
     </div>
 
@@ -38,5 +40,6 @@
 
   </div>
 </div>
+<script src="/js/ajy/board/board_detail.js"></script>
 </body>
 </html>
