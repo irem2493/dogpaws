@@ -64,4 +64,16 @@
             )
         </if>
     </select>
+
+    <select id="getProductOptions" resultType="com.dogpaws.backend.dto.rim.ProductOptionDto">
+        SELECT
+        option_id,
+        option_name,
+        option_price,
+        option_stock,
+        is_base_option as baseOption
+        FROM tbl_product_options
+        WHERE product_id = #{productId}
+        ORDER BY is_base_option DESC, option_name ASC
+    </select>
 </mapper>

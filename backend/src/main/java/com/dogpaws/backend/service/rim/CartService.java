@@ -4,6 +4,7 @@ import com.dogpaws.backend.dto.rim.CartItemParam;
 import com.dogpaws.backend.dto.rim.request.CartListResponseDto;
 import com.dogpaws.backend.dto.rim.request.CartRequestDto;
 import com.dogpaws.backend.dto.rim.request.CartSummaryResponseDto;
+import com.dogpaws.backend.entity.rim.ProductOption;
 import com.dogpaws.backend.repository.dao.rim.CartDao;
 import com.dogpaws.backend.repository.jpa.rim.*;
 import lombok.*;
@@ -224,6 +225,42 @@ public class CartService {
         } catch (Exception e) {
             log.error("장바구니 옵션 삭제 실패: {}", e.getMessage(), e);
             throw new RuntimeException("장바구니 옵션 삭제 중 오류가 발생했습니다.");
+        }
+    }
+
+    @Transactional
+    public void addCartOption(Long cartItemId, Long optionId, int quantity) {
+        try {
+            // 1. 옵션이 이미 존재하는지 확인
+            if (cartDao.isOptionExists(cartItemId, optionId)) {
+                throw new IllegalStateException("이미 존재하는 옵션입니다.");
+            }
+
+            // 2. 옵션이 유효한지 확인 (상품에 존재하는 옵션인지)
+            ProductOption productOption = productOptionRepository.findById(optionId)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 옵션입니다."));
+
+            // 3. 재고 확인
+            if (productOption.getOptionStock() < quantity) {
+                throw new IllegalStateException("재고가 부족합니다.");
+            }
+
+            // 4. 장바구니에 옵션 추가
+            CartRequestDto.CartOptionDto optionDto = new CartRequestDto.CartOptionDto();
+            optionDto.setOptionId(optionId);
+            optionDto.setQuantity(quantity);
+
+            cartDao.insertCartItemOptions(
+                    cartItemId,
+                    Collections.singletonList(optionDto)
+            );
+
+            log.info("장바구니 옵션 추가 완료. cartItemId: {}, optionId: {}, quantity: {}",
+                    cartItemId, optionId, quantity);
+
+        } catch (Exception e) {
+            log.error("장바구니 옵션 추가 실패: {}", e.getMessage(), e);
+            throw new RuntimeException("장바구니 옵션 추가 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 

@@ -2,6 +2,7 @@ package com.dogpaws.backend.controller.rim;
 
 import com.dogpaws.backend.dto.rim.ProductDto;
 import com.dogpaws.backend.dto.rim.ProductListDto;
+import com.dogpaws.backend.dto.rim.ProductOptionDto;
 import com.dogpaws.backend.dto.rim.ProductSearchDto;
 import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.service.rim.ProductService;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -89,6 +92,19 @@ public class ProductController {
 
         } catch (Exception e) {
             log.error("상품 검색 중 오류 발생: {}", e.getMessage(), e);
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
+        }
+    }
+
+    @GetMapping("/{productId}/options")
+    public ApiResponse<List<ProductOptionDto>> getProductOptions(@PathVariable Long productId) {
+        log.info("상품 옵션 목록 조회 요청: productId={}", productId);
+
+        try {
+            List<ProductOptionDto> options = productService.getProductOptions(productId);
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, options);
+        } catch (Exception e) {
+            log.error("상품 옵션 조회 중 오류 발생: {}", e.getMessage(), e);
             return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
         }
     }

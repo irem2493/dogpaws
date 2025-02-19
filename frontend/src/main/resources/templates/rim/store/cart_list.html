@@ -6,7 +6,7 @@
 
     <script src="https://js.tosspayments.com/v2/standard"></script>
 
-    <title>장바구니 목록</title>
+<title>장바구니 목록</title>
     <meta charset="utf-8" />
     <style>
         .btn-icon {
@@ -36,146 +36,200 @@
 </head>
 <body layout:fragment="content" style="min-height: 100vh">
     <div class="container">
-        <div class="container mt-5">
+    <div class="container mt-5">
 
-            <!-- 장바구니가 비어있는 경우 -->
-            <div th:if="${cartSummary == null || cartSummary.cartItems.empty}" class="text-center">
-                <h3>장바구니가 비어있습니다.</h3>
-            </div>
+        <!-- 장바구니가 비어있는 경우 -->
+        <div th:if="${cartSummary == null || cartSummary.cartItems.empty}" class="text-center">
+            <h3>장바구니가 비어있습니다.</h3>
+        </div>
 
-            <!-- 장바구니에 상품이 있는 경우 -->
-            <div th:if="${cartSummary != null && !cartSummary.cartItems.empty}">
-                <form th:action="@{/orders/create}" method="get">
-                    <!-- 전체 선택 체크박스 -->
-                    <div class="mb-3">
-                        <input type="checkbox" id="selectAll" class="form-check-input">
-                        <label for="selectAll" class="form-check-label">전체 선택</label>
-                    </div>
+        <!-- 장바구니에 상품이 있는 경우 -->
+        <div th:if="${cartSummary != null && !cartSummary.cartItems.empty}">
+            <form th:action="@{/orders/create}" method="get">
+                <!-- 전체 선택 체크박스 -->
+                <div class="mb-3">
+                    <input type="checkbox" id="selectAll" class="form-check-input">
+                    <label for="selectAll" class="form-check-label">전체 선택</label>
+                </div>
 
-                    <!-- 장바구니 목록 -->
-                    <!-- 상품 목록 -->
-                    <div th:each="item : ${cartSummary.cartItems}" class="card mb-3">
-                        <div class="row g-0">
-                            <!-- 상품 선택 체크박스 -->
-                            <div class="col-md-1 d-flex align-items-center justify-content-center">
-                                <input type="checkbox" name="cartItemIds"
-                                       th:value="${item.cartOptions[0].cartItemId}"
-                                       class="form-check-input item-checkbox">
-                            </div>
-                            <!-- 상품 이미지 -->
-                            <div class="col-md-2">
-                                <img th:src="${item.imageUrl}" class="img-fluid rounded-start" alt="상품 이미지">
-                            </div>
+                <!-- 장바구니 목록 -->
+                <!-- 상품 목록 표시 부분 -->
 
-                            <!-- 상품 정보 -->
-                            <!-- 상품 정보 부분 수정 -->
-                            <div class="col-md-10">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title" th:text="${item.productName}">상품명</h5>
+                <!-- 상품 목록 -->
+                <div class="card mb-3" th:each="item : ${cartSummary.cartItems}">
+                    <!-- 기존 상품 정보 표시 -->
+                    <div class="row g-0">
+                        <!-- 상품 선택 체크박스 -->
+                        <div class="col-md-1 d-flex align-items-center justify-content-center">
+                            <input type="checkbox" name="cartItemIds"
+                                   th:value="${item.cartOptions[0].cartItemId}"
+                                   class="form-check-input item-checkbox">
+                        </div>
+                        <!-- 상품 이미지 -->
+                        <div class="col-md-2">
+                            <img th:src="${item.imageUrl}" class="img-fluid rounded-start" alt="상품 이미지">
+                        </div>
+
+                        <!-- 상품 정보 -->
+                        <!-- 상품 정보 부분 수정 -->
+                        <div class="col-md-10">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title" th:text="${item.productName}">상품명</h5>
                                         <!-- 상품 단위 수정 버튼 -->
-                                        <div>
+                                    <div>
                                             <!-- 수정 버튼 -->
                                             <div class="option-container"
                                                  th:data-cart-item-id="${item.cartItemId}"
-                                                 th:data-product-name="${item.productName}">
+                                                 th:data-product-name="${item.productName}"
+                                                 th:data-base-price="${item.productPrice}"
+                                                 th:data-image-url="${item.imageUrl}"
+                                                 th:data-product-id="${item.productId}">
                                                 <!-- 각 옵션을 별도의 hidden div로 저장 -->
                                                 <div th:each="option : ${item.cartOptions}"
                                                      class="option-data"
                                                      th:data-option-id="${option.optionId}"
                                                      th:data-option-name="${option.optionName}"
+                                                     th:data-option-price="${option.optionPrice}"
                                                      th:data-quantity="${option.quantity}"
+                                                     th:data-selected="true"
                                                      style="display: none;">
                                                 </div>
                                                 <button type="button" class="btn btn-outline-secondary btn-sm modify-option-btn">수정</button>
                                             </div>
 
                                         </div>
-                                    </div>
-                                    <p class="card-text">기본 가격: <span th:text="${#numbers.formatInteger(item.productPrice, 0, 'COMMA')}">0</span>원</p>
+                                </div>
+                                <p class="card-text">기본 가격: <span th:text="${#numbers.formatInteger(item.productPrice, 0, 'COMMA')}">0</span>원</p>
 
                                     <!-- 옵션 목록 -->
-                                    <div th:each="option : ${item.cartOptions}" class="mb-2">
-                                        <div class="row align-items-center">
-                                            <div class="col">
-                                                <span th:text="${option.optionName}">옵션명</span>
-                                                <span th:if="${option.optionPrice > 0}">
-                            (+<span th:text="${#numbers.formatInteger(option.optionPrice, 0, 'COMMA')}">0</span>원)
-                        </span>
-                                                <span class="ms-2">수량: <span th:text="${option.quantity}">0</span>개</span>
-                                            </div>
+                                <div th:each="option : ${item.cartOptions}" class="mb-2">
+                                    <div class="row align-items-center">
+                                        <div class="col">
+                                            <span th:text="${option.optionName}">옵션명</span>
+                                            <span th:if="${option.optionPrice > 0}">
+                        (+<span th:text="${#numbers.formatInteger(option.optionPrice, 0, 'COMMA')}">0</span>원)
+                    </span>
+                                            <span class="ms-2">수량: <span th:text="${option.quantity}">0</span>개</span>
                                         </div>
                                     </div>
-                                    <!-- 상품별 총 금액 -->
-                                    <p class="card-text mt-2">
-                                        총 금액: <strong th:text="${#numbers.formatInteger(item.totalPrice, 0, 'COMMA')}">0</strong>원
-                                    </p>
                                 </div>
+                                <!-- 상품별 총 금액 -->
+                                <p class="card-text mt-2">
+                                    총 금액: <strong th:text="${#numbers.formatInteger(item.totalPrice, 0, 'COMMA')}">0</strong>원
+                                </p>
                             </div>
                         </div>
                     </div>
-                    <!-- 주문 요약 정보 -->
-                    <div class="card mt-4">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col">
-                                    <p>총 상품금액: <span
-                                            th:text="${#numbers.formatInteger(cartSummary.totalProductPrice, 0, 'COMMA')}">0</span>원
-                                    </p>
-                                    <p>배송비: <span
-                                            th:text="${#numbers.formatInteger(cartSummary.deliveryFee, 0, 'COMMA')}">0</span>원
-                                    </p>
-                                    <h4>총 주문금액: <span
-                                            th:text="${#numbers.formatInteger(cartSummary.totalOrderPrice, 0, 'COMMA')}">0</span>원
-                                    </h4>
-                                    <p>총 <span th:text="${cartSummary.totalQuantity}">0</span>개</p>
+                    <!-- 옵션 수정 모달 -->
+                    <div id="cartOptionModal" class="pawsModal" style="display: none;">
+                        <button class="pawsModal-close" onclick="closeModal(this)"></button>
+                        <div class="pawsModal-title">옵션 수정</div>
+                        <div class="pawsModal-content">
+                            <div id="modalProductInfo"></div>
+                            
+                            <!-- 옵션 추가 영역을 위로 이동 -->
+                            <div class="mt-3 mb-4">
+                                <select id="newOptionSelect" class="form-select mb-2">
+                                    <option value="">옵션 선택</option>
+                                </select>
+                            </div>
+
+                            <!-- 선택된 옵션 목록 -->
+                            <div class="selected-options-container">
+                                <h6 class="mb-3">선택된 옵션</h6>
+                                <div id="optionList">
+                                    <!-- 여기에 선택된 옵션들이 동적으로 추가됨 -->
                                 </div>
-                                <div class="col-auto">
-                                    <button type="submit" class="btn btn-primary" onclick="return validateOrder()">구매하기
-                                    </button>
+                            </div>
+
+                            <!-- 총 금액을 하단에 추가 -->
+                            <div class="mt-4 border-top pt-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">총 상품금액</h6>
+                                    <h5 class="mb-0"><span id="modalTotalPrice" class="text-primary">0</span>원</h5>
                                 </div>
                             </div>
                         </div>
+                        <div class="pawsModal-footer">
+                            <button class="btn-orange-dark" onclick="updateCartOption()" style="color: black;">수정하기</button>
+                        </div>
                     </div>
-                </form>
-            </div>
-            <!-- 옵션 수정 모달 -->
-            <div id="cartOptionModal" class="pawsModal" style="display: none;">
-                <button class="pawsModal-close" onclick="closeModal(this)"></button>
-                <div class="pawsModal-title">옵션 수정</div>
-                <div class="pawsModal-content">
-                    <div id="modalProductInfo"></div>
-                    <div id="optionList">
-                        <!-- 여기에 옵션 목록이 동적으로 추가됨 -->
+                </div>
+                <!-- 주문 요약 정보 -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <p>총 상품금액: <span
+                                        th:text="${#numbers.formatInteger(cartSummary.totalProductPrice, 0, 'COMMA')}">0</span>원
+                                </p>
+                                <p>배송비: <span
+                                        th:text="${#numbers.formatInteger(cartSummary.deliveryFee, 0, 'COMMA')}">0</span>원
+                                </p>
+                                <h4>총 주문금액: <span
+                                        th:text="${#numbers.formatInteger(cartSummary.totalOrderPrice, 0, 'COMMA')}">0</span>원
+                                </h4>
+                                <p>총 <span th:text="${cartSummary.totalQuantity}">0</span>개</p>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary" onclick="return validateOrder()">구매하기
+                                </button>
+                            </div>
+                        </div>
                     </div>
-
                 </div>
-                <div class="pawsModal-footer">
-                    <button class="btn-orange-dark" onclick="updateCartOption()" style="color: black;">수정하기</button>
-                </div>
-            </div>
-
-
+            </form>
         </div>
-        <!-- JavaScript -->
-        <script th:inline="javascript">
-            // 전체 선택 체크박스 이벤트
-            document.getElementById('selectAll').addEventListener('change', function () {
-                const checkboxes = document.getElementsByClassName('item-checkbox');
-                for (let checkbox of checkboxes) {
-                    checkbox.checked = this.checked;
-                }
+
+
+
+    </div>
+    <!-- JavaScript -->
+    <script th:inline="javascript">
+
+        // 전역 변수로 옵션 데이터 저장
+        const availableOptionsMap = {};
+        const cartSummary = /*[[${cartSummary}]]*/ null;
+        let basePrice = 0; // 전역 변수로 이동
+
+        console.log('cartSummary', cartSummary);
+        console.log('사용가능 옵션', cartSummary.cart_items[0].availableOptions);
+
+        // 총 금액 계산 함수를 전역으로 이동
+        function updateTotalPrice() {
+            const optionList = document.getElementById('optionList');
+            const options = optionList.querySelectorAll('.option-item');
+            let total = 0;
+
+            options.forEach(option => {
+                const quantity = parseInt(option.querySelector('.quantity-input').value);
+                const optionPrice = parseInt(option.dataset.optionPrice) || 0;
+                // 각 옵션별로 (기본가격 + 옵션가격) * 수량을 계산
+                const itemTotal = (basePrice + optionPrice) * quantity;
+                total += itemTotal;
             });
 
-            // 개별 체크박스 이벤트 - 전체 선택 상태 업데이트
-            const itemCheckboxes = document.getElementsByClassName('item-checkbox');
-            for (let checkbox of itemCheckboxes) {
-                checkbox.addEventListener('change', function () {
-                    const selectAll = document.getElementById('selectAll');
-                    const allChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
-                    selectAll.checked = allChecked;
-                });
+            document.getElementById('modalTotalPrice').textContent = total.toLocaleString();
+        }
+
+        // 전체 선택 체크박스 이벤트
+        document.getElementById('selectAll').addEventListener('change', function () {
+            const checkboxes = document.getElementsByClassName('item-checkbox');
+            for (let checkbox of checkboxes) {
+                checkbox.checked = this.checked;
             }
+        });
+
+        // 개별 체크박스 이벤트 - 전체 선택 상태 업데이트
+        const itemCheckboxes = document.getElementsByClassName('item-checkbox');
+        for (let checkbox of itemCheckboxes) {
+            checkbox.addEventListener('change', function () {
+                const selectAll = document.getElementById('selectAll');
+                const allChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
+                selectAll.checked = allChecked;
+            });
+        }
 
 
             // 수량 업데이트 함수
@@ -185,8 +239,8 @@
 
                     if (newQuantity < 1) {
                         alert('수량은 1개 이상이어야 합니다.');
-                        return;
-                    }
+                return;
+            }
 
                     input.value = newQuantity;
                 } catch (error) {
@@ -217,42 +271,43 @@
 
                         // UI에서 임시 제거
                         optionRow.remove();
+                        updateTotalPrice(); // 삭제 후 총 금액 업데이트
                     }
                 });
             });
 
-            // 장바구니 상품 삭제
-            function deleteCartItem(cartItemId) {
-                if (confirm('선택한 상품을 장바구니에서 삭제하시겠습니까?')) {
-                    myapi.delete(`/api/cart/selected`, {
+        // 장바구니 상품 삭제
+        function deleteCartItem(cartItemId) {
+            if (confirm('선택한 상품을 장바구니에서 삭제하시겠습니까?')) {
+                myapi.delete(`/api/cart/selected`, {
                         data: [cartItemId]
+                })
+                    .then(() => {
+                        alert('삭제되었습니다.');
+                        location.reload();
                     })
-                        .then(() => {
-                            alert('삭제되었습니다.');
-                            location.reload();
-                        })
-                        .catch(error => {
-                            console.error('삭제 실패:', error);
-                            alert('삭제에 실패했습니다.');
-                        });
-                }
+                    .catch(error => {
+                        console.error('삭제 실패:', error);
+                        alert('삭제에 실패했습니다.');
+                    });
             }
+        }
 
             async function updateCartOption() {
                 const modalContent = document.getElementById('optionList');
                 const options = modalContent.querySelectorAll('.option-item');
                 const updates = [];
-                
+
                 // 현재 표시된 옵션들의 수량 정보 수집
                 options.forEach(option => {
                     const cartItemId = option.dataset.cartItemId;
                     const optionId = option.dataset.optionId;
                     const quantity = parseInt(option.querySelector('input').value);
-                    
+
                     updates.push({
-                        cartItemId: cartItemId,
-                        optionId: optionId,
-                        quantity: quantity
+                cartItemId: cartItemId,
+                optionId: optionId,
+                quantity: quantity
                     });
                 });
 
@@ -268,6 +323,15 @@
                             await myapi.delete(`/api/cart/option/${deletion.cartItemId}/${deletion.optionId}`);
                         }
                     }
+                    // 새로 추가된 옵션이 있다면 처리
+                    if (window.additions && window.additions.length > 0) {
+                        for (const addition of window.additions) {
+                            await myapi.post(`/api/cart/option/${addition.cartItemId}`, {
+                                optionId: addition.optionId,
+                                quantity: addition.quantity
+                            });
+                        }
+                    }
 
                     alert('수정이 완료되었습니다.');
                     location.reload();
@@ -275,17 +339,17 @@
                     console.error('수정 실패:', error);
                     alert('수정에 실패했습니다.');
                 }
-            }
+        }
 
-            // 주문 전 유효성 검사
-            function validateOrder() {
-                const checkedItems = document.querySelectorAll('input[name="cartItemIds"]:checked');
-                if (checkedItems.length === 0) {
-                    alert('주문할 상품을 선택해주세요.');
-                    return false;
-                }
-                return true;
+        // 주문 전 유효성 검사
+        function validateOrder() {
+            const checkedItems = document.querySelectorAll('input[name="cartItemIds"]:checked');
+            if (checkedItems.length === 0) {
+                alert('주문할 상품을 선택해주세요.');
+                return false;
             }
+            return true;
+        }
 
             // DOM이 로드된 후 실행
             document.addEventListener('DOMContentLoaded', function() {
@@ -296,40 +360,82 @@
                     button.addEventListener('click', function(e) {
                         e.preventDefault();
                         const container = this.closest('.option-container');
+                        basePrice = parseInt(container.dataset.basePrice); // 전역 basePrice 설정
+
+                        console.log('container:', container);
+
                         const cartItemId = container.dataset.cartItemId;
+                        console.log('cartItemId:', cartItemId);
+
                         const productName = container.dataset.productName;
+                        console.log('productName:', productName);
+
+                        const imageUrl = container.dataset.imageUrl;
+                        console.log('imageUrl:', imageUrl);
+
+                        const productId = container.dataset.productId;
+                        console.log('productId:', productId);
+
+
+                        let currentItem = null;
+                        // cart_items 배열 순회
+                        for(let i = 0; i < cartSummary.cart_items.length; i++) {
+                            console.log('비교:', cartSummary.cart_items[i].product_id, productId);
+                            if(String(cartSummary.cart_items[i].product_id) === String(productId)) {
+                                currentItem = cartSummary.cart_items[i];
+                                break;
+                            }
+                        }
+
+                        console.log('현재 상품:', currentItem);
+
+                        // 총 금액 계산 함수 제거 (전역으로 이동했으므로)
+                        
+                        // 초기 총 금액 계산 및 표시
+                        updateTotalPrice();
 
                         // 옵션 데이터 수집
                         const options = Array.from(container.querySelectorAll('.option-data')).map(optionDiv => ({
                             optionId: optionDiv.dataset.optionId,
                             optionName: optionDiv.dataset.optionName,
+                            optionPrice: parseInt(optionDiv.dataset.optionPrice) || 0,
                             quantity: parseInt(optionDiv.dataset.quantity)
                         }));
 
                         // 모달 내용 설정
                         const modalProductInfo = document.getElementById('modalProductInfo');
-                        modalProductInfo.innerHTML = `<h5>${productName}</h5>`;
+                        modalProductInfo.innerHTML = `
+                            <div class="d-flex align-items-start mb-3">
+                                <img src="${imageUrl}" alt="상품 이미지" style="width: 100px; height: 100px; object-fit: cover; margin-right: 15px;">
+                                <div>
+                                    <h5>${productName}</h5>
+                                    <p class="mb-1">기본 가격: ${basePrice.toLocaleString()}원</p>
+                                </div>
+                            </div>
+                        `;
 
-                                                optionList.innerHTML = `
-                            <h6>${productName}</h6>
+
+                        optionList.innerHTML = `
                             ${options.map(option => `
                                 <div class="d-flex align-items-center mb-2 option-item"
                                      data-cart-item-id="${cartItemId}"
-                                     data-option-id="${option.optionId}">
+                                     data-option-id="${option.optionId}"
+                                     data-option-price="${option.optionPrice || 0}">
                                     <span class="me-2">${option.optionName}</span>
+                                    <span class="text-muted me-2">
+                                        ${option.optionPrice ? `(+${option.optionPrice.toLocaleString()}원)` : ''}
+                                    </span>
                                     <div class="input-group" style="width: 150px;">
                                         <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn"
                                                 data-change="-1">-</button>
-                                        <input type="number" class="form-control form-control-sm text-center"
+                                        <input type="number" class="form-control form-control-sm text-center quantity-input"
                                                value="${option.quantity}" readonly>
                                         <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn"
                                                 data-change="1">+</button>
                                     </div>
-                                    ${options.length > 1 ? `
-                                        <button type="button" class="btn-icon temp-delete-btn ms-2">
-                                            <img src="/img/icon/button/cancel.svg" alt="삭제" />
-                                        </button>
-                                    ` : ''}
+                                    <button type="button" class="btn-icon temp-delete-btn ms-2" style="display: ${options.length > 1 ? 'block' : 'none'}">
+                                        <img src="/img/icon/button/cancel.svg" alt="삭제" />
+                                    </button>
                                 </div>
                             `).join('')}
                         `;
@@ -347,6 +453,7 @@
                                 }
 
                                 input.value = newQuantity;
+                                updateTotalPrice(); // 수량 변경 시 총 금액 업데이트
                             });
                         });
 
@@ -372,19 +479,218 @@
 
                                     // UI에서 임시 제거
                                     optionRow.remove();
+                                    updateTotalPrice();
                                 }
                             });
                         });
 
+                        // 새 옵션 선택 셀렉트박스 초기화
+                        const newOptionSelect = document.getElementById('newOptionSelect');
+                        newOptionSelect.innerHTML = '<option value="">새 옵션 추가하기</option>';
 
 
+                        // 사용 가능한 옵션 목록 추가
+                        if (currentItem && currentItem.availableOptions) {
+                            currentItem.availableOptions.forEach(option => {
+                                const optEl = document.createElement('option');
+                                optEl.value = option.optionId;
+                                optEl.dataset.price = option.optionPrice;
+                                optEl.textContent = `${option.optionName} ${option.optionPrice > 0 ?
+                                    `(+${option.optionPrice.toLocaleString()}원)` : ''}`;
+                                newOptionSelect.appendChild(optEl);
+                            });
+                        }
+
+
+                        // 초기 총 금액 계산
+                        updateTotalPrice();
                         // 모달 열기
                         openModal('cartOptionModal');
                     });
                 });
+
+
+
+
             });
-        </script>
-    </div>
+
+
+        // newOptionSelect 이벤트 리스너 수정
+        document.getElementById('newOptionSelect').addEventListener('change', function() {
+            if (this.value) {
+                addSelectedOption();
+            }
+        });
+
+        // 삭제 버튼 표시 여부를 업데이트하는 함수 추가
+        function updateDeleteButtons() {
+            const optionList = document.getElementById('optionList');
+            const options = optionList.querySelectorAll('.option-item');
+            const hasMultipleOptions = options.length > 1;
+
+            options.forEach(option => {
+                const deleteBtn = option.querySelector('.temp-delete-btn');
+                if (deleteBtn) {
+                    deleteBtn.style.display = hasMultipleOptions ? 'block' : 'none';
+                }
+            });
+        }
+
+        // 새 옵션 추가 함수 수정
+        async function addSelectedOption() {
+            const select = document.getElementById('newOptionSelect');
+            const optionList = document.getElementById('optionList');
+            const option = select.options[select.selectedIndex];
+
+            if (!option.value) return;
+
+            const optionPrice = parseInt(option.dataset.price) || 0;
+            const cartItemId = document.querySelector('.option-item')?.dataset.cartItemId || 
+                              document.querySelector('.option-container')?.dataset.cartItemId;
+
+            // 이미 선택된 옵션인지 확인
+            const existingOption = optionList.querySelector(`[data-option-id="${option.value}"]`);
+            if (existingOption) {
+                // 이미 선택된 옵션이면 수량만 증가
+                const quantityInput = existingOption.querySelector('.quantity-input');
+                quantityInput.value = parseInt(quantityInput.value) + 1;
+                updateTotalPrice();
+                select.value = ''; // select 초기화
+                return;
+            }
+
+            // 만약 이 옵션이 이전에 삭제된 옵션이라면 deletions 배열에서 제거
+            if (window.deletions) {
+                window.deletions = window.deletions.filter(
+                    item => !(item.cartItemId === cartItemId && item.optionId === option.value)
+                );
+            }
+
+            // 새로 추가된 옵션 정보를 additions 배열에 추가
+            if (!window.additions) window.additions = [];
+            window.additions.push({
+                cartItemId: cartItemId,
+                optionId: option.value,
+                quantity: 1
+            });
+
+            // 현재 옵션 개수 확인
+            const currentOptions = optionList.querySelectorAll('.option-item');
+            const willHaveMultipleOptions = currentOptions.length + 1 > 1;
+
+            // 새 옵션 UI 추가
+            const newOptionHtml = `
+        <div class="d-flex align-items-center mb-2 option-item"
+             data-cart-item-id="${cartItemId}"
+             data-option-id="${option.value}"
+             data-option-price="${optionPrice}">
+            <span class="me-2">${option.text}</span>
+            <div class="input-group" style="width: 150px;">
+                <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn"
+                        data-change="-1">-</button>
+                <input type="number" class="form-control form-control-sm text-center quantity-input"
+                       value="1" readonly>
+                <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn"
+                        data-change="1">+</button>
+            </div>
+            <button type="button" class="btn-icon temp-delete-btn ms-2" style="display: ${willHaveMultipleOptions ? 'block' : 'none'}">
+                <img src="/img/icon/button/cancel.svg" alt="삭제" />
+            </button>
+        </div>
+    `;
+
+            optionList.insertAdjacentHTML('beforeend', newOptionHtml);
+
+            // 새로 추가된 옵션에 이벤트 리스너 추가
+            const newOption = optionList.lastElementChild;
+            addOptionEventListeners(newOption);
+
+            // 삭제 버튼 표시 여부 업데이트
+            updateDeleteButtons();
+
+            // 총 금액 업데이트
+            updateTotalPrice();
+
+            // select 초기화
+            select.value = '';
+        }
+
+        // 옵션 이벤트 리스너 추가 함수 수정
+        function addOptionEventListeners(optionElement) {
+            // 수량 변경 버튼 이벤트
+            optionElement.querySelectorAll('.quantity-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const input = this.parentElement.querySelector('input');
+                    const change = parseInt(this.dataset.change);
+                    const newQuantity = parseInt(input.value) + change;
+
+                    if (newQuantity < 1) {
+                        alert('수량은 1개 이상이어야 합니다.');
+                        return;
+                    }
+
+                    input.value = newQuantity;
+            
+                    // 새로 추가된 옵션의 수량 업데이트
+                    const optionRow = this.closest('.option-item');
+                    const cartItemId = optionRow.dataset.cartItemId;
+                    const optionId = optionRow.dataset.optionId;
+            
+                    if (window.additions) {
+                        const addedOption = window.additions.find(
+                            item => item.cartItemId === cartItemId && item.optionId === optionId
+                        );
+                        if (addedOption) {
+                            addedOption.quantity = newQuantity;
+                        }
+                    }
+            
+                    updateTotalPrice();
+                });
+            });
+
+            // 삭제 버튼 이벤트
+            const deleteBtn = optionElement.querySelector('.temp-delete-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', function() {
+                    const optionRow = this.closest('.option-item');
+                    const remainingOptions = document.querySelectorAll('.option-item');
+
+                    if (remainingOptions.length <= 1) {
+                        alert('최소 1개의 옵션은 유지해야 합니다.');
+                        return;
+                    }
+
+                    if (confirm('이 옵션을 삭제하시겠습니까?')) {
+                        const cartItemId = optionRow.dataset.cartItemId;
+                        const optionId = optionRow.dataset.optionId;
+
+                        // 만약 이 옵션이 방금 추가된 옵션이라면 additions 배열에서 제거
+                        if (window.additions) {
+                            window.additions = window.additions.filter(
+                                item => !(item.cartItemId === cartItemId && item.optionId === optionId)
+                            );
+                        }
+
+                        // 기존 옵션이라면 deletions 배열에 추가
+                        if (!window.deletions) window.deletions = [];
+                        window.deletions.push({ cartItemId, optionId });
+
+                        optionRow.remove();
+                        updateDeleteButtons(); // 삭제 후 버튼 표시 여부 업데이트
+                        updateTotalPrice();
+                    }
+                });
+            }
+        }
+
+        // 기존의 수량 변경 버튼 이벤트 리스너 부분 수정
+        optionList.querySelectorAll('.option-item').forEach(option => {
+            addOptionEventListeners(option);
+        });
+
+    </script>
+</div>
 </div>
 
 <script></script>

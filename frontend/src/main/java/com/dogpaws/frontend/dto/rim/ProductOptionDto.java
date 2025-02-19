@@ -1,4 +1,4 @@
-package com.dogpaws.backend.dto.rim;
+package com.dogpaws.frontend.dto.rim;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ProductOptionDto {
     private Integer optionId;        // 옵션 ID (auto increment)
-    private Long productId;       // 상품 ID (FK)
+    private Integer productId;       // 상품 ID (FK)
     private String optionName;       // 옵션명 (예: "블랙-L", "레드-M")
     private Integer optionPrice;     // 옵션 추가 금액 (기본 상품 가격에 추가되는 금액)
     private Integer optionStock;     // 옵션 재고수량

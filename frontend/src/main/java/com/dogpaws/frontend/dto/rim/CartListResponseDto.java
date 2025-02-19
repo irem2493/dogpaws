@@ -32,6 +32,8 @@ public class CartListResponseDto {
     @JsonProperty("cart_options")
     private List<CartOptionResponseDto> cartOptions;
 
+    private List<ProductOptionDto> availableOptions;
+
     public int getTotalPrice() {
         return cartOptions.stream()
                 .mapToInt(option -> (productPrice + option.getOptionPrice()) * option.getQuantity())

@@ -270,6 +270,21 @@ public class ProductService {
         productOptionRepository.save(productOption);
     }
 
+    public List<ProductOptionDto> getProductOptions(Long productId) {
+        List<ProductOption> options = productOptionRepository.findByProductId(productId);
+        return options.stream()
+                .map(option -> {
+                    ProductOptionDto dto = new ProductOptionDto();
+                    dto.setOptionId(option.getOptionId());
+                    dto.setOptionName(option.getOptionName());
+                    dto.setOptionPrice(option.getOptionPrice());
+                    dto.setProductId(productId);
+                    dto.setBaseOption(option.isBaseOption());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
     /**
      * Entity -> Dto 변환
      */
@@ -328,4 +343,5 @@ public class ProductService {
 
         return productOptionDto;
     }
+
 }
