@@ -1,6 +1,18 @@
-import {db} from '/js/cys/firebase-config.js';  // 절대 경로 적용
-import {collection, doc, updateDoc, getDoc, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, getDocs}
-    from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+import {db} from '/js/cys/firebase-config.js'; // 절대 경로 적용
+import {
+    addDoc,
+    collection,
+    doc,
+    getDocs,
+    getDoc,
+    limit,
+    onSnapshot,
+    orderBy,
+    query,
+    serverTimestamp,
+    updateDoc,
+    where
+} from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
 
 // 현재 로그인한 사용자 가져오기
@@ -18,7 +30,6 @@ const group = document.querySelector('#group');
 
 const oneOnOneCategory = document.querySelector(".one-on-one");
 const groupCategory = document.querySelector(".group");
-const detailTitle = document.querySelector('.detail-title');
 
 const chatRooms = [];
 let otherParticipants = [];
@@ -71,7 +82,7 @@ async function subscribeToNotifications() {
                 })
                 .then(response => {
                     chatProfiles = response.body;
-                    console.log("응답 데이터jjjjj:", chatProfiles);
+                    console.log("응답 데이터 chatProfiles:", chatProfiles);
 
                     chatCategory(currentFilterStatus);
                 })
@@ -80,6 +91,28 @@ async function subscribeToNotifications() {
 
     } catch (error) {
         console.error("채팅방 목록 가져오기 실패:", error);
+    }
+}
+
+async function openLatestChatRoom() {
+    const q = query(collection(db, "chatRooms"), where('participants', 'array-contains', currentDogId), orderBy("lastMessage.timestamp", "desc"), limit(1)); // 최신순 정렬 + 1개만 가져옴
+
+    try {
+        const querySnapshot = await getDocs(q);
+        if(!querySnapshot.empty){
+            const latestRoom = querySnapshot.docs[0];
+            const latestRoomId = latestRoom.id;
+
+            console.log("가장최근 채팅방 : "+ latestRoomId);
+            room(latestRoomId);
+        }else{
+            console.log("참여중인 채팅방이 없습니다.");
+        }
+
+
+
+    } catch (error) {
+        console.log("채팅방 불러오기 실패 : ", error);
     }
 }
 
@@ -161,6 +194,7 @@ function chatCategory(filterStatus) {
 match.addEventListener('click', () => {
     groupCategory.style.borderBottom = 'none';
     oneOnOneCategory.style.borderBottom = "solid 5px #FE904B";
+    document.querySelector('.create-chat').style.display="none";
     chatCategory('M');
     chatCategory('F');
 });
@@ -169,6 +203,7 @@ group.addEventListener('click', () => {
     chatCategory('G');
     oneOnOneCategory.style.borderBottom = 'none';
     groupCategory.style.borderBottom = "solid 5px #FE904B";
+    document.querySelector('.create-chat').style.display="flex";
 });
 
 let selectedRoomId;
@@ -178,25 +213,37 @@ window.room = function (roomId) {
     selectedRoomId = roomId;
     console.log(selectedRoomId);
     subscribeToMessages(roomId);
+    detailProfile();
+    detailPageMedia(roomId);
+    detailPageCalendar();
 }
 
-// 실시간 메시지 구독
 function subscribeToMessages(roomId) {
     const q = query(collection(db, "chatRooms", roomId, "messages"), orderBy("timestamp"));
+
     onSnapshot(q, (snapshot) => {
-        console.log(snapshot);
         console.log("메시지 개수:", snapshot.size);
 
-        const chatMain = document.querySelector('.chat-main'); // 채팅 메시지 컨테이너
-        chatMain.innerHTML = ''; // 기존 메시지 초기화
+        const chatMain = document.querySelector('.chat-main');
+
+        chatMain.innerHTML = '';
 
         snapshot.forEach((doc) => {
-            // console.log("문서 ID:", doc.id, "데이터:", doc.data());
+            console.log("새 메시지:", doc.id, doc.data());
+
             const message = doc.data();
             const messageDiv = document.createElement('div');
 
-            //일정 공유 채팅
-            if(message.status === 'S'){
+
+            // ✅ 시스템 메시지 (예: 날짜 변경)
+            if (message.status === 'system') {
+                messageDiv.className = "system-notice";
+                messageDiv.innerHTML = `${message.text}`;
+                chatMain.appendChild(messageDiv);
+                return;
+            }
+
+            if (message.status === 'S') {
                 if (message.sender === currentDogId) {
                     messageDiv.className = "chat-message right";
                     messageDiv.innerHTML = `
@@ -208,11 +255,11 @@ function subscribeToMessages(roomId) {
                                     <img src="/img/icon/CalendarCheck.svg" alt="일정 아이콘">
                                 </div>
                                 <div class="schedule-info">
+                                    <p class="schedule-time">${formatDateTime(message.calendarStartDate)}</p>
                                     <p class="schedule-name">${message.calendarTitle}</p>
-                                    <p class="schedule-time">시간 <span>${message.calendarStartDate} ~ ${message.calendarEndDate}</span></p>
                                 </div>
                             </div>
-                            <button class="schedule-btn">일정 보기</button>
+                            <button class="schedule-btn" data-schedule-id="${message.id}" onclick="scheduleDetail(this)">일정 보기</button>
                         </div>
                     `;
                 } else {
@@ -229,21 +276,51 @@ function subscribeToMessages(roomId) {
                                         <img src="/img/icon/CalendarCheck.svg" alt="일정 아이콘">
                                     </div>
                                     <div class="schedule-info">
+                                        <p class="schedule-time">${formatDateTime(message.calendarStartDate)}</p>
                                         <p class="schedule-name">${message.calendarTitle}</p>
-                                        <p class="schedule-time">시간 <span>${message.calendarStartDate} ~ ${message.calendarEndDate}</span></p>
                                     </div>
                                 </div>
-                                <button class="schedule-btn">일정 보기</button>
+                                <button class="schedule-btn" data-schedule-id="${message.id}" onclick="scheduleDetail(this)">일정 보기</button>
                             </div>
                         </div>
                         <p class="message-time">${formatTime(message.timestamp)}</p>
                     `;
                 }
+            }
 
-            }else if(message.status === 'C' || message.status !== 'S'){
-                // 메시지 구조 생성
+            else if (message.status === 'M') {
+
+                let imagesHtml = "";
+                message.text.forEach(url => {
+                    imagesHtml += `<img src="${url}" alt="" width="230" style="border-radius: 15px">`;
+                });
+
                 if (message.sender === currentDogId) {
-                    // 본인 메시지일 경우 오른쪽 정렬
+                    messageDiv.className = "chat-message right";
+                    messageDiv.innerHTML = `
+                        <div class="message-content">
+                            <div class="message-time">${formatTime(message.timestamp)}</div>
+                            <div class="message-img">${imagesHtml}</div>
+                        </div>
+                    `;
+                } else {
+                    const profileUrl = getProfileById(message.sender);
+                    messageDiv.className = "chat-message left";
+                    messageDiv.innerHTML = `
+                        <img src="${profileUrl}" width="40" height="40" class="profile-img-2" alt="프로필">
+                        <div class="chat-not-profile">
+                            <div class="chat-name">${message.nickname}</div>
+                            <div class="message-content">
+                                <div class="message-img">${imagesHtml}</div>
+                                <div class="message-time">${formatTime(message.timestamp)}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            else if (message.status === 'C') {
+                if (message.sender === currentDogId) {
                     messageDiv.className = "chat-message right";
                     messageDiv.innerHTML = `
                         <div class="message-content">
@@ -253,8 +330,7 @@ function subscribeToMessages(roomId) {
                     `;
                 } else {
                     const profileUrl = getProfileById(message.sender);
-                    // 상대방 메시지일 경우 왼쪽 정렬
-                    messageDiv.className = 'chat-message left';
+                    messageDiv.className = "chat-message left";
                     messageDiv.innerHTML = `
                         <img src="${profileUrl}" width="40" height="40" class="profile-img-2" alt="프로필">
                         <div class="chat-not-profile">
@@ -271,16 +347,30 @@ function subscribeToMessages(roomId) {
             chatMain.appendChild(messageDiv);
         });
 
-        chatMain.scrollTop = chatMain.scrollHeight; // 자동 스크롤 다운
+        setTimeout(() => {
+            chatMain.scrollTop = chatMain.scrollHeight;
+        }, 10);
     });
-
 }
+
+function scrollToBottom() {
+    const chatMain = document.querySelector('.chat-main');
+    chatMain.scrollTop = chatMain.scrollHeight;
+}
+
 
 // 함수 호출 (페이지 로드 시 실행)
 window.onload = function () {
+    openLatestChatRoom();
     subscribeToNotifications();
 }
 
+document.querySelector('.chat-input').addEventListener('keydown', function (e){
+    if (e.key === 'Enter'){
+        e.preventDefault();
+        sendMessage(selectedRoomId);
+    }
+})
 
 // 메시지 보내기
 async function sendMessage(selectedRoomId) {
@@ -294,7 +384,8 @@ async function sendMessage(selectedRoomId) {
             sender: currentDogId,
             nickname: currentUserNickname,
             text: messageInput,
-            timestamp: serverTimestamp()
+            timestamp: serverTimestamp(),
+            status : 'C'
         };
 
         await addDoc(collection(db, "chatRooms", selectedRoomId, "messages"), NewMessage);
@@ -332,11 +423,29 @@ function formatTime(timestamp) {
     return "알 수 없음";
 }
 
+function formatDateTime(dateTimeStr) {
+    if (!dateTimeStr) return ""; // null 또는 undefined 처리
+
+    const date = new Date(dateTimeStr);
+    if (isNaN(date.getTime())) return ""; // 유효하지 않은 날짜 처리
+
+    const options = {
+        month: "long", // '2월'로 출력 (short: '2월', long: '2월')
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true, // 오전/오후 형식 사용
+    };
+
+    return date.toLocaleString("ko-KR", options);
+}
+
 /////////////////////////////// 일정 /////////////////////////////\
 
 const schedulesBtn = document.querySelector("#add-calender-icon");
-const scheduleModal = document.querySelector(".modal-all");
+const scheduleModal = document.querySelector("#modalForm-all");
 const closeModal = document.querySelector('.close-btn');
+const detailModal = document.querySelector("#detailModal-all");
 
 schedulesBtn.addEventListener('click', function (event){
     event.stopPropagation(); // 클릭 이벤트 전파 방지!
@@ -401,9 +510,11 @@ window.goSchedule = function (){
         }
     })
         .then(async response => {
-            console.log("응답 데이터jjjjj:", response);
+            console.log("응답 데이터 schedule:", response);
+            const calendarId = response.body;
 
             const NewSchedule = {
+                id: calendarId,
                 sender: currentDogId,
                 nickname: currentUserNickname,
                 text: "일정이 공유되었습니다.",
@@ -411,7 +522,7 @@ window.goSchedule = function (){
                 calendarStartDate: calendarStartDate,
                 calendarEndDate: calendarEndDate,
                 timestamp: serverTimestamp(),
-                status : 'S'
+                status: 'S'
             };
 
             await addDoc(collection(db, "chatRooms", selectedRoomId, "messages"), NewSchedule);
@@ -420,6 +531,331 @@ window.goSchedule = function (){
             await updateDoc(doc(db, "chatRooms", selectedRoomId), {lastMessage: NewSchedule})
 
             scheduleModal.style.display = "none";
+
+        })
+        .catch(error => console.error(error));
+}
+
+//일정 상세
+    const sharedBtn = document.querySelector('#shared-btn');
+
+window.scheduleDetail = function (button){
+    const detailClose = document.querySelector("#close-btn");
+    detailModal.style.display = "flex";
+
+
+    detailClose.addEventListener('click', function (){
+        detailModal.style.display = 'none';
+    });
+
+    const messageId = button.getAttribute("data-message-id");
+    const calendarId = button.getAttribute("data-schedule-id");
+
+    console.log("일정Id : "+ calendarId);
+
+    sharedBtn.setAttribute("data-calendar-id", calendarId);
+    // sharedBtn.setAttribute("data-message-id", messageId);
+
+    api.get('/api/chat/schedule', { calendarId : calendarId })
+        .then(async response => {
+            const calendarDto = response.body;
+            console.log("dto title : "+ calendarDto.calendar_title);
+            console.log("dto username : "+ calendarDto.username);
+            console.log("dto currentUser : "+ currentUser);
+
+            if (calendarDto.username === currentUser){
+                sharedBtn.style.display = 'none';
+            }else{
+                sharedBtn.style.display = 'flex';
+            }
+            
+            if (calendarDto.calendar_type === 'W'){
+                document.querySelector('#detailType').value = '산책';
+            }else if(calendarDto.calendar_type === 'P'){
+                document.querySelector('#detailType').value = '놀이';
+            }else if(calendarDto.calendar_type === 'M'){
+                document.querySelector('#detailType').value = '교배';
+            }
+
+            document.querySelector('#detailTitle').value = calendarDto.calendar_title;
+            document.querySelector('#detailStartDate').value = calendarDto.calendar_start_date;
+            document.querySelector('#detailEndDate').value = calendarDto.calendar_end_date;
+            document.querySelector('#detailAddress').value = calendarDto.address;
+            document.querySelector('#detailDescription').value = calendarDto.calendar_description;
+
+
+        })
+        .catch(error => console.error(error));
+}
+
+//공유 일정 추가
+window.sharedCalendar = function (button){
+
+    detailModal.style.display = 'none';
+
+    const calendarId = button.getAttribute("data-calendar-id");
+    // const messageId = button.getAttribute("data-message-id");
+    console.log("캘린더 id / "+calendarId);
+    // console.log("메시지 아이디 : "+ messageId);
+
+    api.post('/api/chat/shared-schedule', {
+        calendarId: calendarId,
+        username: currentUser,
+        roomId: selectedRoomId,
+        dogId: currentDogId
+    })
+        .then(async data => {
+            console.log(data);
+            alert("일정에 추가되었습니다.")
+            window.location.reload();
+            // await updateDoc(doc(db, "chatRooms", selectedRoomId, "messages", messageId), { sharedStatus: 'Y'})
+            // const updated = await getDoc(doc(db, "chatRooms", selectedRoomId, "messages", messageId));
+            //
+            // const getData = updated.data();
+            //
+            // //일정 추가됐는지 firebase에 상태 저장할까? 해야함.
+            //
+            // if ( getData.sharedStatus === 'Y'){
+            //     sharedBtn.style.backgroundColor = 'green';
+            //     sharedBtn.preventDefault();
+            //         alert("이미 추가된 일정입니다.");
+            // }
+
+        })
+        .catch(error => console.error(error));
+
+}
+
+// 파일 업로드
+document.querySelector('#file-icon')
+    .addEventListener('click', function (){
+    document.querySelector('#mediaUpload').click();
+});
+
+// 파일 선택 후 자동 업로드
+document.querySelector('#mediaUpload')
+    .addEventListener('change', function () {
+        fileUpload(); // 파일 선택하면 자동 업로드 🚀
+    });
+
+window.fileUpload = function (){
+
+    const fileInput = document.querySelector('#mediaUpload');
+    const files = fileInput.files;
+    const roomId = selectedRoomId;
+    const dogId = currentDogId;
+
+    const formData = new FormData();
+
+    formData.append("roomId", roomId);
+    formData.append("dogId", dogId);
+
+    for (let i = 0 ; i <files.length ; i++){
+        formData.append("files", files[i]);
+    }
+
+    try{
+        api.post('/api/chat/fileUpload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then(async response => {
+                console.log("응답 데이터 fileUrl:", response);
+                const fileUrl = response.body;
+
+                const fileMessage = {
+                    sender : currentDogId,
+                    text : fileUrl,
+                    nickname : currentUserNickname,
+                    timestamp : serverTimestamp(),
+                    status : 'M'
+                }
+
+                const fileLatestMessage = {
+                    sender : currentDogId,
+                    text : "이미지를 보냈습니다.",
+                    nickname : currentUserNickname,
+                    timestamp : serverTimestamp(),
+                    status : 'M'
+                }
+
+                await addDoc(collection(db, "chatRooms", selectedRoomId, "messages"), fileMessage);
+                await updateDoc(doc(db, "chatRooms", selectedRoomId), {lastMessage: fileLatestMessage})
+
+            })
+            .catch(error => console.error(error));
+
+
+    }catch{
+        console.error("파일 업로드 실패:", error);
+    }
+
+}
+
+//상세정보 페이지
+    
+//이름 불러오기
+window.detailProfile = async function () {
+
+    const roomSnap = await getDoc(doc(db, 'chatRooms', selectedRoomId));
+    const participants = roomSnap.data().participants;
+    console.log('상대 id//'+participants);
+
+    const otherDogId = participants.find(id => id !== currentDogId);
+    const profileUrl = getProfileById(otherDogId);
+    const profile = document.querySelector('.profile');
+
+    profile.innerHTML = '';
+    profile.innerHTML = `
+        <img src="${profileUrl}" class="profile-img-3" alt="">
+    `
+    const detailUserName = document.querySelector('.detail-title');
+    const profileNickName = getNicknameById(otherDogId);
+
+    detailUserName.innerText = '';
+    detailUserName.innerText = `${profileNickName}`;
+}
+
+//미디어
+window.detailPageMedia = function (roomId){
+
+    const q = query(
+        collection(db, "chatRooms", roomId, "messages"),
+        where("status", "==", "M"),orderBy("timestamp", "desc"),limit(6)
+    );
+    console.log(q);
+
+    onSnapshot(q, (snapshot) => {
+        const mediaList = [];
+        snapshot.forEach(doc => {
+            let urls = doc.data().text;
+
+                if (Array.isArray(urls)) {
+                    mediaList.push(...urls); // ✅ 배열이면 그대로 추가
+                } else if (typeof urls === "string") {
+                    mediaList.push(urls); // ✅ 문자열이면 개별 추가
+                }
+            });
+
+            console.log(mediaList);
+
+            const maxImgs = 6;
+            const finalMediaList = mediaList.slice(0, maxImgs);
+
+            const mediaModalList = document.querySelector('.media-list');
+            mediaModalList.innerHTML = '';
+
+        finalMediaList.forEach(url => {
+                const mediaItem = document.createElement('div');
+                mediaItem.classList.add('media-item');
+
+                mediaItem.innerHTML = `
+            <img src="${url}" alt="미디어" class="media-img" >
+        `;
+
+                mediaModalList.appendChild(mediaItem);
+            });
+
+        })
+}
+
+// +버튼 누를시 전체 이미지 리스트
+window.openMediaList = function (){
+
+    const modalOverlay = document.querySelector('.modalMedia');
+    const modalContent = document.querySelector('.allMedia-modal-list');
+    const roomId = selectedRoomId;
+
+    modalOverlay.style.display = 'flex';
+
+    api.get('/api/chat/mediaListAll', {roomId : roomId })
+        .then(data => {
+            // console.log(data.body);
+
+            const mediaUrlList = data.body;
+
+            const mediaModalList = document.querySelector('.allMedia-modal-list');
+
+            mediaModalList.innerHTML = '';
+
+            mediaUrlList.forEach(url => {
+                const mediaItem = document.createElement('div');
+                mediaItem.classList.add('media-item');
+
+                mediaItem.innerHTML = `
+                <img src="${url}" alt="미디어" class="media-img" onclick="openMedia('${url}')">
+            `;
+
+                mediaModalList.appendChild(mediaItem);
+
+            });
+
+
+        })
+        .catch(error => console.error(error));
+
+    setTimeout(() => {
+        window.addEventListener('click', function (event) {
+            if (modalOverlay.style.display === 'flex' && !modalContent.contains(event.target)) {
+                modalOverlay.style.display = 'none';
+            }
+        }, { once: true });
+    }, 100); // ✅ 모달 표시 후 약간의 딜레이 추가 (클릭 이벤트 즉시 실행 방지)
+}
+
+// // ✅ 이미지 클릭 시 큰 화면으로 보기 (모달)
+// function openMedia(url) {
+//     const modal = document.querySelector('.media-modal');
+//     const modalImg = document.querySelector('.modal-img');
+//     modal.style.display = "block";
+//     modalImg.src = url;
+// }
+
+//공유된 일정 불러오기
+window.detailPageCalendar = function (){
+
+    api.get('/api/chat/sharedCalendar', { roomId: selectedRoomId })
+        .then(data => {
+            console.log(data.body);
+            const sharedCalendar = data.body;
+
+            const calendarContent = document.querySelector('.calender-content');
+
+            calendarContent.innerHTML = '';
+
+            const todayDate = new Date().toISOString().split('T')[0];
+
+            sharedCalendar.forEach(calendar => {
+                const calendarItem = document.createElement('div');
+                calendarItem.classList.add('calendar-item');
+
+                const eventDate = new Date(calendar.calendar_start_date).toISOString().split('T')[0];
+
+                if(todayDate === eventDate){
+
+                    const todayBtn = document.querySelector('.today-btn-box');
+
+                    todayBtn.innerHTML ='';
+                    todayBtn.innerHTML = `
+                        <button class="today-btn">오늘</button>
+                    `;
+
+
+                }
+
+                calendarItem.innerHTML = `
+                  <div class="calender-box"></div>
+                    <div class="calender-text">
+                        <div class="calender-name">${calendar.calendar_title}</div>
+                        <div class="calender-date" style="font-size: 13px; color: #656565">${formatDateTime(calendar.calendar_start_date)}</div>
+                    </div>
+            `;
+
+                calendarContent.appendChild(calendarItem);
+
+            });
+
 
         })
         .catch(error => console.error(error));
