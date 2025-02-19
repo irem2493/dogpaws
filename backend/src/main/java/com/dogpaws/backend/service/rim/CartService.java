@@ -26,7 +26,7 @@ public class CartService {
     private final ProductOptionRepository productOptionRepository;
 
     //TODO : 배송비 설정 관리자에서 하도록
-    private static final int DELIVERY_FEE = 3000;
+    public static final int DELIVERY_FEE = 3000;
 
     @Transactional
     public boolean addCart(String username, CartRequestDto requestDto) {
@@ -60,22 +60,25 @@ public class CartService {
                         );
                     }
                     exist = true;
-                } else {
+                }else {
                     // 3. 상품이 없으면 상품과 옵션 모두 새로 추가
                     CartItemParam param = CartItemParam.builder()
                             .username(username)
                             .productId(requestDto.getProductId())
                             .build();
-                    
+
+                    // 상품 정보 저장
                     cartDao.insertCartItem(param);
                     log.info("생성된 cartItemId: {}", param.getCartItemId());
-                    log.info("옵션 정보: {}", option);
 
+                    // 모든 옵션 정보 한 번에 저장
                     cartDao.insertCartItemOptions(
-                        param.getCartItemId(),
-                        Collections.singletonList(option)
+                            param.getCartItemId(),
+                            requestDto.getOptions()  // 전체 옵션 리스트 전달
                     );
-                    break; // 첫 옵션에서 상품을 생성했으므로 이후 옵션은 위의 로직으로 처리됨
+
+                    exist = true;
+                    break;  // 상품이 생성되었으므로 더 이상의 반복은 불필요
                 }
             }
         }
@@ -125,8 +128,9 @@ public class CartService {
                 log.warn("장바구니 아이템이 없습니다. username: {}", username);
                 return;
             }
-
-            // 장바구니 아이템 삭제
+            // 먼저 옵션 삭제
+            cartDao.deleteCartItemOptions(username, cartItemIds);
+            // 그 다음 카트 아이템 삭제
             cartDao.deleteCartItems(username, cartItemIds);
             log.info("장바구니 비우기 완료. username: {}, items: {}", username, cartItemIds);
 

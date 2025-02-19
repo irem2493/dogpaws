@@ -1,7 +1,7 @@
 package com.dogpaws.frontend.controller.rim;
 
 import com.dogpaws.frontend.dto.ajy.UserDto;
-import com.dogpaws.frontend.dto.rim.CartSummaryResponseDto;
+import com.dogpaws.frontend.dto.rim.*;
 import com.dogpaws.frontend.global.ApiResponse;
 import com.dogpaws.frontend.service.ApiRequestService;
 import com.dogpaws.frontend.utils.TokenUtil;
@@ -13,11 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -101,4 +101,116 @@ public class OrderViewController {
         }
     }
 
+    @GetMapping("/success")
+    public String orderSuccessView(
+            @RequestParam String paymentKey,
+            @RequestParam String orderId,
+            @RequestParam Integer amount,
+            Model model,
+            HttpServletRequest request) {
+
+        log.info("결제 성공 처리 - paymentKey: {}, orderId: {}, amount: {}", paymentKey, orderId, amount);
+
+        try {
+            // 1. 결제 성공 API 호출
+            ApiResponse paymentResponse = apiRequestService.fetchData(
+                    "/api/order/success",
+                    Map.of(
+                            "paymentKey", paymentKey,
+                            "qlId", orderId,
+                            "amount", String.valueOf(amount)
+                    ),
+                    false
+            );
+
+            if (paymentResponse.getStatus() != ApiResponse.ApiStatus.SUCCESS) {
+                throw new RuntimeException("결제 처리 실패: " + paymentResponse.getBody());
+            }
+
+            // 2. 주문 정보 조회 API 호출
+            ApiResponse orderResponse = apiRequestService.fetchData(
+                    "/api/order/" + orderId,
+                    null,
+                    false
+            );
+
+            if (orderResponse.getStatus() != ApiResponse.ApiStatus.SUCCESS) {
+                throw new RuntimeException("주문 정보 조회 실패");
+            }
+
+            // 3. 주문 정보를 모델에 추가
+            log.info("주문 정보 변환 시작 - responseBody: {}", orderResponse);
+            Map<String, Object> responseBody = (Map<String, Object>) orderResponse.getBody();
+            Map<String, Object> orderData = (Map<String, Object>) responseBody.get("body");
+            log.info("주문 데이터 추출 - orderData: {}", orderData);
+
+            OrderDto order = objectMapper.convertValue(orderData, OrderDto.class);
+            log.info("주문 정보 변환 완료 - order: {}", order);
+            model.addAttribute("order", order);
+
+            return "rim/store/order_success";
+
+        } catch (Exception e) {
+            log.error("결제 완료 처리 중 오류 발생: {}", e.getMessage(), e);
+            return "redirect:/error";
+        }
+    }
+
+    @GetMapping("/test/success")
+    public String orderSuccessTestView(Model model) {
+        // 테스트용 주문 상품 옵션 생성
+        List<OrderItemOptionDto> options = List.of(
+                OrderItemOptionDto.builder()
+                        .optionId(23L)
+                        .optionName("관절 강아지 사료 2kg (기본)")
+                        .optionPrice(32500)
+                        .quantity(1)
+                        .build(),
+                OrderItemOptionDto.builder()
+                        .optionId(24L)
+                        .optionName("관절 강아지 사료 5kg")
+                        .optionPrice(72500)
+                        .quantity(1)
+                        .build()
+        );
+
+        // 테스트용 주문 상품 생성
+        List<OrderItemDto> orderItems = List.of(
+                OrderItemDto.builder()
+                        .orderItemId(98L)
+                        .productId(22L)
+                        .productName("관절 강아지 사료")
+                        .manufacturer("닥터독")
+                        .imageUrl("http://localhost:2000/uploads/20250217113917045.jpg")
+                        .amount(2)
+                        .itemPrice(152500)
+                        .options(options)
+                        .build()
+        );
+
+        // 테스트용 주문 데이터 생성
+        OrderDto testOrder = OrderDto.builder()
+                .qlId("20250219-204621-7248")
+                .orderId(85L)
+                .username("test8")
+                .totalPrice(350500)
+                .orderStatus("PAID")
+                .orderDate(LocalDateTime.now())
+                .orderName("홍길동")
+                .deliveryFee(3000)
+                .orderPhone("01012345678")
+                .shippingZipcode("06261")
+                .shippingAddress1("서울 강남구 도곡로22길 5")
+                .shippingAddress2("101동 1001호")
+                .shippingMemo("부재시 경비실에 맡겨주세요")
+                .receiverName("홍길동")
+                .receiverPhone("01012345678")
+                .orderItems(orderItems)
+                .paymentKey("tgen_20250219204622ibq06")
+                .build();
+
+        model.addAttribute("order", testOrder);
+        return "rim/store/order_success";
+    }
 }
+

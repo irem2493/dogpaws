@@ -24,6 +24,9 @@ public interface CartDao {
     void insertCartItemOptions(@Param("cartItemId") Long cartItemId,
                                @Param("options") List<CartRequestDto.CartOptionDto> options);
 
+    void deleteCartItemOptions(@Param("username") String username, @Param("cartItemIds") List<Long> cartItemIds);
+    void deleteCartItems(@Param("username") String username, @Param("cartItemIds") List<Long> cartItemIds);
+
 
     // 상품 ID로 장바구니 아이템 찾기
     CartItemParam findCartItemByProductId(@Param("username") String username,
@@ -36,11 +39,6 @@ public interface CartDao {
     void updateCartItemOptionQuantity(@Param("cartItemId") Long cartItemId,
                                       @Param("optionId") Long optionId,
                                       @Param("quantity") int quantity);
-
-
-    // 장바구니 아이템 삭제 (결제 완료 후 카트 비우기)
-    void deleteCartItems(@Param("username") String username,
-                         @Param("cartItemIds") List<Long> cartItemIds);
 
 
     // 선택된 장바구니 아이템 조회

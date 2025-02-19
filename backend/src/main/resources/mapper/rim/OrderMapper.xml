@@ -15,7 +15,6 @@
             shipping_zipcode,
             shipping_address1,
             shipping_address2,
-            shipping_extra_address,
             receiver_name,
             receiver_phone,
             shipping_memo,
@@ -30,7 +29,6 @@
             #{shippingZipcode},
             #{shippingAddress1},
             #{shippingAddress2},
-            #{shippingExtraAddress},
             #{receiverName},
             #{receiverPhone},
             #{shippingMemo},
@@ -38,8 +36,10 @@
             NOW()
         )
 </insert>
-    <!-- 주문 상품 추가 -->
-    <insert id="insertOrderItem" parameterType="com.dogpaws.backend.dto.rim.OrderItemDto" useGeneratedKeys="true" keyProperty="orderItemId">
+
+
+    <!-- 주문 상품 정보 저장 -->
+    <insert id="insertOrderItem" parameterType="com.dogpaws.backend.dto.rim.OrderItemDto"  useGeneratedKeys="true" keyProperty="orderItemId">
         INSERT INTO tbl_order_items (
         ql_id,
         product_id,
@@ -52,86 +52,83 @@
         #{itemPrice}
         )
     </insert>
-    <!-- 주문 상품 옵션 추가 -->
-    <insert id="insertOrderItemOption" parameterType="com.dogpaws.backend.dto.rim.OrderItemOptionDto">
+
+    <!-- 주문 상품 옵션 정보 저장 -->
+    <insert id="insertOrderItemOption">
         INSERT INTO tbl_order_item_options (
         order_item_id,
         option_name,
-        option_price
+        option_price,
+        quantity
         ) VALUES (
         #{orderItemId},
         #{optionName},
-        #{optionPrice}
+        #{optionPrice},
+        #{quantity}
         )
     </insert>
 
-    <!-- 주문 조회 -->
-    <select id="selectOrderByQlId" resultMap="orderResultMap">
-        SELECT
-        o.order_id,
-        o.ql_id,
-        o.payment_key,
-        o.username,
-        o.total_price,
-        o.order_name,
-        o.order_phone,
-        o.shipping_zipcode,
-        o.shipping_address1,
-        o.shipping_address2,
-        o.shipping_extra_address,
-        o.shipping_memo,
-        o.receiver_name,
-        o.receiver_phone,
-        o.order_status,
-        o.order_date,
-        oi.order_item_id,
-        oi.product_id,
-        oi.amount,
-        oi.item_price,
-        oio.option_id,
-        oio.option_name,
-        oio.option_price
+    <!-- 주문에 포함된 장바구니 아이템 ID 조회 -->
+    <select id="selectCartItemsByQlId" resultType="long">
+        SELECT DISTINCT c.cart_item_id
         FROM tbl_orders o
-        LEFT JOIN tbl_order_items oi ON o.ql_id = oi.ql_id
-        LEFT JOIN tbl_order_item_options oio ON oi.order_item_id = oio.order_item_id
+        JOIN tbl_order_items oi ON o.ql_id = oi.ql_id
+        JOIN tbl_cart c ON oi.product_id = c.product_id
         WHERE o.ql_id = #{qlId}
     </select>
 
-    <!-- 주문 결과 매핑 -->
-    <resultMap id="orderResultMap" type="com.dogpaws.backend.dto.rim.OrderDto">
-        <id property="orderId" column="order_id"/>
-        <result property="qlId" column="ql_id"/>
-        <result property="paymentKey" column="payment_key"/>
-        <result property="username" column="username"/>
-        <result property="totalPrice" column="total_price"/>
-        <result property="orderName" column="order_name"/>
-        <result property="orderPhone" column="order_phone"/>
-        <result property="shippingZipcode" column="shipping_zipcode"/>
-        <result property="shippingAddress1" column="shipping_address1"/>
-        <result property="shippingAddress2" column="shipping_address2"/>
-        <result property="orderDate" column="order_date" jdbcType="TIMESTAMP" javaType="java.time.LocalDateTime"/>
-        <result property="shippingExtraAddress" column="shipping_extra_address"/>
-        <result property="shippingMemo" column="shipping_memo"/>
-        <result property="receiverName" column="receiver_name"/>
-        <result property="receiverPhone" column="receiver_phone"/>
-        <result property="orderStatus" column="order_status"
-                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+    <!-- 주문 조회 -->
+    <select id="selectOrderByQlId" resultType="com.dogpaws.backend.dto.rim.OrderDto">
+        SELECT
+        o.order_id as orderId,
+        o.ql_id as qlId,
+        o.payment_key as paymentKey,
+        o.username,
+        o.total_price as totalPrice,
+        o.order_name as orderName,
+        o.order_phone as orderPhone,
+        o.shipping_zipcode as shippingZipcode,
+        o.shipping_address1 as shippingAddress1,
+        o.shipping_address2 as shippingAddress2,
+        o.shipping_extra_address as shippingExtraAddress,
+        o.shipping_memo as shippingMemo,
+        o.receiver_name as receiverName,
+        o.receiver_phone as receiverPhone,
+        o.order_status as orderStatus,
+        o.order_date as orderDate,
+        (
+        SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+        'orderItemId', oi.order_item_id,
+        'qlId', oi.ql_id,
+        'productId', oi.product_id,
+        'productName', p.name,
+        'manufacturer', p.manufacturer,
+        'imageUrl', p.image_url,
+        'amount', oi.amount,
+        'itemPrice', oi.item_price,
+        'options', (
+        SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+        'optionId', oio.option_id,
+        'orderItemId', oio.order_item_id,
+        'optionName', oio.option_name,
+        'optionPrice', oio.option_price
+        )
+        )
+        FROM tbl_order_item_options oio
+        WHERE oio.order_item_id = oi.order_item_id
+        )
+        )
+        )
+        FROM tbl_order_items oi
+        JOIN tbl_products p ON oi.product_id = p.product_id  /* 추가: products 테이블 조인 */
+        WHERE oi.ql_id = o.ql_id
+        ) as orderItems
+        FROM tbl_orders o
+        WHERE o.ql_id = #{qlId}
+    </select>
 
-        <collection property="orderItems" ofType="com.dogpaws.backend.dto.rim.OrderItemDto">
-            <id property="orderItemId" column="order_item_id"/>
-            <result property="qlId" column="ql_id"/>
-            <result property="productId" column="product_id"/>
-            <result property="amount" column="amount"/>
-            <result property="itemPrice" column="item_price"/>
-
-            <collection property="options" ofType="com.dogpaws.backend.dto.rim.OrderItemOptionDto">
-                <id property="optionId" column="option_id"/>
-                <result property="orderItemId" column="order_item_id"/>
-                <result property="optionName" column="option_name"/>
-                <result property="optionPrice" column="option_price"/>
-            </collection>
-        </collection>
-    </resultMap>
 
     <!-- 주문번호 존재 여부 확인 -->
     <select id="existsByQlId" resultType="boolean">
@@ -144,7 +141,9 @@
     <!-- 주문 상태 업데이트 -->
     <update id="updateOrderStatus">
         UPDATE tbl_orders
-        SET order_status = #{status}
+        SET
+        order_status = #{status},
+        payment_key = #{paymentKey}
         WHERE ql_id = #{qlId}
     </update>
 

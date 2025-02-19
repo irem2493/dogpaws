@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CartListResponseDto {
     private Long cartItemId;
+    private String manufacturer;
     private Long productId;
     private String productName;
     private int productPrice;

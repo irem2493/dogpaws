@@ -3,40 +3,209 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout-mypage}">
 <head>
+
+    <script src="https://js.tosspayments.com/v2/standard"></script>
+
     <title>주문서 작성</title>
     <meta charset="utf-8" />
-    <script src="https://js.tosspayments.com/v2/standard"></script>
-</head>
-    <script th:inline="javascript">
-        // 결제 위젯 초기화에 필요한 변수들을 전역으로 선언
-        // 결제 위젯 초기화
-        const paymentWidget = PaymentWidget(clientKey, PaymentWidget.ANONYMOUS);
-    </script>
 </head>
 <body layout:fragment="content" style="min-height: 100vh">
+
+
 <div class="container">
     <div class="order-create-container mt-5">
         <h2>주문서 작성</h2>
 
+        <!-- 주문자 정보 -->
+        <div class="card mb-4">
+            <div class="card-header">주문자 정보</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="orderName" class="form-label">주문자명</label>
+                    <input type="text" class="form-control" id="orderName" name="orderName" >
+                </div>
+                <div class="mb-3">
+                    <label for="orderPhone" class="form-label">연락처</label>
+                    <input type="tel" class="form-control" id="orderPhone" name="orderPhone" >
+                </div>
+            </div>
+        </div>
+
+        <!-- 배송 정보 표시 영역 -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>배송 정보</span>
+                <button type="button" class="btn btn-sm btn-orange-dark" onclick="openModal('shippingModal')">
+                    배송정보 입력
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-3">받는 사람</div>
+                    <div class="col-md-9" id="displayReceiverName">-</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3">연락처</div>
+                    <div class="col-md-9" id="displayReceiverPhone">-</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3">주소</div>
+                    <div class="col-md-9">
+                        <div id="displayShippingZipcode">-</div>
+                        <div id="displayShippingAddress1">-</div>
+                        <div id="displayShippingAddress2">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 배송 메모 -->
+        <div class="card mb-4">
+            <div class="card-header">배송 메모</div>
+            <div class="card-body">
+                <select class="form-select" id="shippingMemo" name="shippingMemo">
+                    <option value="">배송 메모를 선택해주세요</option>
+                    <option value="문 앞에 놓아주세요">문 앞에 놓아주세요</option>
+                    <option value="경비실에 맡겨주세요">경비실에 맡겨주세요</option>
+                    <option value="배송 전 연락 부탁드립니다">배송 전 연락 부탁드립니다</option>
+                    <option value="direct">직접 입력</option>
+                </select>
+                <input type="text" class="form-control mt-2" id="directShippingMemo"
+                       style="display: none;" placeholder="배송메모를 입력해주세요">
+            </div>
+        </div>
+
+
+
+        <!-- 배송정보 입력 모달 -->
+        <div id="shippingModal" class="pawsModal" style="display: none;">
+            <div class="modal-content">
+                <button type="button" class="pawsModal-close" onclick="closeModal(this)">&times;</button>
+                <h3 class="modal-title">배송 정보 입력</h3>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="sameAsOrderer">
+                    <label class="form-check-label" for="sameAsOrderer">
+                        주문자 정보와 동일
+                    </label>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="receiverName" class="form-label">받는 사람</label>
+                        <input type="text" class="form-control" id="receiverName"
+                               placeholder="받으시는 분의 성함을 입력하세요">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="receiverPhone" class="form-label">휴대전화</label>
+                        <input type="tel" class="form-control" id="receiverPhone"
+                               placeholder="휴대전화 번호를 입력하세요">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">배송지 주소</label>
+                        <div class="input-group mb-2">
+                            <input type="text" class="form-control" id="shippingZipcode"
+                                   placeholder="우편번호" readonly>
+                            <button type="button" class="btn btn-secondary" onclick="searchAddress()">
+                                배송지 검색
+                            </button>
+                        </div>
+                        <input type="text" class="form-control mb-2" id="shippingAddress1"
+                               placeholder="배송지 주소" readonly>
+                        <input type="text" class="form-control" id="shippingAddress2"
+                               placeholder="상세 주소">
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-orange-dark" onclick="saveShippingInfo()">
+                            저장하기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- 선택한 상품 목록 -->
         <div class="card mb-4">
             <div class="card-header">주문 상품</div>
             <div class="card-body">
-                <div th:each="item : ${selectedItems.cartItems}" class="mb-3">
+                <div th:each="item : ${selectedItems.cartItems}" class="mb-4 border-bottom pb-3">
                     <div class="row">
+                        <!-- 상품 이미지 -->
                         <div class="col-md-2">
                             <img th:src="${item.imageUrl}" class="img-fluid" alt="상품 이미지">
                         </div>
+                        <!-- 상품 정보 -->
                         <div class="col-md-10">
-                            <h5 th:text="${item.productName}">상품명</h5>
-                            <div th:each="option : ${item.cartOptions}">
-                                <p>
-                                    <span th:text="${option.optionName}">옵션명</span>
-                                    <span th:text="${option.quantity}">수량</span>개
-                                    <span th:text="${#numbers.formatInteger(option.optionPrice, 0, 'COMMA')}">0</span>원
-                                </p>
+                            <!-- 상품명과 제조사 -->
+                            <h5>
+                                <span th:text="${item.manufacturer}">제조사</span>
+                                <span th:text="${item.productName}">상품명</span>
+                            </h5>
+
+                            <!-- 옵션 목록 -->
+                            <div class="mt-3">
+                                <!-- 기본 상품 (첫 번째 옵션) -->
+                                <div th:each="option, status : ${item.cartOptions}" class="mb-2">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <span th:text="${option.optionName}" class="text-muted">옵션명</span>
+                                        </div>
+                                        <div class="col-md-2 text-center">
+                                            수량: <span th:text="${option.quantity}">0</span>개
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <!-- 첫 번째 옵션은 상품 가격, 나머지는 옵션 가격 -->
+                                            <span th:if="${status.index == 0}">
+                                        <span th:text="${#numbers.formatInteger(item.productPrice, 0, 'COMMA')}">0</span>원
+                                    </span>
+                                            <span th:unless="${status.index == 0}">
+                                        <span th:if="${option.optionPrice > 0}">
+                                            (+<span th:text="${#numbers.formatInteger(option.optionPrice, 0, 'COMMA')}">0</span>원)
+                                        </span>
+                                    </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 상품별 합계 -->
+                                <div class="row mt-3">
+                                    <div class="col-12 text-end">
+                                        <strong>상품 합계:
+                                            <span th:text="${#numbers.formatInteger(item.getTotalPrice(), 0, 'COMMA')}">0</span>원
+                                        </strong>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- 전체 주문 금액 정보 -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <table class="table table-sm border-top">
+                            <tr>
+                                <td>상품 금액</td>
+                                <td class="text-end">
+                                    <span th:text="${#numbers.formatInteger(selectedItems.totalProductPrice, 0, 'COMMA')}">0</span>원
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>배송비</td>
+                                <td class="text-end">
+                                    <span th:text="${#numbers.formatInteger(selectedItems.deliveryFee, 0, 'COMMA')}">0</span>원
+                                </td>
+                            </tr>
+                            <tr class="table-active">
+                                <td><strong>결제 예정 금액</strong></td>
+                                <td class="text-end">
+                                    <strong>
+                                        <span th:text="${#numbers.formatInteger(selectedItems.totalOrderPrice, 0, 'COMMA')}">0</span>원
+                                    </strong>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -46,80 +215,6 @@
         <form id="orderForm" onsubmit="return false;">
             <input type="hidden" name="username" th:value="${user.username}">
             <input type="hidden" name="totalPrice" th:value="${selectedItems.totalOrderPrice}">
-
-            <!-- 주문자 정보 -->
-            <div class="card mb-4">
-                <div class="card-header">주문자 정보</div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label for="orderName" class="form-label">주문자명</label>
-                        <input type="text" class="form-control" id="orderName" name="orderName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="orderPhone" class="form-label">연락처</label>
-                        <input type="tel" class="form-control" id="orderPhone" name="orderPhone" required>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 배송지 정보 -->
-            <div class="card mb-4">
-                <div class="card-header">배송지 정보</div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label for="shippingZipcode" class="form-label">우편번호</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="shippingZipcode" name="shippingZipcode" readonly required>
-                            <button type="button" class="btn btn-secondary" onclick="searchAddress()">
-                                주소 검색
-                            </button>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="shippingAddress1" class="form-label">기본주소</label>
-                        <input type="text" class="form-control" id="shippingAddress1" name="shippingAddress1" readonly required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="shippingAddress2" class="form-label">상세주소</label>
-                        <input type="text" class="form-control" id="shippingAddress2" name="shippingAddress2" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="shippingMemo" class="form-label">배송 메모</label>
-                        <input type="text" class="form-control" id="shippingMemo" name="shippingMemo">
-                    </div>
-                </div>
-            </div>
-            <!-- 수령인 정보 -->
-            <div class="card mb-4">
-                <div class="card-header">수령인 정보</div>
-                <div class="card-body">
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="sameAsOrderer">
-                        <label class="form-check-label" for="sameAsOrderer">
-                            주문자 정보와 동일
-                        </label>
-                    </div>
-                    <div class="mb-3">
-                        <label for="receiverName" class="form-label">수령인 이름</label>
-                        <input type="text" class="form-control" id="receiverName" name="receiverName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="receiverPhone" class="form-label">수령인 연락처</label>
-                        <input type="tel" class="form-control" id="receiverPhone" name="receiverPhone" required>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 결제 정보 -->
-            <div class="card mb-4">
-                <div class="card-header">결제 정보</div>
-                <div class="card-body">
-                    <p>총 상품금액: <span th:text="${#numbers.formatInteger(selectedItems.totalProductPrice, 0, 'COMMA')}">0</span>원</p>
-                    <p>배송비: <span th:text="${#numbers.formatInteger(selectedItems.deliveryFee, 0, 'COMMA')}">0</span>원</p>
-                    <h4>최종 결제금액: <span th:text="${#numbers.formatInteger(selectedItems.totalOrderPrice, 0, 'COMMA')}">0</span>원</h4>
-                </div>
-            </div>
-
             <div class="text-center">
                 <button class="btn btn-orange-dark" id="orderSubmitBtn">결제하기</button>
             </div>
@@ -129,20 +224,24 @@
     <!-- 결제 모달 -->
     <div id="paymentModal" class="pawsModal" style="display: none;">
         <div class="modal-content">
-            <button type="button" class="modal-close" onclick="closeModal(this)">&times;</button>
-            <div class="modal-title">결제 수단 선택</div>
+            <button type="button" class="pawsModal-close" onclick="closeModal(this)">&times;</button>
+            <h3 class="modal-title">결제 수단 선택</h3>
 
-            <!-- 결제 위젯 영역 -->
-            <div id="payment-widget">
-                <div id="payment-method"></div>
-                <div id="payment-price"></div>
+            <div class="wrapper">
+                <div class="box_section" style="padding: 40px 30px 50px 30px; margin-top: 30px; margin-bottom: 50px">
+
+                    <!-- 결제 UI -->
+                    <div id="payment-method"></div>
+                    <!-- 이용약관 UI -->
+                    <div id="agreement"></div>
+
+                    <button class="button" id="payment-button" style="margin-top: 30px">결제하기</button>
+                </div>
             </div>
-
-            <div class="modal-footer">
-                <button class="btn-orange-dark" id="payment-button">결제하기</button>
             </div>
         </div>
     </div>
+
 
 </div>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
@@ -154,6 +253,17 @@
 
     console.log('totalAmount:', totalAmount);
     console.log('cartItemsData:', cartItemsData);  // 데이터 확인용 로그
+
+    const tossPayments = TossPayments("test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm");
+    const customerKey = sessionStorage.getItem('username')
+
+    console.log('tossPayments', tossPayments);
+
+
+    // 결제 위젯 초기화 (익명 결제)
+    const paymentWidget = tossPayments.widgets({
+        customerKey // 익명 결제의 경우
+    });
 
 </script>
 <script src="/js/rim/order_create.js"></script>

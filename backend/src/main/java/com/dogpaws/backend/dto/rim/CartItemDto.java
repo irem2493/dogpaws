@@ -11,9 +11,12 @@ import java.util.List;
 @Setter
 @ToString
 public class CartItemDto {
+
     private Long cartItemId;
 
     private Long productId;
+
+    private String manufacturer;
 
     private String productName;
 
