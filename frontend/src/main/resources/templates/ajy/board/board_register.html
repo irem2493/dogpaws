@@ -11,38 +11,30 @@
 <div class="container">
     <div class="board-container">
         <!-- 상단 메뉴 -->
-        <div class="menu">
-            <a href="#">자유게시판</a>
-            <a href="#">강아지 정보 교환</a>
-            <a href="#" class="active">그룹채팅</a>
-            <a href="#">봉사활동</a>
-            <a href="#">공지사항 및 이벤트</a>
-        </div>
-
-        <!-- 상단 이미지 및 제목 -->
-        <div class="header">
-            <img src="/img/board_dog1.jpg" alt="이미지">
-            <div class="header-text">그룹채팅</div>
-        </div>
-
-        <h2>그룹채팅</h2>
+        <div th:replace="~{ajy/board/board_header :: boardHeader}"></div>
 
         <!-- 게시글 입력 -->
-        <input type="text" id="title" class="title-input" placeholder="제목을 입력하세요">
-        <div class="main-container">
-            <div class="editor-container editor-container_classic-editor" id="editor-container">
-                <div class="editor-container__editor">
-                    <div id="editor"></div>
+        <form id="boardForm">
+
+            <input type="hidden" name="username" id="username" th:value="${username}"/>
+            <input type="hidden" name="nickname" id="nickname" th:value="${nickname}"/>
+            <input type="hidden" name="category" id="category" th:value="${category}"/>
+            <input type="text" name="title" id="title" class="title-input" placeholder="제목을 입력하세요">
+            <div class="main-container">
+                <div class="editor-container editor-container_classic-editor" id="editor-container">
+                    <div class="editor-container__editor">
+                        <div id="editor"></div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <script src="https://cdn.ckeditor.com/ckeditor5/44.2.0/ckeditor5.umd.js" crossorigin></script>
-        <script src="https://cdn.ckeditor.com/ckeditor5/44.2.0/translations/ko.umd.js" crossorigin></script>
-        <script src="https://cdn.ckbox.io/ckbox/2.6.1/ckbox.js" crossorigin></script>
-        <script src="/js/ajy/board/board_register.js"></script>
-        <button class="btn-submit" onclick="savePost()">게시글 저장</button>
+            <input type="submit" class="btn-submit" value="게시글 저장"/>
 
+        </form>
     </div>
+    <script src="https://cdn.ckeditor.com/ckeditor5/44.2.0/ckeditor5.umd.js" crossorigin></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/44.2.0/translations/ko.umd.js" crossorigin></script>
+    <script src="https://cdn.ckbox.io/ckbox/2.6.1/ckbox.js" crossorigin></script>
+    <script src="/js/ajy/board/board_register.js"></script>
 </div>
 </body>
 </html>

@@ -42,6 +42,9 @@ const CLOUD_SERVICES_TOKEN_URL =
     'https://jjkg5zjkklym.cke-cs.com/token/dev/8b65a8fa23375014e8d59e3754515103671cb563e31a4ebc90ffa182437f?limit=10';
 
 const editorConfig = {
+    ckfinder:{
+        uploadUrl: "http://localhost:2000/uploads/"
+    },
     toolbar: {
         items: [
             'heading',
@@ -158,8 +161,7 @@ const editorConfig = {
             'ckboxImageEdit'
         ]
     },
-    initialData:
-        '<h2>Congratulations on setting up CKEditor 5! 🎉</h2>\n<p>\n\tYou\'ve successfully created a CKEditor 5 project. This powerful text editor\n\twill enhance your application, enabling rich text editing capabilities that\n\tare customizable and easy to use.\n</p>\n<h3>What\'s next?</h3>\n<ol>\n\t<li>\n\t\t<strong>Integrate into your app</strong>: time to bring the editing into\n\t\tyour application. Take the code you created and add to your application.\n\t</li>\n\t<li>\n\t\t<strong>Explore features:</strong> Experiment with different plugins and\n\t\ttoolbar options to discover what works best for your needs.\n\t</li>\n\t<li>\n\t\t<strong>Customize your editor:</strong> Tailor the editor\'s\n\t\tconfiguration to match your application\'s style and requirements. Or\n\t\teven write your plugin!\n\t</li>\n</ol>\n<p>\n\tKeep experimenting, and don\'t hesitate to push the boundaries of what you\n\tcan achieve with CKEditor 5. Your feedback is invaluable to us as we strive\n\tto improve and evolve. Happy editing!\n</p>\n<h3>Helpful resources</h3>\n<ul>\n\t<li>📝 <a href="https://portal.ckeditor.com/checkout?plan=free">Trial sign up</a>,</li>\n\t<li>📕 <a href="https://ckeditor.com/docs/ckeditor5/latest/installation/index.html">Documentation</a>,</li>\n\t<li>⭐️ <a href="https://github.com/ckeditor/ckeditor5">GitHub</a> (star us if you can!),</li>\n\t<li>🏠 <a href="https://ckeditor.com">CKEditor Homepage</a>,</li>\n\t<li>🧑‍💻 <a href="https://ckeditor.com/ckeditor-5/demo/">CKEditor 5 Demos</a>,</li>\n</ul>\n<h3>Need help?</h3>\n<p>\n\tSee this text, but the editor is not starting up? Check the browser\'s\n\tconsole for clues and guidance. It may be related to an incorrect license\n\tkey if you use premium features or another feature-related requirement. If\n\tyou cannot make it work, file a GitHub issue, and we will help as soon as\n\tpossible!\n</p>\n',
+    initialData: '',
     language: 'ko',
     licenseKey: LICENSE_KEY,
     link: {
@@ -183,7 +185,22 @@ const editorConfig = {
 
 configUpdateAlert(editorConfig);
 
-ClassicEditor.create(document.querySelector('#editor'), editorConfig);
+let editorInstance;
+
+ClassicEditor.create(document.querySelector('#editor'), editorConfig)
+    .then(editor => {
+        editorInstance = editor; // 에디터 인스턴스를 전역 변수에 저장
+    })
+    .catch(error => {
+        console.error("CKEditor 로드 오류:", error);
+    });
+
+// 입력된 값 가져오기
+function getEditorData() {
+    const data = editorInstance.getData();
+    console.log("입력된 값:", data);
+    alert("입력된 값:\n" + data);
+}
 
 /**
  * This function exists to remind you to update the config needed for premium features.
@@ -225,3 +242,59 @@ function configUpdateAlert(config) {
         );
     }
 }
+
+
+document.getElementById('boardForm').addEventListener('submit', function(event) {
+    event.preventDefault();  // 기본 폼 제출 방지
+
+    const username = document.getElementById('username').value;
+    const nickname=document.getElementById('nickname').value;
+    const titleInput = document.getElementById('title');
+    const title = titleInput.value;
+
+    const editorData = editorInstance.getData();
+    const category = document.getElementById('category').value;
+
+
+    const value = title.trim();
+    if (!value) {
+        alert(`필수 입력 항목을 모두 채워주세요: 제목`);
+        if (titleInput) {
+            titleInput.focus();  // 빈 필드에 포커스 설정
+        }
+        return;
+    }
+
+    const content = editorData.trim();
+    if (!content || content === "" || content === "<p></p>") {
+        console.error("에디터 내용이 비어 있습니다.");
+        alert("내용을 입력해주세요.");
+        return;
+    }
+
+    const boardData = {
+        username,
+        nickname,
+        title,
+        content : content,
+        category
+    };
+
+    api.post('/api/board', boardData)
+        .then(async response => {
+
+            if (response.status === 'SUCCESS') {
+                alert("게시글이 저장되었습니다.");
+                location.href=`/board/${category}`;
+            }else{
+                alert("게시글 저장 실패");
+            }
+        })
+        .catch(error => {
+                console.error("API 요청 오류:", error);
+                alert("서버 오류가 발생했습니다.");
+        });
+
+});
+
+

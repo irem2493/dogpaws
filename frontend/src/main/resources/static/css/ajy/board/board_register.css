@@ -43,9 +43,9 @@
 
 .board-container .menu {
     display: flex;
-    justify-content: space-around;
-    padding: 10px;
+    margin: 10px;
     border-bottom: 2px solid #ddd;
+    gap: 20px;
 }
 
 .board-container .menu a {
@@ -63,7 +63,14 @@
     width: 100%;
     padding: 10px;
     font-size: 16px;
+    border: 1px solid #bebebe;
+    border-radius: 5px;
     margin-bottom: 10px;
+}
+
+.board-container .title-input:focus {
+    border: 1px solid orange;
+    outline: none; /* 기본 브라우저 포커스 스타일 제거 */
 }
 
 .board-container .btn-submit {
@@ -85,19 +92,15 @@
 }
 
 .board-container .main-container {
-    font-family: 'Lato';
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+
 }
 
 .board-container .ck-content {
-    font-family: 'Lato';
     line-height: 1.6;
     word-break: break-word;
 }
 
 .board-container .editor-container_classic-editor .editor-container__editor {
-    min-width: 795px;
-    max-width: 100%;
+    width: 100%;
 }
