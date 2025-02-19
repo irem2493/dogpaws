@@ -125,20 +125,24 @@ public class MatchingService {
         System.out.println("성격 유형 후 score: " + score);
 
         //tbl_dog_personal 조건: 해당 항목 수에 2점씩 부여
-        int personalCount = dogMatchDao.countPersonalMatches(candidate.getDogId(), criteria.getDogPersonalGbnCdsList());
-        if (personalCount > 0) {
-            matchedCriteriaList.add("성격");
+        if(!criteria.getDogPersonalGbnCdsList().isEmpty()){
+            int personalCount = dogMatchDao.countPersonalMatches(candidate.getDogId(), criteria.getDogPersonalGbnCdsList());
+            if (personalCount > 0) {
+                matchedCriteriaList.add("성격");
+            }
+            score += 2 * personalCount;
+            System.out.println("tbl_dog_personal score: " + score);
         }
-        score += 2 * personalCount;
-        System.out.println("tbl_dog_personal score: " + score);
 
-        //tbl_dog_play 조건: 해당 항목 수에 2점씩 부여
-        int playCount = dogMatchDao.countPlayMatches(candidate.getDogId(), criteria.getDogPlayGbnCdsList());
-        if (playCount > 0) {
-            matchedCriteriaList.add("놀이");
+        if(!criteria.getDogPlayGbnCdsList().isEmpty()){
+            //tbl_dog_play 조건: 해당 항목 수에 2점씩 부여
+            int playCount = dogMatchDao.countPlayMatches(candidate.getDogId(), criteria.getDogPlayGbnCdsList());
+            if (playCount > 0) {
+                matchedCriteriaList.add("놀이");
+            }
+            score += 2 * playCount;
+            System.out.println("tbl_dog_play score: " + score);
         }
-        score += 2 * playCount;
-        System.out.println("tbl_dog_play score: " + score);
 
         //산책 시작 시간 차이 (분 단위)
         if (candidate.getWalkStartTime() != null && criteria.getWalkStartTime() != null) {
