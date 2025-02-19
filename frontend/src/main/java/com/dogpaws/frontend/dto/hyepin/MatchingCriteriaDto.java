@@ -1,10 +1,13 @@
 package com.dogpaws.frontend.dto.hyepin;
+
 import lombok.Data;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
-public class MatchDto {
+public class MatchingCriteriaDto {
+
     private int dogId;
     private String username;  // 사용자 ID (외래키)
     private String dogName;  // 강아지 이름
@@ -17,8 +20,8 @@ public class MatchDto {
     private String gender;  // 성별 (M/F)
     private String isNeutered;  // 중성화 여부 (Y/N)
     private Integer weight;  // 체중
-    private String walkStartTime;  // 산책 시작 시간
-    private String walkEndTime;  // 산책 종료 시간
+    private LocalTime walkStartTime;  // 산책 시작 시간
+    private LocalTime walkEndTime;  // 산책 종료 시간
     private String walkTimeYn;  // 산책 시간 선택 여부 (Y/N)
     private String walkDays;  // 산책 요일 (월, 화, 수, 목, 금, 토, 일)
     private String isMatingAvailable;  // 교배 매칭 여부 (Y/N)
@@ -35,4 +38,12 @@ public class MatchDto {
 
     private boolean liked; //좋아요 여부
 
+    private String breedGbnCd;
+    private String weightCategory; // 'U' (이상) 또는 'D' (이하)
+    private String dogTypeCodeGbnCd;
+
+    // tbl_dog_personal 조건 코드 목록 (예: 성격 코드 1~5)
+    private List<String> dogPersonalGbnCds;
+    // tbl_dog_play 조건 코드 목록 (예: 놀이 코드 1~5)
+    private List<String> dogPlayGbnCds;
 }
