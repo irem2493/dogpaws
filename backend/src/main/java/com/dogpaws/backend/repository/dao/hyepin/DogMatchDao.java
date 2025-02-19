@@ -1,5 +1,6 @@
 package com.dogpaws.backend.repository.dao.hyepin;
 
+import com.dogpaws.backend.dto.ajy.DogResponseDto;
 import com.dogpaws.backend.dto.hyepin.DogCandidateDto;
 import com.dogpaws.backend.dto.hyepin.FilterDto;
 import com.dogpaws.backend.dto.hyepin.MatchingCriteriaDto;
@@ -17,8 +18,14 @@ public interface DogMatchDao {
     public Integer deleteFilter(@Param("dogId") int dogId, @Param("matchType") char matchType);
     
     //매칭 (친구)
-    public List<DogCandidateDto> getDogFriendMatchList(@Param("dogId") int dogId, @Param("username") String username, @Param("matchType") String matchType);
+    public List<DogCandidateDto> getDogMatchList(@Param("dogId") int dogId, @Param("username") String username, @Param("matchType") String matchType,
+                                                 @Param("bloodTestCertified") String bloodTestCertified, @Param("vaccinationCertified") String vaccinationCertified,
+                                                 @Param("healthRecordCertified") String healthRecordCertified);
+    public List<DogCandidateDto> getDogDefaultMatchList(@Param("dogId") int dogId, @Param("matchType") String matchType);
+    public MatchingCriteriaDto getDogCriteria(@Param("dogId") int dogId);
     public MatchingCriteriaDto getMatchingCriteria(@Param("dogId") int dogId, @Param("username") String username, @Param("matchType") String matchType);
     public Integer countPersonalMatches(@Param("dogId") int dogId, @Param("dogPersonalGbnCdsList") List<String> dogPersonalGbnCdsList);
     public Integer countPlayMatches(@Param("dogId") int dogId, @Param("dogPlayGbnCdsList") List<String> dogPlayGbnCdsList);
+    public DogResponseDto getIsMatingAvailable(@Param("dogId") int dogId);
+
 }

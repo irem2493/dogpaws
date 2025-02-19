@@ -40,7 +40,7 @@ function addSelectedOption(checkbox, container, selectedOptions) {
     const optionDiv = document.createElement("div");
     optionDiv.classList.add("selected-option");
     optionDiv.setAttribute("id", "selected-" + value);
-    optionDiv.innerHTML = `${name} <span class="remove-option" data-value="${value}">| ✖</span>`;
+    optionDiv.innerHTML = `${name} <span class="remove-option" data-value="${value}">| <img src="/img/icon/x-basic.svg" alt="x-circle-icon"></span>`;
 
     container.appendChild(optionDiv);
 
@@ -175,6 +175,19 @@ function applyFilter(filter) {
         document.querySelector(".checkbox-basic").checked = true;
     }
 
+    //각 서류 체크박스
+    if (filter.blood_test_certified === "Y") {
+        document.getElementById("bloodTestCertified").checked = true;
+    }
+
+    if (filter.vaccination_certified === "Y") {
+        document.getElementById("vaccinationCertified").checked = true;
+    }
+
+    if (filter.health_record_certified === "Y") {
+        document.getElementById("healthRecordCertified").checked = true;
+    }
+
     // 체중 입력 및 이상/이하 라디오 버튼 선택
     if (filter.weight) {
         document.querySelector(".input-a").value = filter.weight;
@@ -238,6 +251,10 @@ function applyFilter(filter) {
     }
 }
 
-
+//교배매칭 활성화 하러가기
+function partnerMatingActivate(){
+    const dogId = document.getElementById("sessionDogId").value;
+    window.location.href = `/dog/dogEidt/${dogId}`;
+}
 
 
