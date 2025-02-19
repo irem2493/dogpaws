@@ -99,6 +99,12 @@ public class BoardController {
 
         Map<String, Object> board = (Map<String, Object>) innerBodyObj;
 
+        UserDto user  = SessionUtil.getUser(session);
+        if(user != null){
+            model.addAttribute("user", user);
+        }
+
+        model.addAttribute("category", category);
         model.addAttribute("boardId", boardId);
         model.addAttribute("board", board);
 

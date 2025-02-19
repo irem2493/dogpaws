@@ -59,8 +59,9 @@ public class BoardController {
         Board existBoard = boardService.getBoardById(boardId);
         if (existBoard != null) {
             boardService.deleteBoardById(boardId);
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "게시글 삭제 성공");
         }
-        return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "삭제 실패");
+        return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "게시글 삭제 실패");
     }
 
 
