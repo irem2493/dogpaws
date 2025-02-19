@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+  <link rel="stylesheet" href="/css/ajy/board/board_register.css" />
+  <link rel="stylesheet" href="/css/ajy/board/board_detail.css" />
+  <title>게시판</title>
+</head>
+<body layout:fragment="content" style="min-height: 100vh">
+<div class="container">
+  <div class="board-container">
+    <!-- 상단 메뉴 -->
+    <div th:replace="~{ajy/board/board_header :: boardHeader}"></div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div class="post-header" th:text="${board.title}"></div>
+      <!-- 수정 및 삭제 버튼 -->
+      <div class="button-group">
+        <button class="btn-b" style="height: 35px; color: black">수정</button>
+        <button class="btn-delete">삭제</button>
+      </div>
+    </div>
+
+    <!-- 작성자 정보 및 날짜 -->
+    <div class="post-meta">
+      <div class="post-meta-left">
+        <strong>[[${board.nickname}]]</strong> <img src="/img/icon/dog-filter/clock.svg" alt="clock-icon">
+        <span th:text="${#strings.replace(board.created_at, 'T', ' ')}"></span>
+      </div>
+      <div class="post-meta-right">
+        조회수 <strong>[[${board.view_count}]]</strong> | 댓글수 <strong>6</strong>
+      </div>
+    </div>
+
+    <!-- 게시글 내용 -->
+    <div class="post-content" th:utext="${board.content}"></div>
+
+  </div>
+</div>
+</body>
+</html>
