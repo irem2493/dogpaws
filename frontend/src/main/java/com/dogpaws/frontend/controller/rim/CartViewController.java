@@ -45,6 +45,7 @@ public class CartViewController {
 
 
         log.info("길이 : {}", cartSummary.getCartItems().size());
+        log.info("cartSummary : {}", cartSummary.toString());
         model.addAttribute("cartSummary", cartSummary);
 
         log.info("response : {}",response);

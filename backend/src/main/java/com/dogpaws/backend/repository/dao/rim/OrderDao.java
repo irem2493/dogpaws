@@ -36,13 +36,28 @@ public interface OrderDao {
     // 주문 조회 관련
     List<OrderDto> selectOrdersByUsername(String username);
 
+
+    int countOrdersByUsername(String username);
+
+    List<OrderDto> selectOrdersByUsernameWithPaging(
+            @Param("username") String username,
+            @Param("offset") int offset,
+            @Param("size") int size
+    );
+
+
+
+
+
+
+
     List<OrderDto> selectOrdersByStatus(String status);
     List<OrderDto> selectRecentOrders(@Param("limit") int limit);
 
     // 주문 검증
     boolean existsByQlId(String qlId);
 
-    int countOrdersByUsername(String username);
+
 
     // 주문 취소
     void cancelOrder(@Param("qlId") String qlId, @Param("reason") String reason);

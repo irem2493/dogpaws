@@ -1,15 +1,13 @@
 package com.dogpaws.frontend.dto.rim;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class CartOptionResponseDto {
     @JsonProperty("cart_item_id")
     private Long cartItemId;
@@ -17,7 +15,7 @@ public class CartOptionResponseDto {
     @JsonProperty("option_id")
     private Long optionId;
 
-    private Long CartItemOptionId;
+    private Long cartItemOptionId;
 
     @JsonProperty("option_name")
     private String optionName;

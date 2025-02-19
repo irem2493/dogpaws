@@ -70,7 +70,82 @@ public class CartController {
                     Map.of("message", "선택 상품 조회에 실패했습니다."));
         }
     }
+    // 선택된 장바구니 아이템 삭제
+    @DeleteMapping("/selected")
+    public ResponseEntity<ApiResponse<?>> deleteSelectedItems(
+            @RequestBody List<Long> cartItemIds) {
+        try {
+            cartService.deleteSelectedItems(cartItemIds);
+            return ResponseEntity.ok(new ApiResponse<>(
+                    ApiResponse.ApiStatus.SUCCESS,
+                    Map.of("message", "선택한 상품이 삭제되었습니다.")
+            ));
+        } catch (Exception e) {
+            log.error("장바구니 삭제 실패: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new ApiResponse<>(
+                    ApiResponse.ApiStatus.ERROR,
+                    Map.of("message", "장바구니 삭제에 실패했습니다.")
+            ));
+        }
+    }
 
+    
+
+// 장바구니 옵션 수량 업데이트
+@PutMapping("/option/quantity")
+public ResponseEntity<ApiResponse<?>> updateCartOptionQuantity(
+        @RequestBody Map<String, Object> request) {
+    try {
+        // 요청 데이터 로깅
+        log.info("수량 업데이트 요청 데이터: {}", request);
+        
+        Long cartItemId = Long.parseLong(request.get("cartItemId").toString());
+        Long optionId = Long.parseLong(request.get("optionId").toString());
+        int quantity = Integer.parseInt(request.get("quantity").toString());
+
+        log.info("cartItemId: {}, optionId: {}, quantity: {}", cartItemId, optionId, quantity);
+
+        cartService.updateCartOptionQuantity(cartItemId, optionId, quantity);
+        return ResponseEntity.ok(new ApiResponse<>(
+                ApiResponse.ApiStatus.SUCCESS,
+                Map.of("message", "수량이 변경되었습니다.")
+        ));
+    } catch (IllegalArgumentException e) {
+        log.error("잘못된 파라미터: {}", e.getMessage());
+        return ResponseEntity.badRequest().body(new ApiResponse<>(
+                ApiResponse.ApiStatus.ERROR,
+                Map.of("message", e.getMessage())
+        ));
+    } catch (Exception e) {
+        log.error("수량 변경 실패: {}", e.getMessage(), e);
+        return ResponseEntity.badRequest().body(new ApiResponse<>(
+                ApiResponse.ApiStatus.ERROR,
+                Map.of("message", "수량 변경에 실패했습니다.")
+        ));
+    }
+}
+
+// 장바구니 옵션 삭제
+@DeleteMapping("/option/{cartItemId}/{optionId}")
+public ResponseEntity<ApiResponse<?>> deleteCartOption(
+        @PathVariable Long cartItemId,
+        @PathVariable Long optionId) {
+    try {
+        log.info("옵션 삭제 요청 - cartItemId: {}, optionId: {}", cartItemId, optionId);
+
+        cartService.deleteCartOption(cartItemId, optionId);
+        return ResponseEntity.ok(new ApiResponse<>(
+                ApiResponse.ApiStatus.SUCCESS,
+                Map.of("message", "옵션이 삭제되었습니다.")
+        ));
+    } catch (Exception e) {
+        log.error("옵션 삭제 실패: {}", e.getMessage(), e);
+        return ResponseEntity.badRequest().body(new ApiResponse<>(
+                ApiResponse.ApiStatus.ERROR,
+                Map.of("message", "옵션 삭제에 실패했습니다.")
+        ));
+    }
+}
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleException(Exception e) {
         return ResponseEntity.badRequest().body(

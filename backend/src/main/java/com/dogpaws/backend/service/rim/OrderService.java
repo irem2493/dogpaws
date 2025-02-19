@@ -128,17 +128,24 @@ public class OrderService {
         }
 
         for (OrderItemDto orderItem : orderItems) {
+            // 주문 상품의 총 가격 계산
+            int totalItemPrice = 0;
+            if (orderItem.getOptions() != null) {
+                for (OrderItemOptionDto option : orderItem.getOptions()) {
+                    totalItemPrice += option.getOptionPrice() * option.getQuantity();
+                }
+            }
+
             // 주문 상품 저장
             OrderItemDto backendOrderItem = OrderItemDto.builder()
                     .qlId(qlId)
                     .productId(orderItem.getProductId())
                     .amount(orderItem.getAmount())
-                    .itemPrice(orderItem.getItemPrice())
+                    .itemPrice(totalItemPrice)  // 계산된 총 가격 저장
                     .build();
 
-            // orderDao.insertOrderItem 실행 후 생성된 orderItemId를 backendOrderItem에 설정
             orderDao.insertOrderItem(backendOrderItem);
-            Long orderItemId = backendOrderItem.getOrderItemId();  // 자동 생성된 ID 가져오기
+            Long orderItemId = backendOrderItem.getOrderItemId();
 
             // 주문 상품 옵션 저장
             if (orderItem.getOptions() != null) {
@@ -147,7 +154,7 @@ public class OrderService {
                             .orderItemId(orderItemId)
                             .optionName(option.getOptionName())
                             .optionPrice(option.getOptionPrice())
-                            .quantity(option.getQuantity())
+                            .quantity(option.getQuantity())  // 수량 정보 저장
                             .build();
 
                     orderDao.insertOrderItemOption(backendOption);
@@ -181,6 +188,15 @@ public class OrderService {
      */
     public List<com.dogpaws.backend.dto.rim.OrderDto> getUserOrders(String username) {
         return orderDao.selectOrdersByUsername(username);
+    }
+
+    public int getUserOrdersCount(String username) {
+        return orderDao.countOrdersByUsername(username);
+    }
+
+    public List<OrderDto> getUserOrdersWithPaging(String username, int page, int size) {
+        int offset = page * size;
+        return orderDao.selectOrdersByUsernameWithPaging(username, offset, size);
     }
 
     /**
