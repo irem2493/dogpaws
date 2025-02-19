@@ -25,11 +25,7 @@ public class LikeDogDto {
     private String dogPlayGbnCds;
 
     //리스트
-    public List<String> getDogPersonalGbnCdsList() {
-        return dogPersonalGbnCds != null ? Arrays.asList(dogPersonalGbnCds.split(",")) : List.of();
-    }
+    private List<String> dogPersonalGbnCdsList;
+    private List<String> dogPlayGbnCdsList;
 
-    public List<String> getDogPlayGbnCdsList() {
-        return dogPlayGbnCds != null ? Arrays.asList(dogPlayGbnCds.split(",")) : List.of();
-    }
 }
