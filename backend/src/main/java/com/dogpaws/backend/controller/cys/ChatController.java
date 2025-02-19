@@ -1,6 +1,7 @@
 package com.dogpaws.backend.controller.cys;
 
 import com.dogpaws.backend.dto.cys.CalendarSharedDto;
+import com.dogpaws.backend.dto.cys.CalendarSharedResponseDto;
 import com.dogpaws.backend.dto.cys.DogResponseDto;
 import com.dogpaws.backend.dto.hyepin.CalendarDto;
 import com.dogpaws.backend.service.ajy.DogService;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -68,17 +70,30 @@ public class ChatController {
     }
 
     @PostMapping("/fileUpload")
-    public Map<String,Object> fileUpload(@RequestParam("files") MultipartFile[] files
+    public List<String> fileUpload(@RequestParam("files") MultipartFile[] files
                                         , @RequestParam("dogId") String dogId
                                         , @RequestParam("roomId") String roomId) throws IOException {
-
+        System.out.println(Arrays.toString(files));
+        System.out.println(dogId);
+        System.out.println(roomId);
         List<String> fileUrlList = new ArrayList<>();
 
         for(MultipartFile file : files){
-            fileService.saveFile(file, "CH", roomId, dogId);
+            String fileUrl = fileService.saveChatFile(file, "CH", roomId, dogId);
+            fileUrlList.add(fileUrl);
+            System.out.println(fileUrl);
         }
+        return fileUrlList;
+    }
 
-        return null;
+    @GetMapping("/mediaListAll")
+    public List<String> getAllMediaUrl(@RequestParam("roomId") String roomId) throws IOException {
+        return chatService.getAllMediaUrl(roomId);
+    }
+
+    @GetMapping("/sharedCalendar")
+    public List<CalendarSharedResponseDto> getSharedCalendar(@RequestParam("roomId") String roomId) throws IOException {
+        return chatService.getSharedCalendar(roomId);
     }
 
 }

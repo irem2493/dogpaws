@@ -30,7 +30,7 @@
             <div class="chat-list">
 
             </div>
-            <!--        <div class="create-chat">그룹 채팅방 만들기</div>-->
+            <div class="create-chat" style="display: none">그룹 채팅방 만들기</div>
         </div>
 
     </section>
@@ -180,10 +180,25 @@
                 <button class="star-btn">멍바닥 주기</button>
             </div>
 
+            <div class="participants" style="display: none">
+                <div class="participants-title">
+                    <div class="text">참여자</div>
+                    <div class="plus">*</div>
+                </div>
+                    <div class="participants-list">
+
+                    </div>
+            </div>
             <div class="media">
+                <div class="modalMedia" style="display: none">
+                    <div class="allMedia-modal-list" >
+
+                    </div>
+                </div>
+
                 <div class="media-title">
                     <div class="text">미디어</div>
-                    <div class="plus">+</div>
+                    <div class="plus" onclick="openMediaList()">+</div>
                 </div>
                 <div class="media-list">
 
@@ -191,13 +206,10 @@
             </div>
             <div class="calender">
                 <div class="calender-title" style="width: 100%;">가까운 일정</div>
-                <button class="today-btn">오늘</button>
+                <div class="today-btn-box"></div>
+<!--                <button class="today-btn">오늘</button>-->
                 <div class="calender-content">
-                    <div class="calender-box"></div>
-                    <div class="calender-text">
-                        <div class="calender-name">일정 제목</div>
-                        <div class="calender-date" style="font-size: 13px; color: #656565">일정 날짜</div>
-                    </div>
+
                 </div>
             </div>
             <div class="out-chat" style="color:red">나가기</div>
