@@ -39,12 +39,13 @@
                             <img src="/img/icon/dog-filter/foot.svg" alt="foot-icon" width="25">
                             강아지 소개글
                         </p>
-                        <th:block th:if="${dogProfile.dog_intro != null}">
-                        <p class="introduce" style="font-size: 20px; color: #585858" th:text="${dogProfile.dog_intro}"></p>
+                        <th:block th:if="${dogProfile.dog_intro != null and not #strings.isEmpty(dogProfile.dog_intro)}">
+                            <p class="introduce" style="font-size: 20px; color: #585858" th:text="${dogProfile.dog_intro}"></p>
                         </th:block>
-                        <th:block th:if="${dogProfile.dog_intro == null}">
-                            <p class="introduce" style="font-size: 20px; color: #585858" >
-                                강아지 소개글을 작성해보세요!! </p>
+                        <th:block th:if="${dogProfile.dog_intro == null or #strings.isEmpty(dogProfile.dog_intro)}">
+                            <p class="introduce" style="font-size: 20px; color: #585858">
+                                강아지 소개글을 작성해보세요!!
+                            </p>
                         </th:block>
                         <div class="dog-characteristic">
                             <span class="character" th:text="${dogProfile.breed}"></span>
