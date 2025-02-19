@@ -6,6 +6,7 @@ import com.dogpaws.backend.entity.ajy.Board;
 import com.dogpaws.backend.repository.jpa.ajy.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ public class BoardService {
 
     //특정 게시글 조회
     public Board getBoardById(Integer board_id) {
+
         return boardRepository.findById(board_id).orElse(null);
     }
 
@@ -45,7 +47,7 @@ public class BoardService {
 
     //카테고리별 게시글 조회
     public List<BoardResponseDto> getBoardsByCategory(String category) {
-        List<Board> bList = boardRepository.findByCategory(category);
+        List<Board> bList = boardRepository.findByCategoryOrderByBoardIdDesc(category);
 
         List<BoardResponseDto> boardList = new ArrayList<>();
         if(!bList.isEmpty()){
@@ -67,6 +69,7 @@ public class BoardService {
     }
 
     //게시글 조회
+    @Transactional
     public BoardResponseDto getBoardWithIncreaseView(Integer boardId) {
         boardRepository.increaseViewCount(boardId); // 🔥 조회수 증가
 
@@ -81,6 +84,7 @@ public class BoardService {
             dto.setCreatedAt(board.getCreatedAt().toString());
             dto.setTitle(board.getTitle());
             dto.setContent(board.getContent());
+            dto.setViewCount(board.getViewCount());
             return dto;
         }
 

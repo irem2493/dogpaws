@@ -327,7 +327,7 @@ public class JoinController {
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, provider);
         }
 
-        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "소셜 제공자 정보 없음");
+        return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "소셜 제공자 정보 없음");
     }
 
 }
