@@ -16,7 +16,7 @@ let startIndex = 0;   // 현재 시작 인덱스
 const dogId = sessionDogId.value;
 const username = sessionUsername.value;
 // 컨트롤러에서 matchList 데이터 가져오기
-api.get('/api/matching?dogId=' + dogId + '&username=' + username)
+api.get('/api/matching?dogId=' + dogId + '&username=' + username + '&matchType=F')
     .then(data => {
         matchList = [...matchList, ...data.body];
         console.log('match loaded:', matchList);
@@ -38,6 +38,7 @@ function updateCards() {
         const card = document.createElement('div');
 
         let dogId = dog.dog_id;
+        let username = dog.username;
         let dogLiked = dog.liked;
         console.log("dogLiked" + dogLiked);
 
@@ -114,10 +115,10 @@ function updateCards() {
         }
                 </div>
                 <div class="card-bottom-items">
-                    <img src="/img/icon/messege.svg" alt="messege-icon" onclick="chatForm()">
+                    <img src="/img/icon/messege.svg" alt="messege-icon" data-dog-id="${dogId}" data-username="${username}" onclick="chatForm(this)">
                 </div>
                 <div class="card-bottom-items">
-                    <img src="/img/icon/wechat-logo.svg" alt="wechat-logo-icon" data-target="${dogId}" onclick="openModal('groupChat'); getGroupChatRoom(this)">
+                    <img src="/img/icon/wechat-logo.svg" alt="wechat-logo-icon" data-dog-id="${dogId}" data-username="${username}" onclick="openModal('groupChat'); getGroupChatRoom(this)">
                 </div>
                 <div class="card-bottom-items">
                     <img src="/img/icon/alarm-warning-line.svg" alt="alarm-warning-line-icon" data-target="${dogId}" onclick="openModal('declarationForm'); declarationForm(this)">

@@ -10,7 +10,7 @@
         WHERE dog_id = #{id}
     </select>
 
-    <insert id="insertCalendar">
+    <insert id="insertCalendar" useGeneratedKeys="true" keyProperty="calendarId">
         INSERT INTO tbl_calendar
         (username, dog_id, calendar_title, address, calendar_type,
         calendar_start_date, calendar_end_date, calendar_description)
@@ -18,4 +18,46 @@
         (#{calenderDto.username}, #{calenderDto.dogId}, #{calenderDto.calendarTitle}, #{calenderDto.address}, #{calenderDto.calendarType},
         #{calenderDto.calendarStartDate}, #{calenderDto.calendarEndDate}, #{calenderDto.calendarDescription})
     </insert>
+
+    <select id="getCalendar" resultType="com.dogpaws.backend.dto.hyepin.CalendarDto">
+        SELECT *
+        FROM tbl_calendar
+        WHERE calendar_id = #{calendarId}
+    </select>
+
+    <insert id="sharedSchedule">
+        INSERT INTO tbl_calendar_shared
+        (calendar_id, username, room_id, dog_id)
+        VALUES
+        (#{sharedDto.calendarId}, #{sharedDto.username}, #{sharedDto.roomId}, #{sharedDto.dogId})
+    </insert>
+
+    <update id="updateSharedYN">
+        UPDATE tbl_calendar
+        SET shared_yn = 'Y'
+        WHERE calendar_id = #{calendarId}
+    </update>
+
+    <select id="getAllMediaUrl" resultType="String">
+        SELECT file_url
+        FROM tbl_file
+        WHERE file_ref_no= #{roomId}
+        ORDER BY file_no DESC;
+    </select>
+
+    <select id="getSharedCalendar" resultType="com.dogpaws.backend.dto.cys.CalendarSharedResponseDto">
+        SELECT cs.room_id,
+                c.calendar_title,
+                c.calendar_start_date,
+                c.calendar_end_date,
+                c.calendar_id
+        FROM tbl_calendar_shared cs
+        JOIN tbl_calendar c
+        ON c.calendar_id = cs.calendar_id
+        WHERE cs.room_id = #{roomId}
+        AND c.calendar_start_date >= CURRENT_DATE
+        ORDER BY c.calendar_start_date
+        LIMIT 3
+    </select>
+
 </mapper>

@@ -40,7 +40,7 @@ function addSelectedOption(checkbox, container, selectedOptions) {
     const optionDiv = document.createElement("div");
     optionDiv.classList.add("selected-option");
     optionDiv.setAttribute("id", "selected-" + value);
-    optionDiv.innerHTML = `${name} <span class="remove-option" data-value="${value}">| ✖</span>`;
+    optionDiv.innerHTML = `${name} <span class="remove-option" data-value="${value}">| <img src="/img/icon/x-basic.svg" alt="x-circle-icon"></span>`;
 
     container.appendChild(optionDiv);
 
@@ -235,19 +235,6 @@ function applyFilter(filter) {
             }
         });
         document.getElementById("selectAll").checked = allChecked;
-    }
-}
-
-
-//메시지 폼 열기
-function messageForm(element) {
-    const target = element.dataset.target;
-    if (target === "O") {
-        //개인톡 실행
-
-    } else if (target === "G") {
-        //그룹채팅 리스트 출력
-
     }
 }
 

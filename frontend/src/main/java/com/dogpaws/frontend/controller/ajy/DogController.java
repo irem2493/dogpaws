@@ -24,7 +24,6 @@ import java.util.Objects;
 public class DogController {
 
     private final ApiRequestService apiRequestService;
-    private final ApiRequestService apiService;
 
     @GetMapping("/dogProfileSelect")
     public String dogProfileSelect(HttpServletRequest request, HttpSession session) {
@@ -67,9 +66,9 @@ public class DogController {
     @GetMapping("/dogProfileRegister")
     public String dogProfileStep1(Model model) {
 
-        var breedResponse = apiService.fetchData("/api/gubn/breed_code");
-        var personalityResponse = apiService.fetchData("/api/gubn/dog_personal_code");
-        var playResponse = apiService.fetchData("/api/gubn/dog_play_code");
+        var breedResponse = apiRequestService.fetchData("/api/gubn/breed_code");
+        var personalityResponse = apiRequestService.fetchData("/api/gubn/dog_personal_code");
+        var playResponse = apiRequestService.fetchData("/api/gubn/dog_play_code");
 
         var breedList = breedResponse.getBody();
         var personalityList = personalityResponse.getBody();
@@ -90,12 +89,12 @@ public class DogController {
     public String dogList(Model model, HttpSession session) {
 
         if(SessionUtil.getUser(session) != null){
-            var dogListResponse = apiService.fetchData("/api/dog/mypage/dogList/"+ Objects.requireNonNull(SessionUtil.getUser(session)).getUsername());
+            var dogListResponse = apiRequestService.fetchData("/api/dog/mypage/dogList/"+ Objects.requireNonNull(SessionUtil.getUser(session)).getUsername());
             var dogList = dogListResponse.getBody();
 
-            var breedResponse = apiService.fetchData("/api/gubn/breed_code");
-            var personalityResponse = apiService.fetchData("/api/gubn/dog_personal_code");
-            var playResponse = apiService.fetchData("/api/gubn/dog_play_code");
+            var breedResponse = apiRequestService.fetchData("/api/gubn/breed_code");
+            var personalityResponse = apiRequestService.fetchData("/api/gubn/dog_personal_code");
+            var playResponse = apiRequestService.fetchData("/api/gubn/dog_play_code");
 
             var breedList = breedResponse.getBody();
             var personalityList = personalityResponse.getBody();
@@ -114,15 +113,15 @@ public class DogController {
     //강아지 상세 정보
     @GetMapping("/detail/{dogId}")
     public String detail(@PathVariable("dogId") Integer dogId, Model model, HttpSession session) {
-        var dogResponse = apiService.fetchData("/api/dog/detail/" + dogId);
+        var dogResponse = apiRequestService.fetchData("/api/dog/detail/" + dogId);
         var dog = dogResponse.getBody();
 
-        var breedResponse = apiService.fetchData("/api/gubn/breed_code");
+        var breedResponse = apiRequestService.fetchData("/api/gubn/breed_code");
         var breedList = breedResponse.getBody();
 
-        var personalityResponse = apiService.fetchData("/api/gubn/dog_personal_code");
-        var playResponse = apiService.fetchData("/api/gubn/dog_play_code");
-        var dogTypeResponse = apiService.fetchData("/api/gubn/dog_type_code");
+        var personalityResponse = apiRequestService.fetchData("/api/gubn/dog_personal_code");
+        var playResponse = apiRequestService.fetchData("/api/gubn/dog_play_code");
+        var dogTypeResponse = apiRequestService.fetchData("/api/gubn/dog_type_code");
 
         var personalityList = personalityResponse.getBody();
         var playList = playResponse.getBody();
@@ -144,6 +143,61 @@ public class DogController {
             model.addAttribute("dogTypeList", dogTypeList);
 
             return "/ajy/dog_detail";
+        }
+        return "redirect:/login";
+    }
+
+    @GetMapping("/dogEidt/{dogId}")
+    public String dogEidt(@PathVariable("dogId") Integer dogId, Model model, HttpSession session) {
+        var dogResponse = apiRequestService.fetchData("/api/dog/detail/" + dogId);
+        var dog = dogResponse.getBody();
+
+        var breedResponse = apiRequestService.fetchData("/api/gubn/breed_code");
+        var breedList = breedResponse.getBody();
+
+        var personalityResponse = apiRequestService.fetchData("/api/gubn/dog_personal_code");
+        var playResponse = apiRequestService.fetchData("/api/gubn/dog_play_code");
+        var dogTypeResponse = apiRequestService.fetchData("/api/gubn/dog_type_code");
+
+        var personalityList = personalityResponse.getBody();
+        var playList = playResponse.getBody();
+        var dogTypeList = dogTypeResponse.getBody();
+        UserDto user = SessionUtil.getUser(session);
+
+        if(user != null){
+            model.addAttribute("user", user.getUsername());
+        }
+
+        if(dog != null){
+            System.out.println("강아지 상세정보 : " + dog);
+
+            model.addAttribute("dog", dog);
+            model.addAttribute("breedList", breedList);
+            model.addAttribute("personalityList", personalityList);
+            model.addAttribute("playList", playList);
+            model.addAttribute("dogTypeList", dogTypeList);
+
+            return "/ajy/dog_profile_register";
+        }
+        return "redirect:/login";
+    }
+
+    @GetMapping("/nearbyDogMap")
+    public String nearbyDogMap(Model model, HttpSession session) {
+        UserDto user = SessionUtil.getUser(session);
+        if(user != null){
+            var locationResponse = apiRequestService.fetchData("/api/user/location/" + user.getUsername());
+            var coordinates = locationResponse.getBody();
+
+            System.out.println(coordinates);
+
+            if(session.getAttribute("dog") != null){
+                model.addAttribute("coordinates", coordinates);
+                model.addAttribute("username", user.getUsername());
+                return "/ajy/near_dog_map";
+            }
+
+            else return "redirect:/dog/dogProfileSelect";
         }
         return "redirect:/login";
     }

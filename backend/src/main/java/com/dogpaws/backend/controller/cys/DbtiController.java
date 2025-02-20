@@ -24,9 +24,10 @@ public class DbtiController {
     @PostMapping("/dbti")
     public ResponseEntity<String> receiveAnswers(@RequestBody Map<String, String> request) {
         String myType = request.get("myType");
-        int dogId = 2;
+        int dogId = Integer.parseInt(request.get("dogId"));
         dbtiService.dogType(myType, dogId);
         System.out.println("선택된 답변 목록: " + myType);
+
 
         // 추가 처리 후 응답 반환
         return ResponseEntity.ok("응답을 잘 받았습니다!");

@@ -63,6 +63,12 @@ public class User {
     @Column(name = "unbanned_date")
     private LocalDateTime unbannedDate; // 제재 해제된 날짜
 
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
     @PrePersist
     public void prePersist() {
         if (registrationDate == null) {

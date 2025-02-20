@@ -25,6 +25,8 @@ repositories {
 
 dependencies {
 
+	implementation 'org.json:json:20231013' // JSON 라이브러리
+
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
