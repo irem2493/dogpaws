@@ -1,3 +1,18 @@
+
+window.onload = function() {
+    const editButton = document.getElementById('editButton');
+
+    if (editButton) {
+        editButton.addEventListener('click', function() {
+            const boardId = this.getAttribute('data-board-id');
+            const category = this.getAttribute('data-category');
+            window.location.href = '/board/boardEdit/' + boardId + '/' + category;
+        });
+    }
+}
+
+
+
 document.getElementById("deleteBoardBtn").addEventListener("click", function () {
     if (confirm("게시글을 삭제 하시겠습니까?")) {
         deleteBoard(); // ✅ 회원탈퇴 진행

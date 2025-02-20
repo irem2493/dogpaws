@@ -5,12 +5,15 @@ import com.dogpaws.backend.dto.ajy.BoardResponseDto;
 import com.dogpaws.backend.entity.ajy.Board;
 import com.dogpaws.backend.repository.jpa.ajy.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -28,6 +31,31 @@ public class BoardService {
                 .build();
         boardRepository.save(board);
     }
+
+    //게시글 수정
+    @Transactional
+    public boolean edit(BoardRequestDto boardRequestDto){
+
+        Board board = boardRepository.findByBoardId(boardRequestDto.getBoardId());
+
+        log.info("board: " + board);
+
+        if(board != null){
+            board.setUsername(boardRequestDto.getUsername());
+            board.setNickname(boardRequestDto.getNickname());
+            board.setTitle(boardRequestDto.getTitle());
+            board.setContent(boardRequestDto.getContent());
+            board.setCategory(boardRequestDto.getCategory());
+            board.setModifedAt(LocalDateTime.now());
+
+            // 변경 사항 저장
+            boardRepository.save(board);
+            return true;
+        }
+
+        return false;
+    }
+
 
     //게시글 조회
     public List<Board> getBoards() {
