@@ -9,10 +9,10 @@ function handleClick(event) {
     localStorage.setItem('activeMenu', clickedId);
 
         if(clickedId === 'fmatching'){
-            window.location.href = '';
+            window.location.href = '/matching/friend';
             alert('친구 매칭');
         }else if(clickedId === 'pmatching'){
-            window.location.href = '';
+            window.location.href = '/matching/partner';
             alert('교배 매칭');
         }else if(clickedId === 'chat'){
             window.location.href = '/chat-room';
