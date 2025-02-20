@@ -3,6 +3,7 @@ package com.dogpaws.backend.utils;
 import com.dogpaws.backend.dto.hyepin.FilterDto;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -86,5 +87,19 @@ public class StringUtil {
         return filterDto;
     }
 
-    
+    /**
+     * String 타입의 날짜를 LocalDate로 변환
+     * @param dateStr 날짜 문자열 (yyyy-MM-dd 형식)
+     * @return 변환된 LocalDate 객체, 유효하지 않은 입력의 경우 null 반환
+     */
+    public static LocalDate stringToLocalDate(String dateStr) {
+        if (dateStr == null || dateStr.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(dateStr);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

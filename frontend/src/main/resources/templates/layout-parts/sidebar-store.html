@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<aside th:fragment="sidebar" class="sidebar-container-container">
+    <!-- 전체 박스 -->
+    <div class="sidebar">
+        <div class="sidebar-container">
+            <div class="sidebar-header">
+                <img class="store-logo" src="/img/logo.svg" alt="로고"/>
+            </div>
+            <ul class="sidebar-menu">
+                <div class="sidebar-section">
+                    <li><a href="#">카테고리</a>
+                        <hr>
+                        <li>
+                            <ul>
+                                <li class="has-submenu">
+                                    <a href="#" class="menu-toggle">사료</a>
+                                    <ul class="submenu">
+                                        <li><a th:href="@{/store/category/F(type='dry')}">건식</a></li>
+                                        <li><a th:href="@{/store/category/F(type='wet')}">습식</a></li>
+                                    </ul>
+                                </li>
+                                <li><a th:href="@{/store/category/N}">간식</a></li>
+                                <li><a th:href="@{/store/category/T}">산책용품</a></li>
+                            </ul>
+                        </li>
+                    </li>
+                </div>
+            </ul>
+        </div>
+    </div>
+    <!-- 전체 박스 -->
+</aside>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuToggles = document.querySelectorAll('.menu-toggle');
+        
+        menuToggles.forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.classList.toggle('active');
+                const submenu = this.nextElementSibling;
+                if (submenu.style.display === 'none' || submenu.style.display === '') {
+                    submenu.style.display = 'block';
+                } else {
+                    submenu.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+</html> 
