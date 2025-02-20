@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dogpaws.backend.repository.dao.rim.CartDao">
+
+    <!-- 기존 장바구니 확인 -->
+    <select id="checkExistingCart" resultType="boolean">
+        SELECT EXISTS (
+        SELECT 1 FROM tbl_cart
+        WHERE username = #{username}
+        )
+    </select>
+
+    <!-- 동일한 상품/옵션 조합 찾기 -->
+    <select id="findExistingCartItem" resultMap="cartItemParamMap">
+        SELECT
+        c.cart_item_id,
+        c.product_id,
+        c.username
+        FROM tbl_cart c
+        JOIN tbl_cart_item_options cio ON c.cart_item_id = cio.cart_item_id
+        WHERE c.username = #{username}
+        AND c.product_id = #{productId}
+        AND cio.option_id = #{optionId}
+        LIMIT 1
+    </select>
+
+    <resultMap id="cartItemParamMap" type="com.dogpaws.backend.dto.rim.CartItemParam">
+        <id property="cartItemId" column="cart_item_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="username" column="username"/>
+    </resultMap>
+
+    <!-- 장바구니 아이템 옵션 수량 업데이트 -->
+    <update id="updateCartItemOptionQuantity">
+        UPDATE tbl_cart_item_options
+        SET quantity = quantity + #{quantity},
+        updated_at = NOW()
+        WHERE cart_item_id = #{cartItemId}
+        AND option_id = #{optionId}
+    </update>
+
+    <!-- 장바구니 아이템 생성 -->
+    <insert id="insertCartItem" parameterType="com.dogpaws.backend.dto.rim.CartItemParam"
+            useGeneratedKeys="true" keyProperty="cartItemId">
+        INSERT INTO tbl_cart (
+        username,
+        product_id,
+        created_at,
+        updated_at
+        ) VALUES (
+        #{username},
+        #{productId},
+        NOW(),
+        NOW()
+        )
+    </insert>
+
+    <!-- 장바구니 아이템 옵션 추가 -->
+    <insert id="insertCartItemOptions">
+        INSERT INTO tbl_cart_item_options (
+        cart_item_id,
+        option_id,
+        quantity,
+        created_at,
+        updated_at
+        )
+        VALUES
+        <foreach collection="options" item="option" separator=",">
+            (
+            #{cartItemId},
+            #{option.optionId},
+            #{option.quantity},
+            NOW(),
+            NOW()
+            )
+        </foreach>
+    </insert>
+
+    <!-- 상품 ID로 장바구니 아이템 찾기 -->
+    <select id="findCartItemByProductId" resultMap="cartItemParamMap">
+        SELECT
+        cart_item_id,
+        product_id,
+        username
+        FROM tbl_cart
+        WHERE username = #{username}
+        AND product_id = #{productId}
+        LIMIT 1
+    </select>
+
+    <!-- 장바구니 목록 조회 -->
+    <select id="findCartItemsByUsername" resultMap="CartResultMap">
+        SELECT DISTINCT
+        c.cart_item_id,
+        c.product_id,
+        p.name as product_name,
+        p.price as product_price,
+        p.manufacturer,
+        p.image_url,
+        po.option_id,
+        cio.cart_item_option_id,
+        po.option_name,
+        po.option_price,
+        cio.quantity as option_quantity,
+        c.username
+        FROM tbl_cart c
+        INNER JOIN tbl_products p ON c.product_id = p.product_id
+        INNER JOIN tbl_cart_item_options cio ON c.cart_item_id = cio.cart_item_id
+        INNER JOIN tbl_product_options po ON cio.option_id = po.option_id
+        WHERE c.username = #{username}
+        ORDER BY c.product_id, po.option_id
+    </select>
+    <resultMap id="CartResultMap" type="com.dogpaws.backend.dto.rim.request.CartListResponseDto">
+        <!-- 상품 정보 매핑 -->
+        <id property="cartItemId" column="cart_item_id"/>
+        <id property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="manufacturer" column="manufacturer"/>
+        <result property="productPrice" column="product_price"/>
+        <result property="imageUrl" column="image_url"/>
+
+        <!-- 옵션 정보 매핑 -->
+        <collection property="cartOptions" ofType="com.dogpaws.backend.dto.rim.request.CartOptionResponseDto">
+            <id property="cartItemId" column="cart_item_id"/>
+            <id property="cartItemOptionId" column="cart_item_option_id"/>
+            <id property="optionId" column="option_id"/>
+            <result property="optionName" column="option_name"/>
+            <result property="optionPrice" column="option_price"/>
+            <result property="quantity" column="option_quantity"/>
+        </collection>
+    </resultMap>
+
+    <!-- 선택된 장바구니 아이템 삭제 -->
+    <delete id="deleteSelectedItems">
+        DELETE FROM tbl_cart_item_options
+        WHERE cart_item_id IN
+        <foreach item="itemId" collection="cartItemIds" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>;
+
+        DELETE FROM tbl_cart
+        WHERE cart_item_id IN
+        <foreach item="itemId" collection="cartItemIds" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+    </delete>
+
+    <!-- 장바구니 옵션 수량 업데이트 -->
+    <update id="updateCartOptionQuantity">
+        UPDATE tbl_cart_item_options
+        SET quantity = #{quantity}
+        WHERE cart_item_id = #{cartItemId}
+        AND option_id = #{optionId}
+    </update>
+
+
+    <select id="isOptionExists" resultType="boolean">
+        SELECT EXISTS (
+        SELECT 1
+        FROM tbl_cart_item_options
+        WHERE cart_item_id = #{cartItemId}
+        AND option_id = #{optionId}
+        )
+    </select>
+
+    <!-- 장바구니 옵션 삭제 -->
+    <delete id="deleteCartItemOptions">
+        DELETE FROM tbl_cart_item_options
+        WHERE cart_item_id IN (
+        SELECT cart_item_id
+        FROM tbl_cart
+        WHERE username = #{username}
+        AND cart_item_id IN
+        <foreach item="itemId" collection="cartItemIds" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+        )
+    </delete>
+
+
+    <!-- 장바구니 아이템 삭제 -->
+    <delete id="deleteCartItems">
+        DELETE FROM tbl_cart
+        WHERE username = #{username}
+        AND cart_item_id IN
+        <foreach item="itemId" collection="cartItemIds" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+    </delete>
+
+    <!-- 장바구니 옵션 삭제 -->
+    <delete id="deleteCartOption">
+        DELETE FROM tbl_cart_item_options
+        WHERE cart_item_id = #{cartItemId}
+        AND option_id = #{optionId}
+    </delete>
+
+    <!-- 장바구니 아이템의 남은 옵션 개수 조회 -->
+    <select id="countRemainingOptions" resultType="int">
+        SELECT COUNT(*)
+        FROM tbl_cart_item_options
+        WHERE cart_item_id = #{cartItemId}
+    </select>
+
+    <!-- 장바구니 아이템 삭제 (옵션이 없는 경우) -->
+    <delete id="deleteEmptyCartItem">
+        DELETE FROM tbl_cart
+        WHERE cart_item_id = #{cartItemId}
+    </delete>
+
+    <!-- 선택된 장바구니 목록 보여주기 -->
+    <select id="findSelectedCartItems" resultMap="CartResultMap">
+        SELECT DISTINCT
+        c.cart_item_id,
+        c.product_id,
+        p.name as product_name,
+        p.manufacturer,
+        p.price as product_price,
+        p.image_url,
+        po.option_id,
+        cio.cart_item_option_id,
+        po.option_name,
+        po.option_price,
+        cio.quantity as option_quantity,
+        c.username
+        FROM tbl_cart c
+        INNER JOIN tbl_products p ON c.product_id = p.product_id
+        INNER JOIN tbl_cart_item_options cio ON c.cart_item_id = cio.cart_item_id
+        INNER JOIN tbl_product_options po ON cio.option_id = po.option_id
+        WHERE c.username = #{username}
+        AND c.cart_item_id IN
+        <foreach item="itemId" collection="cartItemIds" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+        ORDER BY c.product_id, po.option_id
+    </select>
+
+</mapper>
