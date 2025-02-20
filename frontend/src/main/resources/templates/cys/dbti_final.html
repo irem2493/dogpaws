@@ -166,7 +166,7 @@
     <h1 class="first-h1">나는 누구?</h1>
     <div class="result">
         <div class="left-result">
-            <img src="/img/견BTI임시프로필.jpg" width="360" alt="">
+<!--            <img src="/img/멋쟁이강아지.png" width="360" alt="">-->
         </div>
         <div class="right-result">
             <button class="btn-result"></button>
@@ -257,6 +257,10 @@
     const $MatchContent = document.querySelector(".match-content");
     const $MatchFooter = document.querySelector(".match-end")
 
+    const $Image = document.querySelector('.left-result');
+
+    $Image.innerHTML = '';
+
     $TypeBtn.innerHTML='';
     $TypeTitle.innerHTML='';
     $TypeContent.innerHTML='';
@@ -273,24 +277,28 @@
         switch (myType){
             case 'A':
                 $TypeBtn.style.backgroundColor = "#FF7542"
+                $Image.innerHTML = `<img src="/img/리더형강아지.png" width="360" alt="">`;
                 $TypeBtn.innerText="#"+resultData[0].title;
                 $TypeTitle.innerText=resultData[0].headline;
                 $TypeContent.innerHTML=resultData[0].description;
                 break;
             case 'B':
                 $TypeBtn.style.backgroundColor = "#A7C957"
+                $Image.innerHTML = `<img src="/img/멋쟁이강아지.png" width="360" alt="">`;
                 $TypeBtn.innerText="#"+resultData[1].title;
                 $TypeTitle.innerText=resultData[1].headline;
                 $TypeContent.innerHTML=resultData[1].description;
                 break;
             case 'C':
                 $TypeBtn.style.backgroundColor = "#FF577E"
+                $Image.innerHTML = `<img src="/img/애교형강아지.png" width="360" alt="">`;
                 $TypeBtn.innerText="#"+resultData[2].title;
                 $TypeTitle.innerText=resultData[2].headline;
                 $TypeContent.innerHTML=resultData[2].description;
                 break;
             case 'D':
                 $TypeBtn.style.backgroundColor = "#6D73EF"
+                $Image.innerHTML = `<img src="/img/고독형강아지.png" width="360" alt="">`;
                 $TypeBtn.innerText="#"+resultData[3].title;
                 $TypeTitle.innerText=resultData[3].headline;
                 $TypeContent.innerHTML=resultData[3].description;

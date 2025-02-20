@@ -108,6 +108,7 @@
 </head>
 <body layout:fragment="content" >
 <div class="all">
+    <input type="hidden" id="dogId" th:value="${dogId}">
     <div class="container-box">
         <div class="icon-container">
 
@@ -224,15 +225,12 @@
             console.log("나의 타입 : " + myType);
             localStorage.setItem("myType", myType);
 
-            // axios.post(" http://localhost:8080/api/dbti",{myType})
-            //     .then(response => {
-            //         console.log('Response:', response.data);
-            //     })
-            //     .catch(error => {
-            //         console.error('Error occurred:', error);
-            //     });
+            const currentDogId = document.querySelector('#dogId').value;
 
-            api.post('/api/dbti', {myType})
+            api.post('/api/dbti', {
+                myType : myType,
+                dogId : currentDogId
+            })
                 .then(data => console.log(data))
                 .catch(error => console.error(error));
 
