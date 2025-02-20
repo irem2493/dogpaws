@@ -2,10 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <aside th:fragment="sidebar" class="sidebar-container-container">
     <!-- 전체 박스 -->
+    <link rel="stylesheet" href="/css/rim/admin/admin.css">
     <div class="sidebar">
         <div class="sidebar-container">
             <div class="sidebar-header">
-                <img class="admin-logo" src="/img/logo.svg" alt="로고"/>
+                <a href="/admin/main">
+                    <img class="admin-logo" src="/img/logo.svg" alt="로고"/>
+                </a>
             </div>
             <ul class="sidebar-menu">
                 <div class="sidebar-section">
@@ -13,7 +16,7 @@
                         <hr>
                         <li>
                             <ul>
-                                <li><a href="#">상품 등록</a></li>
+                                <li><a href="/admin/product/regist">상품 등록</a></li>
                                 <li><a href="#">상품 관리</a></li>
                                 <li><a href="#">판매 현황</a></li>
                                 <li><a href="#">주문 관리</a></li>

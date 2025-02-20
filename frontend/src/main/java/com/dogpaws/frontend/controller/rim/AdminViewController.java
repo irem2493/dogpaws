@@ -11,4 +11,8 @@ public class AdminViewController {
     public String adminMainView() {
         return "rim/admin/admin_main";
     }
+    @GetMapping("/manage")
+    public String productManageView() {
+        return "rim/admin/admin_product_manage";
+    }
 }
