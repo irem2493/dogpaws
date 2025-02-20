@@ -47,10 +47,10 @@ public class DogController {
         return dogService.getDogList(username);
     }
 
-    @GetMapping("/detail/{dogId}")
-    public DogResponseDto getDog(@PathVariable Integer dogId) {
-        System.out.println(dogService.getDog(dogId));
-        return dogService.getDog(dogId);
+    @GetMapping("/detail/{dogId}/{myDogId}")
+    public DogResponseDto getDog(@PathVariable Integer dogId, @PathVariable Integer myDogId) {
+        System.out.println(dogService.getDog(dogId, myDogId));
+        return dogService.getDog(dogId, myDogId);
     }
 
     //강아지 정보 삭제
