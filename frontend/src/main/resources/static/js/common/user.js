@@ -10,22 +10,16 @@ function handleClick(event) {
 
         if(clickedId === 'fmatching'){
             window.location.href = '/matching/friend';
-            alert('친구 매칭');
         }else if(clickedId === 'pmatching'){
             window.location.href = '/matching/partner';
-            alert('교배 매칭');
         }else if(clickedId === 'chat'){
             window.location.href = '/chat-room';
-            alert('채팅하기');
         } else if(clickedId === 'map'){
             window.location.href = '/dog/nearbyDogMap';
-            alert('근처 강아지 보기');
         } else if(clickedId === 'store'){
             window.location.href = '';
-            alert('스토어');
         } else if(clickedId === 'board'){
             window.location.href = '/board/F';
-            alert('커뮤니티');
         }
 }
 
