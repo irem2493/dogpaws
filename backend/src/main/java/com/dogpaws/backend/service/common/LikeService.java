@@ -42,5 +42,11 @@ public class LikeService {
         return matchList;
     }
 
+    public int checkLike (int myDogId, char likeCode, int dogId){
+        int result = likeDao.checkLike(myDogId, likeCode, dogId);
+        return result;
+    }
+
+
 
 }

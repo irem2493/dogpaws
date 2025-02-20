@@ -12,6 +12,7 @@ import com.dogpaws.backend.repository.jpa.ajy.DogPersonalRepository;
 import com.dogpaws.backend.repository.jpa.ajy.DogPlayRepository;
 import com.dogpaws.backend.repository.jpa.ajy.DogRepository;
 import com.dogpaws.backend.service.common.FileService;
+import com.dogpaws.backend.service.common.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ public class DogService {
     private final DogPersonalRepository dogPersonalRepository;
     private final DogPlayRepository dogPlayRepository;
     private final FileService fileService;
+    private final LikeService likeService;
 
     public List<DogDto> getDogs(String username){
         List<DogDto> dogDtoList = new ArrayList<>();
@@ -102,7 +104,7 @@ public class DogService {
         return dogResponseDtoList;
     }
 
-    public DogResponseDto getDog(Integer dogId) {
+    public DogResponseDto getDog(Integer dogId, Integer myDogId) {
         Dog dog = dogRepository.findByDogId(dogId);
 
         System.out.println(dog);
@@ -166,6 +168,18 @@ public class DogService {
             if (file3 != null) {
                 dogDto.setHeFile(file3);
             }
+
+            //좋아요 체크
+
+            int result = likeService.checkLike(myDogId, 'F', dogId);
+            if(result == 1){
+                dogDto.setFriendLiked(true);
+            }
+            result= likeService.checkLike(myDogId, 'P', dogId);
+            if(result == 1){
+                dogDto.setMatingLiked(true);
+            }
+
             System.out.println(dogDto);
 
             return dogDto;
