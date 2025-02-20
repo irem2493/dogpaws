@@ -1,6 +1,9 @@
 console.log("hello admin-login.js...");
 
 document.addEventListener('DOMContentLoaded', function (){
+    // 페이지 진입 시 세션스토리지 초기화
+    clearSessionStorage();
+
 
     const adminLoginForm = document.getElementById('adminLoginForm');
     const logoutButton = document.getElementById('logoutButton');
@@ -15,6 +18,13 @@ document.addEventListener('DOMContentLoaded', function (){
     });
 
 });
+
+// 세션스토리지 초기화 함수
+function clearSessionStorage() {
+    const keysToRemove = ['username', 'role', 'nickname', 'accessToken'];
+    keysToRemove.forEach(key => sessionStorage.removeItem(key));
+    console.log('세션스토리지 초기화 완료');
+}
 
 function adminLogin() {
     const username = document.getElementById('username').value;

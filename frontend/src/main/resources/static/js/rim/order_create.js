@@ -106,6 +106,18 @@ async function processOrder(widgets) {
 
     console.log('cartItemsData>>',cartItemsData);
 
+    // 배송 메모 값 처리
+    const shippingMemoSelect = document.getElementById('shippingMemo');
+    const directMemoInput = document.getElementById('directShippingMemo');
+    let finalShippingMemo = '';  // 기본값 빈 문자열로 설정
+
+    // 배송 메모 값 결정
+    if (shippingMemoSelect.value === 'direct') {
+        finalShippingMemo = directMemoInput.value;
+    } else if (shippingMemoSelect.value) {  // 빈 문자열이 아닌 경우
+        finalShippingMemo = shippingMemoSelect.value;
+    }
+
     // 2. 주문 데이터 생성
     const orderData = {
         username: sessionStorage.getItem('username'),
@@ -115,7 +127,7 @@ async function processOrder(widgets) {
         shipping_zipcode: elements.shippingZipcode.value,
         shipping_address1: elements.shippingAddress1.value,
         shipping_address2: elements.shippingAddress2.value,
-        shipping_memo: elements.shippingMemo.value,
+        shipping_memo: finalShippingMemo, 
         receiver_name: elements.receiverName.value,
         receiver_phone: elements.receiverPhone.value,
         order_items: convertCartItemsToOrderItems(cartItemsData),
