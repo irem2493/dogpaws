@@ -113,7 +113,10 @@ public class DogController {
     //강아지 상세 정보
     @GetMapping("/detail/{dogId}")
     public String detail(@PathVariable("dogId") Integer dogId, Model model, HttpSession session) {
-        var dogResponse = apiRequestService.fetchData("/api/dog/detail/" + dogId);
+        DogDto sessionDog = (DogDto) session.getAttribute("dog");
+        int myDogId = sessionDog.getDogId();
+
+        var dogResponse = apiRequestService.fetchData("/api/dog/detail/" + dogId + "/" + myDogId);
         var dog = dogResponse.getBody();
 
         var breedResponse = apiRequestService.fetchData("/api/gubn/breed_code");
@@ -149,7 +152,10 @@ public class DogController {
 
     @GetMapping("/dogEidt/{dogId}")
     public String dogEidt(@PathVariable("dogId") Integer dogId, Model model, HttpSession session) {
-        var dogResponse = apiRequestService.fetchData("/api/dog/detail/" + dogId);
+        DogDto sessionDog = (DogDto) session.getAttribute("dog");
+        int myDogId = sessionDog.getDogId();
+
+        var dogResponse = apiRequestService.fetchData("/api/dog/detail/" + dogId + "/" + myDogId);
         var dog = dogResponse.getBody();
 
         var breedResponse = apiRequestService.fetchData("/api/gubn/breed_code");
