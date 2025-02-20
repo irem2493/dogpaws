@@ -18,13 +18,13 @@ function handleClick(event) {
             window.location.href = '/chat-room';
             alert('채팅하기');
         } else if(clickedId === 'map'){
-            window.location.href = '';
+            window.location.href = '/dog/nearbyDogMap';
             alert('근처 강아지 보기');
         } else if(clickedId === 'store'){
             window.location.href = '';
             alert('스토어');
         } else if(clickedId === 'board'){
-            window.location.href = '';
+            window.location.href = '/board/F';
             alert('커뮤니티');
         }
 }

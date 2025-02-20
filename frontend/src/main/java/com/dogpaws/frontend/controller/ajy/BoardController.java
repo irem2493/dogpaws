@@ -74,4 +74,42 @@ public class BoardController {
 
     }
 
+    @GetMapping("/boardDetail/{boardId}/{category}")
+    public String boardDetail(@PathVariable("boardId") String boardId,
+                              @PathVariable("category") String category,
+                              Model model, HttpSession session) {
+
+        var boardResponse = apiRequestService.fetchData("/api/board/" + boardId);
+        var boardResponseBody = boardResponse.getBody();
+
+        // `boardResponseBody`가 Map인지 확인 후 변환
+        if (!(boardResponseBody instanceof Map)) {
+            model.addAttribute("error", "잘못된 응답 형식입니다.");
+            return "redirect:/board/"+category; // 에러 페이지로 이동
+        }
+
+        Map<String, Object> bodyMap = (Map<String, Object>) boardResponseBody;
+
+        // `"body"` 값이 존재하는지 확인
+        Object innerBodyObj = bodyMap.get("body");
+        if (!(innerBodyObj instanceof Map)) {
+            model.addAttribute("error", "게시글 정보를 가져올 수 없습니다.");
+            return "redirect:/board/"+category; // 에러 페이지로 이동
+        }
+
+        Map<String, Object> board = (Map<String, Object>) innerBodyObj;
+
+        UserDto user  = SessionUtil.getUser(session);
+        if(user != null){
+            model.addAttribute("user", user);
+        }
+
+        model.addAttribute("category", category);
+        model.addAttribute("boardId", boardId);
+        model.addAttribute("board", board);
+
+        return "/ajy/board/board_detail";
+    }
+
+
 }

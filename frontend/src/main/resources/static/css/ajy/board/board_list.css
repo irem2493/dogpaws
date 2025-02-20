@@ -40,3 +40,8 @@
     background: #FFA03A;
     color: black;
 }
+
+.board-container a{
+    text-decoration: none;
+    color: black;
+}
