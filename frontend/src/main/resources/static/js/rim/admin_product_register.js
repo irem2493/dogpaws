@@ -69,70 +69,145 @@ document.addEventListener('DOMContentLoaded', function (){
 
         // 기본 필수 옵션 필드
         let optionFields = `
-        <div class="option-basic">
-            <input type="text" placeholder="옵션명" class="option-name" required>
-            <input type="number" placeholder="추가금액" class="option-price" required>
-            <input type="number" placeholder="재고수량" class="option-stock" required>
+        <div class="option-basic row">
+            <div class="col-md-4">
+                <input type="text" placeholder="옵션명" class="option-name form-control" required>
+            </div>
+            <div class="col-md-4">
+                <input type="number" placeholder="추가금액" class="option-price form-control" required>
+            </div>
+            <div class="col-md-4">
+                <input type="number" placeholder="재고수량" class="option-stock form-control" required>
+            </div>
         </div>
     `;
 
         // 추가 옵션 필드 선택 영역
-        optionFields += `<div class="option-additional">
-        <div class="option-selectors">
-            <p>변경할 옵션 선택:</p>`;
+        optionFields += `<div class="option-additional mt-3">
+        <div class="option-selectors row">
+            <div class="col-12">
+                <p class="mb-2">변경할 옵션 선택:</p>
+                <div class="row">`;
 
         // 카테고리별 선택 가능한 추가 옵션
         if (mainCat === 'F' || mainCat === 'N') {
             optionFields += `
-            <label><input type="checkbox" class="option-field-toggle" data-field="expiration-date"> 유통기한</label>
-            <label><input type="checkbox" class="option-field-toggle" data-field="weight"> 무게</label>
-            <label><input type="checkbox" class="option-field-toggle" data-field="storage-info"> 보관방법</label>
-            <label><input type="checkbox" class="option-field-toggle" data-field="manufacturer"> 제조사</label>
-            <label><input type="checkbox" class="option-field-toggle" data-field="origin"> 원산지</label>
-        `;
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input option-field-toggle" data-field="expiration-date" id="expiration-date-${Date.now()}">
+                            <label class="form-check-label" for="expiration-date-${Date.now()}">유통기한</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input option-field-toggle" data-field="weight" id="weight-${Date.now()}">
+                            <label class="form-check-label" for="weight-${Date.now()}">무게</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input option-field-toggle" data-field="storage-info" id="storage-info-${Date.now()}">
+                            <label class="form-check-label" for="storage-info-${Date.now()}">보관방법</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input option-field-toggle" data-field="manufacturer" id="manufacturer-${Date.now()}">
+                            <label class="form-check-label" for="manufacturer-${Date.now()}">제조사</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input option-field-toggle" data-field="origin" id="origin-${Date.now()}">
+                            <label class="form-check-label" for="origin-${Date.now()}">원산지</label>
+                        </div>
+                    </div>
+            `;
         } else if (mainCat === 'T') {
             optionFields += `
-            <label><input type="checkbox" class="option-field-toggle" data-field="size"> 크기</label>
-            <label><input type="checkbox" class="option-field-toggle" data-field="color"> 색상</label>
-            <label><input type="checkbox" class="option-field-toggle" data-field="weight"> 무게</label>
-            <label><input type="checkbox" class="option-field-toggle" data-field="material"> 재질</label>
-            <label><input type="checkbox" class="option-field-toggle" data-field="manufacturer"> 제조사</label>
-            <label><input type="checkbox" class="option-field-toggle" data-field="origin"> 원산지</label>
-        `;
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input option-field-toggle" data-field="size" id="size-${Date.now()}">
+                            <label class="form-check-label" for="size-${Date.now()}">크기</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input option-field-toggle" data-field="color" id="color-${Date.now()}">
+                            <label class="form-check-label" for="color-${Date.now()}">색상</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input option-field-toggle" data-field="weight" id="weight-${Date.now()}">
+                            <label class="form-check-label" for="weight-${Date.now()}">무게</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input option-field-toggle" data-field="material" id="material-${Date.now()}">
+                            <label class="form-check-label" for="material-${Date.now()}">재질</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input option-field-toggle" data-field="manufacturer" id="manufacturer-${Date.now()}">
+                            <label class="form-check-label" for="manufacturer-${Date.now()}">제조사</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input option-field-toggle" data-field="origin" id="origin-${Date.now()}">
+                            <label class="form-check-label" for="origin-${Date.now()}">원산지</label>
+                        </div>
+                    </div>
+            `;
         }
 
-        // 추가 옵션 입력 필드 영역 (처음에는 숨겨져 있음)
         optionFields += `
-        <div class="option-additional-fields">
-            <div class="option-expiration-date" style="display:none">
-                <input type="date" placeholder="유통기한" class="option-expiration-date-input">
+                </div>
             </div>
-            <div class="option-weight" style="display:none">
-                <input type="text" placeholder="무게" class="option-weight-input">
-            </div>
-            <div class="option-storage-info" style="display:none">
-                <input type="text" placeholder="보관방법" class="option-storage-info-input">
-            </div>
-            <div class="option-size" style="display:none">
-                <input type="text" placeholder="크기" class="option-size-input">
-            </div>
-            <div class="option-color" style="display:none">
-                <input type="text" placeholder="색상" class="option-color-input">
-            </div>
-            <div class="option-material" style="display:none">
-                <input type="text" placeholder="재질" class="option-material-input">
-            </div>
-            <div class="option-manufacturer" style="display:none">
-                <input type="text" placeholder="제조사" class="option-manufacturer-input">
-            </div>
-            <div class="option-origin" style="display:none">
-                <input type="text" placeholder="원산지" class="option-origin-input">
+        </div>`;
+
+        // 추가 옵션 입력 필드 영역
+        optionFields += `
+        <div class="option-additional-fields mt-3">
+            <div class="row">
+                <div class="col-md-6 option-expiration-date" style="display:none">
+                    <input type="date" placeholder="유통기한" class="form-control option-expiration-date-input">
+                </div>
+                <div class="col-md-6 option-weight" style="display:none">
+                    <input type="text" placeholder="무게" class="form-control option-weight-input">
+                </div>
+                <div class="col-md-6 option-storage-info" style="display:none">
+                    <input type="text" placeholder="보관방법" class="form-control option-storage-info-input">
+                </div>
+                <div class="col-md-6 option-size" style="display:none">
+                    <input type="text" placeholder="크기" class="form-control option-size-input">
+                </div>
+                <div class="col-md-6 option-color" style="display:none">
+                    <input type="text" placeholder="색상" class="form-control option-color-input">
+                </div>
+                <div class="col-md-6 option-material" style="display:none">
+                    <input type="text" placeholder="재질" class="form-control option-material-input">
+                </div>
+                <div class="col-md-6 option-manufacturer" style="display:none">
+                    <input type="text" placeholder="제조사" class="form-control option-manufacturer-input">
+                </div>
+                <div class="col-md-6 option-origin" style="display:none">
+                    <input type="text" placeholder="원산지" class="form-control option-origin-input">
+                </div>
             </div>
         </div>
     </div>`;
 
         // 삭제 버튼
-        optionFields += `<button type="button" class="remove-option">삭제</button>`;
+        optionFields += `
+        <div class="row mt-3">
+            <div class="col-12 text-end">
+                <button type="button" class="btn btn-danger remove-option">삭제</button>
+            </div>
+        </div>`;
 
         optionItem.innerHTML = optionFields;
 
