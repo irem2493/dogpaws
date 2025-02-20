@@ -13,5 +13,6 @@ public class ProductListDto {
     private String status;              // 판매상태
     private Integer stockQuantity;      // 재고수량
     private String mainCategory;        // 대분류
+    private String manufacturer;
     private LocalDateTime createdAt;    // 등록일
 }

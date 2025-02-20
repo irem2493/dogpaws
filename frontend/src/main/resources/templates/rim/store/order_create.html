@@ -3,11 +3,114 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout-mypage}">
 <head>
-
     <script src="https://js.tosspayments.com/v2/standard"></script>
-
     <title>주문서 작성</title>
     <meta charset="utf-8" />
+    <link rel="stylesheet" href="/css/rim/store/store.css">
+    <style>
+        .container {
+            padding: 0 20px;
+        }
+        .order-create-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .order-create-container h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            padding: 15px 20px;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .form-label {
+            color: #333;
+            font-weight: 500;
+        }
+        .form-control:focus {
+            border-color: #EF7E06;
+            box-shadow: 0 0 0 0.2rem rgba(239, 126, 6, 0.25);
+        }
+        .form-select:focus {
+            border-color: #EF7E06;
+            box-shadow: 0 0 0 0.2rem rgba(239, 126, 6, 0.25);
+        }
+        .btn-orange-dark {
+            background-color: #EF7E06;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .btn-orange-dark:hover {
+            background-color: #d86d05;
+            color: white;
+        }
+        .text-primary {
+            color: #EF7E06 !important;
+        }
+        .order-price {
+            color: #EF7E06;
+            font-weight: bold;
+        }
+        .table-active {
+            background-color: #fff8f3 !important;
+        }
+        .table-active strong {
+            color: #EF7E06;
+        }
+        .form-check-input:checked {
+            background-color: #EF7E06;
+            border-color: #EF7E06;
+        }
+        .pawsModal .modal-content {
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .pawsModal .modal-title {
+            color: #333;
+            font-weight: 600;
+        }
+        .pawsModal-close {
+            color: #666;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            cursor: pointer;
+        }
+        .pawsModal-close:hover {
+            color: #333;
+        }
+        #payment-button {
+            background-color: #EF7E06;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        #payment-button:hover {
+            background-color: #d86d05;
+        }
+    </style>
 </head>
 <body layout:fragment="content" style="min-height: 100vh">
 

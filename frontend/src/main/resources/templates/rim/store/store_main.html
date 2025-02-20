@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>DogPaws Store</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="/css/rim/store/store.css">
+    <style>
+        .store-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .swiper-container {
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            margin-bottom: 20px;
+        }
+        .swiper {
+            width: 100%;
+            height: 320px;
+        }
+        .swiper-slide img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+        }
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: #ffffff !important;
+        }
+        .swiper-pagination-bullet {
+            background: #ffffff !important;
+        }
+        .swiper-pagination-bullet-active {
+            background: #EF7E06 !important;
+        }
+        .category-nav {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+            gap: 20px;
+        }
+        .category-nav a {
+            padding: 10px 20px;
+            border-radius: 20px;
+            background-color: #f5f5f5;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+        }
+        .category-nav a:hover {
+            background-color: #EF7E06;
+            color: white;
+        }
+        .best-products {
+            margin: 40px 0;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        .section-header h2 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        .more-link {
+            color: #666;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: color 0.3s;
+            margin-top: 10px;
+        }
+        .more-link:hover {
+            color: #EF7E06;
+        }
+    </style>
+</head>
+<body layout:fragment="content">
+<div class="store-container">
+    <!-- 스와이퍼 슬라이드 -->
+    <div class="swiper-container">
+        <div class="swiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <img src="/img/store/snap_shot.jpg" alt="배너1">
+                </div>
+                <div class="swiper-slide">
+                    <img src="/img/store/snap_shot2.jpg" alt="배너2">
+                </div>
+                <div class="swiper-slide">
+                    <img src="/img/store/snap_shot3.jpg" alt="배너3">
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </div>
+
+    <!-- 카테고리 네비게이션 -->
+    <div class="category-nav">
+        <a th:href="@{/store/category/F}">사료</a>
+        <a th:href="@{/store/category/N}">간식</a>
+        <a th:href="@{/store/category/T}">산책용품</a>
+    </div>
+
+    <!-- Best 사료 -->
+    <section class="best-products">
+        <div class="section-header">
+            <h2>BEST 사료</h2>
+            <a th:href="@{/store/category/F}" class="more-link">더보기 ></a>
+        </div>
+        <div class="product-grid">
+            <div th:each="product : ${bestFoods}" class="product-card">
+                <a th:href="@{/store/{id}(id=${product.product_id})}">
+                    <img th:src="${product.image_url}" class="product-image" alt="상품 이미지">
+                    <div class="product-info">
+                        <div class="manufacturer" th:text="${product.manufacturer}">제조사</div>
+                        <div class="product-name" th:text="${product.name}">상품명</div>
+                        <div class="product-price">
+                            <span th:text="${#numbers.formatInteger(product.price, 0, 'COMMA')}">0</span>원
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Best 간식 -->
+    <section class="best-products">
+        <div class="section-header">
+            <h2>BEST 간식</h2>
+            <a th:href="@{/store/category/N}" class="more-link">더보기 ></a>
+        </div>
+        <div class="product-grid">
+            <div th:each="product : ${bestSnacks}" class="product-card">
+                <a th:href="@{/store/{id}(id=${product.product_id})}">
+                    <img th:src="${product.image_url}" class="product-image" alt="상품 이미지">
+                    <div class="product-info">
+                        <div class="manufacturer" th:text="${product.manufacturer}">제조사</div>
+                        <div class="product-name" th:text="${product.name}">상품명</div>
+                        <div class="product-price">
+                            <span th:text="${#numbers.formatInteger(product.price, 0, 'COMMA')}">0</span>원
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Best 산책용품 -->
+    <section class="best-products">
+        <div class="section-header">
+            <h2>BEST 산책용품</h2>
+            <a th:href="@{/store/category/T}" class="more-link">더보기 ></a>
+        </div>
+        <div class="product-grid">
+            <div th:each="product : ${bestToys}" class="product-card">
+                <a th:href="@{/store/{id}(id=${product.product_id})}">
+                    <img th:src="${product.image_url}" class="product-image" alt="상품 이미지">
+                    <div class="product-info">
+                        <div class="manufacturer" th:text="${product.manufacturer}">제조사</div>
+                        <div class="product-name" th:text="${product.name}">상품명</div>
+                        <div class="product-price">
+                            <span th:text="${#numbers.formatInteger(product.price, 0, 'COMMA')}">0</span>원
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+<script>
+    new Swiper('.swiper', {
+        loop: true,
+        pagination: {
+            el: '.swiper-pagination',
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        autoplay: {
+            delay: 3000,
+        },
+    });
+</script>
+</body>
+</html>

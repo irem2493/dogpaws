@@ -23,7 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -159,6 +161,7 @@ public class ProductService {
             List<ProductListDto> content = productDao.searchProducts(searchDto);
             int total = productDao.getTotalCount(searchDto);
 
+            log.info("content : {}", content);
             // Page 객체 생성 및 반환
             return new PageImpl<>(content,
                     PageRequest.of(searchDto.getPage() - 1, searchDto.getPageSize()),
@@ -343,5 +346,14 @@ public class ProductService {
 
         return productOptionDto;
     }
+    public Map<String, List<ProductListDto>> getAllBestProducts(int size) {
+        Map<String, List<ProductListDto>> result = new HashMap<>();
 
+        // 각 카테고리별 베스트 상품 조회
+        result.put("bestFoods", productDao.getBestProducts("F", size));
+        result.put("bestSnacks", productDao.getBestProducts("N", size));
+        result.put("bestToys", productDao.getBestProducts("T", size));
+
+        return result;
+    }
 }
