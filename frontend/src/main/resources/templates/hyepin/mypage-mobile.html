@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/hyepin/mypage.css">
+</head>
+<body layout:fragment="content" >
+<div class="container">  <!-- 컨테이너 div.. 지우지 마세요 !-->
+    <!-- 여기서부터 작성하시면 됩니다. !-->
+
+    <div class="mypage-container">
+        <div class="mypage-title">마이페이지</div>
+        <div class="mypage-grid">
+            <div class="mypage-item">
+                <a href="/editUserPassword">
+                <img src="/img/icon/mypage/mypage-user.svg" alt="user-icon">
+                <div>개인정보</div>
+                </a>
+            </div>
+            <div class="mypage-item">
+                <a href="/dog/mypage/dogList">
+                <img src="/img/icon/mypage/mypage-dog.svg" alt="dog-icon">
+                <div>반려견 정보</div>
+                </a>
+            </div>
+            <div class="mypage-item">
+                <a href="/like">
+                <img src="/img/icon/mypage/mypage-like.svg" alt="like-icon">
+                <div>좋아요 목록</div>
+                </a>
+            </div>
+            <div class="mypage-item">
+                <a href="/calendar">
+                <img src="/img/icon/mypage/mypage-calendar.svg" alt="calendar-icon">
+                <div>일정</div>
+                </a>
+            </div>
+            <div class="mypage-item">
+                <a href="#">
+                <img src="/img/icon/mypage/mypage-board.svg" alt="board-icon">
+                <div>작성한 게시글</div>
+                </a>
+            </div>
+            <div class="mypage-item">
+                <a href="/store">
+                <img src="/img/icon/mypage/mypage-store.svg" alt="store-icon">
+                <div>스토어</div>
+                </a>
+            </div>
+            <div class="mypage-item">
+                <a href="/cart/list">
+                <img src="/img/icon/mypage/mypage-cart.svg" alt="cart-icon">
+                <div>장바구니</div>
+                </a>
+            </div>
+            <div class="mypage-item">
+                <a href="/orders/list">
+                <img src="/img/icon/mypage/mypage-delivery.svg" alt="delivery-icon">
+                <div>주문 · 배송</div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div> <!-- 컨테이너 div.. 지우지 마세요 !-->
+</body>
+</html>
