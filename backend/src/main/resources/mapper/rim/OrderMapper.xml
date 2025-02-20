@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dogpaws.backend.repository.dao.rim.OrderDao">
+
+    <!-- 주문 생성 -->
+    <insert id="insertOrder" parameterType="com.dogpaws.backend.dto.rim.OrderDto" useGeneratedKeys="true" keyProperty="orderId">
+        INSERT INTO tbl_orders (
+            ql_id,
+            username,
+            total_price,
+            order_name,
+            order_phone,
+            shipping_zipcode,
+            shipping_address1,
+            shipping_address2,
+            receiver_name,
+            receiver_phone,
+            shipping_memo,
+            order_status,
+            order_date
+        ) VALUES (
+            #{qlId},
+            #{username},
+            #{totalPrice},
+            #{orderName},
+            #{orderPhone},
+            #{shippingZipcode},
+            #{shippingAddress1},
+            #{shippingAddress2},
+            #{receiverName},
+            #{receiverPhone},
+            #{shippingMemo},
+            #{orderStatus},
+            NOW()
+        )
+</insert>
+
+
+    <!-- 주문 상품 정보 저장 -->
+    <insert id="insertOrderItem" parameterType="com.dogpaws.backend.dto.rim.OrderItemDto"  useGeneratedKeys="true" keyProperty="orderItemId">
+        INSERT INTO tbl_order_items (
+        ql_id,
+        product_id,
+        amount,
+        item_price
+        ) VALUES (
+        #{qlId},
+        #{productId},
+        #{amount},
+        #{itemPrice}
+        )
+    </insert>
+
+    <!-- 주문 상품 옵션 정보 저장 -->
+    <insert id="insertOrderItemOption">
+        INSERT INTO tbl_order_item_options (
+        order_item_id,
+        option_name,
+        option_price,
+        quantity
+        ) VALUES (
+        #{orderItemId},
+        #{optionName},
+        #{optionPrice},
+        #{quantity}
+        )
+    </insert>
+
+    <!-- 주문에 포함된 장바구니 아이템 ID 조회 -->
+    <select id="selectCartItemsByQlId" resultType="long">
+        SELECT DISTINCT c.cart_item_id
+        FROM tbl_orders o
+        JOIN tbl_order_items oi ON o.ql_id = oi.ql_id
+        JOIN tbl_cart c ON oi.product_id = c.product_id
+        WHERE o.ql_id = #{qlId}
+    </select>
+
+
+    <!-- 주문 조회 -->
+    <select id="selectOrderByQlId" resultType="com.dogpaws.backend.dto.rim.OrderDto">
+        SELECT
+        o.order_id as orderId,
+        o.ql_id as qlId,
+        o.payment_key as paymentKey,
+        o.username,
+        o.total_price as totalPrice,
+        o.order_name as orderName,
+        o.order_phone as orderPhone,
+        o.shipping_zipcode as shippingZipcode,
+        o.shipping_address1 as shippingAddress1,
+        o.shipping_address2 as shippingAddress2,
+        o.shipping_extra_address as shippingExtraAddress,
+        o.shipping_memo as shippingMemo,
+        o.receiver_name as receiverName,
+        o.receiver_phone as receiverPhone,
+        o.order_status as orderStatus,
+        o.order_date as orderDate,
+        (
+        SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+        'orderItemId', oi.order_item_id,
+        'qlId', oi.ql_id,
+        'productId', oi.product_id,
+        'productName', p.name,
+        'manufacturer', p.manufacturer,
+        'imageUrl', p.image_url,
+        'amount', oi.amount,
+        'itemPrice', oi.item_price,
+        'options', (
+        SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+        'optionId', oio.option_id,
+        'orderItemId', oio.order_item_id,
+        'optionName', oio.option_name,
+        'optionPrice', oio.option_price,
+        'quantity', oio.quantity
+        )
+        )
+        FROM tbl_order_item_options oio
+        WHERE oio.order_item_id = oi.order_item_id
+        )
+        )
+        )
+        FROM tbl_order_items oi
+        JOIN tbl_products p ON oi.product_id = p.product_id  /* 추가: products 테이블 조인 */
+        WHERE oi.ql_id = o.ql_id
+        ) as orderItems
+        FROM tbl_orders o
+        WHERE o.ql_id = #{qlId}
+    </select>
+    <!-- 사용자의 전체 주문 수 조회 -->
+    <select id="countOrdersByUsername" resultType="int">
+        SELECT COUNT(*)
+        FROM tbl_orders
+        WHERE username = #{username}
+    </select>
+
+    <!-- 사용자의 주문 목록 조회 (페이징) -->
+    <select id="selectOrdersByUsernameWithPaging" resultType="com.dogpaws.backend.dto.rim.OrderDto">
+        SELECT
+        o.order_id as orderId,
+        o.ql_id as qlId,
+        o.payment_key as paymentKey,
+        o.username,
+        o.total_price as totalPrice,
+        o.order_name as orderName,
+        o.order_status as orderStatus,
+        o.order_date as orderDate,
+        (
+        SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+        'orderItemId', oi.order_item_id,
+        'productId', oi.product_id,
+        'productName', p.name,
+        'manufacturer', p.manufacturer,
+        'imageUrl', p.image_url,
+        'amount', oi.amount,
+        'itemPrice', oi.item_price
+        )
+        )
+        FROM tbl_order_items oi
+        JOIN tbl_products p ON oi.product_id = p.product_id
+        WHERE oi.ql_id = o.ql_id
+        ) as orderItems
+        FROM tbl_orders o
+        WHERE o.username = #{username}
+        ORDER BY o.order_date DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+    <!-- 주문번호 존재 여부 확인 -->
+    <select id="existsByQlId" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM tbl_orders
+        WHERE ql_id = #{qlId}
+    </select>
+
+
+    <!-- 주문 상태 업데이트 -->
+    <update id="updateOrderStatus">
+        UPDATE tbl_orders
+        SET
+        order_status = #{status},
+        payment_key = #{paymentKey}
+        WHERE ql_id = #{qlId}
+    </update>
+
+    <!-- 결제키 업데이트 -->
+    <update id="updatePaymentKey">
+        UPDATE tbl_orders
+        SET payment_key = #{paymentKey},
+        order_status = 'PAID'
+        WHERE ql_id = #{qlId}
+    </update>
+
+</mapper>

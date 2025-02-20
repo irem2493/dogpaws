@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout-mypage}">
+<head>
+    <title>상품 목록</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/css/rim/store/store.css">
+
+</head>
+<body layout:fragment="content" >
+<div class="container" style="margin: 0">
+    <div class="product-list-container mt-5">
+        <!-- 메인 컨텐츠 영역 -->
+        <div class="product-list-header">
+            <h2 th:text="${category == 'F' ? '사료' : (category == 'N' ? '간식' : '산책용품')}">카테고리</h2>
+        </div>
+
+        <!-- 상품 그리드 -->
+        <div class="product-grid">
+            <div th:each="product : ${products}" class="product-card">
+                <a th:href="@{/store/{id}(id=${product.productId})}">
+                    <img th:src="${product.imageUrl}" class="product-image" alt="상품 이미지">
+                    <div class="product-info">
+                        <div class="manufacturer" th:text="${product.manufacturer}">제조사</div>
+                        <div class="product-name" th:text="${product.name}">상품명</div>
+                        <div class="product-price">
+                            <span th:text="${#numbers.formatInteger(product.price, 0, 'COMMA')}">0</span>원
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="d-flex justify-content-center" th:if="${totalPages > 0}">
+            <ul class="pagination">
+                <!-- 이전 페이지 -->
+                <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                    <a class="page-link" 
+                       th:href="@{/store/category/{category}(category=${category}, page=${currentPage - 1})}"
+                       th:onclick="${currentPage == 0} ? 'alert(\'첫 페이지입니다.\'); return false;' : ''">
+                        <span>&laquo;</span>
+                    </a>
+                </li>
+                
+                <!-- 페이지 번호 -->
+                <li class="page-item" 
+                    th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${pageNum == currentPage ? 'active' : ''}">
+                    <a class="page-link" 
+                       th:href="@{/store/category/{category}(category=${category}, page=${pageNum})}"
+                       th:text="${pageNum + 1}">1</a>
+                </li>
+                
+                <!-- 다음 페이지 -->
+                <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                    <a class="page-link" 
+                       th:href="@{/store/category/{category}(category=${category}, page=${currentPage + 1})}"
+                       th:onclick="${currentPage >= totalPages - 1} ? 'alert(\'마지막 페이지입니다.\'); return false;' : ''">
+                        <span>&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        padding: 0 20px;
+    }
+    .product-list-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .product-list-header {
+        margin-bottom: 30px;
+    }
+    .product-list-header h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #333;
+    }
+</style>
+</body>
+</html>
