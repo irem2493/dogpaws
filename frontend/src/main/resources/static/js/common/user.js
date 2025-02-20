@@ -17,7 +17,7 @@ function handleClick(event) {
         } else if(clickedId === 'map'){
             window.location.href = '/dog/nearbyDogMap';
         } else if(clickedId === 'store'){
-            window.location.href = '';
+            window.location.href = '/store';
         } else if(clickedId === 'board'){
             window.location.href = '/board/F';
         }

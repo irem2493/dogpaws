@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout-admin}">
+<head>
+    <title>상품 관리</title>
+</head>
+<body layout:fragment="content">
+<div class="container">
+    <div class="admin-container">
+        <div class="nav-path">홈 > 스토어 관리 > 상품 관리</div>
+        <div class="pw-title">상품 관리</div>
+
+        <!-- 상단 버튼 영역 -->
+        <div class="manage-header">
+            <button type="button" id="stockHistoryBtn">입고 내역</button>
+        </div>
+
+        <!-- 필터 영역 -->
+        <div class="filter-section">
+            <select id="mainCategory">
+                <option value="">전체 카테고리</option>
+                <option value="F">사료</option>
+                <option value="N">간식</option>
+                <option value="T">장난감</option>
+            </select>
+
+            <select id="subCategory" style="display: none;">
+                <option value="">소분류 선택</option>
+                <option value="D">건식 사료</option>
+                <option value="W">습식 사료</option>
+            </select>
+
+            <select id="status">
+                <option value="">전체 상태</option>
+                <option value="O">판매중</option>
+                <option value="S">품절</option>
+                <option value="D">판매중지</option>
+            </select>
+
+            <select id="stockSort">
+                <option value="">재고 정렬</option>
+                <option value="asc">재고 적은순</option>
+                <option value="desc">재고 많은순</option>
+            </select>
+
+            <input type="text" id="searchKeyword" placeholder="상품명 검색">
+            <button type="button" id="searchBtn">검색</button>
+        </div>
+
+        <!-- 상품 목록 테이블 -->
+        <table class="product-table">
+            <thead>
+            <tr>
+                <th>상품명</th>
+                <th>판매가</th>
+                <th>판매상태</th>
+                <th>현재재고</th>
+                <th>관리</th>
+            </tr>
+            </thead>
+            <tbody id="productList">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 상태 변경 모달 -->
+<div id="statusModal" class="modal">
+    <div class="modal-content">
+        <h3>판매상태 변경</h3>
+        <p>판매상태를 변경하시겠습니까?</p>
+        <div class="modal-buttons">
+            <button type="button" id="confirmStatus">확인</button>
+            <button type="button" id="cancelStatus">취소</button>
+        </div>
+    </div>
+</div>
+
+<!-- 입고 등록 모달 -->
+<div id="stockModal" class="modal">
+    <div class="modal-content">
+        <h3>입고 등록</h3>
+        <input type="number" id="addStock" placeholder="입고 수량">
+        <div class="modal-buttons">
+            <button type="button" id="confirmStock">확인</button>
+            <button type="button" id="cancelStock">취소</button>
+        </div>
+    </div>
+</div>
+
+<!-- 삭제 확인 모달 -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h3>상품 삭제</h3>
+        <p>상품을 삭제하시겠습니까?</p>
+        <div class="modal-buttons">
+            <button type="button" id="confirmDelete">확인</button>
+            <button type="button" id="cancelDelete">취소</button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/rim/admin_product_manage.js"></script>
+</body>
+</html>

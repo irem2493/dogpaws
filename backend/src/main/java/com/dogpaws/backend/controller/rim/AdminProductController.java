@@ -1,7 +1,9 @@
 package com.dogpaws.backend.controller.rim;
 
 import com.dogpaws.backend.dto.rim.ProductDto;
+import com.dogpaws.backend.dto.rim.ProductListDto;
 import com.dogpaws.backend.dto.rim.ProductOptionDto;
+import com.dogpaws.backend.dto.rim.ProductSearchDto;
 import com.dogpaws.backend.dto.rim.request.ProductRegistRequest;
 import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.service.common.CustomUserDetails;
@@ -10,6 +12,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -48,5 +51,28 @@ public class AdminProductController {
         );
 
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "상품 등록 성공");
+    }
+
+    @GetMapping("/manage")
+    public ApiResponse<Page<ProductListDto>> getProductList(
+            @RequestParam(required = false) String mainCategory,
+            @RequestParam(required = false) String subCategory,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String searchKeyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        ProductSearchDto searchDto = new ProductSearchDto();
+        searchDto.setMainCategory(mainCategory);
+        searchDto.setSubCategory(subCategory);
+        searchDto.setStatus(status);
+        searchDto.setSortBy(sortBy);
+        searchDto.setSearchKeyword(searchKeyword);
+        searchDto.setPage(page + 1);
+        searchDto.setPageSize(size);
+
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS,
+                productService.searchProducts(searchDto));
     }
 }
