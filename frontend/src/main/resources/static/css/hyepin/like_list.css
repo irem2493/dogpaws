@@ -45,7 +45,7 @@
 
 .content-item{
     display: flex;
-    gap: 10px;
+    gap: 20px;
     width: 600px;
 }
 
@@ -55,6 +55,7 @@
     justify-content: center;
     padding: 20px;
     gap: 30px;
+    margin-bottom: 10px;
 }
 
 .like-list-container-content-mobile{
@@ -63,9 +64,77 @@
 
 .content-item-container{
     display: flex;
-    gap: 10px;
+    gap: 20px;
     justify-content: center;
 }
+
+
+.item-profile, .item-like{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+}
+
+.item-like{
+    width: 100px;
+}
+
+.item-profile {
+    max-height: 170px;   /* 가로 비율에 맞춰 자동 조정 */
+    overflow: hidden; /* 넘치는 부분 숨김 */
+    display: flex; /* 이미지 중앙 정렬을 위해 flex 사용 */
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+}
+
+.item-profile img {
+    width: 100%;  /* 부모 요소보다 커지지 않게!!! */
+    height: 100%;  /* 부모 요소보다 커지지 않게!!! */
+    object-fit: cover; /* 이미지 왜곡 없이 맞춤 */
+}
+
+.like-list-container-content-mobile{
+    margin-top: 20px;
+}
+
+
+
+.mobile-container{
+    padding: 20px 0px 20px 0px;
+}
+
+.content-items-moblie{
+    padding-top: 20px;
+}
+
+.item-name, .item-breed{
+    font-size: 18px;
+}
+
+.item-gender, .item-birth{
+    font-size: 17px;
+    color: #5D5D5D;
+}
+
+.trait-tag, .play-tag{
+    border: 1px solid #5e5e5e;
+    border-radius: 30px;
+    padding: 5px 16px
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 @media (max-width: 768px) {
     .like-list-container{
@@ -85,19 +154,16 @@
     .content-item-container-web-box{
         display: none;
     }
-}
 
-.item-profile, .item-like{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 200px;
-}
+    .content-item{
+        display: flex;
+        gap: 10px;
+        width: 150px;
+    }
 
-.like-list-container-content-mobile{
-    margin-top: 20px;
-}
 
-.item-play-mobile{
-    margin-bottom: 20px;
+    .item-profile {
+        max-height: 120px;   /* 가로 비율에 맞춰 자동 조정 */
+    }
+
 }
