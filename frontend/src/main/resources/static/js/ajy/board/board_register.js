@@ -187,9 +187,18 @@ configUpdateAlert(editorConfig);
 
 let editorInstance;
 
+const content = document.getElementById('content').value;
 ClassicEditor.create(document.querySelector('#editor'), editorConfig)
     .then(editor => {
         editorInstance = editor; // 에디터 인스턴스를 전역 변수에 저장
+
+        if (content && content.trim() !== "") {
+            console.log('여기?');
+            editorInstance.setData(content);  // 서버에서 받은 content를 에디터에 넣기
+        } else {
+            console.log('여기로 들어가나용?');
+            editorInstance.setData('<p></p>');  // content가 비어있으면 빈 paragraph 넣기
+        }
     })
     .catch(error => {
         console.error("CKEditor 로드 오류:", error);
@@ -244,6 +253,7 @@ function configUpdateAlert(config) {
 }
 
 
+//등록
 document.getElementById('boardForm').addEventListener('submit', function(event) {
     event.preventDefault();  // 기본 폼 제출 방지
 
@@ -252,25 +262,53 @@ document.getElementById('boardForm').addEventListener('submit', function(event) 
     const titleInput = document.getElementById('title');
     const title = titleInput.value;
 
+    const contentData = document.getElementById('content').value;
+    const boardId = document.getElementById('boardId').value;
+
     const editorData = editorInstance.getData();
     const category = document.getElementById('category').value;
 
 
-    const value = title.trim();
-    if (!value) {
-        alert(`필수 입력 항목을 모두 채워주세요: 제목`);
-        if (titleInput) {
-            titleInput.focus();  // 빈 필드에 포커스 설정
-        }
-        return;
-    }
 
-    const content = editorData.trim();
-    if (!content || content === "" || content === "<p></p>") {
-        console.error("에디터 내용이 비어 있습니다.");
-        alert("내용을 입력해주세요.");
-        return;
-    }
+   // if(!boardId){
+        const value = title.trim();
+        if (!value) {
+            alert(`필수 입력 항목을 모두 채워주세요: 제목`);
+            if (titleInput) {
+                titleInput.focus();  // 빈 필드에 포커스 설정
+            }
+            return;
+        }
+
+        const content = editorData.trim();
+        if (!content || content === "" || content === "<p></p>") {
+            console.error("에디터 내용이 비어 있습니다.");
+            alert("내용을 입력해주세요.");
+            return;
+        }
+    /*}
+    else{
+        // 기존 값 저장
+        const fields = ["title", "content"];
+        const previousValues = {};
+        fields.forEach(field => {
+            const element = document.getElementById(field);
+            previousValues[field] = element.getAttribute("th:value") || "";
+        });
+
+        fields.forEach(field => {
+            const inputElement = document.getElementById(field);
+            if (inputElement) {
+                const currentValue = inputElement.value.trim();
+                const prevValue = inputElement.getAttribute("data-prev-value") || "";
+
+                // 값이 비어 있으면 이전 값으로 설정
+                if (!currentValue) {
+                    inputElement.value = prevValue;
+                }
+            }
+        });
+    }*/
 
     const boardData = {
         username,
@@ -280,21 +318,66 @@ document.getElementById('boardForm').addEventListener('submit', function(event) 
         category
     };
 
-    api.post('/api/board', boardData)
-        .then(async response => {
+    console.log(boardId);
+    if(!boardId){
+        api.post('/api/board', boardData)
+            .then(async response => {
 
-            if (response.status === 'SUCCESS') {
-                alert("게시글이 저장되었습니다.");
-                location.href=`/board/${category}`;
-            }else{
-                alert("게시글 저장 실패");
-            }
-        })
-        .catch(error => {
+                if (response.status === 'SUCCESS') {
+                    alert("게시글이 저장되었습니다.");
+                    location.href=`/board/${category}`;
+                }else{
+                    alert("게시글 저장 실패");
+                }
+            })
+            .catch(error => {
                 console.error("API 요청 오류:", error);
                 alert("서버 오류가 발생했습니다.");
-        });
+            });
+    }else{
+        api.put(`/api/board/${boardId}`, boardData)
+            .then(async response => {
+
+                if (response.status === 'SUCCESS') {
+                    alert("게시글이 수정되었습니다.");
+                    location.href=`/board/${category}`;
+                }else{
+                    alert("게시글 수정 실패");
+                }
+            })
+            .catch(error => {
+                console.error("API 요청 오류:", error);
+                alert("서버 오류가 발생했습니다.");
+            });
+    }
+
 
 });
+/*
+document.addEventListener("DOMContentLoaded", function() {
+    const content = document.getElementById('content').value;  // hidden input에서 content 값 가져오기
+
+    // CKEditor 초기화
+    ClassicEditor
+        .create(
+            document.querySelector('#editor'),editorConfig
+        )
+        .then(editor => {
+            // 에디터 초기화 후에는 #editor 요소를 숨기기 전에 값을 설정합니다.
+            if (content && content.trim() !== "") {
+                console.log('여기?');
+                editor.setData(content);  // 서버에서 받은 content를 에디터에 넣기
+            } else {
+                console.log('여기로 들어가나용?');
+                editor.setData('<p></p>');  // content가 비어있으면 빈 paragraph 넣기
+            }
+
+            // 초기화가 완료된 후에 에디터를 숨깁니다.
+            document.querySelector('#editor-container').style.display = 'none';
+        })
+        .catch(error => {
+            console.error("CKEditor 초기화 실패: ", error);
+        });
+});*/
 
 

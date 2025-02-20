@@ -45,10 +45,11 @@ public class BoardController {
     //특정 게시물 수정
     @PutMapping("/{boardId}")
     public ApiResponse<?> updateBoard(@PathVariable("boardId") Integer boardId, @RequestBody BoardRequestDto board) {
-        Board existBoard = boardService.getBoardById(boardId);
-        if (existBoard != null) {
-            board.setBoardId(boardId);
-            boardService.save(board);
+
+        board.setBoardId(boardId);
+        boolean result = boardService.edit(board);
+        if(result){
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "수정 성공");
         }
         return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "수정 실패");
     }
