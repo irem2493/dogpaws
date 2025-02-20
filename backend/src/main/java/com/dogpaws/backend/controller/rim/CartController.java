@@ -73,9 +73,21 @@ public class CartController {
     // 선택된 장바구니 아이템 삭제
     @DeleteMapping("/selected")
     public ResponseEntity<ApiResponse<?>> deleteSelectedItems(
-            @RequestBody List<Long> cartItemIds) {
+            @RequestBody Map<String, Object> request) {
         try {
-            cartService.deleteSelectedItems(cartItemIds);
+            log.info("장바구니 삭제시작...");
+            String username = (String) request.get("username");
+            @SuppressWarnings("unchecked")
+            List<Long> cartItemIds = (List<Long>) request.get("cartItemIds");
+
+            if (username == null || cartItemIds == null) {
+                return ResponseEntity.badRequest().body(new ApiResponse<>(
+                        ApiResponse.ApiStatus.ERROR,
+                        Map.of("message", "필수 파라미터가 누락되었습니다.")
+                ));
+            }
+
+            cartService.deleteSelectedItems(username, cartItemIds);
             return ResponseEntity.ok(new ApiResponse<>(
                     ApiResponse.ApiStatus.SUCCESS,
                     Map.of("message", "선택한 상품이 삭제되었습니다.")
@@ -88,6 +100,7 @@ public class CartController {
             ));
         }
     }
+
 
     
 

@@ -172,15 +172,15 @@ public class CartService {
      * 선택된 장바구니 아이템 삭제
      */
     @Transactional
-    public void deleteSelectedItems(List<Long> cartItemIds) {
+    public void deleteSelectedItems(String username, List<Long> cartItemIds) {
         try {
             if (cartItemIds == null || cartItemIds.isEmpty()) {
                 throw new IllegalArgumentException("삭제할 상품이 선택되지 않았습니다.");
             }
 
             // 먼저 옵션 삭제 후 카트 아이템 삭제
-            cartDao.deleteCartItemOptions(null, cartItemIds);  // username은 null로 전달 (이미 cartItemIds로 식별)
-            cartDao.deleteCartItems(null, cartItemIds);
+            cartDao.deleteCartItemOptions(username, cartItemIds);  // username은 null로 전달 (이미 cartItemIds로 식별)
+            cartDao.deleteCartItems(username, cartItemIds);
 
             log.info("장바구니 아이템 삭제 완료. items: {}", cartItemIds);
         } catch (Exception e) {

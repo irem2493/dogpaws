@@ -5,6 +5,7 @@ import com.dogpaws.backend.dto.rim.ProductListDto;
 import com.dogpaws.backend.dto.rim.ProductSearchDto;
 import com.dogpaws.backend.entity.rim.ProductOption;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -19,4 +20,7 @@ public interface ProductDao {
 
     // 상품 ID로 옵션 목록 조회하는 메서드 추가
     List<ProductOption> findByProductProductId(Long productId);
+
+    List<ProductListDto> getBestProducts(@Param("category") String category,
+                                         @Param("size") int size);
 }

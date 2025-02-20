@@ -5,13 +5,16 @@ import com.dogpaws.backend.dto.rim.ProductListDto;
 import com.dogpaws.backend.dto.rim.ProductOptionDto;
 import com.dogpaws.backend.dto.rim.ProductSearchDto;
 import com.dogpaws.backend.global.common.ApiResponse;
+import com.dogpaws.backend.repository.dao.rim.ProductDao;
 import com.dogpaws.backend.service.rim.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -20,6 +23,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductDao productDao;
 
     @GetMapping("/{productId}")
     public ApiResponse<ProductDto> getProduct(@PathVariable Long productId) {
@@ -66,6 +70,18 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/best")
+    public ApiResponse<Map<String, List<ProductListDto>>> getAllBestProducts(
+            @RequestParam(defaultValue = "4") int size) {
+        try {
+            Map<String, List<ProductListDto>> bestProducts = productService.getAllBestProducts(size);
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, bestProducts);
+        } catch (Exception e) {
+            log.error("베스트 상품 조회 중 오류 발생: {}", e.getMessage(), e);
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
+        }
+    }
+
     @GetMapping("/search")
     public ApiResponse<Page<ProductListDto>> searchProducts(
             @RequestParam(required = false) String category,
@@ -95,6 +111,8 @@ public class ProductController {
             return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
         }
     }
+
+
 
     @GetMapping("/{productId}/options")
     public ApiResponse<List<ProductOptionDto>> getProductOptions(@PathVariable Long productId) {

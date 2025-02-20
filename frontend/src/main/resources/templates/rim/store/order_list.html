@@ -2,110 +2,162 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout-mypage}">
-<title>주문 목록</title>
-<div layout:fragment="content">
-    <div class="container mt-5">
-        <h2 class="mb-4">주문 목록</h2>
+<head>
+    <title>주문 목록</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/css/rim/store/store.css">
+</head>
+<body layout:fragment="content">
+<div class="container" style="margin: 0">
+    <div class="order-list-container mt-5">
+        <div class="order-list-header">
+            <h2>주문 목록</h2>
+        </div>
 
         <!-- 주문 내역이 없는 경우 -->
         <div th:if="${#lists.isEmpty(orders)}" class="text-center">
             <p>주문 내역이 없습니다.</p>
         </div>
 
-        <!-- 주문 목록 테이블 -->
-        <table class="table table-hover">
-            <thead class="table-light">
-            <tr>
-                <th>주문번호</th>
-                <th>상품정보</th>
-                <th>진행상황</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="order : ${orders}">
-                <!-- 주문번호 및 날짜 -->
-                <td class="align-middle">
-                    <div class="d-flex flex-column">
-                        <small class="text-muted"
-                               th:text="${#temporals.format(order.orderDate, 'yyyy.MM.dd')}">
-                        </small>
+        <!-- 주문 목록 -->
+        <div th:if="${not #lists.isEmpty(orders)}" class="order-list">
+            <div class="row bg-light py-2 mb-3 text-center">
+                <div class="col-2">주문 번호</div>
+                <div class="col-7">상품 정보</div>
+                <div class="col-3">진행 상황</div>
+            </div>
+
+            <div th:each="order : ${orders}" class="order-item mb-3">
+                <!-- 주문 정보 -->
+                <div class="row align-items-center py-3 border-bottom">
+                    <!-- 주문번호 및 날짜 -->
+                    <div class="col-2">
+                        <small class="text-muted" th:text="${#temporals.format(order.orderDate, 'yyyy.M.dd')}"></small>
+                        <br>
                         <a th:href="@{/orders/detail/{qlId}(qlId=${order.qlId})}"
                            th:text="${order.qlId}"
                            class="text-primary text-decoration-none">
                         </a>
                     </div>
-                </td>
 
-                <!-- 상품 정보 -->
-                <td class="align-middle">
-                    <div class="d-flex align-items-center">
-                        <!-- 첫 번째 상품 이미지 -->
-                        <div class="me-3" style="width: 80px; height: 80px;">
-                            <img th:if="${not #lists.isEmpty(order.orderItems)}"
-                                 th:src="${order.orderItems[0].imageUrl}"
-                                 class="img-fluid" alt="상품이미지"
-                                 style="width: 100%; height: 100%; object-fit: cover;">
-                        </div>
-                        <!-- 상품 정보 텍스트 -->
-                        <div th:if="${not #lists.isEmpty(order.orderItems)}">
-                            <div class="text-muted"
-                                 th:text="${order.orderItems[0].manufacturer}">
+                    <!-- 상품 정보 -->
+                    <div class="col-7">
+                        <div class="d-flex align-items-center">
+                            <!-- 상품 이미지 -->
+                            <div class="me-3" style="width: 80px; height: 80px;">
+                                <img th:if="${not #lists.isEmpty(order.orderItems)}"
+                                     th:src="${order.orderItems[0].imageUrl}"
+                                     class="img-fluid rounded" alt="상품이미지"
+                                     style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
-                            <div>
-                                <span th:text="${order.orderItems[0].productName}"></span>
-                                <span th:if="${#lists.size(order.orderItems) > 1}"
-                                      th:text="' 외 ' + (${#lists.size(order.orderItems)} - 1) + '건'">
-                                    </span>
-                            </div>
-                            <div class="text-primary fw-bold"
-                                 th:text="${#numbers.formatInteger(order.totalPrice, 0, 'COMMA') + '원'}">
+                            <!-- 상품 상세 정보 -->
+                            <div class="flex-grow-1">
+                                <div th:if="${not #lists.isEmpty(order.orderItems)}">
+                                    <div class="text-muted small" th:text="${order.orderItems[0].manufacturer}"></div>
+                                    <div class="mb-1">
+                                        <span th:text="${order.orderItems[0].productName}"></span>
+                                        <span th:if="${#lists.size(order.orderItems) > 1}"
+                                              class="text-muted small"
+                                              th:text="' 포함 ' + (${#lists.size(order.orderItems)} - 1) + '건'">
+                                        </span>
+                                    </div>
+                                    <div class="order-price" th:text="${#numbers.formatInteger(order.totalPrice, 0, 'COMMA') + '원'}"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </td>
 
-                <!-- 진행상황 -->
-                <td class="align-middle">
-                        <span class="badge rounded-pill"
-                              th:classappend="${
-                                order.orderStatus == 'READY' ? 'bg-warning' :
-                                order.orderStatus == 'PAID' ? 'bg-success' :
-                                order.orderStatus == 'CANCELLED' ? 'bg-danger' :
-                                order.orderStatus == 'PREPARING' ? 'bg-info' :
-                                order.orderStatus == 'SHIPPING' ? 'bg-primary' :
-                                order.orderStatus == 'DELIVERED' ? 'bg-secondary' : 'bg-secondary'
-                              }"
-                              th:text="${
-                                order.orderStatus == 'READY' ? '결제대기' :
-                                order.orderStatus == 'PAID' ? '결제완료' :
-                                order.orderStatus == 'CANCELLED' ? '주문취소' :
-                                order.orderStatus == 'PREPARING' ? '배송준비중' :
-                                order.orderStatus == 'SHIPPING' ? '배송중' :
-                                order.orderStatus == 'DELIVERED' ? '배송완료' : order.orderStatus
-                              }">
-                        </span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                    <!-- 진행상황 -->
+                    <div class="col-3 text-center">
+                        <div class="d-flex justify-content-center align-items-center">
+                            <span class="badge rounded-pill"
+                                  th:classappend="${
+                                    order.orderStatus == 'READY' ? 'bg-warning' :
+                                    order.orderStatus == 'PAID' ? 'bg-success' :
+                                    order.orderStatus == 'CANCELLED' ? 'bg-danger' :
+                                    order.orderStatus == 'PREPARING' ? 'bg-info' :
+                                    order.orderStatus == 'SHIPPING' ? 'bg-primary' :
+                                    order.orderStatus == 'DELIVERED' ? 'bg-secondary' : 'bg-secondary'
+                                  }"
+                                  th:text="${
+                                    order.orderStatus == 'READY' ? '결제대기' :
+                                    order.orderStatus == 'PAID' ? '결제완료' :
+                                    order.orderStatus == 'CANCELLED' ? '주문취소' :
+                                    order.orderStatus == 'PREPARING' ? '배송준비중' :
+                                    order.orderStatus == 'SHIPPING' ? '배송중' :
+                                    order.orderStatus == 'DELIVERED' ? '배송완료' : order.orderStatus
+                                  }">
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <!-- 페이징 네비게이션 -->
-        <nav aria-label="Page navigation" class="mt-4">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${isFirst} ? 'disabled'">
-                    <a class="page-link" th:href="@{/orders/list(page=${currentPage - 1})}">&laquo;</a>
+        <!-- 페이지네이션 -->
+        <div class="d-flex justify-content-center" th:if="${totalPages > 0}">
+            <ul class="pagination">
+                <!-- 이전 페이지 -->
+                <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                    <a class="page-link" 
+                       th:href="@{/orders/list(page=${currentPage - 1})}"
+                       th:onclick="${currentPage == 0} ? 'alert(\'첫 페이지입니다.\'); return false;' : ''">
+                        <span>&laquo;</span>
+                    </a>
                 </li>
-                <li class="page-item"
+                
+                <!-- 페이지 번호 -->
+                <li class="page-item" 
                     th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-                    th:classappend="${pageNum == currentPage} ? 'active'">
-                    <a class="page-link" th:href="@{/orders/list(page=${pageNum})}"
+                    th:classappend="${pageNum == currentPage ? 'active' : ''}">
+                    <a class="page-link" 
+                       th:href="@{/orders/list(page=${pageNum})}"
                        th:text="${pageNum + 1}">1</a>
                 </li>
-                <li class="page-item" th:classappend="${isLast} ? 'disabled'">
-                    <a class="page-link" th:href="@{/orders/list(page=${currentPage + 1})}">&raquo;</a>
+                
+                <!-- 다음 페이지 -->
+                <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                    <a class="page-link" 
+                       th:href="@{/orders/list(page=${currentPage + 1})}"
+                       th:onclick="${currentPage >= totalPages - 1} ? 'alert(\'마지막 페이지입니다.\'); return false;' : ''">
+                        <span>&raquo;</span>
+                    </a>
                 </li>
             </ul>
-        </nav>
+        </div>
     </div>
 </div>
+
+<style>
+    .container {
+        padding: 0 20px;
+    }
+    .order-list-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .order-list-header {
+        margin-bottom: 30px;
+    }
+    .order-list-header h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #333;
+    }
+    .order-price {
+        color: #EF7E06;
+        font-weight: bold;
+    }
+    .badge {
+        padding: 8px 12px;
+    }
+    .text-primary {
+        color: #EF7E06 !important;
+    }
+    .page-item.active .page-link {
+        background-color: #EF7E06 !important;
+        border-color: #EF7E06 !important;
+    }
+</style>
+</body>
 </html>

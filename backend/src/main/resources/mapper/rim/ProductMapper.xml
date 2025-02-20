@@ -3,7 +3,42 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dogpaws.backend.repository.dao.rim.ProductDao">
-
+    <select id="getBestProducts" resultType="com.dogpaws.backend.dto.rim.ProductListDto">
+        SELECT
+        p.product_id,
+        p.name,
+        p.price,
+        p.image_url,
+        p.status,
+        p.stock_quantity,
+        p.main_category,
+        p.manufacturer,
+        COALESCE(COUNT(DISTINCT oi.ql_id), 0) as order_count
+        FROM
+        tbl_products p
+        LEFT JOIN
+        tbl_order_items oi ON p.product_id = oi.product_id
+        LEFT JOIN
+        tbl_orders o ON oi.ql_id = o.ql_id
+        AND o.order_status NOT IN ('READY', 'CANCELLED')
+        AND o.order_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+        WHERE
+        p.status = 'O'
+        AND p.main_category = #{category}
+        GROUP BY
+        p.product_id,
+        p.name,
+        p.price,
+        p.image_url,
+        p.status,
+        p.stock_quantity,
+        p.main_category,
+        p.manufacturer
+        ORDER BY
+        order_count DESC,
+        p.created_at DESC
+        LIMIT #{size}
+    </select>
     <select id="searchProducts" resultType="com.dogpaws.backend.dto.rim.ProductListDto">
         SELECT
         p.product_id,
@@ -14,6 +49,7 @@
         p.stock_quantity,
         p.main_category,
         p.created_at,
+        p.manufacturer,
         (SELECT COUNT(*) FROM tbl_product_options po
         WHERE po.product_id = p.product_id) as option_count
         FROM tbl_products p
