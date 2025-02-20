@@ -4,18 +4,19 @@ function likeToggle(element) {
     let isLiked = icon.src.includes("like-push.svg");
 
     const username = sessionUsername.value;
+    const myDogId = sessionDogId.value;
     const dogId = element.dataset.target;
     console.log("dogId:" + dogId);
 
     //숫자와 char 형식은 변환이 필요하기 때문에 폼데이터로 보내겠습니다.
     const LikeDto = {
-        "username": username,
+        "myDogId": myDogId,
         "dogId": parseInt(dogId), // <-- 숫자로 변환
         "likeCode": "P".charAt(0) // <-- char 변환
     }
 
     const formData = new FormData();
-    formData.append("username", username);
+    formData.append("myDogId", myDogId);
     formData.append("dogId", dogId);
     formData.append("likeCode", "P");
 
