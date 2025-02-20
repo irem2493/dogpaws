@@ -2,6 +2,7 @@ package com.dogpaws.backend.dto.ajy;
 
 import com.dogpaws.backend.dto.common.FileDto;
 import lombok.Data;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

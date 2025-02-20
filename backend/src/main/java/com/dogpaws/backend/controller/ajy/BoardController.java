@@ -1,6 +1,7 @@
 package com.dogpaws.backend.controller.ajy;
 
 import com.dogpaws.backend.dto.ajy.BoardRequestDto;
+import com.dogpaws.backend.dto.ajy.BoardResponseDto;
 import com.dogpaws.backend.entity.ajy.Board;
 import com.dogpaws.backend.service.ajy.BoardService;
 import com.dogpaws.frontend.global.ApiResponse;
@@ -34,7 +35,7 @@ public class BoardController {
     //특정 게시글 조회
     @GetMapping("/{boardId}")
     public ApiResponse<?> getBoard(@PathVariable("boardId") Integer boardId) {
-        Board board = boardService.getBoardById(boardId);
+        BoardResponseDto board = boardService.getBoardWithIncreaseView(boardId);
         if (board != null) {
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, board);
         }
@@ -58,8 +59,9 @@ public class BoardController {
         Board existBoard = boardService.getBoardById(boardId);
         if (existBoard != null) {
             boardService.deleteBoardById(boardId);
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "게시글 삭제 성공");
         }
-        return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "삭제 실패");
+        return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "게시글 삭제 실패");
     }
 
 

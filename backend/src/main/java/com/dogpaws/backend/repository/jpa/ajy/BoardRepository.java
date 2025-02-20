@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Integer> {
 
-    List<Board> findByCategory(String category);
+    List<Board> findByCategoryOrderByBoardIdDesc(String category);
 
     // 가장 높은 board_id 가져오기 (없으면 1 반환)
     @Query("SELECT COALESCE(MAX(b.boardId), 1) FROM Board b")
