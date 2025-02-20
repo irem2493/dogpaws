@@ -131,3 +131,26 @@ function getRefreshTokenFromCookie() {
     return null;
 }
 
+async function verifyUserRole() {
+    try {
+        const response = await api.post('/api/verify-token', {}, {
+            headers: {
+                "Authorization": `Bearer ${sessionStorage.getItem('accessToken')}`
+            }
+        });
+
+        if (!response.body.roles.includes('ROLE_USER')) {
+            alert('일반 회원만 이용 가능한 서비스입니다.');
+            window.location.href = '/login';
+            return false;
+        }
+        return true;
+    } catch (error) {
+        console.error('권한 확인 중 오류 발생:', error);
+        alert('로그인이 필요한 서비스입니다.');
+        window.location.href = '/login';
+        return false;
+    }
+}
+
+

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<aside th:fragment="sidebar" class="sidebar-container-container">
+    <!-- 전체 박스 -->
+    <div class="sidebar">
+        <div class="sidebar-container">
+            <div class="sidebar-header">
+                <img class="admin-logo" src="/img/logo.svg" alt="로고"/>
+            </div>
+            <ul class="sidebar-menu">
+                <div class="sidebar-section">
+                    <li><a href="#">스토어 관리</a>
+                        <hr>
+                        <li>
+                            <ul>
+                                <li><a href="#">상품 등록</a></li>
+                                <li><a href="#">상품 관리</a></li>
+                                <li><a href="#">판매 현황</a></li>
+                                <li><a href="#">주문 관리</a></li>
+                            </ul>
+                        </li>
+                    </li>
+                </div>
+                <div class="sidebar-section">
+                    <li class="sidebar-section"><a href="#">회원 관리</a>
+                        <hr>
+                        <li>
+                            <ul>
+                                <li><a href="#">회원 정보 관리</a></li>
+                                <li><a href="#">신고 목록</a></li>
+                                <li><a href="#">문의 관리</a></li>
+                            </ul>
+                        </li>
+                    </li>
+                </div>
+            </ul>
+        </div>
+    </div>
+    <!-- 전체 박스 -->
+</aside>
+</html>

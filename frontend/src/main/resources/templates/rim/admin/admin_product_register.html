@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout-admin}">
+<head>
+  <title>관리자</title>
+  <style>
+    /* 기본 컨테이너 스타일 */
+    .admin-container {
+      max-width: 800px;
+      margin: 0;  /* 좌측 정렬을 위해 margin 수정 */
+      padding: 20px;
+    }
+
+    /* 네비게이션 경로 */
+    .nav-path {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    /* 페이지 제목 */
+    .pw-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    /* 폼 스타일 */
+    .productRegisterForm {
+      background: #fff;
+      padding: 30px 0;  /* 좌우 패딩 제거 */
+      border: none;     /* 테두리 제거 */
+    }
+
+    /* 섹션 공통 스타일 */
+    .category-section,
+    .basic-info-section,
+    .food-info-section,
+    .toy-info-section,
+    .image-section,
+    .options-section,
+    .description-section,
+    .status-section {
+      margin-bottom: 25px;
+    }
+
+    /* 셀렉트 박스 스타일 */
+    select {
+      width: 200px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-right: 10px;
+      background: #fff;
+    }
+
+    /* 입력 필드 스타일 */
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    /* 텍스트에리어 스타일 */
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    /* 이미지 업로드 섹션 */
+    .image-section p,
+    .options-section p {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    /* 이미지 미리보기 공통 스타일 */
+    .image-preview {
+      width: 200px;
+      height: 200px;
+      border: 1px solid #ddd;
+      margin-top: 10px;
+      background: #f9f9f9;
+    }
+
+    /* 옵션 아이템 스타일 */
+    .option-item {
+        background: #fff;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    /* 옵션 기본 필드 스타일 */
+    .option-basic {
+        margin-bottom: 20px;
+    }
+
+    .option-basic input {
+        margin-bottom: 10px;
+    }
+
+    /* 옵션 체크박스 스타일 */
+    .form-check {
+        margin-bottom: 10px;
+    }
+
+    .form-check-input:checked {
+        background-color: #4a4a4a;
+        border-color: #4a4a4a;
+    }
+
+    /* 추가 옵션 필드 스타일 */
+    .option-additional-fields input {
+        margin-bottom: 10px;
+    }
+
+    /* 삭제 버튼 스타일 */
+    .remove-option {
+        padding: 8px 16px;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .remove-option:hover {
+        background-color: #c82333;
+    }
+
+    /* 옵션 추가 버튼 스타일 */
+    #addOption {
+        width: 100%;
+        padding: 12px;
+        background: #4a4a4a;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        margin-top: 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    #addOption:hover {
+        background: #333;
+    }
+
+    /* 입력 필드 포커스 스타일 */
+    .form-control:focus {
+        border-color: #4a4a4a;
+        box-shadow: 0 0 0 0.2rem rgba(74, 74, 74, 0.25);
+    }
+
+    /* 체크박스 컨테이너 스타일 */
+    .option-selectors {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    .option-selectors p {
+        font-weight: 500;
+        color: #333;
+    }
+
+    /* 반응형 조정 */
+    @media (max-width: 768px) {
+        .col-md-4, .col-md-6 {
+            margin-bottom: 10px;
+        }
+    }
+
+    /* 파일 입력 필드 스타일 */
+    input[type="file"] {
+      margin-bottom: 10px;
+    }
+
+    /* 섹션 제목 스타일 */
+    .section-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 15px;
+    }
+    /* 카테고리 섹션 스타일 */
+    .category-section {
+      display: flex;
+      gap: 10px;  /* 셀렉트 박스 사이 간격 */
+      margin-bottom: 25px;
+      align-items: center;
+    }
+
+    /* 셀렉트 박스 스타일 */
+    .category-section select {
+      width: 200px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: #fff;
+    }
+    /* 상세 이미지 미리보기 전용 스타일 */
+    #detailPreview {
+      width: 100%;  /* 컨테이너 너비에 맞춤 */
+      height: 400px;  /* 높이 고정 */
+      overflow-y: auto;  /* 세로 스크롤 */
+      overflow-x: hidden;  /* 가로 스크롤 숨김 */
+    }
+    #detailPreview img {
+      width: 100%;  /* 이미지 너비를 컨테이너에 맞춤 */
+      height: auto;  /* 이미지 비율 유지 */
+      display: block;  /* 이미지 간 간격 제거 */
+    }
+
+    /* 상세 이미지 섹션 스타일 */
+    .detail-image-upload {
+      margin-top: 20px;
+    }
+
+    .detail-image-upload p {
+      margin-bottom: 10px;
+      font-size: 16px;
+      color: #333;
+    }
+  </style>
+</head>
+<body layout:fragment="content">
+<div class="container">
+  <div class="admin-container">
+    <div class="nav-path">홈 > 스토어 관리 > 상품 등록</div>
+    <div class="pw-title">상품등록</div>
+    <form class="productRegisterForm" id="productRegisterForm">
+      <!-- 카테고리 섹션 -->
+      <div class="category-section">
+        <select name="mainCategory" id="mainCategory">
+          <option value="">대분류 선택</option>
+          <option value="F">사료</option>
+          <option value="N">간식</option>
+          <option value="T">장난감</option>
+        </select>
+
+        <select name="subCategory" id="subCategory" style="display: none;">
+          <option value="">소분류 선택</option>
+          <option value="D">건식 사료</option>
+          <option value="W">습식 사료</option>
+        </select>
+      </div>
+
+      <!-- 공통 필드 -->
+      <div id="commonFields">
+        <div class="basic-info-section">
+          <input type="text" id="productName" placeholder="상품명" >
+          <input type="number" id="price" placeholder="판매가" >
+          <input type="number" id="stockQuantity" placeholder="초기재고량" >
+          <input type="text" id="origin" placeholder="원산지">
+          <input type="text" id="size" placeholder="크기">
+          <input type="text" id="weight" placeholder="무게">
+          <input type="text" id="manufacturer" placeholder="제조사(브랜드)">
+        </div>
+      </div>
+
+      <!-- 사료/간식 전용 필드 -->
+      <div id="foodFields" style="display: none;">
+        <div class="food-info-section">
+          <input type="date" id="expirationDate" placeholder="유통기한">
+          <input type="text" id="storageInfo" placeholder="보관방법">
+        </div>
+      </div>
+
+      <!-- 장난감 전용 필드 -->
+      <div id="toyFields" style="display: none;">
+        <div class="toy-info-section">
+          <input type="text" id="color" placeholder="색상">
+        </div>
+      </div>
+
+      <!-- 이미지 섹션 -->
+      <div class="image-section">
+        <div class="thumbnail-upload">
+          <p>상품 썸네일</p>
+          <input type="file" id="thumbnailImage" accept="image/*">
+          <div id="thumbnailPreview" class="image-preview"></div>
+        </div>
+      </div>
+
+      <!-- 옵션 섹션 -->
+      <div class="options-section">
+        <p>옵션</p>
+        <div id="optionList">
+          <!-- 옵션 아이템들이 여기에 추가됨 -->
+          <button type="button" id="addOption">옵션 추가</button>
+        </div>
+      </div>
+
+      <!-- 상품 설명 섹션 -->
+      <div class="description-section">
+        <textarea id="description" placeholder="상품 설명"></textarea>
+        <div class="detail-image-upload">
+          <p>상품 상세 이미지 (1개만 등록 가능합니다.)</p>
+          <input type="file" id="detailImage" accept="image/*">
+          <div id="detailPreview" class="image-preview"></div>
+        </div>
+      </div>
+
+      <!-- 상태 섹션 -->
+      <div class="status-section">
+        <select id="status">
+          <option value="O">판매중</option>
+          <option value="D">판매대기</option>
+        </select>
+      </div>
+
+      <button type="submit">상품 등록</button>
+    </form>
+  </div>
+</div>
+<script src="/js/rim/admin_product_register.js"></script>
+</body>
+</html>
