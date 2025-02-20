@@ -19,7 +19,12 @@
             <input type="hidden" name="username" id="username" th:value="${username}"/>
             <input type="hidden" name="nickname" id="nickname" th:value="${nickname}"/>
             <input type="hidden" name="category" id="category" th:value="${category}"/>
-            <input type="text" name="title" id="title" class="title-input" placeholder="제목을 입력하세요">
+
+            <input type="hidden" name="boardId" id="boardId" th:value="${boardId != null ? boardId : ''}"/>
+
+            <input type="text" name="title" id="title" class="title-input" placeholder="제목을 입력하세요" th:value="${board != null ? board.title : ''}" th:attr="data-prev-value=${board != null ? board.title : ''}">
+
+            <input type="hidden" name="content" id="content" th:value="${board != null ? board.content : null}" th:attr="data-prev-value=${board != null ? board.content : ''}">
             <div class="main-container">
                 <div class="editor-container editor-container_classic-editor" id="editor-container">
                     <div class="editor-container__editor">
@@ -27,7 +32,7 @@
                     </div>
                 </div>
             </div>
-            <input type="submit" class="btn-submit" value="게시글 저장"/>
+            <input type="submit" class="btn-submit" th:value="${boardId != null ? '게시글 수정' : '게시글 등록'}"/>
 
         </form>
     </div>

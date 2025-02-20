@@ -19,7 +19,11 @@
       <div class="post-header" th:text="${board.title}"></div>
       <!-- 수정 및 삭제 버튼 -->
       <div class="button-group" th:if="${user!= null and user.username == board.username}">
-        <button type="button" class="btn-b" style="height: 35px; color: black">수정</button>
+        <button type="button" class="btn-b" style="height: 35px; color: black"
+                id="editButton" th:data-board-id="${boardId}" th:data-category="${category}">
+          수정
+        </button>
+
         <button type="button" class="btn-delete" id="deleteBoardBtn">삭제</button>
       </div>
     </div>
