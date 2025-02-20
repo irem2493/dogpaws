@@ -24,6 +24,7 @@
 
         <h2 class="dog-name">
             <span>
+            <div style="display: flex; gap: 10px;">
                 <span th:text="${dog.dog_name}"></span>
                 <th:block th:if="${user == dog.username}">
                     <button class="btn-b" style="width: 85px; height: 35px;"
@@ -36,17 +37,18 @@
                             삭제
                     </button>
                 </th:block>
-                    <div style="display: flex; gap: 10px;">
                         <div>
                             <th:block th:if="${user != dog.username}"></th:block>
                         </div>
+                        <th:block th:if="${user != dog.username}">
                         <div class="like-img">
                             <img id="friendlikeIcon" th:src="${dog.friend_liked ? '/img/icon/like-push.svg' : '/img/icon/like.svg'}" alt="friend-like-icon" data-like-code="F" onclick="likeToggle(this)">
                         </div>
                         <div class="like-img">
                             <img id="matinglikeIcon" th:src="${dog.mating_liked ? '/img/icon/mating-push.svg' : '/img/icon/mating.svg'}" alt="mating-like-icon" data-like-code="P" onclick="likeToggle(this)">
                         </div>
-                    </div>
+                        </th:block>
+            </div>
             </span>
             <span>
                 <button class="btn-b" style="width: 100px; height: 35px;">1:1 채팅</button>
