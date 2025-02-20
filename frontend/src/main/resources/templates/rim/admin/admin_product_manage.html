@@ -4,6 +4,82 @@
       layout:decorate="~{layout/layout-admin}">
 <head>
     <title>상품 관리</title>
+    <style>
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .product-table th,
+        .product-table td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .product-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .btn-normal {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+
+        .btn-normal:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .page-link {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .page-link.active {
+            background-color: #2196F3;
+            color: white;
+            border-color: #2196F3;
+        }
+
+        .product-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .product-info span {
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
 </head>
 <body layout:fragment="content">
 <div class="container">
@@ -18,33 +94,33 @@
 
         <!-- 필터 영역 -->
         <div class="filter-section">
-            <select id="mainCategory">
+            <select id="mainCategory" class="auto-submit">
                 <option value="">전체 카테고리</option>
-                <option value="F">사료</option>
-                <option value="N">간식</option>
-                <option value="T">장난감</option>
+                <option th:each="category : ${mainCategories}"
+                        th:value="${category.key}"
+                        th:text="${category.value}"
+                        th:selected="${category.key == param.category}">카테고리명</option>
             </select>
 
-            <select id="subCategory" style="display: none;">
-                <option value="">소분류 선택</option>
-                <option value="D">건식 사료</option>
-                <option value="W">습식 사료</option>
-            </select>
-
-            <select id="status">
+            <select id="status" class="auto-submit">
                 <option value="">전체 상태</option>
-                <option value="O">판매중</option>
-                <option value="S">품절</option>
-                <option value="D">판매중지</option>
+                <option th:each="status : ${statuses}"
+                        th:value="${status.key}"
+                        th:text="${status.value}"
+                        th:selected="${status.key == param.status}">상태</option>
             </select>
 
-            <select id="stockSort">
+            <select id="stockSort" class="auto-submit">
                 <option value="">재고 정렬</option>
-                <option value="asc">재고 적은순</option>
-                <option value="desc">재고 많은순</option>
+                <option th:each="sort : ${sortOptions}"
+                        th:value="${sort.key}"
+                        th:text="${sort.value}"
+                        th:selected="${sort.key == param.sortBy}">정렬옵션</option>
             </select>
 
-            <input type="text" id="searchKeyword" placeholder="상품명 검색">
+            <input type="text" id="searchKeyword"
+                   th:value="${param.keyword}"
+                   placeholder="상품명 검색">
             <button type="button" id="searchBtn">검색</button>
         </div>
 
@@ -56,17 +132,70 @@
                 <th>판매가</th>
                 <th>판매상태</th>
                 <th>현재재고</th>
-                <th>관리</th>
+                <th>재고변경</th>
+                <th>상태변경</th>
+                <th>삭제</th>
             </tr>
             </thead>
-            <tbody id="productList">
+            <tbody>
+            <tr th:each="product : ${productList.body.content}">
+                <td>
+                    <div class="product-info">
+                        <img th:if="${product.image_url}" th:src="${product.image_url}"
+                             alt="상품 이미지" class="product-thumb">
+                        <span th:text="${product.name}">상품명</span>
+                    </div>
+                </td>
+                <td th:text="${#numbers.formatInteger(product.price, 0, 'COMMA') + '원'}">가격</td>
+                <td>
+            <span th:switch="${product.status}">
+                <span th:case="'O'">판매중</span>
+                <span th:case="'S'">품절</span>
+                <span th:case="'D'">판매중지</span>
+            </span>
+                </td>
+                <td th:text="${product.stock_quantity}">재고</td>
+                <td>
+                    <button type="button" class="btn-normal"
+                            th:data-product-id="${product.product_id}">재고</button>
+                </td>
+                <td>
+                    <button type="button" class="btn-normal"
+                            th:data-product-id="${product.product_id}"
+                            th:data-current-status="${product.status}">상태</button>
+                </td>
+                <td>
+                    <button type="button" class="btn-normal"
+                            th:data-product-id="${product.product_id}">삭제</button>
+                </td>
+            </tr>
             </tbody>
         </table>
+
+        <!-- 페이징 처리도 수정 -->
+        <div th:if="${productList.body.total_elements > 0}" class="pagination">
+    <span th:if="${!productList.body.first}">
+        <a href="#" class="page-link" th:data-page="0">처음</a>
+    </span>
+            <span th:each="pageNum : ${#numbers.sequence(0, productList.body.total_pages - 1)}">
+        <a href="#" class="page-link"
+           th:classappend="${pageNum == productList.body.number} ? 'active'"
+           th:text="${pageNum + 1}"
+           th:data-page="${pageNum}">1</a>
+    </span>
+            <span th:if="${!productList.body.last}">
+        <a href="#" class="page-link"
+           th:data-page="${productList.body.total_pages - 1}">마지막</a>
+    </span>
+        </div>
+
+        <!--        <p th:text="${productList}"></p>-->
+
     </div>
 </div>
 
 <!-- 상태 변경 모달 -->
-<div id="statusModal" class="modal">
+<div id="statusModal" class="pawsModal">
     <div class="modal-content">
         <h3>판매상태 변경</h3>
         <p>판매상태를 변경하시겠습니까?</p>
@@ -77,11 +206,37 @@
     </div>
 </div>
 
-<!-- 입고 등록 모달 -->
-<div id="stockModal" class="modal">
+<!-- 재고 관리 모달 (입고/출고 통합) -->
+<div id="stockModal" class="pawsModal" style="display: none">
     <div class="modal-content">
-        <h3>입고 등록</h3>
-        <input type="number" id="addStock" placeholder="입고 수량">
+        <h3>재고 관리</h3>
+        <div class="stock-type-selector">
+            <label>
+                <input type="radio" name="stockType" value="in" checked> 입고
+            </label>
+            <label>
+                <input type="radio" name="stockType" value="out"> 출고
+            </label>
+        </div>
+
+        <!-- 옵션 선택 영역 -->
+        <div class="option-selector">
+            <select id="optionSelect">
+                <option value="">옵션을 선택하세요</option>
+                <!-- 옵션들은 JavaScript로 동적 추가 -->
+            </select>
+        </div>
+
+        <!-- 재고 정보 표시 영역 -->
+        <div class="stock-info">
+            <p>현재 옵션 재고: <span id="currentOptionStock">0</span></p>
+            <p>총 재고: <span id="currentTotalStock">0</span></p>
+        </div>
+
+        <div class="stock-input">
+            <input type="number" id="stockQuantity" min="1" placeholder="수량 입력">
+        </div>
+
         <div class="modal-buttons">
             <button type="button" id="confirmStock">확인</button>
             <button type="button" id="cancelStock">취소</button>
@@ -89,8 +244,42 @@
     </div>
 </div>
 
+<!-- 재고 내역 모달 -->
+<div id="stockHistoryModal" class="pawsModal" style="display: none">
+    <div class="modal-content">
+        <h3>재고 관리 내역</h3>
+        <div class="stock-history-filters">
+            <select id="historyOptionSelect">
+                <option value="">전체 옵션</option>
+            </select>
+            <select id="historyTypeSelect">
+                <option value="">전체 유형</option>
+                <option value="in">입고</option>
+                <option value="out">출고</option>
+            </select>
+        </div>
+        <table class="stock-history-table">
+            <thead>
+            <tr>
+                <th>일시</th>
+                <th>옵션명</th>
+                <th>유형</th>
+                <th>수량</th>
+                <th>처리자</th>
+            </tr>
+            </thead>
+            <tbody id="stockHistoryList">
+            </tbody>
+        </table>
+        <div class="modal-buttons">
+            <button type="button" id="closeStockHistory">닫기</button>
+        </div>
+    </div>
+</div>
+
+
 <!-- 삭제 확인 모달 -->
-<div id="deleteModal" class="modal">
+<div id="deleteModal" class="pawsModal" style="display: none">
     <div class="modal-content">
         <h3>상품 삭제</h3>
         <p>상품을 삭제하시겠습니까?</p>

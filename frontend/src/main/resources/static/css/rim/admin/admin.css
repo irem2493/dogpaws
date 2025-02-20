@@ -1,6 +1,6 @@
 /* 기본 컨테이너 스타일 */
 .admin-container {
-    max-width: 800px;
+    max-width: 100%;
     margin: 0;
     padding: 20px;
 }
@@ -8,14 +8,14 @@
 /* 네비게이션 경로 */
 .nav-path {
     font-size: 14px;
-    color: #666;
+    color: #131313;
     margin-bottom: 20px;
 }
 
 /* 페이지 제목 */
 .pw-title {
     font-size: 24px;
-    font-weight: 600;
+    font-weight: 500;
     margin-bottom: 30px;
     color: #333;
 }
@@ -278,3 +278,60 @@ button[type="submit"]:hover {
     font-weight: 500;
 }
 
+
+.stock-type-selector {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.stock-type-selector label {
+    margin-right: 20px;
+}
+
+.option-selector {
+    margin-bottom: 15px;
+}
+
+.option-selector select {
+    width: 100%;
+    padding: 8px;
+}
+
+.stock-info {
+    background-color: #f8f9fa;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.stock-input {
+    margin-bottom: 15px;
+}
+
+.stock-input input {
+    width: 100%;
+    padding: 8px;
+}
+
+.stock-history-table {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.stock-history-table th,
+.stock-history-table td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.stock-history-filters {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.stock-history-filters select {
+    padding: 6px;
+}

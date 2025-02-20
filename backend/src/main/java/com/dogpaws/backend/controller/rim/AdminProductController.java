@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -74,5 +75,95 @@ public class AdminProductController {
 
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS,
                 productService.searchProducts(searchDto));
+    }
+
+    // 상품 상태 변경
+    @PutMapping("/{productId}/status")
+    public ApiResponse<String> updateProductStatus(
+            @PathVariable Long productId,
+            @RequestBody Map<String, String> request) {
+        try {
+            String status = request.get("status");
+            productService.updateProductStatus(productId, status);
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "상품 상태 변경 성공");
+        } catch (Exception e) {
+            log.error("상품 상태 변경 실패: {}", e.getMessage(), e);
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "상품 상태 변경 실패");
+        }
+    }
+
+    /**
+     * 상품 재고 수정 처리 (입고/출고)
+     */
+    @PostMapping("/{productId}/stock")
+    public ApiResponse<Map<String, Object>> updateStock(
+            @PathVariable Long productId,
+            @RequestBody Map<String, Object> request) {
+        try {
+            Long optionId = Long.parseLong(request.get("optionId").toString());
+            Integer quantity = Integer.parseInt(request.get("quantity").toString());
+            Boolean isIncrease = Boolean.parseBoolean(request.get("isIncrease").toString());
+
+            // 재고 수정 처리
+            productService.updateStock(productId, optionId, quantity, isIncrease);
+
+            // 현재 재고 상태 조회
+            Map<String, Integer> currentStock = productService.getCurrentStock(productId, optionId);
+
+            // 응답 데이터 구성
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", isIncrease ? "재고 입고 처리 성공" : "재고 출고 처리 성공");
+            response.put("optionStock", currentStock.get("optionStock"));
+            response.put("totalStock", currentStock.get("totalStock"));
+
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, response);
+
+        } catch (IllegalArgumentException e) {
+            log.error("잘못된 요청: {}", e.getMessage());
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR,
+                    Map.of("message", "재고 처리 실패: " + e.getMessage()));
+
+        } catch (Exception e) {
+            log.error("재고 처리 중 오류 발생: {}", e.getMessage(), e);
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR,
+                    Map.of("message", "재고 처리 실패: 시스템 오류"));
+        }
+    }
+
+    /**
+     * 현재 재고 상태 조회
+     */
+    @GetMapping("/{productId}/stock/{optionId}")
+    public ApiResponse<Map<String, Integer>> getStock(
+            @PathVariable Long productId,
+            @PathVariable Long optionId) {
+        try {
+            Map<String, Integer> stockInfo = productService.getCurrentStock(productId, optionId);
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, stockInfo);
+
+        } catch (IllegalArgumentException e) {
+            log.error("잘못된 요청: {}", e.getMessage());
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
+
+        } catch (Exception e) {
+            log.error("재고 조회 중 오류 발생: {}", e.getMessage(), e);
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
+        }
+    }
+
+
+    // 상품 삭제
+    @DeleteMapping("/{productId}")
+    public ApiResponse<String> deleteProduct(@PathVariable Long productId) {
+        try {
+            productService.deleteProduct(productId);
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "상품 삭제 성공");
+        } catch (IllegalStateException e) {
+            log.warn("상품 삭제 실패 (주문 진행중): {}", e.getMessage());
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, e.getMessage());
+        } catch (Exception e) {
+            log.error("상품 삭제 실패: {}", e.getMessage(), e);
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "상품 삭제 실패");
+        }
     }
 }

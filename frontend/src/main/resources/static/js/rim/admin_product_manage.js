@@ -1,84 +1,115 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 초기 데이터 로드
-    loadProducts();
+    // URL 파라미터에서 현재 필터 상태 가져오기
+    const urlParams = new URLSearchParams(window.location.search);
 
-    // 이벤트 리스너 등록
-    document.getElementById('mainCategory').addEventListener('change', handleMainCategoryChange);
-    document.getElementById('subCategory').addEventListener('change', loadProducts);
-    document.getElementById('status').addEventListener('change', loadProducts);
-    document.getElementById('stockSort').addEventListener('change', loadProducts);
-    document.getElementById('searchBtn').addEventListener('click', loadProducts);
-});
+    // 셀렉트 박스 초기값 설정
+    const mainCategory = document.getElementById('mainCategory');
+    const status = document.getElementById('status');
+    const stockSort = document.getElementById('stockSort');
+    const searchKeyword = document.getElementById('searchKeyword');
 
-// 상품 목록 로드
-function loadProducts() {
-    const params = {
-        mainCategory: document.getElementById('mainCategory').value,
-        subCategory: document.getElementById('subCategory').value,
-        status: document.getElementById('status').value,
-        sortBy: document.getElementById('stockSort').value,
-        searchKeyword: document.getElementById('searchKeyword').value,
-        page: 0,
-        size: 10
-    };
-
-    api.get('/api/admin/products/manage', params)
-        .then(response => {
-            if (response.status === 'SUCCESS') {
-                renderProductList(response.body.content);
-            }
-        })
-        .catch(error => {
-            console.error('상품 목록 로드 실패:', error);
-        });
-}
-
-// 대분류 카테고리 변경 처리
-function handleMainCategoryChange() {
-    const mainCategory = document.getElementById('mainCategory').value;
-    const subCategory = document.getElementById('subCategory');
-
-    if (mainCategory === 'F') { // 사료 카테고리
-        subCategory.style.display = 'inline-block';
-    } else {
-        subCategory.style.display = 'none';
-        subCategory.value = '';
+    // URL 파라미터 값으로 셀렉트 박스 설정
+    if (urlParams.get('category')) {
+        mainCategory.value = urlParams.get('category');
     }
-
-    loadProducts();
-}
-
-// 상품 목록 렌더링
-function renderProductList(products) {
-    const tbody = document.getElementById('productList');
-    tbody.innerHTML = '';
-
-    products.forEach(product => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${product.name}</td>
-            <td>${product.price.toLocaleString()}원</td>
-            <td>
-                <select class="status-select" data-product-id="${product.productId}">
-                    <option value="O" ${product.status === 'O' ? 'selected' : ''}>판매중</option>
-                    <option value="S" ${product.status === 'S' ? 'selected' : ''}>품절</option>
-                    <option value="D" ${product.status === 'D' ? 'selected' : ''}>판매중지</option>
-                </select>
-            </td>
-            <td class="stock-cell" data-product-id="${product.productId}">
-                ${product.stockQuantity}
-                <button type="button" class="add-stock-btn">입고</button>
-            </td>
-            <td>
-                <button type="button" class="edit-btn" data-product-id="${product.productId}">수정</button>
-                <button type="button" class="delete-btn" data-product-id="${product.productId}">삭제</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
+    if (urlParams.get('status')) {
+        status.value = urlParams.get('status');
+    }
+    if (urlParams.get('sortBy')) {
+        stockSort.value = urlParams.get('sortBy');
+    }
+    if (urlParams.get('keyword')) {
+        searchKeyword.value = urlParams.get('keyword');
+    }
+    
+    // 자동 제출 이벤트 리스너 추가
+    document.querySelectorAll('.auto-submit').forEach(select => {
+        select.addEventListener('change', function() {
+            loadFilteredProducts(0, true);
+        });
     });
 
-    // 이벤트 리스너 등록
-    addEventListeners();
+    // 검색 버튼 클릭 이벤트
+    document.getElementById('searchBtn').addEventListener('click', function() {
+        loadFilteredProducts(0, true);
+    });
+
+    // 검색어 입력 필드에서 엔터 키 이벤트
+    document.getElementById('searchKeyword').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            loadFilteredProducts(0, true);
+        }
+    });
+    // 페이지네이션 클릭 이벤트
+    document.querySelectorAll('.page-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const page = this.getAttribute('data-page');
+            loadFilteredProducts(page, true);
+        });
+    });
+
+});
+
+// 필터링된 상품 로드
+async function loadFilteredProducts(page = 0, useAjax = false) {
+    const category = document.getElementById('mainCategory').value;
+    const status = document.getElementById('status').value;
+    const sortBy = document.getElementById('stockSort').value;
+    const keyword = document.getElementById('searchKeyword').value;
+
+    // URL 파라미터 설정
+    const params = new URLSearchParams({
+        category: category,
+        status: status,
+        sortBy: sortBy,
+        keyword: keyword,
+        page: page
+    });
+
+    // URL 업데이트 (페이지 새로고침 없이)
+    window.history.pushState({}, '', `${window.location.pathname}?${params}`);
+
+    if (useAjax) {
+        try {
+            // AJAX 요청
+            const response = await fetch(`/admin/product/manage?${params}`);
+            const html = await response.text();
+
+            // 새로운 HTML에서 테이블 본문만 추출
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newTableBody = doc.querySelector('.product-table tbody');
+            const newPagination = doc.querySelector('.pagination');
+
+            // 테이블 본문 업데이트
+            if (newTableBody) {
+                document.querySelector('.product-table tbody').innerHTML = newTableBody.innerHTML;
+            }
+
+            // 페이지네이션 업데이트
+            if (newPagination) {
+                document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+            }
+
+            // 페이지네이션 이벤트 리스너 다시 설정
+            document.querySelectorAll('.page-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const newPage = this.getAttribute('data-page');
+                    loadFilteredProducts(newPage, true);
+                });
+            });
+
+        } catch (error) {
+            console.error('데이터 로드 실패:', error);
+            // 에러 발생 시 페이지 새로고침
+            window.location.reload();
+        }
+    } else {
+        // 기존 방식 (페이지 새로고침)
+        window.location.href = `${window.location.pathname}?${params}`;
+    }
 }
 
 // 이벤트 리스너 등록

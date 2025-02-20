@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -157,12 +158,17 @@ public class ProductService {
         searchDto.setOffset((searchDto.getPage() - 1) * searchDto.getPageSize());
 
         try {
+            // sortBy 파라미터 검증
+            if (searchDto.getSortBy() != null) {
+                if (!searchDto.getSortBy().matches("^(stock_asc|stock_desc)$")) {
+                    searchDto.setSortBy(null); // 잘못된 값이면 기본 정렬 사용
+                }
+            }
+
             // 데이터 조회
             List<ProductListDto> content = productDao.searchProducts(searchDto);
             int total = productDao.getTotalCount(searchDto);
 
-            log.info("content : {}", content);
-            // Page 객체 생성 및 반환
             return new PageImpl<>(content,
                     PageRequest.of(searchDto.getPage() - 1, searchDto.getPageSize()),
                     total);
@@ -171,6 +177,55 @@ public class ProductService {
             log.error("상품 검색 중 오류 발생: {}", e.getMessage(), e);
             throw new RuntimeException("상품 검색 실패", e);
         }
+    }
+
+    /**
+     * 상품 상태 변경 (JPA)
+     */
+    @Transactional
+    public void updateProductStatus(Long productId, String status) {
+        // 상태값 검증
+        if (!isValidStatus(status)) {
+            throw new IllegalArgumentException("잘못된 상품 상태값입니다: " + status);
+        }
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        // 재고가 0인 경우 품절 상태로만 변경 가능
+        if (product.getStockQuantity() == 0 && !status.equals(ProductDto.Status.SOLD_OUT.getCode())) {
+            throw new IllegalStateException("재고가 없는 상품은 품절 상태로만 변경할 수 있습니다.");
+        }
+
+        product.update(
+                product.getName(),
+                product.getPrice(),
+                product.getStockQuantity(),
+                product.getDescription(),
+                status,
+                product.getMainCategory(),
+                product.getSubCategory(),
+                product.getMaterial(),
+                product.getOrigin(),
+                product.getExpirationDate(),
+                product.getWeight()
+        );
+
+        log.info("상품 상태 변경 완료. productId: {}, status: {}", productId, status);
+    }
+
+    /**
+     * 상품 삭제 (JPA + MyBatis)
+     */
+    @Transactional
+    public void deleteProduct(Long productId) {
+        // 주문 진행중인 상품인지 확인 (MyBatis)
+        if (productDao.hasActiveOrders(productId)) {
+            throw new IllegalStateException("해당 상품에 대한 주문이 진행중입니다.");
+        }
+
+        productRepository.deleteById(productId);
+        log.info("상품 삭제 완료. productId: {}", productId);
     }
 
     /**
@@ -232,13 +287,6 @@ public class ProductService {
         }
     }
 
-    /**
-     * 상품 삭제 (JPA)
-     */
-    public void deleteProduct(Long productId) {
-        productRepository.deleteById(productId);
-        log.info("productId : {}  삭제 성공", productId);
-    }
 
     /**
      * 옵션 추가 (JPA)
@@ -273,6 +321,9 @@ public class ProductService {
         productOptionRepository.save(productOption);
     }
 
+    /**
+     * 해당 상품 옵션목록 조회 (JPA)
+     */
     public List<ProductOptionDto> getProductOptions(Long productId) {
         List<ProductOption> options = productOptionRepository.findByProductId(productId);
         return options.stream()
@@ -289,6 +340,138 @@ public class ProductService {
     }
 
     /**
+     * 각 카테고리별 베스트 상품 조회
+     */
+    public Map<String, List<ProductListDto>> getAllBestProducts(int size) {
+        Map<String, List<ProductListDto>> result = new HashMap<>();
+
+        result.put("bestFoods", productDao.getBestProducts("F", size));
+        result.put("bestSnacks", productDao.getBestProducts("N", size));
+        result.put("bestToys", productDao.getBestProducts("T", size));
+
+        return result;
+    }
+
+
+    /**
+     * 재고 관리
+     */
+
+    /**
+     * 재고 수량 변경 처리 - 옵션별 (JPA)
+     */
+    @Transactional
+    public void updateStock(Long productId, Long optionId, Integer quantity, boolean isIncrease) {
+        int maxRetries = 3;
+        int retryCount = 0;
+
+        while (retryCount < maxRetries) {
+            try {
+                processStockUpdate(productId, optionId, quantity, isIncrease);
+                return;
+            } catch (ObjectOptimisticLockingFailureException e) {
+                retryCount++;
+                if (retryCount == maxRetries) {
+                    throw new RuntimeException("재고 처리 실패. 잠시 후 다시 시도해주세요.");
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("재고 처리가 중단되었습니다.");
+                }
+            }
+        }
+    }
+
+    private void processStockUpdate(Long productId, Long optionId, Integer quantity, boolean isIncrease) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("수량은 0보다 커야 합니다.");
+        }
+
+        // MyBatis로 비관적 락 조회
+        Product product = productDao.findByIdWithLock(productId);
+        if (product == null) {
+            throw new IllegalArgumentException("상품을 찾을 수 없습니다.");
+        }
+
+        ProductOption option = productDao.findOptionByIdWithLock(optionId);
+        if (option == null) {
+            throw new IllegalArgumentException("옵션을 찾을 수 없습니다.");
+        }
+
+        // 옵션이 해당 상품의 것인지 확인
+        if (!option.getProduct().getProductId().equals(productId)) {
+            throw new IllegalArgumentException("해당 상품의 옵션이 아닙니다.");
+        }
+
+        // 재고 감소 시 재고 체크
+        if (!isIncrease && option.getOptionStock() < quantity) {
+            throw new IllegalStateException("재고가 부족합니다.");
+        }
+
+        // 옵션 재고 변경
+        int newOptionStock = isIncrease ?
+                option.getOptionStock() + quantity :
+                option.getOptionStock() - quantity;
+        option.updateStock(newOptionStock);
+
+        // MyBatis로 전체 재고 합계 조회
+        int totalStock = productDao.getTotalStockByProductId(productId);
+
+        // 상품 상태 결정
+        String newStatus = product.getStatus();
+        if (totalStock == 0) {
+            newStatus = ProductDto.Status.SOLD_OUT.getCode();
+        } else if (product.getStatus().equals(ProductDto.Status.SOLD_OUT.getCode())) {
+            newStatus = ProductDto.Status.ON_SALE.getCode();
+        }
+
+        // JPA로 엔티티 업데이트
+        product.update(
+                product.getName(),
+                product.getPrice(),
+                totalStock,
+                product.getDescription(),
+                newStatus,
+                product.getMainCategory(),
+                product.getSubCategory(),
+                product.getMaterial(),
+                product.getOrigin(),
+                product.getExpirationDate(),
+                product.getWeight()
+        );
+
+        // 변경사항 저장
+        productRepository.save(product);
+        productOptionRepository.save(option);
+
+        log.info("재고 {} 처리 완료. productId: {}, optionId: {}, 수량: {}, 총재고: {}",
+                isIncrease ? "입고" : "출고", productId, optionId, quantity, totalStock);
+    }
+    /**
+     * 현재 재고 조회
+     */
+    @Transactional(readOnly = true)
+    public Map<String, Integer> getCurrentStock(Long productId, Long optionId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        ProductOption option = productOptionRepository.findById(optionId)
+                .orElseThrow(() -> new IllegalArgumentException("옵션을 찾을 수 없습니다."));
+
+        // 전체 옵션의 재고 합계 계산
+        int totalStock = productDao.getTotalStockByProductId(productId);
+
+        Map<String, Integer> stockInfo = new HashMap<>();
+        stockInfo.put("optionStock", option.getOptionStock());
+        stockInfo.put("totalStock", totalStock);
+
+        return stockInfo;
+    }
+
+
+    /** util ...
      * Entity -> Dto 변환
      */
     private ProductDto convertProductToProductDto(Product product) {
@@ -346,14 +529,15 @@ public class ProductService {
 
         return productOptionDto;
     }
-    public Map<String, List<ProductListDto>> getAllBestProducts(int size) {
-        Map<String, List<ProductListDto>> result = new HashMap<>();
 
-        // 각 카테고리별 베스트 상품 조회
-        result.put("bestFoods", productDao.getBestProducts("F", size));
-        result.put("bestSnacks", productDao.getBestProducts("N", size));
-        result.put("bestToys", productDao.getBestProducts("T", size));
-
-        return result;
+    /**
+     * 상태 값 검증 메서드
+     */
+    private boolean isValidStatus(String status) {
+        return status != null && (
+                status.equals(ProductDto.Status.ON_SALE.getCode()) ||
+                        status.equals(ProductDto.Status.SOLD_OUT.getCode()) ||
+                        status.equals(ProductDto.Status.DISCONTINUED.getCode())
+        );
     }
 }
