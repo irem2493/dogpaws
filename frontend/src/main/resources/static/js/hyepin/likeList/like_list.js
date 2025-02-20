@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const container = document.getElementById("like-list-container-content");
 
     const sessionDogId = document.getElementById("sessionDogId");
-    const myDogId = 1;
+    const myDogId = sessionDogId.value;
 
     function toggleList(selectedTab) {
         friendTab.classList.remove("title-s");
@@ -46,8 +46,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         newContentContainer.innerHTML = likeList.map(item => `
             <div class="content-item-container-web">
-                <div class="item-profile"> <img src="${item.profile_url}" alt="강아지 프로필"
-                            onerror="this.onerror=null; this.src='/img/로고.jpg';">
+                <div class="item-profile"><a href="/dog/detail/${item.dog_id}"> <img src="${item.profile_url}" alt="강아지 프로필"
+                            onerror="this.onerror=null; this.src='/img/로고.jpg';" style="cursor: pointer;"> </a>
                 </div>
                 <div class="content-items">
                     <div class="content-item">
@@ -98,8 +98,8 @@ document.addEventListener("DOMContentLoaded", function () {
         newMoblieContentContainer.innerHTML = likeList.map(item => `
             <div class="mobile-container">
                 <div class="content-item-container">
-                    <div class="item-profile"> <img src="${item.profile_url}" alt="강아지 프로필"
-                            onerror="this.onerror=null; this.src='/img/로고.jpg';">
+                    <div class="item-profile"><a href="/dog/detail/${item.dog_id}"> <img src="${item.profile_url}" alt="강아지 프로필"
+                            onerror="this.onerror=null; this.src='/img/로고.jpg';" style="cursor: pointer;"> </a>
                     </div>
                     <div class="content-items-moblie">
                         <div class="item-name">${item.dog_name}</div>

@@ -82,10 +82,10 @@
     justify-content: center;
     align-items: center;
     max-width: 40px;
-    cursor: pointer;
 }
 
 .item-like img {
+    cursor: pointer;
     max-width: 100%; /* 부모 요소보다 커지지 않게!!! */
     height: auto; /* 가로 비율 유지!!! */
     object-fit: contain; /* 이미지 비율 유지하면서 맞춤 */
