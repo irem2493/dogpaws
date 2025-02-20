@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Data
-public class LikeDogDto {
+public class LikeeeeDogDto {
 
     private int likeId; //좋아요 번호
     private int dogId; // 상대 dog ID
