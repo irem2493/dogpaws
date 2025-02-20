@@ -1,0 +1,259 @@
+.all-container{
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/*main1*/
+.main-first{
+    position: relative;
+    background-color: #FFEEDE;
+    width: 1920px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main1{
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+.main1-inner{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: absolute;
+    top: 20%;
+    right: 22%;
+}
+
+.text p{
+    text-align: center;
+    font-size: 20px;
+}
+
+/*main2*/
+.main-profile {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.profile-inner{
+    width: 900px; height: 300px;
+}
+
+.profile-inner a{
+    text-decoration: none;
+    color: black;
+    align-items: center;
+    text-align: end;
+}
+
+.profile-box{
+    width: 100%; height: 100%;
+    border-radius: 10px;
+    border: 2px solid #F5B65A;
+    display: flex;
+    box-sizing: border-box;
+}
+
+.profile-img-box{
+    width: 300px; height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.profile-img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    box-sizing: border-box;
+}
+
+.profile-text {
+    width: 70%;
+    text-align: start;
+    padding: 20px 50px;
+}
+
+.introduce{
+    min-height: 60px;
+}
+
+.dog-characteristic{
+    display: flex;
+}
+
+.character, .dbti{
+    border: 1px solid black;
+    border-radius: 30px;
+    padding: 5px 20px;
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.mypage{
+    display: inline-flex;
+    justify-content: flex-end;
+    align-self: flex-end;
+    margin: 20px 0;
+}
+
+.mypageLink{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/*main3*/
+.main-dbti{
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dbti-inner{
+    text-align: center;
+}
+
+.dbti-inner img{
+    margin: 30px;
+}
+
+
+/*main4*/
+.main-map{
+    position: relative;
+}
+
+.main4-inner{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 20%;
+}
+
+.map-btn{
+    width: 110px; height: 35px;
+    font-size: 20px;
+    background-color: #FF812F;
+    margin: 20px 0;
+    border-radius: 10px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: 70;
+    line-height: normal;
+    box-sizing: border-box;
+    text-decoration: none;
+    border: none;
+}
+
+.main4-img{
+    width: 850px;
+    position: absolute;
+    bottom: 10%;
+    left: 53%;
+}
+
+/*main5*/
+.main-matching{
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFEEDE;
+}
+
+.main5-img{
+    margin: 80px 0;
+}
+
+/*main6*/
+.main-store{
+    position: relative;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main6{
+    position: absolute;
+    bottom: 0;
+    z-index: 1;
+}
+
+.store-content{
+    position: absolute;
+    display: flex;
+    z-index: 2;
+}
+
+.detail{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 80px;
+}
+
+.detail h1, .detail .map-btn{
+    margin: 10px;
+}
+
+/*main7*/
+.main-volunteer{
+    position: relative;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.main-volunteer h1{
+    margin: 50px;
+}
+
+.volunteer-list{
+    display: flex;
+}
+
+.volunteer{
+    margin: 30px;
+}
+
+.volunteer img{
+    width: 450px; height: 300px;
+    overflow: hidden;
+    border-radius: 20px;
+}
+
+.volunteer p{
+    font-size: 24px;
+    text-align: start;
+    margin: 20px 10px 10px 10px;
+    font-weight: 100;
+}
+
+.volunteer a{
+    display: block; /* 줄바꿈 처리 */
+    color: gray;
+    text-align: left; /* 왼쪽 정렬 */
+    margin-left: 10px; /* 텍스트와 동일한 간격 유지 */
+}

@@ -1,6 +1,7 @@
 package com.dogpaws.backend.service.ajy;
 
 import com.dogpaws.backend.dto.ajy.DogDto;
+import com.dogpaws.backend.dto.ajy.DogLocationDto;
 import com.dogpaws.backend.dto.ajy.DogResponseDto;
 import com.dogpaws.backend.dto.common.FileDto;
 import com.dogpaws.backend.entity.File;
@@ -17,11 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class DogService {
+    private final UserService userService;
     private final DogRepository dogRepository;
     private final DogPersonalRepository dogPersonalRepository;
     private final DogPlayRepository dogPlayRepository;
@@ -33,7 +36,6 @@ public class DogService {
         for (Dog d : dogList) {
             DogDto dogDto = new DogDto();
             dogDto.setDogId(d.getDogId());
-            dogDto.setDogName(d.getDogName());
             dogDto.setDogName(d.getDogName());
             dogDto.setProfileUrl(d.getProfileUrl());
             dogDtoList.add(dogDto);
@@ -63,6 +65,7 @@ public class DogService {
             dogDto.setGender(d.getGender());
             dogDto.setIsNeutered(d.getIsNeutered());
             dogDto.setWeight(d.getWeight());
+            dogDto.setIsMatingAvailable(d.getIsMatingAvailable());
             dogDto.setWalkDays(d.getWalkDays());
 
             dogDto.setWalkTimeYn(d.getWalkTimeYn());
@@ -102,6 +105,8 @@ public class DogService {
     public DogResponseDto getDog(Integer dogId) {
         Dog dog = dogRepository.findByDogId(dogId);
 
+        System.out.println(dog);
+
         if (dog != null) {
             DogResponseDto dogDto = new DogResponseDto();
             dogDto.setUsername(dog.getUsername());
@@ -114,6 +119,7 @@ public class DogService {
             dogDto.setGender(dog.getGender());
             dogDto.setIsNeutered(dog.getIsNeutered());
             dogDto.setWeight(dog.getWeight());
+            dogDto.setIsMatingAvailable(dog.getIsMatingAvailable());
             dogDto.setWalkDays(dog.getWalkDays());
 
             dogDto.setWalkTimeYn(dog.getWalkTimeYn());
@@ -182,4 +188,27 @@ public class DogService {
         dogRepository.deleteById(dogId);
         return true;
     }
+
+    public List<DogLocationDto> getNearbyDogs(String username) {
+        List<Object[]> results = dogRepository.findNearbyDogs(username);
+        List<DogLocationDto> dogList = new ArrayList<>();
+
+        for (Object[] row : results) {
+            DogLocationDto dto = new DogLocationDto();
+
+            dto.setDogId((row[0] != null) ? ((Number) row[0]).intValue() : 0);  // 강아지 ID
+            dto.setUsername((row[1] != null) ? row[1].toString() : "");          // 강아지 이름
+            dto.setDogName((row[2] != null) ? row[2].toString() : "");          // 강아지 이름
+            dto.setProfileUrl((row[17] != null) ? row[17].toString() : "");       // 프로필 URL
+            dto.setLatitude((row[25] != null) ? ((Number) row[25]).doubleValue() : 0.0);  // 위도
+            dto.setLongitude((row[26] != null) ? ((Number) row[26]).doubleValue() : 0.0); // 경도
+
+            System.out.println(dto);
+
+            dogList.add(dto);  // 변환된 DTO 리스트에 추가
+        }
+
+        return dogList;  // 최종 리스트 반환
+    }
+
 }

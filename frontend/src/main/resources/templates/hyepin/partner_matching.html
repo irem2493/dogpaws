@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/hyepin/matching.css">
+    <link rel="stylesheet" href="/css/hyepin/partner-matching.css">
+</head>
+<body layout:fragment="content" style="min-height: 100vh">
+<div class="container">  <!-- 컨테이너 div.. 지우지 마세요 !-->
+    <!-- 여기서부터 작성하시면 됩니다. !-->
+
+    <!-- 세션에서 유저값 받기 !-->
+    <th:block th:if="${session.user != null && session.dog != null}">
+        <input type="hidden" id="sessionUsername" th:value="${session.user.username}">
+        <input type="hidden" id="sessionDogId" th:value="${session.dog.dogId}">
+        <input type="hidden" id="sessionDogName" th:value="${session.dog.dogName}">
+    </th:block>
+
+
+    <div class="row">
+        <div class="pw-title col-12">교배 매칭</div>
+    </div>
+
+    <!-- 필터 구분 영역 -->
+    <div style="display: flex; gap: 20px; padding: 20px;">
+        <div class="dog-filter" style="gap: 5px;">
+            <div>
+                <img src="/img/icon/dog-filter/filter.svg" alt="dog-icon"> 필터
+            </div>
+            <div>
+                <img src="/img/icon/button/caret.svg" alt="dog-icon" style="cursor: pointer" id="filterIcon"
+                     data-target="filter" onclick="filterToggle(this)">
+            </div>
+        </div>
+        <div class="dog-filter" style="gap: 5px;">
+            <div>
+                <img src="/img/icon/dog-filter/liking.svg" alt="dog-icon"> 이런 짝이 좋아요!
+            </div>
+            <div>
+                <img src="/img/icon/button/caret.svg" alt="dog-icon" style="cursor: pointer" id="cardIcon"
+                     data-target="card" onclick="filterToggle(this)">
+            </div>
+        </div>
+    </div> <!-- 필터 구분 영역 -->
+
+    <hr class="custom-hr">
+
+    <!-- 필터 영역 -->
+    <form name="filterForm" id="filterForm">
+        <div class="matching-filter" id="matchingFilter">
+            <div class="row">
+                <div class="col-12 d-flex justify-content-end">
+                    <img src="/img/icon/rollback-arrow.svg" alt="rollback-arrow-icon" width="20px" height="20px"
+                         class="reset-btn" onclick="filterReset('P')">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="matching-item col-md-4 col-sm-12">
+                    <div class="dog-filter">
+                        <img src="/img/icon/dog-filter/dog.svg" alt="dog-icon">견종
+                    </div>
+                    <div>
+                        <div class="flex-box">
+                            <select class="select-a" style="width: 70%; margin-right: 10px" id="breedSelect" name="breedGbnCd">
+                                <option value="" selected>견종을 선택하세요</option>
+                                <option th:each="breed : ${breedList}"
+                                        th:value="${breed['gubn_code']}"
+                                        th:text="${breed['gubn_name']}">
+                                </option>
+                            </select>
+                            <label><input type="checkbox" name="isMix" value="N" class="checkbox-basic red"> 순종</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 등록 서류 -->
+                <div class="matching-item col-md-4 col-sm-12">
+                    <div class="dog-filter">
+                        <img src="/img/icon/dog-filter/document.svg" alt="document-icon"> 등록 서류
+                    </div>
+                    <div>
+                        <label> <input type="checkbox" class="checkbox-basic red" name="bloodTestCertified" id="bloodTestCertified" value="Y">혈통서</label>
+                        <label> <input type="checkbox" class="checkbox-basic red" name="vaccinationCertified" id="vaccinationCertified" value="Y">예방접종 증명서</label>
+                        <label> <input type="checkbox" class="checkbox-basic red" name="healthRecordCertified" id="healthRecordCertified" value="Y">건강기록 증명서</label>
+                    </div>
+                </div>
+
+                <div class="matching-item col-md-4 col-sm-12">
+                    <div class="dog-filter">
+                        <img src="/img/icon/dog-filter/weight.svg" alt="weight-icon"> 체중
+                    </div>
+                    <div>
+                        <input type="number" class="input-a" name="weight" placeholder="체중을 입력해주세요" style="width: 50%"> Kg
+                        <label> <input type="radio" name="weightCategory" class="checkbox-round red" value="U" checked> 이상</label>
+                        <label><input type="radio" name="weightCategory" class="checkbox-round red" value="D"> 이하</label>
+                    </div>
+                </div>
+
+                <div class="matching-item col-md-4 col-sm-12">
+                    <div class="dog-filter">
+                        <img src="/img/icon/dog-filter/foot.svg" alt="foot-icon"> 견BTI
+                    </div>
+                    <div class="dogTypeCode-container">
+                        <select class="select-a" style="width: 70%; margin-right: 10px" onchange="test()" id="dogTypeSelect"
+                                name="dogTypeCodeGbnCd">
+                            <option value="" selected>견BTI를 선택하세요</option>
+                            <option th:each="dogType : ${dogTypeCodeList}"
+                                    th:value="${dogType['gubn_code']}"
+                                    th:text="${dogType['gubn_name']}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="matching-item col-md-4 col-sm-12">
+
+                    <div class="dog-filter">
+                        <img src="/img/icon/dog-filter/bone.svg" alt="bone-icon">
+                        강아지 성격(최대 5개 선택 가능)
+                    </div>
+                    <div class="personality-container">
+                        <div class="search-box">
+                            <input type="text" class="input-a" id="searchInput" style="width: 90%" placeholder="성격을 입력해 주세요"
+                                   onfocus="showDropdown()">
+                            <span onclick="clearInput()" class="search-icon">
+                                <img src="/img/icon/search-red.svg" alt="search-icon">
+                            </span>
+                        </div>
+                        <div class="dropdown" id="dropdown" style="display: none;">
+                            <div th:if="${personalityList != null}" th:each="personality : ${personalityList}"
+                                 class="option">
+                                <input type="checkbox" class="checkbox-basic red"
+                                       th:id="'option' + ${personality['gubn_code']}"
+                                       th:value="${personality['gubn_code']}"
+                                       th:attr="data-name=${personality['gubn_name']}">
+                                <label th:for="'option' + ${personality['gubn_code']}"
+                                       th:text="${personality['gubn_name']}"></label>
+                            </div>
+                        </div>
+                        <div class="selected-options" id="selectedOptions"></div>
+                    </div>
+                </div>
+
+                <div class="matching-item col-md-4 col-sm-12">
+                    <div class="dog-filter">
+                        <img src="/img/icon/dog-filter/dribbble-ball.svg" alt="dribbble-ball-icon">
+                        강아지 선호놀이(최대 5개 선택 가능)
+                    </div>
+                    <div class="play-container personality-container">
+                        <div class="search-box">
+                            <input type="text" class="input-a" id="searchInput2" style="width: 90%"
+                                   placeholder="좋아하는 놀이를 입력해 주세요" onfocus="showDropdown2()">
+                            <span onclick="clearInput2()"><img src="/img/icon/search-red.svg" alt="search-icon"></span>
+                        </div>
+                        <div class="dropdown" id="dropdown2" style="display: none;">
+                            <div th:if="${playList != null}" th:each="play : ${playList}" class="option">
+                                <input type="checkbox" class="checkbox-basic red"
+                                       th:id="'option' + ${play['gubn_code']}"
+                                       th:value="${play['gubn_code']}"
+                                       th:attr="data-name=${play['gubn_name']}"
+                                       onclick="selectOption2(this)">
+                                <label th:for="'option' + ${play['gubn_code']}" th:text="${play['gubn_name']}"></label>
+                            </div>
+                        </div>
+                        <div class="selected-options" id="selectedOptions2"></div>
+                    </div>
+
+                </div>
+
+                <div class="matching-item col-md-4 col-sm-12 day">
+                    <div class="dog-filter">
+                        <img src="/img/icon/dog-filter/clock.svg" alt="clock-icon"> 산책 시작 시간
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <input class="input-a" name="walkStartTime" type="time" style="width: 45%; padding: 0px 15px 0px 15px;">
+                        <input class="input-a" name="walkEndTime" type="time" style="width: 45%; padding: 0px 15px 0px 15px;">
+                    </div>
+                    <div>
+                        <div>
+                            <div class="dog-filter">
+                                <img src="/img/icon/dog-filter/calendar.svg" alt="calendar-icon"> 산책요일
+                            </div>
+                            <label> <input type="checkbox" class="checkbox-basic red" id="selectAll"> 전체</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label> <input type="checkbox" class="checkbox-basic red day-checkbox">월요일</label>
+                        <label> <input type="checkbox" class="checkbox-basic red day-checkbox">화요일</label>
+                        <label> <input type="checkbox" class="checkbox-basic red day-checkbox">수요일</label>
+                        <label> <input type="checkbox" class="checkbox-basic red day-checkbox">목요일</label>
+                        <label> <input type="checkbox" class="checkbox-basic red day-checkbox">금요일</label>
+                        <label> <input type="checkbox" class="checkbox-basic red day-checkbox">토요일</label>
+                        <label> <input type="checkbox" class="checkbox-basic red day-checkbox">일요일</label>
+                    </div>
+
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn-a" onclick="filterCancle()">취소</button>
+                <button class="btn-delete" type="button" onclick="filterSubmit('P')">확인</button>
+            </div>
+
+        </div> <!-- 필터 영역 -->
+    </form>
+
+    <!-- 선호 친구 조회 영역 -->
+    <div class="filter-cards col-md-5 col-sm-12" id="filterCard">
+        <div class="row">
+            <div class="row">
+                <div class="dog-filter col-11 d-flex align-items-center" style="gap: 5px; margin-bottom: 20px">
+                    <img src="/img/icon/dog-filter/liking.svg" alt="dog-icon"> 이런 짝이 좋아요!
+                </div>
+                <div class="col-1">
+                    <img class="cancle-btn" onclick="cardCancle()" src="/img/icon/x-circle.svg" alt="x-circle-icon">
+                </div>
+            </div>
+            <th:block th:if="${filter == null}">
+                <div>
+                    저장된 필터가 없습니다!
+                </div>
+            </th:block>
+            <th:block th:if="${filter != null}">
+
+                <!-- 🟢 여기부터 3열 배치 -->
+                <div class="row">
+                    <th:block th:if="${filter.breed != null}">
+                        <div class="col-md-4 col-sm-4">
+                            <div class="dog-filter">
+                                <img src="/img/icon/dog-filter/dog.svg" alt="dog-icon"> 견종
+                            </div>
+                            <div class="filter-card">[[${filter.breed}]]
+                                <th:block th:if="${filter.is_mix == 'N'}">
+                                    <span style="margin-left: 5px;"> |순종</span>
+                                </th:block>
+                            </div>
+                        </div>
+                    </th:block>
+
+                    <th:block th:if="${filter.weight != null}">
+                        <div class="col-md-4 col-sm-4">
+                            <div class="dog-filter">
+                                <img src="/img/icon/dog-filter/weight.svg" alt="weight-icon"> 체중
+                            </div>
+                            <div class="filter-card">[[${filter.weight}]]kg
+                                <th:block th:if="${filter.weight_category == 'U'}">
+                                    <span style="margin-left: 5px;"> 이상</span>
+                                </th:block>
+                                <th:block th:if="${filter.weight_category == 'D'}">
+                                    <span style="margin-left: 5px;"> 이하</span>
+                                </th:block>
+                            </div>
+                        </div>
+                    </th:block>
+
+                    <th:block th:if="${filter.dog_type != null}">
+                        <div class="col-md-4 col-sm-4">
+                            <div class="dog-filter">
+                                <img src="/img/icon/dog-filter/foot.svg" alt="foot-icon"> 견BTI
+                            </div>
+                            <div class="filter-card">[[${filter.dog_type}]]</div>
+                        </div>
+                    </th:block>
+                </div>
+                <!-- 🟢 여기까지 3열 배치 -->
+
+                <th:block th:if="${filter.walk_day_list != null}">
+                    <div class="row">
+                        <div class="dog-filter">
+                            <img src="/img/icon/dog-filter/clock.svg" alt="clock-icon"> 산책 시작 시간
+                        </div>
+                        <div class="d-flex flex-wrap" style="gap: 5px;">
+                            <div class="filter-card">
+                                <th:block th:each="walkDay : ${filter.walk_day_list}">
+                                    <span style="margin-right: 5px;">[[${(walkDay != null and walkDay.length() > 0) ? walkDay.substring(0,1) : ''}]]</span>
+                                </th:block>
+                                <span>
+                                    <th:block th:if="${filter.str_walk_start_time == '' && filter.str_walk_end_time != ''}">
+                                        |anytime ~ [[${filter.str_walk_end_time}]]
+                                    </th:block>
+                                     <th:block th:if="${filter.str_walk_start_time != '' && filter.str_walk_end_time == ''}">
+                                        |[[${filter.str_walk_start_time}]] ~ anytime
+                                    </th:block>
+                                    <th:block th:if="${filter.str_walk_start_time == '' && filter.str_walk_end_time == ''}">
+                                    </th:block>
+                                    <th:block th:if="${filter.str_walk_start_time != '' && filter.str_walk_end_time != ''}">
+                                        |[[${filter.str_walk_start_time}]] ~ [[${filter.str_walk_end_time}]]
+                                    </th:block>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+
+                <th:block th:if="${filter.blood_test_certified != null || filter.vaccination_certified != null || filter.health_record_certified != null}">
+                    <th:block th:if="${filter.blood_test_certified == 'Y' || filter.vaccination_certified == 'Y' || filter.health_record_certified == 'Y'}">
+                        <div class="row">
+                            <div class="dog-filter">
+                                <img src="/img/icon/dog-filter/document.svg" width="15px;" alt="document-icon">  등록 서류
+                            </div>
+                            <div class="d-flex flex-wrap" style="gap: 5px;">
+                                <th:block th:if="${filter.blood_test_certified == 'Y'}">
+                                    <div class="filter-card">혈통서</div>
+                                </th:block>
+                                <th:block th:if="${filter.vaccination_certified  == 'Y'}">
+                                    <div class="filter-card">예방접종 증명서</div>
+                                </th:block>
+                                <th:block th:if="${filter.health_record_certified  == 'Y'}">
+                                    <div class="filter-card">건강기록 증명서</div>
+                                </th:block>
+                            </div>
+                        </div>
+                    </th:block>
+                </th:block>
+
+                <th:block th:if="${filter.dog_personal_list != null and not #lists.isEmpty(filter.dog_personal_list)}">
+                    <div class="row">
+                        <div class="dog-filter">
+                            <img src="/img/icon/dog-filter/bone.svg" alt="bone-icon"> 성격 유형
+                        </div>
+                        <div class="d-flex flex-wrap" style="gap: 5px;">
+                            <th:block th:each="personal : ${filter.dog_personal_list}">
+                                <div class="filter-card">[[${personal}]]</div>
+                            </th:block>
+                        </div>
+                    </div>
+                </th:block>
+
+                <th:block th:if="${filter.dog_play_list != null and not #lists.isEmpty(filter.dog_play_list)}">
+                    <div class="row">
+                        <div class="dog-filter">
+                            <img src="/img/icon/dog-filter/dribbble-ball.svg" alt="dribbble-ball-icon"> 좋아하는 놀이
+                        </div>
+                        <div class="d-flex flex-wrap" style="gap: 5px;">
+                            <th:block th:each="play : ${filter.dog_play_list}">
+                                <div class="filter-card">[[${play}]]</div>
+                            </th:block>
+                        </div>
+                    </div>
+                </th:block>
+            </th:block>
+        </div>
+    </div>
+    <!-- 선호 친구 조회 영역 -->
+
+    <!-- 스와이프 -->
+    <div class="row" style="display: flex; margin-top: 10px; justify-content: flex-end;">
+        <img class="col-md-3 col-sm-6 swipe-img" src="/img/partner_swipe.svg" alt="dog-icon">
+    </div>
+
+    <!-- 매칭 영역 -->
+    <div class="row matching-container" id="matchingContainer">
+        <!-- 왼쪽 화살표 -->
+        <div class="matching-arrow col-1 d-flex flex-column justify-content-center align-items-center" id="prev">
+            <img src="/img/icon/partner-left-btn.svg" alt="left-btn-icon">
+        </div>
+
+        <!-- 카드 컨테이너 -->
+        <div class="col-10" id="cardContainer"
+             style="display: flex; justify-content: center; align-items: center;"></div>
+
+        <!-- 오른쪽 화살표 -->
+        <div class="matching-arrow col-1 d-flex flex-column justify-content-center align-items-center" id="next">
+            <img src="/img/icon/partner-right-btn.svg" alt="right-btn-icon">
+        </div>
+    </div> <!-- 매칭 영역 -->
+
+    <!-- 채팅방으로 공유 모달창 -->
+    <div class="pawsModal" id="groupChat" style="display: none;">
+        <h2 class="pawsModal-title">그룹채팅 초대하기
+            <div class="pw-title" id="pw-title"></div>
+        </h2>
+        <button class="pawsModal-close" onclick="closeModal(this)"></button>
+        <div class="pawsModal-content" id="chatList" style="margin: 0 auto; text-align: center;">
+
+            <!-- 채팅방 삽입 영역 -->
+        </div>
+    </div>   <!-- 채팅방으로 공유 모달창 -->
+
+    <!-- 신고 모달 창 -->
+    <div class="pawsModal" id="declarationForm" style="display: none;">
+        <h2 class="pawsModal-title">사용자 신고</h2>
+        <button class="pawsModal-close" onclick="closeModal(this)"></button>
+        <div class="pawsModal-content">
+            <div class="pawsModal-container">
+                <form name="declaration" id="declaration">
+                    <div class="declaration-container" style="margin-top: 5px">
+                        <div class="declaration-radio">
+                            <input type="radio" id="declaration1" name="declarationCode" value="IC" class="radio-round" checked>
+                        </div>
+                        <label for="declaration1" class="declaration-label">
+                            <div class="declaration-title">부적절한 콘텐츠</div>
+                            <div class="declaration-content">욕설, 비방, 혐오 발언, 또는 폭력적인 내용 포함</div>
+                        </label>
+                    </div>
+
+                    <div class="declaration-container">
+                        <div class="declaration-radio">
+                            <input type="radio" id="declaration2" name="declarationCode" value="SA" class="radio-round">
+                        </div>
+                        <div>
+                            <label for="declaration2" class="declaration-label">
+                                <div class="declaration-title">스팸 또는 광고</div>
+                                <div class="declaration-content">과도한 홍보, 스팸성 메시지, 또는 반복적인 광고 게시</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="declaration-container">
+                        <div class="declaration-radio">
+                            <input type="radio" id="declaration3" name="declarationCode" value="HI" class="radio-round">
+                        </div>
+                        <div>
+                            <label for="declaration3" class="declaration-label">
+                                <div class="declaration-title">유해하거나 불법적인 정보</div>
+                                <div class="declaration-content">불법적인 활동을 조장하거나, 유해한 정보(사기, 도박 등) 포함</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="declaration-container">
+                        <div class="declaration-radio">
+                            <input type="radio" id="declaration4" name="declarationCode" value="FI" class="radio-round">
+                        </div>
+                        <div>
+                            <label for="declaration4" class="declaration-label">
+                                <div class="declaration-title">허위 또는 사칭 계정</div>
+                                <div class="declaration-content">다른 사람의 신분을 사칭하거나, 잘못된 정보를 포함한 계정</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="declaration-container">
+                        <div class="declaration-radio">
+                            <input type="radio" id="declaration5" name="declarationCode" value="PV" class="radio-round">
+                        </div>
+                        <div>
+                            <label for="declaration5" class="declaration-label">
+                                <div class="declaration-title">개인정보 침해</div>
+                                <div class="declaration-content">타인의 사진, 연락처, 주소 등 개인 정보를 무단으로 공개</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>상세사유</div>
+                    <textarea name="declarationContent" class="input-a" placeholder="상세한 사유를 같이 입력하시면 도움이 됩니다." style="width: 350px; height: 150px;"></textarea>
+                </form>
+
+            </div>
+
+        </div>
+        <div class="pawsModal-footer">
+            <button class="pawsModal-confirm" onclick="closeModal(this); declarationSubmit()">확인</button>
+            <button class="pawsModal-cancel" onclick="closeModal(this)">취소</button>
+        </div>
+    </div> <!-- 신고 모달 창 -->
+
+
+
+
+
+</div> <!-- 컨테이너 div.. 지우지 마세요 !-->
+<script src="/js/hyepin/partnerMatching/partner_form.js"></script>
+<script src="/js/hyepin/partnerMatching/partner_filter.js"></script>
+<script src="/js/hyepin/partnerMatching/partner_matching_card.js"></script>
+<script src="/js/hyepin/partnerMatching/partner_swipe.js"></script>
+<script src="/js/hyepin/partnerMatching/partner_toggle.js"></script>
+<script type="module"  src="/js/hyepin/partnerMatching/partner_chat.js"></script>
+<script src="/js/hyepin/partnerMatching/partner_declaration.js"></script>
+</body>
+</html>

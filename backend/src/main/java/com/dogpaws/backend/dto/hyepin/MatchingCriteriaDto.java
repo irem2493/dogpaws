@@ -1,0 +1,52 @@
+package com.dogpaws.backend.dto.hyepin;
+
+import lombok.Data;
+
+import java.time.LocalTime;
+import java.util.List;
+
+@Data
+public class MatchingCriteriaDto {
+
+    private int dogId;
+    private String username;  // 사용자 ID (외래키)
+    private String dogName;  // 강아지 이름
+    private String breed;  // 품종
+    private String breedName;  // 품종 (한글)
+    private String address;  // 품종 (한글)
+    private String isMix;  // 믹스 여부 (Y/N)
+    private String birthYear;  // 생년
+    private String birthMonth;  // 월
+    private String gender;  // 성별 (M/F)
+    private String isNeutered;  // 중성화 여부 (Y/N)
+    private Integer weight;  // 체중
+    private String weightCategory; // 'U' (이상) 또는 'D' (이하)
+    private LocalTime walkStartTime;  // 산책 시작 시간
+    private LocalTime walkEndTime;  // 산책 종료 시간
+    private String walkTimeYn;  // 산책 시간 선택 여부 (Y/N)
+    private String walkDays;  // 산책 요일 (월, 화, 수, 목, 금, 토, 일)
+    private String isMatingAvailable;  // 교배 매칭 여부 (Y/N)
+    private String dogIntro;  // 강아지 소개
+    private String personalityType;  // 성격 유형
+    private String profileUrl;  // 강아지 프로필 이미지 URL
+    private int matchScore; // 매칭 점수
+    private String matchedCriteria; // 매칭 일치조건 , 형식 문자열
+    private List<String> matchedCriteriaList; //매칭 일치조건 리스트
+
+    private String bloodTestCertified;  // 혈통서 증명서 여부 (Y/N)
+    private String vaccinationCertified;  // 예방접종 증명서 여부 (Y/N)
+    private String healthRecordCertified;  // 건강기록 증명서 여부 (Y/N)
+
+    private boolean liked; //좋아요 여부
+
+    private String breedGbnCd;
+    private String dogTypeCodeGbnCd;
+
+    //문자열
+    private String dogPersonalGbnCds;
+    private String dogPlayGbnCds;
+
+    //리스트
+    private List<String> dogPersonalGbnCdsList;
+    private List<String> dogPlayGbnCdsList;
+}

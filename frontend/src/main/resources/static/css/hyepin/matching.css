@@ -84,13 +84,14 @@
     font-size: 14px;
     border: 1px solid #B0B0B0;
     border-radius: 20px;
-    padding: 8px 16px;
+    padding: 8px 10px 8px 16px;
 }
 
 .remove-option {
-    margin-left: 6px;
+    margin-left: 13px;
     cursor: pointer;
     font-weight: bold;
+    color: #B0B0B0;
 }
 
 .day label{
@@ -247,4 +248,47 @@ margin-right: 10px; /* 오른쪽에 15px 마진 */
 
 .declaration-content{
     font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.img-container {
+    width: 60px;       /* 원하는 크기로 지정 */
+    height: 60px;      /* 가로와 세로를 동일하게 */
+    border-radius: 50%; /* 50%나 100% 모두 원형이 됩니다. 보통 50%를 사용 */
+    overflow: hidden;   /* 이미지가 컨테이너 밖으로 넘어가지 않도록 */
+}
+
+.img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  /* 이미지가 찌그러지지 않고 꽉 차게 채움 */
+    display: block;     /* 기본 인라인 요소의 여백 제거 */
+}
+
+.unstyled-button {
+    border: none;       /* 테두리 제거 */
+    background: none;   /* 배경 제거 */
+    padding: 0;         /* 내부 여백 제거 */
+    margin: 0;          /* 외부 여백 제거 */
+    cursor: pointer;    /* 커서 포인터 */
+    outline: none;      /* 포커스 아웃라인 제거 */
+    font-size: 20px;    /* 텍스트 크기를 15px로 설정 */
+    text-align: left;
+    width: 20ch;          /* 15글자 분량의 폭 설정 */
+    overflow: hidden;     /* 넘치는 텍스트 감추기 */
+    white-space: nowrap;  /* 텍스트 줄바꿈 없애기 */
+    text-overflow: ellipsis; /* 넘칠 경우 ... 표시 */
+}
+
+.chat-list-item{
+    display: flex;
+    gap: 15px;
+    justify-content: left;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#pw-title {
+    border-bottom: 2px solid var(--primary-color);
+    height: 20px;
 }

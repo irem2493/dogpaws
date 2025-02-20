@@ -1,0 +1,26 @@
+<header th:fragment="boardHeader">
+
+    <div class="board-container">
+        <!-- 상단 메뉴 -->
+        <div class="menu">
+            <a href="/board/F" th:classappend="${category == 'F'} ? 'active'">자유게시판</a>
+            <a href="/board/I" th:classappend="${category == 'I'} ? 'active'">강아지 정보 교환</a>
+            <a href="/board/G" th:classappend="${category == 'G'} ? 'active'">그룹채팅</a>
+            <a href="/board/V" th:classappend="${category == 'V'} ? 'active'">봉사활동</a>
+            <a href="/board/N" th:classappend="${category == 'N'} ? 'active'">공지사항</a>
+        </div>
+
+        <!-- 상단 이미지 및 제목 -->
+        <div class="header">
+            <img src="/img/board_dog1.jpg" alt="이미지">
+            <div class="header-text">
+                <span th:if="${category == 'F'}">자유게시판</span>
+                <span th:if="${category == 'I'}">강아지 정보 교환</span>
+                <span th:if="${category == 'G'}">그룹채팅</span>
+                <span th:if="${category == 'V'}">봉사활동</span>
+                <span th:if="${category == 'N'}">공지사항</span>
+            </div>
+        </div>
+    </div>
+
+</header>

@@ -48,7 +48,7 @@ public class JoinController {
 
     @PostMapping("/step1")
     public ApiResponse<?> step1(@ModelAttribute UserRequestDto userRequestDto, HttpSession session) throws IOException {
-        //log.info("여기는 백 컨트롤러 step1 / userRequestDto 값: {}", userRequestDto);
+        log.info("여기는 백 컨트롤러 step1 / userRequestDto 값: {}", userRequestDto);
 
         String encryptedPassword = passwordEncoder.encode(userRequestDto.getPassword());
         userRequestDto.setPassword(encryptedPassword);
@@ -59,6 +59,8 @@ public class JoinController {
             sessionData = new JoinSessionDto();
         }
         sessionData.setStep1Data(userRequestDto);
+
+        System.out.println(sessionData.getStep1Data());
         session.setAttribute("joinSession", sessionData);
 
 
@@ -281,7 +283,6 @@ public class JoinController {
             return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "저장된 데이터 없음");
         }
 
-
         // 1단계 데이터 반환
         UserRequestDto step1Data = sessionData.getStep1Data();
 
@@ -316,14 +317,17 @@ public class JoinController {
 
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, step1Data);
     }
-    
-    @PostMapping("/social/provider")
-    public ApiResponse<?> getSocialProvider(@ModelAttribute UserRequestDto userRequestDto, HttpSession session) throws IOException {
-        if(session.getAttribute("provider") != null) {
+
+    @GetMapping("/social/provider")
+    public ApiResponse<?> getSocialProvider(HttpServletRequest request) {
+        HttpSession session = request.getSession(false); // ✅ 기존 세션만 가져오고, 없으면 null 반환
+
+        if (session != null && session.getAttribute("provider") != null) {
             String provider = (String) session.getAttribute("provider");
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, provider);
         }
-        
-        else return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "소셜 제공자 정보 없음");
+
+        return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "소셜 제공자 정보 없음");
     }
+
 }
