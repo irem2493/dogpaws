@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dogpaws.backend.repository.dao.hyepin.LikeDogDao">
+
+    <select id="getLikeList" resultType="com.dogpaws.backend.dto.hyepin.LikeDogDto">
+        SELECT
+        d.*,
+        (SELECT GROUP_CONCAT(DISTINCT ps.dog_personal_gbn_cd ORDER BY ps.dog_personal_gbn_cd SEPARATOR ',')
+        FROM tbl_dog_personal ps WHERE ps.dog_id = d.dog_id) AS dogPersonalGbnCds,
+        (SELECT GROUP_CONCAT(DISTINCT pl.dog_play_gbn_cd ORDER BY pl.dog_play_gbn_cd SEPARATOR ',')
+        FROM tbl_dog_play pl WHERE pl.dog_id = d.dog_id) AS dogPlayGbnCds
+        FROM tbl_likes l
+        JOIN tbl_dogs d ON d.dog_id = l.dog_id
+        WHERE l.my_dog_id = #{myDogId} AND like_code = #{likeCode}
+    </select>
+
+</mapper>

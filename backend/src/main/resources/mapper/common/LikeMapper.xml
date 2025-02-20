@@ -7,19 +7,19 @@
     <select id="checkLike" resultType="int">
         SELECT COUNT(1)
         FROM tbl_likes
-        WHERE username = #{username}
+        WHERE my_dog_id = #{myDogId}
         AND like_code = #{likeCode}
         AND dog_id = #{dogId};
     </select>
 
     <insert id="insertLike">
-        INSERT INTO tbl_likes (username, like_code, dog_id)
-        VALUES (#{username}, #{likeCode}, #{dogId});
+        INSERT INTO tbl_likes (my_dog_id, like_code, dog_id)
+        VALUES (#{myDogId}, #{likeCode}, #{dogId});
     </insert>
 
     <delete id="deleteLike">
         DELETE FROM tbl_likes
-        WHERE username = #{username}
+        WHERE my_dog_id = #{myDogId}
         AND like_code = #{likeCode}
         AND dog_id = #{dogId};
     </delete>
