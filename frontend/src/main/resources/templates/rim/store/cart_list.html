@@ -152,7 +152,7 @@
                                     <!-- 상품 정보 -->
                                     <div class="flex-grow-1">
                                         <div class="d-flex flex-column">
-                                            <small class="text-muted mb-1">제조사명</small>
+                                            <small class="text-muted mb-1" th:text="${item.manufacturer}">제조사명</small>
                                             <h5 class="card-title mb-2" th:text="${item.productName}">상품명</h5>
                                             <!-- 옵션 목록 -->
                                             <div th:each="option : ${item.cartOptions}" class="mb-2">
@@ -300,13 +300,16 @@
     function updateSelectedInfo() {
         const checkedItems = document.querySelectorAll('input[name="cartItemIds"]:checked');
         const selectedCount = checkedItems.length;
-        let totalPrice = 0;
+        let totalProductPrice = 0;
+        let deliveryFee = selectedCount > 0 ? 3000 : 0; // 선택된 상품이 있을 경우 배송비 3000원 추가
 
         checkedItems.forEach(item => {
             const cardBody = item.closest('.card-body');
             const priceText = cardBody.querySelector('.text-end strong').textContent;
-            totalPrice += parseInt(priceText.replace(/,/g, ''));
+            totalProductPrice += parseInt(priceText.replace(/,/g, ''));
         });
+
+        const totalPrice = totalProductPrice + deliveryFee;
 
         document.getElementById('selectedItemCount').textContent = selectedCount;
         document.getElementById('selectedTotalPrice').textContent = totalPrice.toLocaleString();
