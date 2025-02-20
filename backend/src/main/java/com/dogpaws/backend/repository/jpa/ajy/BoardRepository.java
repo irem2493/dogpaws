@@ -14,6 +14,8 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
 
     List<Board> findByCategoryOrderByBoardIdDesc(String category);
 
+    Board findByBoardId(Integer boardId);
+
     // 가장 높은 board_id 가져오기 (없으면 1 반환)
     @Query("SELECT COALESCE(MAX(b.boardId), 1) FROM Board b")
     Integer findMaxBoardId();
