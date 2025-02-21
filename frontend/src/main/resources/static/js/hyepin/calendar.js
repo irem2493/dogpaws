@@ -171,6 +171,19 @@ const updateBtn = document.getElementById("update");
 const shareBtn = document.getElementById("share");
 const deleteBtn = document.getElementById("delete");
 
+
+var mapContainer = document.getElementById('calendar-map');
+var mapOption = {
+    center: new kakao.maps.LatLng(37.537187, 127.005476), // 초기 중심좌표
+    level: 5
+};
+var map = new kakao.maps.Map(mapContainer, mapOption);
+var geocoder = new kakao.maps.services.Geocoder();
+var marker = new kakao.maps.Marker({
+    position: new kakao.maps.LatLng(37.537187, 127.005476),
+    map: map
+});
+
 // 일정 추가 폼 띄우기
 function showCalendarForm(selectedDate) {
     resetForm();
@@ -185,34 +198,35 @@ function showCalendarForm(selectedDate) {
     shareBtn.style.display = "none";
     deleteBtn.style.display = "none";
 
-    calendarTitleField.value = "";  // 제목 초기화
-    calendarStartDateField.value = selectedDate + "T00:00";  // 기본 시작일 설정
-    calendarEndDateField.value = selectedDate + "T23:59";    // 기본 종료일 설정
-    addressField.value = ""; // 주소 초기화
-    calendarDescriptionField.value = ""; // 일정상세 초기화
+    calendarTitleField.value = "";
+    calendarStartDateField.value = selectedDate + "T00:00";
+    calendarEndDateField.value = selectedDate + "T23:59";
+    addressField.value = "";
+    calendarDescriptionField.value = "";
     calendarTypeField.value = "W";
     dogIdField.value = "1";
 
     calendarTitleField.removeAttribute('readonly');
     calendarStartDateField.removeAttribute('readonly');
     calendarEndDateField.removeAttribute('readonly');
-    //addressField.removeAttribute('readonly');
     calendarDescriptionField.removeAttribute('readonly');
     calendarTypeField.removeAttribute('disabled');
     dogIdField.removeAttribute('disabled');
-}
 
+    // 🛑 일정 등록 시 지도 숨김!
+    mapContainer.style.display = "none";
+}
 // 일정 상세 폼 띄우기
 function editEventForm(event, scheduleType) {
     document.getElementById("scheduleType").value = event.extendedProps?.scheduleType;
     document.getElementById("sharedYn").value = event.extendedProps?.sharedYn;
     document.getElementById("sharedId").value = event.extendedProps?.sharedId;
-    currentEventId = event.id;  // 수정할 이벤트 ID 저장
+    currentEventId = event.id;
     openModal('calendarForm');
 
     if(scheduleType === "my"){
         shareBtn.style.display = "block";
-    }else if(scheduleType === "oth"){
+    } else if(scheduleType === "oth"){
         shareBtn.style.display = "none";
         const shareUserField = document.getElementById("shareUserField");
         shareUserField.style.display = "block";
@@ -228,19 +242,14 @@ function editEventForm(event, scheduleType) {
 
     calendarTitleField.value = event.title;
     calendarTitleField.setAttribute('readonly', true);
-
     calendarTypeField.value = event.extendedProps?.calendarType;
     dogIdField.value = event.extendedProps?.dogId || 1;
 
-    // 서버에서 받은 시간
     const startDate = new Date(event.start);
     const endDate = event.end ? new Date(event.end) : startDate;
-
-    // 클라이언트에서 시간을 로컬 타임존에 맞게 변환
     const startDateLocal = startDate.toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(" ", "T").slice(0, 16);
     const endDateLocal = endDate.toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(" ", "T").slice(0, 16);
 
-    // 시작일과 종료일 설정 및 읽기 전용
     calendarStartDateField.value = startDateLocal;
     calendarStartDateField.setAttribute('readonly', true);
     calendarEndDateField.value = endDateLocal;
@@ -249,15 +258,55 @@ function editEventForm(event, scheduleType) {
     calendarTypeField.setAttribute('disabled', true);
     dogIdField.setAttribute('disabled', true);
 
-    // 주소
+    // 📍 기존 주소 설정
     addressField.value = event.extendedProps?.address || '';
-    //addressField.setAttribute('readonly', true); // 읽기 전용 설정
 
-    // 상세 설명
+    // 📍 상세 설명 설정
     calendarDescriptionField.value = event.extendedProps?.description || '';
-    calendarDescriptionField.setAttribute('readonly', true); // 읽기 전용 설정
+    calendarDescriptionField.setAttribute('readonly', true);
 
+    // 📍 주소가 있으면 지도 표시
+    if (addressField.value) {
+        updateMapWithAddress(addressField.value);
+    } else {
+        mapContainer.style.display = "none"; // 주소 없으면 지도 숨김
+    }
 }
+
+
+//주소 검색 버튼 클릭 시 지도 표시
+function sample5_execDaumPostcode() {
+    new daum.Postcode({
+        oncomplete: function (data) {
+            var addr = data.address; // 최종 주소 변수
+
+            // 📍 주소 입력 필드에 값 설정
+            document.getElementById("sample5_address").value = addr;
+
+            // 📍 지도 업데이트 함수 호출 (주소 기반)
+            updateMapWithAddress(addr);
+        }
+    }).open();
+}
+
+// 주소를 기반으로 지도 업데이트하는 함수
+function updateMapWithAddress(address) {
+    geocoder.addressSearch(address, function (results, status) {
+        if (status === kakao.maps.services.Status.OK) {
+            var result = results[0];
+            var coords = new kakao.maps.LatLng(result.y, result.x);
+
+            // 📍 지도 표시
+            mapContainer.style.display = "block";
+            map.relayout();
+            map.setCenter(coords);
+            marker.setPosition(coords);
+        } else {
+            console.error("주소 변환 실패:", status);
+        }
+    });
+}
+
 
 // 일정 수정 폼 열기
 function calendarModify(){

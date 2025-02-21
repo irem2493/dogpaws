@@ -40,68 +40,72 @@
             </div>
             <input type="hidden" name="calendarId" value="">
 
-
             <div class="pawsModal-content">
-                <div>
-                    <label for="calendarType">일정 구분</label>
-                    <!-- 이거 구분 테이블에서 가져와야함. 일단 픽스로  -->
-                    <select class="select-a" id="calendarType" name="calendarType">
-                        <option value="W">산책</option>
-                        <option value="P">놀이</option>
-                        <option value="M">교배</option>
-                    </select>
-                </div>
+                <div class="pawsModal-content-container">
+                    <div style="display: flex; gap: 30px;">
+                        <div>
+                            <label for="calendarType">일정 구분</label>
+                            <!-- 이거 구분 테이블에서 가져와야함. 일단 픽스로  -->
+                            <select class="select-a" id="calendarType" name="calendarType">
+                                <option value="W">산책</option>
+                                <option value="P">놀이</option>
+                                <option value="M">교배</option>
+                            </select>
+                        </div>
 
-                <div>
-                    <label for="dogId">반려견 선택</label>
-                    <select class="select-a" id="dogId" name="dogId">
-                        <th:block th:each="dog: ${dogList}">
-                            <option th:value="${dog.dog_id}">[[${dog.dog_name}]]</option>
-                        </th:block>
-                    </select>
-                </div>
+                        <div>
+                            <label for="dogId">반려견 선택</label>
+                            <select class="select-a" id="dogId" name="dogId">
+                                <th:block th:each="dog: ${dogList}">
+                                    <option th:value="${dog.dog_id}">[[${dog.dog_name}]]</option>
+                                </th:block>
+                            </select>
+                        </div>
+                    </div>
 
-                <div>
-                    <label for="calendarTitle">제목</label><br>
-                    <input class="input-a" type="text" name="calendarTitle" id="calendarTitle" maxlength="7"
-                           required><br><br>
-                </div>
+                    <div>
+                        <label for="calendarTitle">제목</label><br>
+                        <input class="input-a" type="text" name="calendarTitle" id="calendarTitle" maxlength="7"
+                               required><br><br>
+                    </div>
 
-                <div id="shareUserField" style="display: none;">
-                    <label for="shareUser">공유자</label><br>
-                    <input class="input-a" type="text" id="shareUser" required><br><br>
-                </div>
+                    <div id="shareUserField" style="display: none;">
+                        <label for="shareUser">공유자</label><br>
+                        <input class="input-a" type="text" id="shareUser" required><br><br>
+                    </div>
 
-                <div>
                     <div>날짜</div>
-                    <input class="input-a" type="datetime-local" name="calendarStartDate" id="calendarStartDate"
-                           required><br><br>
-                    <input class="input-a" type="datetime-local" name="calendarEndDate" id="calendarEndDate"
-                           required><br><br>
+                    <div style="display: flex; gap: 5px;">
+                        <input class="input-a" type="datetime-local" name="calendarStartDate" id="calendarStartDate"
+                               required style="width: 185px;">
+                        <div>~</div>
+                        <input class="input-a" type="datetime-local" name="calendarEndDate" id="calendarEndDate"
+                               required style="width: 185px;">
+                    </div>
+
+                    <div>
+                        <div>장소</div>
+
+                        <input type="text" id="sample5_address" name="address" class="input-a" placeholder="주소" readonly>
+                        <input type="button" onclick="sample5_execDaumPostcode()" class="btn-confirm" value="주소 검색"><br>
+                        <div id="calendar-map"></div>
+
+                    </div>
+
+                    <div>
+                        <label for="calendarDescription">일정 상세</label><br>
+                        <textarea class="input-a" name="calendarDescription" id="calendarDescription"></textarea><br><br>
+                    </div>
                 </div>
+                    <div class="pawsModal-footer">
+                        <button class="pawsModal-confirm" id="submit" onclick="calendarSubmit()">저장</button>
+                        <button class="pawsModal-cancel" id="delete" onclick="calendarDelete()" style="display: none;">삭제
+                        </button>
+                        <button class="pawsModal-confirm" id="update" onclick="calendarUpdate()" style="display: none;">수정
+                        </button>
+                        <button class="pawsModal-confirm" id="share" onclick="closeModal(this); openShareForm();">공유</button>
+                    </div>
 
-                <div>
-                    <div>장소</div>
-
-                    <input type="text" id="sample5_address" name="address" class="input-a" placeholder="주소" readonly>
-                    <input type="button" onclick="sample5_execDaumPostcode()" class="btn-confirm" value="주소 검색"><br>
-                    <div id="calendar-map" style="width:300px;height:300px;margin-top:10px;display:none"></div>
-
-                </div>
-
-                <div>
-                    <label for="calendarDescription">일정 상세</label><br>
-                    <textarea class="input-a" name="calendarDescription" id="calendarDescription"></textarea><br><br>
-                </div>
-
-                <div class="pawsModal-footer">
-                    <button class="pawsModal-confirm" id="submit" onclick="calendarSubmit()">저장</button>
-                    <button class="pawsModal-cancel" id="delete" onclick="calendarDelete()" style="display: none;">삭제
-                    </button>
-                    <button class="pawsModal-confirm" id="update" onclick="calendarUpdate()" style="display: none;">수정
-                    </button>
-                    <button class="pawsModal-confirm" id="share" onclick="closeModal(this); openShareForm();">공유</button>
-                </div>
             </div>
         </form>
     </div>
