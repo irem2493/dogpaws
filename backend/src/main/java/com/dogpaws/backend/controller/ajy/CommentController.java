@@ -11,6 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Log4j2
 @RestController
@@ -43,6 +44,22 @@ public class CommentController {
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "댓글 삭제 성공");
         }
         return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "댓글 삭제 실패");
+    }
+    //댓글 수정
+    @PutMapping("/{commentId}")
+    public ApiResponse<?> updateComment(@PathVariable Integer commentId, @RequestBody Map<String, String> request) {
+
+        String updatedComment = request.get("comment"); // JSON의 "comment" 값 가져오기
+
+        if (updatedComment == null) {
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "수정 실패");
+        }
+
+        boolean result = commentService.edit(commentId, updatedComment);
+        if(result){
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "수정 성공");
+        }
+        return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "수정 실패");
     }
 
 }
