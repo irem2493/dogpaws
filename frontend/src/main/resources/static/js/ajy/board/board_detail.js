@@ -1,8 +1,3 @@
-document.addEventListener("DOMContentLoaded", function() {
-
-
-
-});
 
 window.onload = function() {
     const editButton = document.getElementById('editButton');
@@ -90,3 +85,39 @@ function deleteBoard(){
         });
 
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const boardId = document.getElementById('boardId').value;
+    const category = document.getElementById('category').value;
+
+    document.querySelectorAll(".delete-comment-btn").forEach(button => {
+        button.addEventListener("click", function (event) {
+            event.preventDefault(); // 기본 동작 방지
+            const commentId = this.getAttribute("data-comment-id"); // commentId 가져오기
+            if (confirm("댓글을 삭제하시겠습니까?")) {
+                deleteComment(commentId);
+            }
+        });
+    });
+
+    function deleteComment(commentId) {
+        api.delete(`/api/comment/${commentId}`)
+            .then(data => {
+                console.log('Response Data:', data);  // 응답 데이터 출력
+
+                // 응답의 body.body가 '1단계 저장 완료'인지 확인
+                if (data.body?.body === '댓글 삭제 성공') {
+                    alert("댓글 삭제 완료");
+                    location.href = `/board/boardDetail/${boardId}/${category}`;
+                } else {
+                    alert("댓글 삭제 실패");
+                }
+            })
+            .catch(error => {
+                console.error("오류:", error);
+                alert("게시글 삭제 중 오류.");
+            });
+    }
+});
+

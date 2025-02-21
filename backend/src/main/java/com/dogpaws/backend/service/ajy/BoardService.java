@@ -3,7 +3,9 @@ package com.dogpaws.backend.service.ajy;
 import com.dogpaws.backend.dto.ajy.BoardRequestDto;
 import com.dogpaws.backend.dto.ajy.BoardResponseDto;
 import com.dogpaws.backend.entity.ajy.Board;
+import com.dogpaws.backend.entity.ajy.Comment;
 import com.dogpaws.backend.repository.jpa.ajy.BoardRepository;
+import com.dogpaws.backend.repository.jpa.ajy.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
 
     //게시글 저장
     public void save(BoardRequestDto boardRequestDto) {
@@ -69,8 +72,16 @@ public class BoardService {
     }
 
     //특정 게시글 삭제
-    public void deleteBoardById(Integer board_id) {
-        boardRepository.deleteById(board_id);
+    @Transactional
+    public void deleteBoardById(Integer boardId) {
+        boardRepository.deleteById(boardId);
+
+        List<Comment> cList = commentRepository.findByBoardId(boardId);
+        if(!cList.isEmpty()){
+            for(Comment c : cList){
+                commentRepository.deleteById(c.getCommentId());
+            }
+        }
     }
 
     //카테고리별 게시글 조회

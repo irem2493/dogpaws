@@ -62,7 +62,7 @@
               <br> <!-- 줄바꿈 추가 -->
               <th:block th:if="${user!=null and comment.username == user.username}">
                 <a href="#" >수정</a> |
-                <a href="#" >삭제</a>
+                <a href="#" id="commentDeleteBtn" th:data-comment-id="${comment.comment_id}" class="delete-comment-btn">삭제</a>
               </th:block>
             </td>
 
