@@ -13,7 +13,7 @@
         <!-- 상단 메뉴 -->
         <div th:replace="~{ajy/board/board_header :: boardHeader}"></div>
 
-        <th:block th:if="${user != null}">
+        <th:block th:if="${user != null and category != 'N'}">
             <button class="btn-b" style="width: 95px; height: 35px; margin-bottom: 10px"
                     th:data-url="@{/board/boardRegister/{category}(category=${category})}"
                     onclick="window.location.href = this.getAttribute('data-url')">작성</button>
