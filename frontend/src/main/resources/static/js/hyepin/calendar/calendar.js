@@ -213,7 +213,7 @@ function showCalendarForm(selectedDate) {
     calendarTypeField.removeAttribute('disabled');
     dogIdField.removeAttribute('disabled');
 
-    // 🛑 일정 등록 시 지도 숨김!
+    // 일정 등록 시 지도 숨김!
     mapContainer.style.display = "none";
 }
 // 일정 상세 폼 띄우기
@@ -258,14 +258,14 @@ function editEventForm(event, scheduleType) {
     calendarTypeField.setAttribute('disabled', true);
     dogIdField.setAttribute('disabled', true);
 
-    // 📍 기존 주소 설정
+    //기존 주소 설정
     addressField.value = event.extendedProps?.address || '';
 
-    // 📍 상세 설명 설정
+    //상세 설명 설정
     calendarDescriptionField.value = event.extendedProps?.description || '';
     calendarDescriptionField.setAttribute('readonly', true);
 
-    // 📍 주소가 있으면 지도 표시
+    //주소가 있으면 지도 표시
     if (addressField.value) {
         updateMapWithAddress(addressField.value);
     } else {
@@ -307,7 +307,6 @@ function updateMapWithAddress(address) {
     });
 }
 
-
 // 일정 수정 폼 열기
 function calendarModify(){
     let scheduleType = document.getElementById("scheduleType").value;
@@ -328,7 +327,6 @@ function calendarModify(){
         alert("일정 수정");
         dogIdField.removeAttribute('disabled');
     }
-
 }
 
 // 폼 초기화
@@ -425,54 +423,4 @@ function calendarDelete(){
         });
 }
 
-//일정 공유
-function openShareForm(){
-    updateBtn.style.display = "none";
-    alert("일정 공유");
-    openModal('shareForm');
-    // 공유 폼 띄우기
-    // 해당 사용자의 일반채팅, 그룹채팅 값 가져오기 (api 연결)
 
-    // 받는 사람은 알림에서 확인
-    // 알림에서 공유받을 때 다른 정보는 읽기로 확인 가능하고, 반려견 선택할 수 있게.
-}
-
-function calendarShare(){
-    alert("일정 공유");
-    // 선택한 채팅방에 공유 api
-    // 사용자 이름, 채팅방 번호(이거 개인톡, 그룹톡 안나눠도 번호로 나눠지겠지?), 일정 번호
-    const username = sessionUsername.value;
-    var calendarId = parseInt(document.querySelector('input[name="calendarId"]').value, 10);  // 문자열을 Integer로 변환
-    var roomId = 1;
-    /*
-    const data = {
-        username: username,
-        calendarId: calendarId,
-        roomId: roomId
-    }
-    */
-
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("calendarId", calendarId);
-    formData.append("roomId", roomId);
-
-
-
-    //폼데이터 보내기
-    api.post('/api/calendar/share', formData, {
-    })
-        .then(res => {
-            if (res.body.body == '일정 공유 성공') {  // res.body.body 로 받아야합니다..
-                alert("공유 성공");
-                resetForm();  // 폼 초기화
-                window.location.reload();
-            } else {
-                alert("공유 실패");
-            }
-        })
-        .catch(error => {
-            console.error("오류:", error);
-            alert("공유 오류");
-        });
-}
