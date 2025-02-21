@@ -87,3 +87,73 @@
         gap: 5px;
     }
 }
+
+.board-container .btn-b:hover{
+    background: #FFA03A;
+    color: black;
+}
+
+/* 댓글 섹션 */
+.board-container .comments-section {
+    background: #fff;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.board-container h3 {
+    font-size: 18px;
+    margin-left: 5px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid black;
+}
+
+/* 댓글 테이블 */
+.board-container .comment-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.board-container .comment-table tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.board-container .comment-table td {
+    padding: 8px;
+}
+
+.board-container .comment-table td:first-child {
+    font-weight: bold;
+    width: 150px;
+}
+
+.board-container .comment-table td:last-child {
+    text-align: right;
+    color: #777;
+    width: 150px;
+}
+
+/* 수정, 삭제 버튼 */
+.board-container .comment-actions {
+    text-align: right;
+    font-size: 12px;
+}
+
+.board-container .comment-actions a {
+    color: #777;
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+.board-container .comment-actions a:hover {
+    text-decoration: underline;
+}
+
+.board-container #commentForm{
+    text-align: right;
+}
+
+.board-container .comments-section a{
+    text-decoration: none;
+    color: #898989;
+}

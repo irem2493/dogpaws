@@ -99,6 +99,26 @@ public class BoardController {
 
         Map<String, Object> board = (Map<String, Object>) innerBodyObj;
 
+
+        //댓글
+        var commentsResponse = apiRequestService.fetchData("/api/comment/comments/" + boardId+ "/" + category);
+        var cList = commentsResponse.getBody();
+
+        if (!(cList instanceof Map)) {
+            throw new RuntimeException("잘못된 응답 형식입니다.");
+        }
+
+        // 2️⃣ 내부 "body" 필드 추출
+        Map<String, Object> bodyMap2 = (Map<String, Object>) cList;
+        Object innerBodyObj2 = bodyMap2.get("body");
+        if (!(innerBodyObj2 instanceof List)) {
+            throw new RuntimeException("잘못된 응답 형식입니다.");
+        }
+
+        // 3️⃣ 게시글 리스트를 가져와서 모델에 추가
+        List<Map<String, Object>> commentList = (List<Map<String, Object>>) innerBodyObj2;
+
+
         UserDto user  = SessionUtil.getUser(session);
         if(user != null){
             model.addAttribute("user", user);
@@ -107,6 +127,7 @@ public class BoardController {
         model.addAttribute("category", category);
         model.addAttribute("boardId", boardId);
         model.addAttribute("board", board);
+        model.addAttribute("commentList", commentList);
 
         return "/ajy/board/board_detail";
     }
