@@ -67,6 +67,7 @@ public class CalendarController {
     public ApiResponse<String> shareCalendar(@ModelAttribute CalendarDto calendarDto) throws IOException {
         //채팅방으로 연결 -> 채팅방에 일정이 공유됨.
         //상대방 알림 테이블에 등록(알림유형 - C / 구분코드 - SH(calendar_code)
+        //일정 테이블에 공유 현황 업데이트
         log.info("shareCalendar / calendarDto 값: {}", calendarDto);
         System.out.println("calendarDto: " + calendarDto);
         int result = calendarService.shareCalendar(calendarDto);
