@@ -163,6 +163,10 @@ margin-right: 10px; /* 오른쪽에 15px 마진 */
 
 
 @media (max-width: 768px) {
+    #breedSelect{
+        width: 198.8px;
+    }
+
     .matching-card-side, .matching-arrow {
         display: none !important;
     }
