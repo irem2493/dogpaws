@@ -24,8 +24,8 @@
 
     <!-- 필터 구분 영역 -->
     <div style="display: flex; gap: 20px; padding: 20px;">
-        <div class="dog-filter" style="gap: 5px;">
-            <div>
+        <div class="dog-filter filter-container" style="gap: 5px;">
+            <div onclick="document.getElementById('filterIcon').click();">
                 <img src="/img/icon/dog-filter/filter.svg" alt="dog-icon"> 필터
             </div>
             <div>
@@ -33,8 +33,8 @@
                      data-target="filter" onclick="filterToggle(this)">
             </div>
         </div>
-        <div class="dog-filter" style="gap: 5px;">
-            <div>
+        <div class="dog-filter filter-container-none" style="gap: 5px;">
+            <div onclick="document.getElementById('cardIcon').click();">
                 <img src="/img/icon/dog-filter/liking.svg" alt="dog-icon"> 이런 친구가 좋아요!
             </div>
             <div>

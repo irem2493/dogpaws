@@ -1,3 +1,15 @@
+.filter-container {
+    background-color: #ffd591;
+}
+
+.filter-container-none, .filter-container{
+    justify-content: center;
+    border-radius: 10px;
+    padding: 3px 8px;
+    height: 30px;
+    cursor: pointer;
+}
+
 .custom-hr {
     border: 1px solid #B0B0B0;
     margin: 0;
