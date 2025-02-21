@@ -13,3 +13,24 @@ a{
     text-decoration: none;
     color: inherit;
 }
+
+.pawsModal-content{
+    height: 500px;    overflow: auto;
+}
+
+.input-a {
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: 1px solid #bebebe;
+    padding: 0 15px;
+    box-sizing: border-box;
+    font-size: 0.8rem;
+    font-weight: 400;
+    line-height: normal;
+    display: inline-block;
+}
+
+#calendarDescription {
+    width: 300px;
+}
