@@ -423,4 +423,25 @@ function calendarDelete(){
         });
 }
 
+// 🔥 `closeModal()` 실행 후 `openShareForm()`을 호출하는 함수
+function closeAndOpenShareForm(button) {
+    closeModal(button);  // ✅ 모달 닫기 먼저 실행
 
+    // 🔥 100ms 후 `openShareForm()` 실행해서 충돌 방지
+    setTimeout(() => {
+        openShareForm();
+    }, 100);
+}
+
+function closeModal(button) {
+    const modal = button.closest('.pawsModal');
+    const overlay = modal.parentElement;
+
+    if (modal && overlay.classList.contains('pawsModal-overlay')) {
+        document.body.appendChild(modal);
+        overlay.remove();
+        modal.style.display = 'none';
+    }
+
+    return false;  // ✅ 기본 동작 방지
+}

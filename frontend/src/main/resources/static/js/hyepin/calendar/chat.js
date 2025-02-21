@@ -1,25 +1,26 @@
-import {db} from '/js/cys/firebase-config.js';  // 절대 경로 적용
+import {db} from '/js/cys/firebase-config.js';
 import {collection, doc, updateDoc, getDoc, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, getDocs}
     from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
-let selectedRoomId = null;  // 🔥 선택한 채팅방 ID 저장
 
-// 🔥 일정 공유 버튼 클릭 시 실행
+let selectedRoomId = null;
+const currentDogId = document.getElementById("sessionDogId").value;
+console.log("currentDogId: " + currentDogId);
+
+const chatListElement = document.getElementById("chat-list");
+let chatProfiles = [];
+let chatRooms = [];
+let otherParticipants = [];
+
+let currentFilterStatus = 'ALL';  // 기본 필터 상태를 'ALL'로 설정 (F와 G 모두 포함)
+
+// 일정 공유 버튼 클릭 시 실행
 async function openShareForm() {
     console.log("✅ 일정 공유 모달 열기 시도!");
-
-    let shareForm = document.getElementById("shareForm");
-    if (!shareForm) {
-        console.error("❌ 공유 모달을 찾을 수 없습니다.");
-        return;
-    }
-
-    shareForm.style.display = "flex";  // ✅ `block` 대신 `flex` 사용!
-
-    const currentDogId = document.getElementById("sessionDogId").value;
+    openModal('shareForm');
 
     if (!currentDogId) {
         console.error("❌ 현재 로그인된 강아지 ID를 찾을 수 없습니다.");
-        alert("로그인 후 이용해주세요.");
+        window.location.href = '/login';
         return;
     }
 
@@ -27,180 +28,189 @@ async function openShareForm() {
         const chatRoomsRef = collection(db, 'chatRooms');
         const q = query(
             chatRoomsRef,
-            where('participants', 'array-contains', parseInt(currentDogId)),
+            where('participants', 'array-contains', currentDogId),
             orderBy('lastMessage.timestamp', 'desc')
         );
 
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-            console.log("❌ 참여 중인 채팅방 없음");
-            document.querySelector(".chat-list").innerHTML = "<p>참여 중인 채팅방이 없습니다.</p>";
+            chatListElement.innerHTML = "<li>참여 중인 채팅방이 없습니다.</li>";
             return;
         }
 
-        let oneOnOneRooms = [];
-        let groupRooms = [];
+        chatRooms = [];
 
         querySnapshot.forEach((doc) => {
-            const chatRoom = { id: doc.id, ...doc.data() };
-            const participants = chatRoom.participants.filter(user => user !== parseInt(currentDogId));
+            chatRooms.push({ id: doc.id, ...doc.data() });
 
-            if (participants.length === 1) {
-                oneOnOneRooms.push(chatRoom);
-            } else {
-                groupRooms.push(chatRoom);
-            }
+            const participants = doc.data().participants.filter(user => user !== currentDogId);
+            participants.forEach(participant => {
+                if (!otherParticipants.includes(participant)) {
+                    otherParticipants.push(participant);
+                }
+            });
         });
 
-        displayChatRooms(oneOnOneRooms, groupRooms);
+        console.log("참여자 목록:", otherParticipants);
 
-        openModal('shareForm');  // ✅ 모달 열기
-
-        // 🔥 `shareUser` 필드의 `required` 속성 조정
-        const shareUserInput = document.getElementById("shareUser");
-        if (!shareUserInput || shareUserInput.style.display === "none" || shareUserInput.hidden) {
-            shareUserInput.removeAttribute("required");
-        } else {
-            shareUserInput.setAttribute("required", "true");
-        }
+        api.post('/api/chat/profile', {otherParticipants}, {
+            headers: {'Content-Type': 'application/json'}
+        })
+            .then(response => {
+                chatProfiles = response.body;
+                console.log("응답 데이터:", chatProfiles);
+                chatCategory(currentFilterStatus);  // 필터링된 목록 표시
+            })
+            .catch(error => console.error(error));
 
     } catch (error) {
-        console.error("❌ 채팅방 목록 가져오기 실패:", error);
+        console.error("채팅방 목록 가져오기 실패:", error);
     }
 }
 window.openShareForm = openShareForm;
 
+// 채팅방 목록을 HTML에 추가하는 함수 (F = 1:1 채팅, G = 그룹 채팅)
+function chatCategory(filterStatus) {
 
-// 🔥 채팅방 목록을 HTML에 추가하는 함수
-function displayChatRooms(oneOnOneRooms, groupRooms) {
-    const oneOnOneContainer = document.querySelector(".one-on-one");
-    const groupContainer = document.querySelector(".group");
+    const oneElement = document.getElementById("one-on-one");
+    const groupElement = document.getElementById("group");
+    currentFilterStatus = filterStatus;  // 현재 필터 상태 업데이트
+    //chatListElement.innerHTML = "";
+    oneElement.innerHTML = "";
+    groupElement.innerHTML = "";
 
-    oneOnOneContainer.innerHTML = "";
-    groupContainer.innerHTML = "";
+    chatRooms.forEach((chatRoom) => {
+        if (filterStatus === 'ALL' || chatRoom.status === filterStatus) {
+            const otherParticipants = chatRoom.participants.filter(id => id !== currentDogId);
+            let participantId = otherParticipants.length === 1 ? otherParticipants[0] : null;
 
-    // 1:1 채팅방 표시
-    oneOnOneRooms.forEach(chatRoom => {
-        const participantId = chatRoom.participants.find(id => id !== parseInt(currentDogId));
-        const listItem = `
-            <div class="chat-one" onclick="selectChatRoom('${chatRoom.id}')">
-                <span>${chatRoom.roomName || `1:1 채팅방 (${participantId})`}</span>
-            </div>
-        `;
-        oneOnOneContainer.innerHTML += listItem;
-    });
+            const listItem = document.createElement("div");
 
-    // 그룹 채팅방 표시
-    groupRooms.forEach(chatRoom => {
-        const listItem = `
-            <div class="chat-one" onclick="selectChatRoom('${chatRoom.id}')">
-                <span>${chatRoom.roomName} (멤버: ${chatRoom.participants.length})</span>
-            </div>
-        `;
-        groupContainer.innerHTML += listItem;
+            if (chatRoom.status === 'F') {
+                // 1:1 채팅(F) → 상대방 정보 가져오기
+                const profileUrl = getProfileById(participantId);
+                const otherNickname = getNicknameById(participantId);
+
+                listItem.innerHTML = `
+                    <div class="chat-one" onclick="room('${chatRoom.id}')">
+                        <div class="img-container">
+                            <img src="${profileUrl}" width="50" height="50" class="profile-img-2" alt="프로필"
+                                 onerror="this.onerror=null; this.src='/img/로고.jpg';">
+                        </div>
+                        <div class="pre-chat-with">
+                                <input type="button" value="${otherNickname}" title="${otherNickname}" data-room-id="${chatRoom.id}" data-room-name="${otherNickname}" onclick="calendarShare(this)" class="unstyled-button"> 
+                        </div>
+                    </div>  
+                `;
+
+                oneElement.appendChild(listItem);
+            } else if (chatRoom.status === 'G') {
+                // 그룹 채팅(G) → 그룹 정보 가져오기
+                const groupImage = chatRoom.roomProfile || "/img/groupchat.png";
+
+                listItem.innerHTML = `
+                    <div class="chat-one" onclick="room('${chatRoom.id}')">
+                        <div class="img-container">
+                            <img src="${groupImage}" width="50" height="50" class="profile-img-2" alt="그룹 프로필"
+                                onerror="this.onerror=null; this.src='/img/로고.jpg';">
+                        </div>
+                        <div class="pre-chat-content">
+                            <div class="pre-chat-with">
+                                <input type="button" value="(${chatRoom.participants.length}명) ${chatRoom.roomName}" title="${chatRoom.roomName}" data-room-id="${chatRoom.id}" data-room-name="${chatRoom.roomName}" onclick="calendarShare(this)" class="unstyled-button"> 
+                            </div>
+                        </div>
+                    </div>  
+                `;
+                groupElement.appendChild(listItem);
+            }
+            //chatListElement.appendChild(listItem);
+        }
     });
 }
-window.displayChatRooms = displayChatRooms;
+window.chatCategory = chatCategory;
 
+// 프로필 가져오는 함수 (ID 기반)
+function getProfileById(participantId) {
+    if (!participantId) return "/img/로고.jpg";
+    const profile = chatProfiles.find(profile => profile.dog_id === parseInt(participantId));
+    return profile ? profile.profile_url : "/img/로고.jpg";
+}
 
-// 🔥 선택한 채팅방 저장 함수
+// 닉네임 가져오는 함수 (ID 기반)
+function getNicknameById(participantId) {
+    if (!participantId) return "알 수 없음";
+    const profile = chatProfiles.find(profile => profile.dog_id === parseInt(participantId));
+    return profile ? profile.nickname : "알 수 없음";
+}
+
+// 선택한 채팅방 저장 함수
 window.selectChatRoom = function (roomId) {
     selectedRoomId = roomId;
     console.log("✅ 선택된 채팅방 ID:", selectedRoomId);
 };
 
-// 🔥 일정 공유 함수 (선택한 채팅방 ID 적용)
-function calendarShare() {
+// 일정 공유 함수 (선택한 채팅방 ID 적용)
+function calendarShare(element) {
+    let selectedRoomId = element.dataset.roomId;
+    let selectedRoomName = element.dataset.roomName;
+
+    const calendarIdInput = document.querySelector('input[name="calendarId"]');
+    console.log("calendarIdInput:", calendarIdInput);
+    console.log("selectedRoomId:", selectedRoomId);
+    console.log("selectedRoomName:", selectedRoomName);
+
+    if (!calendarIdInput || !calendarIdInput.value) {
+        alert("공유할 일정을 선택해주세요!");
+        return;
+    }
+
     if (!selectedRoomId) {
         alert("채팅방을 선택해주세요!");
         return;
     }
 
-    alert("일정 공유");
+    if (confirm(`[${selectedRoomName}] 방에 공유하시겠습니까?`)) {
+        const username = document.getElementById("sessionUsername").value;
+        const currentUserNickname = document.getElementById("sessionNickname").value;
+        const calendarId = parseInt(calendarIdInput.value, 10);
+        console.log("username: " + username + " / calendarId: " + calendarId + " / selectedRoomId: " + selectedRoomId);
 
-    const username = document.getElementById("sessionUsername").value;
-    const calendarId = parseInt(document.querySelector('input[name="calendarId"]').value, 10);
+        //캘린더 ID로 제목, 시작시간, 끝나는 시간 받아오기
+        api.get('/api/calendar/one?calendarId=' + calendarId)
+            .then(data => {
+                let calendar = data.body;  // body 속성의 배열을 할당
+                console.log('calendar loaded:', calendar);
 
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("calendarId", calendarId);
-    formData.append("roomId", selectedRoomId);  // 🔥 선택한 채팅방 ID 반영
-
-    // 🔥 폼 데이터 전송
-    api.post('/api/calendar/share', formData, {})
-        .then(res => {
-            if (res.body.body == '일정 공유 성공') {
-                alert("공유 성공");
-                resetForm();
-                window.location.reload();
-            } else {
-                alert("공유 실패");
-            }
-        })
-        .catch(error => {
-            console.error("오류:", error);
-            alert("공유 오류");
-        });
-}
-window.calendarShare = calendarShare;
-
-// 🔥 `#shareUserField` 숨길 때 required 제거
-function hideShareUserField() {
-    const shareUserField = document.getElementById("shareUserField");
-    const shareUserInput = document.getElementById("shareUser");
-
-    shareUserField.style.display = "none";
-    shareUserInput.removeAttribute("required");
-}
-
-// 🔥 `#shareUserField` 보일 때 required 추가
-function showShareUserField() {
-    const shareUserField = document.getElementById("shareUserField");
-    const shareUserInput = document.getElementById("shareUser");
-
-    shareUserField.style.display = "block";
-    shareUserInput.setAttribute("required", "true");
-}
-
-
-
-
-/*
-//그룹채팅 초대완료
-function groupChatSubmit(element){
-    const username = sessionUsername.value;
-    const modal = document.querySelector(".pawsModal"); // 모달 요소 찾기
-    const otherDogId = modal.getAttribute("data-other-dog-id"); // 저장된 ID 가져오기
-    const otherUsername = modal.getAttribute("data-other-username"); // 저장된 ID 가져오기
-    const roomId = element.dataset.roomId;
-    const roomName = element.dataset.roomName;
-    const message = `그룹 채팅방 [${roomName}]에 초대되었습니다. 참여하시겠습니까?`
-    console.log("그룹채팅 초대 완료 / username: " + username +  " / otherDogId : ", otherDogId + " / roomId: " + roomId + "/ otherUsername: " + otherUsername);
-
-    const formData = new FormData();
-    formData.append("username", otherDogId);
-    formData.append("alarmType", "G");
-    formData.append("gubnId", roomId);
-    formData.append("message", message);
-
-    if (confirm(`[${roomName}] 방으로 초대하시겠습니까?`)) {
-
-        api.post('/api/matching/chat-room', formData, {})
-            .then(res => {
-                if (res.body.body == '그룹 초대 성공') {  // res.body.body 로 받아야합니다..
-                    alert("초대 완료!");
-                    const modalElement = document.querySelector('#groupChat');
-                    closeModal(modalElement);
-                } else {
-                    alert("실패!");
+                if (Array.isArray(calendar) && calendar.length > 0) {
+                    calendar = calendar[0]; // 첫 번째 일정 가져오기
                 }
+
+                let calendarTitle = calendar.calendar_title ?? "제목 없음";
+                let calendarStartDate = calendar.calendar_start_date ?? "날짜 없음";
+                let calendarEndDate = calendar.calendar_end_date ?? "날짜 없음";
+
+                const NewSchedule = {
+                    id: calendarId,
+                    sender: currentDogId,
+                    nickname: currentUserNickname,
+                    text: "일정이 공유되었습니다.",
+                    calendarTitle: calendarTitle,
+                    calendarStartDate: calendarStartDate,
+                    calendarEndDate: calendarEndDate,
+                    timestamp: serverTimestamp(),
+                    status: 'S'
+                };
+                console.log("Firestore에 추가할 데이터 확인:", NewSchedule);
+
+                addDoc(collection(db, "chatRooms", selectedRoomId, "messages"), NewSchedule)
+                updateDoc(doc(db, "chatRooms", selectedRoomId), { lastMessage: NewSchedule })
             })
             .catch(error => {
-                console.error("오류:", error);
-                alert("초대 오류");
+                console.error(error);
+                alert("오류가 발생했습니다.");
             });
+
     }
 }
-window.groupChatSubmit = groupChatSubmit;
- */
+window.calendarShare = calendarShare;
