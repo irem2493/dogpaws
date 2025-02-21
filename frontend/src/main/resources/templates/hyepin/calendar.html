@@ -16,6 +16,7 @@
     <!-- 세션에서 유저값 받기 !-->
     <th:block th:if="${session.user != null && session.dog != null}">
         <input type="hidden" id="sessionUsername" th:value="${session.user.username}">
+        <input type="hidden" id="sessionNickname" th:value="${session.user.nickname}">
         <input type="hidden" id="sessionDogId" th:value="${session.dog.dogId}">
     </th:block>
 
@@ -104,7 +105,7 @@
                         </button>
                         <button class="pawsModal-confirm" id="update" onclick="calendarUpdate()" style="display: none;">수정
                         </button>
-                        <button class="pawsModal-confirm" id="share" onclick="closeModal(this); openShareForm();">공유</button>
+                        <button type="button" class="pawsModal-confirm" id="share" onclick="closeAndOpenShareForm(this)">공유</button>
                     </div>
 
             </div>
@@ -120,9 +121,9 @@
                 <div class="pw-title">일반</div>
                 <div class="pw-title">그룹</div>
             </div>
-            <div class="chat-list">
-                <div class="one-on-one"></div>  <!-- 1:1 채팅 목록 -->
-                <div class="group"></div>  <!-- 그룹 채팅 목록 -->
+            <div class="chat-list" id="chat-list">
+                <div class="one-on-one" id="one-on-one">1:1 채팅목록 </div>  <!-- 1:1 채팅 목록 -->
+                <div class="group" id="group">그룹 채팅 목록</div>  <!-- 그룹 채팅 목록 -->
             </div>
         </div>
         <div class="pawsModal-footer">
@@ -132,6 +133,8 @@
 
 </div> <!-- 컨테이너 !-->
 
+<script src="/js/hyepin/calendar/calendar.js"></script>
+<script type="module"  src="/js/hyepin/calendar/chat.js"></script>
 <script>
     var mapContainer = document.getElementById('calendar-map'), // 지도를 표시할 div
         mapOption = {
@@ -179,7 +182,5 @@
         }).open();
     }
 </script>
-<script src="/js/hyepin/calendar/calendar.js"></script>
-<script type="module"  src="/js/hyepin/calendar/chat.js"></script>
 </body>
 </html>

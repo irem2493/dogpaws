@@ -55,6 +55,13 @@ public class CalendarController {
         }
     }
 
+    //일정 하나 가져오기
+    @GetMapping("one")
+    public CalendarDto getCalendarById(@RequestParam int calendarId) throws IOException {
+        CalendarDto calendar = calendarService.getCalendarById(calendarId);
+        return calendar;
+    }
+
     //일정 리스트
     @GetMapping
     public ApiResponse<List<CalendarDto>> getCalendar(@RequestParam String username) throws IOException {
