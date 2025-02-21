@@ -20,4 +20,7 @@ public interface CalendarDao {
     public Integer insertShareCalendar(ShareDto shareDto);
     public Integer updateShareCalendar(CalendarDto calendarDto);
     public Integer deleteShareCalendar(CalendarDto calendarDto);
+
+    //알림 - rim
+    Long getLastInsertedCalendarId(@Param("username") String username);
 }

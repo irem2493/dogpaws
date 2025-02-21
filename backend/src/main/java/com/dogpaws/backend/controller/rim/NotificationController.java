@@ -25,7 +25,8 @@ public class NotificationController {
         notificationService.sendNotification(
                 username,
                 message,
-                "TEST"  // 알림 타입
+                "TEST",  // 알림 타입,
+                "test"
         );
         return ResponseEntity.ok().build();
     }

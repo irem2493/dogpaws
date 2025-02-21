@@ -93,4 +93,13 @@
         WHERE shared_id = #{sharedId}
     </delete>
 
+    <!--    알림용 rim -->
+    <select id="getLastInsertedCalendarId" resultType="Long">
+        SELECT calendar_id
+        FROM tbl_calendar
+        WHERE username = #{username}
+        ORDER BY created_at DESC
+        LIMIT 1
+    </select>
+    <!--    알림용 끝 -->
 </mapper>

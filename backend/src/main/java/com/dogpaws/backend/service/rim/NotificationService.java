@@ -1,7 +1,9 @@
 package com.dogpaws.backend.service.rim;
 
+import com.dogpaws.backend.dto.rim.NotificationScheduleDto;
 import com.dogpaws.backend.repository.dao.common.AlarmDao;
 import com.dogpaws.backend.repository.dao.rim.FCMTokenDao;
+import com.dogpaws.backend.repository.dao.rim.NotificationScheduleDao;
 import com.dogpaws.backend.repository.jpa.ajy.UserRepository;
 import com.dogpaws.frontend.dto.hyepin.AlarmDto;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -12,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,31 +30,49 @@ public class NotificationService {
 
     private final UserRepository userRepository;
 
-
-    public void sendNotification(String username, String message, String alarmType) {
-        log.info("알림 저장 시작: username={}, type={}, message={}", username, alarmType, message);
+    private final NotificationScheduleDao scheduleDao;
 
 
-        log.info("알림 저장 완료: username={}, type={}", username, alarmType);
-
-        // FCM 토큰 조회 후 알림 전송
-        String fcmToken = getFcmToken(username);
+    // 즉시 알림 발송
+    public void sendNotification(String username, String message, String alarmType, String gubnId) {
+        // FCM 발송
+        String fcmToken = fcmTokenDao.getFcmToken(username);
         if (fcmToken != null) {
             fcmService.sendMessage(fcmToken, "알림", message);
-        }else{
-            log.info("FCM 토큰 조회 실패.......... ");
         }
+        // DB 저장
+        saveAlarm(username, message, alarmType, gubnId);
+    }
 
+    // 예약 알림 등록
+    public void scheduleNotification(
+            String username,
+            String message,
+            String alarmType,
+            String startDate,
+            Long calendarId
+    ) {
+        NotificationScheduleDto schedule = NotificationScheduleDto.builder()
+                .username(username)
+                .calendarId(calendarId)
+                .scheduleTime(LocalDateTime.parse(startDate).minusDays(1))
+                .alarmType(alarmType)
+                .gubnId(calendarId.toString())
+                .message(message)
+                .status("PENDING")
+                .build();
+
+        scheduleDao.insertSchedule(schedule);
+        log.info("알림 예약 완료: username={}, calendarId={}", username, calendarId);
     }
-    private String getFcmToken(String username) {
-        try {
-            return fcmTokenDao.getFcmToken(username);
-        } catch (Exception e) {
-            log.error("FCM 토큰 조회 실패: " + e.getMessage());
-            return null;
-        }
+
+    // 예약 알림 삭제
+    public void deleteNotification(Long calendarId) {
+        scheduleDao.deleteByCalendarId(calendarId);
+        log.info("알림 예약 삭제 완료: calendarId={}", calendarId);
     }
-    // 전체 발송 메서드 추가
+
+    // 전체 발송 메서드
     public void sendNotificationToAll(String message, String alarmType) {
         userRepository.findAll().forEach(user -> {
             sendNotification(user.getUsername(), message, alarmType);
@@ -64,8 +86,9 @@ public class NotificationService {
             log.info("FCM 토큰 저장 성공: {}", username);
         } catch (Exception e) {
             log.error("FCM 토큰 저장 실패: " + e.getMessage());
-        }
+        }g
     }
+
     // FCM 토큰 삭제 (로그아웃 시 호출)
     public void deleteFcmToken(String username) {
         try {
@@ -75,4 +98,14 @@ public class NotificationService {
             log.error("FCM 토큰 삭제 실패: " + e.getMessage());
         }
     }
+
+    private void saveAlarm(String username, String message, String alarmType, String gubnId) {
+        AlarmDto alarm = new AlarmDto();
+        alarm.setUsername(username);
+        alarm.setAlarmType(alarmType);
+        alarm.setGubnId(gubnId);
+        alarm.setMessage(message);
+        alarmDao.insertAlarm(alarm);
+    }
+
 }

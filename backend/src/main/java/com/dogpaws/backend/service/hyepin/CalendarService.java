@@ -3,7 +3,7 @@ package com.dogpaws.backend.service.hyepin;
 import com.dogpaws.backend.dto.hyepin.CalendarDto;
 import com.dogpaws.backend.dto.hyepin.ShareDto;
 import com.dogpaws.backend.repository.dao.hyepin.CalendarDao;
-import com.dogpaws.backend.service.rim.NotificationScheduleService;
+import com.dogpaws.backend.service.rim.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 public class CalendarService {
 
-    private final NotificationScheduleService notificationScheduleService;
+    private final NotificationService notificationService;
     private final CalendarDao calendarDao;
 
     //유저 ID로 전체 캘린더 받아오기
@@ -28,11 +28,18 @@ public class CalendarService {
     public int insertCalendar(CalendarDto calendarDto) {
         int result = calendarDao.insertCalendar(calendarDto);
 
-        log.info("CalendarDto ID {}",calendarDto.getCalendarId());
-
+        //알림 시작 -rim
         if (result > 0) {
-            notificationScheduleService.scheduleCalendarNotification(calendarDto,"C");
+            Long calendarId = calendarDao.getLastInsertedCalendarId(calendarDto.getUsername());
+            notificationService.scheduleNotification(
+                    calendarDto.getUsername(),
+                    String.format("내일 일정이 있습니다: %s", calendarDto.getCalendarTitle()),
+                    "C",
+                    calendarDto.getCalendarStartDate(),
+                    calendarId
+            );
         }
+        //알림 끝 -rim
 
         System.out.println("Dao. result" + result);
         return result;
@@ -49,9 +56,20 @@ public class CalendarService {
             }else if(calendarDto.getScheduleType().equals("oth")){
                 result = calendarDao.updateShareCalendar(calendarDto);
             }
+
+            //알림 시작 -rim
             if (result > 0) {
-                notificationScheduleService.scheduleCalendarNotification(calendarDto,"C");
+                // 기존 알림 삭제 후 새로 예약
+                notificationService.deleteNotification(calendarDto.getCalendarId().longValue());
+                notificationService.scheduleNotification(
+                        calendarDto.getUsername(),
+                        String.format("내일 일정이 있습니다: %s", calendarDto.getCalendarTitle()),
+                        "C",
+                        calendarDto.getCalendarStartDate(),
+                        calendarDto.getCalendarId().longValue()
+                );
             }
+            //알림 끝-rim
         }
         System.out.println("Dao. result = " + result);
         return result;
@@ -66,19 +84,20 @@ public class CalendarService {
             result = calendarDao.deleteCalendar(calendarDto);
             //공유받은 일정일 때, 공유 테이블에서만 삭제
 
+            //알림 시작-rim
             if (result > 0) {
-                notificationScheduleService.deleteCalendarNotification(calendarDto.getCalendarId().longValue());
+                notificationService.deleteNotification(calendarDto.getCalendarId().longValue());
             }
+            //알림 끝-rim
 
         }else if(calendarDto.getScheduleType().equals("oth")){
             result = calendarDao.deleteShareCalendar(calendarDto);
 
+            //알림 시작-rim
             if (result > 0) {
-                notificationScheduleService.deleteSharedCalendarNotification(
-                        calendarDto.getCalendarId().longValue(),
-                        calendarDto.getUsername()
-                );
+                notificationService.deleteNotification(calendarDto.getCalendarId().longValue());
             }
+            //알림 끝-rim
 
         }
         System.out.println("Dao. result = " + result);
