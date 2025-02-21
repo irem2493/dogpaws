@@ -29,9 +29,15 @@ const FCMClient = {
             // 포그라운드 메시지 핸들러 등록
             this.messaging.onMessage((payload) => {
                 console.log('포그라운드 메시지 수신:', payload);
-                new Notification(payload.notification.title, {
-                    body: payload.notification.body,
-                    icon: '/images/logo.png'
+
+                // 토스트 알림 표시
+                this.showToast(payload.notification.title, payload.notification.body);
+
+                // 알림 목록에 추가
+                this.addNewNotification({
+                    message: payload.notification.body,
+                    alarmId: payload.data?.alarmId,
+                    createdAt: new Date()
                 });
             });
 
@@ -112,6 +118,45 @@ const FCMClient = {
             if (error.response) {
                 console.error('서버 응답:', error.response.data);
             }
+        }
+    },
+    // FCMClient 객체 내부에 추가
+    showToast(title, message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.innerHTML = `
+        <h4>${title}</h4>
+        <p>${message}</p>
+        `;
+        document.body.appendChild(toast);
+
+        // 3초 후 토스트 제거
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    },
+    addNewNotification(notification) {
+        const container = document.getElementById('notifications');
+        if (!container) return;
+
+        const notificationElement = document.createElement('div');
+        notificationElement.className = 'notification-item unread';
+        notificationElement.setAttribute('data-id', notification.alarmId);
+        notificationElement.innerHTML = `
+        <div class="notification-content">
+            <p>${notification.message}</p>
+            <small>${new Date().toLocaleString('ko-KR')}</small>
+        </div>
+    `;
+
+        // 목록 최상단에 추가
+        container.insertBefore(notificationElement, container.firstChild);
+
+        // 안읽은 알림 수 업데이트
+        const unreadCount = document.getElementById('unreadCount');
+        if (unreadCount) {
+            const currentCount = parseInt(unreadCount.textContent || '0');
+            unreadCount.textContent = currentCount + 1;
         }
     }
 };

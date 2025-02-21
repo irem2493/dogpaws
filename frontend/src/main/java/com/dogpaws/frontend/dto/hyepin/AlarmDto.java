@@ -1,8 +1,10 @@
 package com.dogpaws.frontend.dto.hyepin;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString
 public class AlarmDto {
 
     private int alarmId;

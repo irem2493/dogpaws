@@ -4,11 +4,13 @@ import com.dogpaws.backend.repository.dao.common.AlarmDao;
 import com.dogpaws.backend.service.rim.NotificationService;
 import com.dogpaws.frontend.dto.hyepin.AlarmDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/notifications")
@@ -34,6 +36,8 @@ public class NotificationController {
     @GetMapping("/notifications")
     public List<AlarmDto> getNotifications(
             @RequestParam String username) {
-        return alarmDao.getAlarms(username);
+        List<AlarmDto> alarm = alarmDao.getAlarms(username);
+        log.info(alarm.toString());
+        return alarm;
     }
 }

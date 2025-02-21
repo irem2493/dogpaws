@@ -72,13 +72,6 @@ public class NotificationService {
         log.info("알림 예약 삭제 완료: calendarId={}", calendarId);
     }
 
-    // 전체 발송 메서드
-    public void sendNotificationToAll(String message, String alarmType) {
-        userRepository.findAll().forEach(user -> {
-            sendNotification(user.getUsername(), message, alarmType);
-        });
-    }
-
     // FCM 토큰 저장
     public void saveFcmToken(String username, String token) {
         try {
@@ -86,7 +79,7 @@ public class NotificationService {
             log.info("FCM 토큰 저장 성공: {}", username);
         } catch (Exception e) {
             log.error("FCM 토큰 저장 실패: " + e.getMessage());
-        }g
+        }
     }
 
     // FCM 토큰 삭제 (로그아웃 시 호출)
