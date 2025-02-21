@@ -40,6 +40,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         sessionStorage.setItem('nickname', loginResponse.body.nickname);
 
         //경림 추가 2.21
+        if(sessionStorage.getItem('username'));
         try {
             // FCM 초기화 및 알림 권한 요청
             FCMClient.init();

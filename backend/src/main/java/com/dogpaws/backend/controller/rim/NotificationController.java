@@ -40,4 +40,11 @@ public class NotificationController {
         log.info(alarm.toString());
         return alarm;
     }
+
+    //읽음 처리
+    @PostMapping("/mark-read/{alarmId}")
+    public ResponseEntity<Void> markAsRead(@PathVariable Long alarmId) {
+        alarmDao.markAlarmAsRead(alarmId);
+        return ResponseEntity.ok().build();
+    }
 }

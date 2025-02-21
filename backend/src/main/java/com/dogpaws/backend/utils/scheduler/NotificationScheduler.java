@@ -18,7 +18,7 @@ public class NotificationScheduler {
     private final NotificationScheduleDao scheduleDao;
     private final NotificationService notificationService;
 
-    @Scheduled(cron = "0/20 * * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void checkScheduledNotifications() {
         List<NotificationScheduleDto> schedules = scheduleDao
                 .findPendingSchedules(LocalDateTime.now());

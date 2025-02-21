@@ -8,7 +8,8 @@
       INSERT INTO tbl_alarm (username, alarm_type, gubn_id, message)
       VALUES (#{username}, #{alarmType}, #{gubnId}, #{message})
     </insert>
-    <!-- 알림 목록 조회 -->
+
+    <!-- 읽지 않은 알림 목록 조회 -->
     <select id="getAlarms" resultType="com.dogpaws.frontend.dto.hyepin.AlarmDto">
       SELECT
       alarm_id as alarmId,
@@ -16,10 +17,10 @@
       alarm_type as alarmType,
       gubn_id as gubnId,
       message,
-      is_read as isRead,
+      read_status as readStatus,
       created_at as createdAt
       FROM tbl_alarm
-      WHERE username = #{username}
+      WHERE username = #{username} AND read_status = 'N'
       ORDER BY created_at DESC
     </select>
 
@@ -34,7 +35,7 @@
     <!-- 알림 읽음 처리 -->
     <update id="markAlarmAsRead">
       UPDATE tbl_alarm
-      SET is_read = true
+      SET read_status = 'Y'
       WHERE alarm_id = #{alarmId}
     </update>
 </mapper>

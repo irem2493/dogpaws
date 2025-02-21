@@ -35,10 +35,121 @@
 
 
 
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
 
+                    // 로그인 상태 확인
+                    const username = document.getElementById('pawsUsername');
+
+                    if(username){
+                        console.log('fcm.js - 사용자 인증 완료')
+                    }else{
+                        console.log('fcm.js - 사용자 인증 실패')
+                    }
+
+
+                    if (username) {  // 로그인한 경우에만 알림 기능 초기화
+                        document.getElementById('paws-notification-box').classList.remove('hidden');
+
+
+                        const notificationBtn = document.getElementById('notificationBtn');
+                        const notificationList = document.getElementById('notificationList');
+                        const notifications = document.getElementById('notifications');
+                        const unreadCount = document.getElementById('unreadCount');
+                        const closeBtn = document.getElementById('closeNotification');
+
+                        // FCM 초기화 및 토큰 설정
+                        FCMClient.init();
+
+                        // 알림 목록 로드
+                        loadNotifications();
+
+                        // 알림 버튼 클릭 이벤트
+                        notificationBtn.addEventListener('click', function() {
+                            notificationList.classList.toggle('hidden');
+                            if (!notificationList.classList.contains('hidden')) {
+                                loadNotifications();
+                            }
+                        });
+
+                        // 닫기 버튼
+                        closeBtn.addEventListener('click', function() {
+                            notificationList.classList.add('hidden');
+                        });
+                        // 알림 목록 로드 함수
+                        async function loadNotifications() {
+                            try {
+                                const username = sessionStorage.getItem('username');
+
+                                const notifications = await api.get('/api/notifications/notifications?username='+ username );
+
+                                console.log('fcm-notifications',notifications);
+
+                                renderNotifications(notifications);
+                                updateUnreadCount(notifications);
+                            } catch (error) {
+                                console.error('알림 로드 실패:', error);
+                            }
+                        }
+
+                        // 알림 렌더링 함수
+                        function renderNotifications(notifications) {
+                            const container = document.getElementById('notifications');
+                            container.innerHTML = notifications.body.map(notification => `
+                            <div class="notification-item ${notification.isRead ? 'read' : 'unread'}"
+                                 data-id="${notification.alarm_id}">
+                                <div class="notification-content">
+                                    <p>${notification.message}</p>
+                                    <small>${formatDate(notification.created_at)}</small>
+                                </div>
+                            </div>
+                        `).join('');
+
+                            // 알림 클릭 이벤트 추가
+                            container.querySelectorAll('.notification-item').forEach(item => {
+                                item.addEventListener('click', function() {
+                                    console.log('item.data.id',item.dataset.id);
+                                    markAsRead(item.dataset.id);
+                                });
+                            });
+                        }
+
+                        // 날짜 포맷 함수
+                        function formatDate(dateString) {
+                            const date = new Date(dateString);
+                            return date.toLocaleDateString('ko-KR', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                        }
+
+                        // 읽음 처리 함수
+                        async function markAsRead(alarmId) {
+                            try {
+                                await api.post(`/api/notifications/mark-read/${alarmId}`);
+                                loadNotifications(); // 목록 새로고침
+                            } catch (error) {
+                                console.error('읽음 처리 실패:', error);
+                            }
+                        }
+
+                        // 안읽은 알림 수 업데이트
+                        function updateUnreadCount(notifications) {
+                            const unreadCount = notifications.body.filter(n => !n.isRead).length;
+                            document.getElementById('unreadCount').textContent = unreadCount;
+                        }
+                    }else {
+                        // 로그인하지 않은 경우 알림 영역 숨기기
+                        document.getElementById('paws-notification-box').classList.add('hidden')
+                    }
+                });
+            </script>
             <!-- 테스트 시작 -->
-            <div class="notification-area">
-                <button id="notificationBtn" class="notification-btn">
+            <div class="notification-area hidden" id="paws-notification-box">
+                <button id="notificationBtn" class="notification-btn" th:if="${session.user != null}">
                     <i class="fas fa-bell"></i>
                     <span id="unreadCount" class="badge">0</span>
                 </button>
@@ -139,99 +250,7 @@
                     display: none;
                 }
             </style>
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const notificationBtn = document.getElementById('notificationBtn');
-                    const notificationList = document.getElementById('notificationList');
-                    const notifications = document.getElementById('notifications');
-                    const unreadCount = document.getElementById('unreadCount');
-                    const closeBtn = document.getElementById('closeNotification');
 
-                    // FCM 초기화 및 토큰 설정
-                    FCMClient.init()
-
-                    // 알림 목록 로드
-                    loadNotifications();
-
-                    // 알림 버튼 클릭 이벤트
-                    notificationBtn.addEventListener('click', function() {
-                        notificationList.classList.toggle('hidden');
-                        if (!notificationList.classList.contains('hidden')) {
-                            loadNotifications();
-                        }
-                    });
-
-                    // 닫기 버튼
-                    closeBtn.addEventListener('click', function() {
-                        notificationList.classList.add('hidden');
-                    });
-
-                    // 알림 목록 로드 함수
-                    async function loadNotifications() {
-                        try {
-                            const username = sessionStorage.getItem('username');
-
-                            const notifications = await api.get('/api/notifications/notifications', { username });
-
-                            renderNotifications(notifications);
-                            updateUnreadCount(notifications);
-                        } catch (error) {
-                            console.error('알림 로드 실패:', error);
-                        }
-                    }
-
-                    // 알림 렌더링 함수
-                    function renderNotifications(notifications) {
-                        const container = document.getElementById('notifications');
-                        container.innerHTML = notifications.map(notification => `
-                            <div class="notification-item ${notification.isRead ? 'read' : 'unread'}"
-                                 data-id="${notification.alarmId}">
-                                <div class="notification-content">
-                                    <p>${notification.message}</p>
-                                    <small>${formatDate(notification.createdAt)}</small>
-                                </div>
-                            </div>
-                        `).join('');
-
-                        // 알림 클릭 이벤트 추가
-                        container.querySelectorAll('.notification-item').forEach(item => {
-                            item.addEventListener('click', function() {
-                                markAsRead(item.dataset.id);
-                            });
-                        });
-                    }
-
-                    // 날짜 포맷 함수
-                    function formatDate(dateString) {
-                        const date = new Date(dateString);
-                        return date.toLocaleDateString('ko-KR', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        });
-                    }
-
-                    // 읽음 처리 함수
-                    async function markAsRead(alarmId) {
-                        try {
-                            await fetch(`/api/notifications/mark-read/${alarmId}`, {
-                                method: 'POST'
-                            });
-                            loadNotifications(); // 목록 새로고침
-                        } catch (error) {
-                            console.error('읽음 처리 실패:', error);
-                        }
-                    }
-
-                    // 안읽은 알림 수 업데이트
-                    function updateUnreadCount(notifications) {
-                        const unreadCount = notifications.filter(n => !n.isRead).length;
-                        document.getElementById('unreadCount').textContent = unreadCount;
-                    }
-                });
-            </script>
             <!-- 테스트 끝 -->
 
 
@@ -263,7 +282,7 @@
                 <!-- 로그인 상태 -->
                 <span th:if="${session.user != null}" class="profile-dropdown"  style="cursor: pointer;">
                     <span th:text="${session.dog != null and session.dog.dogName != null ? session.dog.dogName + ' 님' :
-                                    (session.user != null and session.user.username != null ? session.user.nickname + '님' : 'Guest')}"></span>
+                                    (session.user != null and session.user.username != null ? session.user.nickname + '님' : 'Guest')}" id="pawsUsername"></span>
                     <img src="/img/icon/button/down-sign.svg" alt="dropdown img" style="width: 12px; height: 12px"/>
                     <!--<button id="logoutButton">로그아웃</button>-->
 
