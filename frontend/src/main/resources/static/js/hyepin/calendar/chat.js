@@ -204,7 +204,17 @@ function calendarShare(element) {
                 console.log("Firestore에 추가할 데이터 확인:", NewSchedule);
 
                 addDoc(collection(db, "chatRooms", selectedRoomId, "messages"), NewSchedule)
-                updateDoc(doc(db, "chatRooms", selectedRoomId), { lastMessage: NewSchedule })
+                    .then(() => {
+                        return updateDoc(doc(db, "chatRooms", selectedRoomId), { lastMessage: NewSchedule });
+                    })
+                    .then(() => {
+                        alert("공유가 완료되었습니다!");
+                        calendarCloseModal('shareForm');
+                    })
+                    .catch(error => {
+                        console.error("일정 공유 중 오류 발생:", error);
+                        alert("공유에 실패했습니다. 다시 시도해주세요!");
+                    });
             })
             .catch(error => {
                 console.error(error);
@@ -214,3 +224,4 @@ function calendarShare(element) {
     }
 }
 window.calendarShare = calendarShare;
+
