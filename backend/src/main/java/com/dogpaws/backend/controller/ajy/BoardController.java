@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Log4j2
 @RestController
 @RequestMapping("/api/board")
@@ -65,6 +67,11 @@ public class BoardController {
         return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "게시글 삭제 실패");
     }
 
-
+    //마이페이지 게시판 리스트 조회
+    @GetMapping("/mypage/{username}/{category}")
+    public ApiResponse<?> getMyBoard(@PathVariable("username") String username, @PathVariable("category") String category) {
+        List<BoardResponseDto> boards = boardService.getMyBoardsByCategory(username, category);
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, boards);
+    }
 
 }

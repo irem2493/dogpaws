@@ -3,9 +3,12 @@ package com.dogpaws.backend.service.ajy;
 import com.dogpaws.backend.dto.ajy.BoardRequestDto;
 import com.dogpaws.backend.dto.ajy.BoardResponseDto;
 import com.dogpaws.backend.entity.ajy.Board;
+import com.dogpaws.backend.entity.ajy.Comment;
 import com.dogpaws.backend.repository.jpa.ajy.BoardRepository;
+import com.dogpaws.backend.repository.jpa.ajy.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +22,7 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
 
     //게시글 저장
     public void save(BoardRequestDto boardRequestDto) {
@@ -69,13 +73,22 @@ public class BoardService {
     }
 
     //특정 게시글 삭제
-    public void deleteBoardById(Integer board_id) {
-        boardRepository.deleteById(board_id);
+    @Transactional
+    public void deleteBoardById(Integer boardId) {
+        boardRepository.deleteById(boardId);
+
+        List<Comment> cList = commentRepository.findByBoardId(boardId);
+        if(!cList.isEmpty()){
+            for(Comment c : cList){
+                commentRepository.deleteById(c.getCommentId());
+            }
+        }
     }
 
     //카테고리별 게시글 조회
     public List<BoardResponseDto> getBoardsByCategory(String category) {
         List<Board> bList = boardRepository.findByCategoryOrderByBoardIdDesc(category);
+
 
         List<BoardResponseDto> boardList = new ArrayList<>();
         if(!bList.isEmpty()){
@@ -88,6 +101,10 @@ public class BoardService {
                 dto.setCategory(b.getCategory());
                 dto.setCreatedAt(b.getCreatedAt().toString());
                 dto.setTitle(b.getTitle());
+
+               List<Comment> commentList = commentRepository.findByBoardIdAndCategory(b.getBoardId(), category, Sort.by(Sort.Order.desc("commentId")));
+                dto.setCommentCount(commentList.size());
+
                 dto.setContent(b.getContent());
                 dto.setViewCount(b.getViewCount());
                 boardList.add(dto);
@@ -117,5 +134,26 @@ public class BoardService {
         }
 
         return null;
+    }
+
+    //마이페이지 게시글 조회
+    public List<BoardResponseDto> getMyBoardsByCategory(String username, String category) {
+        List<Board> bList = boardRepository.findByUsernameAndCategory(username, category, Sort.by(Sort.Order.desc("boardId")));
+        List<BoardResponseDto> boardList = new ArrayList<>();
+        if(!bList.isEmpty()){
+            for (Board b : bList) {
+                BoardResponseDto dto = new BoardResponseDto();
+                dto.setBoardId(b.getBoardId());
+                dto.setUsername(b.getUsername());
+                dto.setNickname(b.getNickname());
+                dto.setTitle(b.getTitle());
+                dto.setContent(b.getContent());
+                dto.setViewCount(b.getViewCount());
+                dto.setCreatedAt(b.getCreatedAt().toString());
+                dto.setCategory(b.getCategory());
+                boardList.add(dto);
+            }
+        }
+        return boardList;
     }
 }

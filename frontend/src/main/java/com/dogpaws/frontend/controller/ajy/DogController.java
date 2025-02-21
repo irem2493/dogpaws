@@ -113,77 +113,82 @@ public class DogController {
     //강아지 상세 정보
     @GetMapping("/detail/{dogId}")
     public String detail(@PathVariable("dogId") Integer dogId, Model model, HttpSession session) {
-        DogDto sessionDog = (DogDto) session.getAttribute("dog");
-        int myDogId = sessionDog.getDogId();
-
-        var dogResponse = apiRequestService.fetchData("/api/dog/detail/" + dogId + "/" + myDogId);
-        var dog = dogResponse.getBody();
-
-        var breedResponse = apiRequestService.fetchData("/api/gubn/breed_code");
-        var breedList = breedResponse.getBody();
-
-        var personalityResponse = apiRequestService.fetchData("/api/gubn/dog_personal_code");
-        var playResponse = apiRequestService.fetchData("/api/gubn/dog_play_code");
-        var dogTypeResponse = apiRequestService.fetchData("/api/gubn/dog_type_code");
-
-        var personalityList = personalityResponse.getBody();
-        var playList = playResponse.getBody();
-        var dogTypeList = dogTypeResponse.getBody();
-
         UserDto user = SessionUtil.getUser(session);
 
         if(user != null){
-            model.addAttribute("user", user.getUsername());
-        }
 
-        if(dog != null){
-            System.out.println("강아지 상세정보 : " + dog);
+            DogDto sessionDog = (DogDto) session.getAttribute("dog");
+            if(sessionDog != null){
+                int myDogId = sessionDog.getDogId();
 
-            model.addAttribute("dog", dog);
-            model.addAttribute("breedList", breedList);
-            model.addAttribute("personalityList", personalityList);
-            model.addAttribute("playList", playList);
-            model.addAttribute("dogTypeList", dogTypeList);
+                var dogResponse = apiRequestService.fetchData("/api/dog/detail/" + dogId + "/" + myDogId);
+                var dog = dogResponse.getBody();
 
-            return "/ajy/dog_detail";
+                var breedResponse = apiRequestService.fetchData("/api/gubn/breed_code");
+                var breedList = breedResponse.getBody();
+
+                var personalityResponse = apiRequestService.fetchData("/api/gubn/dog_personal_code");
+                var playResponse = apiRequestService.fetchData("/api/gubn/dog_play_code");
+                var dogTypeResponse = apiRequestService.fetchData("/api/gubn/dog_type_code");
+
+                var personalityList = personalityResponse.getBody();
+                var playList = playResponse.getBody();
+                var dogTypeList = dogTypeResponse.getBody();
+
+                //System.out.println("강아지 상세정보 : " + dog);
+
+                model.addAttribute("username", user.getUsername());
+                model.addAttribute("dog", dog);
+                model.addAttribute("breedList", breedList);
+                model.addAttribute("personalityList", personalityList);
+                model.addAttribute("playList", playList);
+                model.addAttribute("dogTypeList", dogTypeList);
+
+                return "/ajy/dog_detail";
+            }
+            else return "redirect:/dog/dogProfileSelect";
         }
         return "redirect:/login";
     }
 
     @GetMapping("/dogEidt/{dogId}")
     public String dogEidt(@PathVariable("dogId") Integer dogId, Model model, HttpSession session) {
-        DogDto sessionDog = (DogDto) session.getAttribute("dog");
-        int myDogId = sessionDog.getDogId();
 
-        var dogResponse = apiRequestService.fetchData("/api/dog/detail/" + dogId + "/" + myDogId);
-        var dog = dogResponse.getBody();
-
-        var breedResponse = apiRequestService.fetchData("/api/gubn/breed_code");
-        var breedList = breedResponse.getBody();
-
-        var personalityResponse = apiRequestService.fetchData("/api/gubn/dog_personal_code");
-        var playResponse = apiRequestService.fetchData("/api/gubn/dog_play_code");
-        var dogTypeResponse = apiRequestService.fetchData("/api/gubn/dog_type_code");
-
-        var personalityList = personalityResponse.getBody();
-        var playList = playResponse.getBody();
-        var dogTypeList = dogTypeResponse.getBody();
         UserDto user = SessionUtil.getUser(session);
 
         if(user != null){
-            model.addAttribute("user", user.getUsername());
-        }
+            DogDto sessionDog = (DogDto) session.getAttribute("dog");
 
-        if(dog != null){
-            System.out.println("강아지 상세정보 : " + dog);
+            if(sessionDog != null ){
 
-            model.addAttribute("dog", dog);
-            model.addAttribute("breedList", breedList);
-            model.addAttribute("personalityList", personalityList);
-            model.addAttribute("playList", playList);
-            model.addAttribute("dogTypeList", dogTypeList);
+                int myDogId = sessionDog.getDogId();
 
-            return "/ajy/dog_profile_register";
+                var dogResponse = apiRequestService.fetchData("/api/dog/detail/" + dogId + "/" + myDogId);
+                var dog = dogResponse.getBody();
+
+                var breedResponse = apiRequestService.fetchData("/api/gubn/breed_code");
+                var breedList = breedResponse.getBody();
+
+                var personalityResponse = apiRequestService.fetchData("/api/gubn/dog_personal_code");
+                var playResponse = apiRequestService.fetchData("/api/gubn/dog_play_code");
+                var dogTypeResponse = apiRequestService.fetchData("/api/gubn/dog_type_code");
+
+                var personalityList = personalityResponse.getBody();
+                var playList = playResponse.getBody();
+                var dogTypeList = dogTypeResponse.getBody();
+
+                model.addAttribute("username", user.getUsername());
+
+                //System.out.println("강아지 상세정보 : " + dog);
+
+                model.addAttribute("dog", dog);
+                model.addAttribute("breedList", breedList);
+                model.addAttribute("personalityList", personalityList);
+                model.addAttribute("playList", playList);
+                model.addAttribute("dogTypeList", dogTypeList);
+
+                return "/ajy/dog_profile_register";
+            }else return "redirect:/dog/dogProfileSelect";
         }
         return "redirect:/login";
     }
