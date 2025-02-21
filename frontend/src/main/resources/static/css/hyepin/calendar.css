@@ -13,3 +13,88 @@ a{
     text-decoration: none;
     color: inherit;
 }
+
+.pawsModal-content{
+    height: 500px;    overflow: auto;
+}
+
+.input-a {
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: 1px solid #bebebe;
+    padding: 0 15px;
+    box-sizing: border-box;
+    font-size: 0.8rem;
+    font-weight: 400;
+    line-height: normal;
+    display: inline-block;
+}
+
+#calendarDescription {
+    width: 400px;
+    height: 200px;
+}
+
+.pawsModal-content-container {
+    margin-top: 20px;
+    margin-left: 80px;
+}
+
+#calendar-map{
+    border-radius:10px;
+    width: 400px;
+    height: 200px;
+    margin: 10px 0px 10px 0px;
+    display:none;
+}
+
+#sample5_address {
+    width: 300px;
+}
+
+.img-container {
+    width: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    height: 60px;
+}
+
+.profile-img-2{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.chat-one{
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+
+.chat-list{
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.one-on-one, .group{
+    width: 274px;
+}
+
+
+.unstyled-button {
+    border: none;       /* 테두리 제거 */
+    background: none;   /* 배경 제거 */
+    padding: 0;         /* 내부 여백 제거 */
+    margin: 0;          /* 외부 여백 제거 */
+    cursor: pointer;    /* 커서 포인터 */
+    outline: none;      /* 포커스 아웃라인 제거 */
+    font-size: 18px;    /* 텍스트 크기를 15px로 설정 */
+    text-align: left;
+    width: 180px;           /* 15글자 분량의 폭 설정 */
+    overflow: hidden;     /* 넘치는 텍스트 감추기 */
+    white-space: nowrap;  /* 텍스트 줄바꿈 없애기 */
+    text-overflow: ellipsis; /* 넘칠 경우 ... 표시 */
+}
