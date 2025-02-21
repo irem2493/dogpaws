@@ -16,6 +16,7 @@
     <input type="hidden" id="dogId" th:value="${dogId}">
         <input type="hidden" id="dogName" th:value="${dogName}">
     <input type="hidden" id="dogProfile" th:value="${dogProfile}">
+    <input type="hidden" id="inviteId" th:value="${inviteId}">
     <!-- 1번 페이지 : 채팅방 목록 -->
     <section class="page active" id="page1">
         <div class="list-background">
@@ -154,6 +155,25 @@
         </div>
 <!--        일정 상세 모달 완-->
 
+        <!--                채팅방 생성 모달-->
+        <div id="chatRoomModal" class="modal-overlay" style="display: none;">
+            <div class="chatRoomModal-content">
+                <div class="modal-header">
+                    <p>채팅방 생성</p>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-icon">
+                        <input type="file" id="fileInput" style="display: none;">
+                        <img src="/img/groupchat.png" id="uploadImage" alt="채팅방 아이콘" style="width: 80px; height: 80px; object-fit: cover">
+                    </div>
+                    <input type="text" id="chatRoomName" placeholder="채팅방 이름을 입력하세요" class="chatroom-input">
+                    <button id="createChatRoomBtn" class="create-chatroom-btn">생성</button>
+                </div>
+            </div>
+        </div>
+<!--        채팅방 생성 모달 완-->
+
         <div class="chat-main">
 
         </div>
@@ -176,14 +196,17 @@
 <!--                <img src="/img/groupchat.png" class="profile-img-3" alt="">-->
             </div>
             <div class="title-box">
-                <div class="detail-title">경림냥</div>
+                <div class="detail-title"></div>
                 <button class="star-btn">멍바닥 주기</button>
+                <button class="link-btn" onclick="linkModal()" style="min-width: 60px;">초대 링크</button>
             </div>
+
+            <div class="linkBox" style="display: none"></div>
 
             <div class="participants" style="display: none">
                 <div class="participants-title">
                     <div class="text">참여자</div>
-                    <div class="plus">*</div>
+                    <div class="plus">+</div>
                 </div>
                     <div class="participants-list">
 
@@ -212,7 +235,7 @@
 
                 </div>
             </div>
-            <div class="out-chat" style="color:red">나가기</div>
+            <div class="out-chat" style="color:red; cursor: pointer;">나가기</div>
         </div>
     </section>
 </div>
