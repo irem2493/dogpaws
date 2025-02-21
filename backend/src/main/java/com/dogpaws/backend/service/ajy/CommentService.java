@@ -19,6 +19,7 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final BoardService boardService;
 
    public void save(CommentRequestDto commentRequestDto) {
        log.info("comment : {}", commentRequestDto);
@@ -39,6 +40,7 @@ public class CommentService {
        for(Comment comment : comments) {
            log.info("comment : {}", comment);
            CommentResponseDto commentResponseDto = new CommentResponseDto();
+           commentResponseDto.setCommentId(comment.getCommentId());
            commentResponseDto.setBoardId(comment.getBoardId());
            commentResponseDto.setUsername(comment.getUsername());
            commentResponseDto.setNickname(comment.getNickname());
@@ -49,5 +51,20 @@ public class CommentService {
 
        return commentResponseDtos;
    }
+
+   //특정 게시글 조회
+    public Comment getCommentById(Integer commentId) {
+       return commentRepository.findById(commentId).orElse(null);
+    }
+
+    //특정 게시글 삭제
+    public void deleteCommentById(Integer commentId) {
+       commentRepository.deleteById(commentId);
+    }
+
+    //게시글 번호에 해당되는 댓글 반환
+    public List<Comment> getCommentsByBoardId(Integer boardId) {
+       return commentRepository.findByBoardId(boardId);
+    }
 
 }
