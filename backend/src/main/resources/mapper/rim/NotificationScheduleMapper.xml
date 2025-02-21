@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dogpaws.backend.repository.dao.rim.NotificationScheduleDao">
+
+    <insert id="insertSchedule">
+        INSERT INTO tbl_alarm_schedules (
+        username,
+        calendar_id,
+        schedule_time,
+        status,
+        alarm_type,
+        gubn_id,
+        message
+        ) VALUES (
+        #{username},
+        #{calendarId},
+        #{scheduleTime},
+        #{status},
+        #{alarmType},
+        #{gubnId},
+        #{message}
+        )
+    </insert>
+
+    <delete id="deleteByCalendarIdAndUsername">
+        DELETE FROM tbl_alarm_schedules
+        WHERE calendar_id = #{calendarId}
+        AND username = #{username}
+    </delete>
+
+    <select id="findPendingSchedules" resultType="com.dogpaws.backend.dto.rim.NotificationScheduleDto">
+        SELECT
+        ns.alarm_schedules_id as id,
+        ns.username,
+        ns.calendar_id as calendarId,
+        ns.schedule_time as scheduleTime,
+        ns.status,
+        ns.alarm_type as alarmType,
+        ns.gubn_id as gubnId,
+        ns.message,
+        c.calendar_title as calendarTitle
+        FROM tbl_alarm_schedules ns
+        JOIN tbl_calendar c ON ns.calendar_id = c.calendar_id
+        WHERE ns.status = 'PENDING'
+        AND STRCMP(DATE_FORMAT(ns.schedule_time, '%Y-%m-%d %H:%i'),
+        DATE_FORMAT(#{currentTime}, '%Y-%m-%d %H:%i')) IN (-1, 0)
+    </select>
+
+    <update id="updateStatus">
+        UPDATE tbl_alarm_schedules
+        SET status = #{status},
+        updated_at = CURRENT_TIMESTAMP
+        WHERE alarm_schedules_id = #{alarm_schedules_id}
+    </update>
+</mapper>

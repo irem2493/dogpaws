@@ -131,20 +131,13 @@ public class AdminProductController {
     }
 
     /**
-     * 현재 재고 상태 조회
+     * 현재 재고 상태 조회 (상품 ID로 모든 옵션 재고 포함)
      */
-    @GetMapping("/{productId}/stock/{optionId}")
-    public ApiResponse<Map<String, Integer>> getStock(
-            @PathVariable Long productId,
-            @PathVariable Long optionId) {
+    @GetMapping("/{productId}/stock")
+    public ApiResponse<Map<String, Object>> getStock(@PathVariable Long productId) {
         try {
-            Map<String, Integer> stockInfo = productService.getCurrentStock(productId, optionId);
+            Map<String, Object> stockInfo = productService.getAllStockInfo(productId);
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, stockInfo);
-
-        } catch (IllegalArgumentException e) {
-            log.error("잘못된 요청: {}", e.getMessage());
-            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
-
         } catch (Exception e) {
             log.error("재고 조회 중 오류 발생: {}", e.getMessage(), e);
             return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);

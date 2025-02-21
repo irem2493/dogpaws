@@ -19,14 +19,25 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     }
 
     api.post('/login', {username, password, userType:'ROLE_USER'})
-        .then(response => {
+        .then(async response => {
             sessionStorage.setItem('accessToken', response.body.access_token);
             sessionStorage.setItem('username', response.body.username);
             sessionStorage.setItem('role', response.body.role);
             sessionStorage.setItem('nickname', response.body.nickname);
+
+            try {
+                // FCM 초기화 및 알림 권한 요청
+                FCMClient.init();
+                await FCMClient.requestNotificationPermission();  // await 추가
+                console.log('FCM 설정 완료');
+            } catch (error) {
+                console.warn('FCM 설정 실패:', error);
+                // FCM 설정 실패해도 로그인은 계속 진행
+            }
+
             alert('로그인 성공!');
 
-          if (response.body.role === 'ROLE_USER') {
+            if (response.body.role === 'ROLE_USER') {
                 location.href = '/dog/dogProfileSelect';
             } else {
                 throw new Error('올바르지 않은 역할');

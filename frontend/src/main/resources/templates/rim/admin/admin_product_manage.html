@@ -79,6 +79,10 @@
             font-size: 14px;
             color: #333;
         }
+
+        .pawsModal-footer{
+            margin-top: 30px;
+        }
     </style>
 </head>
 <body layout:fragment="content">
@@ -195,7 +199,7 @@
 </div>
 
 <!-- 상태 변경 모달 -->
-<div id="statusModal" class="pawsModal">
+<div id="statusModal" class="pawsModal" style="display: none">
     <div class="modal-content">
         <h3>판매상태 변경</h3>
         <p>판매상태를 변경하시겠습니까?</p>
@@ -206,40 +210,35 @@
     </div>
 </div>
 
-<!-- 재고 관리 모달 (입고/출고 통합) -->
+
+<!-- 재고 관리 모달 수정 -->
 <div id="stockModal" class="pawsModal" style="display: none">
-    <div class="modal-content">
-        <h3>재고 관리</h3>
-        <div class="stock-type-selector">
-            <label>
-                <input type="radio" name="stockType" value="in" checked> 입고
-            </label>
-            <label>
-                <input type="radio" name="stockType" value="out"> 출고
-            </label>
-        </div>
+    <button class="pawsModal-close" onclick="closeModal(this)"></button>
+    <div class="pawsModal-title">재고 관리</div>
+    <div class="pawsModal-content">
+        <div class="box" style="width: 90%; margin: 0 auto">
+            <!-- 재고 정보 표시 영역 -->
+            <div class="stock-info">
+                <!-- JavaScript로 동적 추가됨 -->
+            </div>
 
-        <!-- 옵션 선택 영역 -->
-        <div class="option-selector">
-            <select id="optionSelect">
-                <option value="">옵션을 선택하세요</option>
-                <!-- 옵션들은 JavaScript로 동적 추가 -->
-            </select>
+            <div class="option-stock-management">
+                <h4>재고 수정</h4>
+                <!-- 옵션 선택 영역 -->
+                <div class="option-selector">
+                    <select id="optionSelect">
+                        <option value="">옵션 선택</option>
+                    </select>
+                </div>
+                <!-- 선택된 옵션들의 수량 입력 영역 -->
+                <div class="selected-options">
+                    <!-- JavaScript로 동적 추가됨 -->
+                </div>
+            </div>
         </div>
-
-        <!-- 재고 정보 표시 영역 -->
-        <div class="stock-info">
-            <p>현재 옵션 재고: <span id="currentOptionStock">0</span></p>
-            <p>총 재고: <span id="currentTotalStock">0</span></p>
-        </div>
-
-        <div class="stock-input">
-            <input type="number" id="stockQuantity" min="1" placeholder="수량 입력">
-        </div>
-
-        <div class="modal-buttons">
-            <button type="button" id="confirmStock">확인</button>
-            <button type="button" id="cancelStock">취소</button>
+        <div class="pawsModal-footer">
+            <button class="pawsModal-confirm" id="confirmStock">확인</button>
+            <button class="pawsModal-cancel" id="cancelStock" onclick="closeModal(this)">취소</button>
         </div>
     </div>
 </div>
@@ -290,6 +289,7 @@
     </div>
 </div>
 
+<script src="/js/common/modal.js"></script>
 <script src="/js/rim/admin_product_manage.js"></script>
 </body>
 </html>

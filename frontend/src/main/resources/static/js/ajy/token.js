@@ -111,6 +111,7 @@ async function logout() {
         sessionStorage.removeItem('accessToken');
         document.cookie = 'Refresh-Token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
 
+
         console.log("🟢 로그아웃 성공");
         alert("로그아웃되었습니다.");
         window.location.href = "/login"; // ✅ 로그아웃 후 로그인 페이지로 이동
@@ -152,5 +153,3 @@ async function verifyUserRole() {
         return false;
     }
 }
-
-

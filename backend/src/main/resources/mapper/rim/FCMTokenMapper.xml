@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dogpaws.backend.repository.dao.rim.FCMTokenDao">
+
+    <select id="getFcmToken" resultType="String">
+        SELECT fcm_token
+        FROM tbl_fcm_tokens
+        WHERE username = #{username}
+        ORDER BY created_at DESC
+        LIMIT 1
+    </select>
+
+    <insert id="saveFcmToken">
+        INSERT INTO tbl_fcm_tokens (username, fcm_token)
+        VALUES (#{username}, #{token})
+    </insert>
+
+    <delete id="deleteFcmToken">
+        DELETE FROM tbl_fcm_tokens
+        WHERE username = #{username}
+    </delete>
+
+</mapper>

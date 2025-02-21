@@ -180,4 +180,27 @@
         FROM tbl_product_options
         WHERE product_id = #{productId}
     </select>
+    <!-- 상품 ID로 옵션 목록 조회 -->
+    <select id="findByProductProductId" resultType="com.dogpaws.backend.entity.rim.ProductOption">
+        SELECT
+        option_id,
+        product_id,
+        option_name,
+        option_price,
+        option_stock,
+        is_base_option,
+        option_size,
+        option_color,
+        option_weight,
+        option_material,
+        option_expiration_date,
+        option_storage_info,
+        option_manufacturer,
+        option_origin
+        FROM
+        tbl_product_options
+        WHERE
+        product_id = #{productId}
+    </select>
+
 </mapper>

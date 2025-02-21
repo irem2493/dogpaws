@@ -450,7 +450,7 @@ public class ProductService {
                 isIncrease ? "입고" : "출고", productId, optionId, quantity, totalStock);
     }
     /**
-     * 현재 재고 조회
+     * 현재 상품 옵션들 재고 조회
      */
     @Transactional(readOnly = true)
     public Map<String, Integer> getCurrentStock(Long productId, Long optionId) {
@@ -468,6 +468,41 @@ public class ProductService {
         stockInfo.put("totalStock", totalStock);
 
         return stockInfo;
+    }
+
+    /**
+     * 상품의 모든 재고 정보 조회 (옵션정보포함)
+     */
+    public Map<String, Object> getAllStockInfo(Long productId) {
+        Map<String, Object> result = new HashMap<>();
+
+        // 상품 기본 정보 조회
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        // 옵션 목록 조회
+        List<ProductOption> options = productDao.findByProductProductId(productId);
+
+        // 전체 재고 계산
+        int totalStock = productDao.getTotalStockByProductId(productId);
+
+        // 옵션별 재고 정보 구성
+        List<Map<String, Object>> optionStocks = options.stream()
+                .map(option -> {
+                    Map<String, Object> optionInfo = new HashMap<>();
+                    optionInfo.put("optionId", option.getOptionId());
+                    optionInfo.put("optionName", option.getOptionName());
+                    optionInfo.put("optionStock", option.getOptionStock());
+                    return optionInfo;
+                })
+                .collect(Collectors.toList());
+
+        result.put("productId", productId);
+        result.put("productName", product.getName());
+        result.put("totalStock", totalStock);
+        result.put("options", optionStocks);
+
+        return result;
     }
 
 

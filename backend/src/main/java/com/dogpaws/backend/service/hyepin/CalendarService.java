@@ -3,6 +3,7 @@ package com.dogpaws.backend.service.hyepin;
 import com.dogpaws.backend.dto.hyepin.CalendarDto;
 import com.dogpaws.backend.dto.hyepin.ShareDto;
 import com.dogpaws.backend.repository.dao.hyepin.CalendarDao;
+import com.dogpaws.backend.service.rim.NotificationScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.List;
 @Slf4j
 public class CalendarService {
 
+    private final NotificationScheduleService notificationScheduleService;
     private final CalendarDao calendarDao;
 
     //유저 ID로 전체 캘린더 받아오기
@@ -25,6 +27,13 @@ public class CalendarService {
     //개인 캘린더 등록
     public int insertCalendar(CalendarDto calendarDto) {
         int result = calendarDao.insertCalendar(calendarDto);
+
+        log.info("CalendarDto ID {}",calendarDto.getCalendarId());
+
+        if (result > 0) {
+            notificationScheduleService.scheduleCalendarNotification(calendarDto,"C");
+        }
+
         System.out.println("Dao. result" + result);
         return result;
     }
@@ -40,6 +49,9 @@ public class CalendarService {
             }else if(calendarDto.getScheduleType().equals("oth")){
                 result = calendarDao.updateShareCalendar(calendarDto);
             }
+            if (result > 0) {
+                notificationScheduleService.scheduleCalendarNotification(calendarDto,"C");
+            }
         }
         System.out.println("Dao. result = " + result);
         return result;
@@ -53,8 +65,21 @@ public class CalendarService {
              //일정 테이블에서 삭제 (CASCADE 설정해놓음)
             result = calendarDao.deleteCalendar(calendarDto);
             //공유받은 일정일 때, 공유 테이블에서만 삭제
+
+            if (result > 0) {
+                notificationScheduleService.deleteCalendarNotification(calendarDto.getCalendarId().longValue());
+            }
+
         }else if(calendarDto.getScheduleType().equals("oth")){
             result = calendarDao.deleteShareCalendar(calendarDto);
+
+            if (result > 0) {
+                notificationScheduleService.deleteSharedCalendarNotification(
+                        calendarDto.getCalendarId().longValue(),
+                        calendarDto.getUsername()
+                );
+            }
+
         }
         System.out.println("Dao. result = " + result);
         return result;
