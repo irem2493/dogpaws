@@ -1,5 +1,6 @@
 package com.dogpaws.backend.service.ajy;
 
+import com.dogpaws.backend.dto.ajy.BoardRequestDto;
 import com.dogpaws.backend.dto.ajy.CommentRequestDto;
 import com.dogpaws.backend.dto.ajy.CommentResponseDto;
 import com.dogpaws.backend.entity.ajy.Board;
@@ -8,6 +9,7 @@ import com.dogpaws.backend.repository.jpa.ajy.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -54,7 +56,7 @@ public class CommentService {
 
    //특정 게시글 조회
     public Comment getCommentById(Integer commentId) {
-       return commentRepository.findById(commentId).orElse(null);
+       return commentRepository.findByCommentId(commentId);
     }
 
     //특정 게시글 삭제
@@ -65,6 +67,23 @@ public class CommentService {
     //게시글 번호에 해당되는 댓글 반환
     public List<Comment> getCommentsByBoardId(Integer boardId) {
        return commentRepository.findByBoardId(boardId);
+    }
+
+    //댓글 수정
+    @Transactional
+    public boolean edit(Integer commentId, String updateText) {
+
+        Comment comment = commentRepository.findByCommentId(commentId);
+
+        log.info("comment: " + comment);
+
+        if(comment != null){
+            // 변경 사항 저장
+            commentRepository.updateCommentContent(commentId, updateText);
+            return true;
+        }
+
+        return false;
     }
 
 }

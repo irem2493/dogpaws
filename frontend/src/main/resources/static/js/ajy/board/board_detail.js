@@ -121,3 +121,67 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+function editComment(commentId) {
+    let commentDiv = document.getElementById("comment" + commentId);
+    let commentInput = document.getElementById("commentInput" + commentId);
+
+    // 기존 댓글 숨기기
+    commentDiv.style.display = "none";
+
+    // input 필드 보이기 및 기존 댓글 내용을 input에 넣기
+    commentInput.style.display = "inline-block";
+    commentInput.value = commentDiv.innerText.trim(); // 기존 댓글 값 유지
+
+    // 수정 버튼 숨기고 저장 버튼 보이기
+    document.getElementById("editBtn" + commentId).style.display = "none";
+    document.getElementById("saveBtn" + commentId).style.display = "inline-block";
+}
+
+function saveComment(commentId) {
+    let commentDiv = document.getElementById("comment" + commentId);
+    let commentInput = document.getElementById("commentInput" + commentId);
+    let updatedText = commentInput.value.trim(); // 수정된 댓글 가져오기
+
+    if (!updatedText) {
+        // 빈 값이면 기존 댓글 값 유지
+        alert("빈 값은 입력할 수 없습니다. 기존 댓글이 유지됩니다.");
+        commentInput.value = commentDiv.innerText; // 기존 값 복원
+        return;
+    }
+
+    // 기존 댓글 div 업데이트
+    commentDiv.innerText = updatedText;
+
+    // 다시 원래대로 돌리기
+    commentDiv.style.display = "inline-block";
+    commentInput.style.display = "none";
+
+    // 저장 버튼 숨기고 수정 버튼 다시 보이기
+    document.getElementById("editBtn" + commentId).style.display = "inline-block";
+    document.getElementById("saveBtn" + commentId).style.display = "none";
+
+    // 실제 서버에 저장하는 로직
+    updateCommentInServer(commentId, updatedText);
+}
+
+function updateCommentInServer(commentId, updatedText) {
+    const category = document.getElementById('category').value;
+    const boardId = document.getElementById('boardId').value;
+    const data = {
+        comment: updatedText
+    };
+
+    api.put(`/api/comment/${commentId}`, data)
+        .then(async response => {
+            if (response.status === 'SUCCESS') {
+                alert("댓글이 수정되었습니다.");
+                location.href = `/board/boardDetail/${boardId}/${category}`;
+            } else {
+                alert("댓글 수정 실패");
+            }
+        })
+        .catch(error => {
+            console.error("API 요청 오류:", error);
+            alert("서버 오류가 발생했습니다.");
+        });
+}
