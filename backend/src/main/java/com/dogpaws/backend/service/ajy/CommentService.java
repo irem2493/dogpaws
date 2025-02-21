@@ -8,6 +8,7 @@ import com.dogpaws.backend.entity.ajy.Comment;
 import com.dogpaws.backend.repository.jpa.ajy.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +38,7 @@ public class CommentService {
    }
 
    public List<CommentResponseDto> findByBoardIdAndCategory(Integer boardId, String category) {
-       List<Comment> comments = commentRepository.findByBoardIdAndCategory(boardId, category);
+       List<Comment> comments = commentRepository.findByBoardIdAndCategory(boardId, category, Sort.by(Sort.Order.desc("commentId")));
        List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
        for(Comment comment : comments) {
            log.info("comment : {}", comment);
