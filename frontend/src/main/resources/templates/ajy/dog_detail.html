@@ -26,7 +26,7 @@
             <span>
             <div style="display: flex; gap: 10px;">
                 <span th:text="${dog.dog_name}"></span>
-                <th:block th:if="${user == dog.username}">
+                <th:block th:if="${username == dog.username}">
                     <button class="btn-b" style="width: 85px; height: 35px;"
                             th:onclick="'window.location.href=\'/dog/dogEidt/' + ${dog.dog_id} + '\''">수정</button>
 

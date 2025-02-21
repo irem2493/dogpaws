@@ -16,6 +16,8 @@
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <input type="hidden" name="boardId" id="boardId" th:value="${boardId}"/>
       <input type="hidden" name="category" id="category" th:value="${category}"/>
+      <input type="hidden" name="username" id="username" th:value="${user!= null ? user.username : null}"/>
+      <input type="hidden" name="nickname" id="nickname" th:value="${user!= null ? user.nickname : null}"/>
       <div class="post-header" th:text="${board.title}"></div>
       <!-- 수정 및 삭제 버튼 -->
       <div class="button-group" th:if="${user!= null and user.username == board.username}">
@@ -42,6 +44,59 @@
     <!-- 게시글 내용 -->
     <div class="post-content" th:utext="${board.content}"></div>
 
+    <!-- 댓글 목록 -->
+    <div class="comments-section">
+      <h3><span id="commentTotal" th:text="${commentList.size()}"></span> 개의 댓글</h3>
+      <table class="comment-table">
+        <tbody id="commentList">
+          <tr th:if="${commentList.size() == 0 }">
+             <td colspan="2" style="font-weight: normal">등록된 댓글이 없습니다.</td>
+            <td></td>
+          </tr>
+
+          <tr th:if="${commentList.size() > 0 }" th:each="comment : ${commentList}">
+            <td th:text="${comment.nickname}"></td>
+            <td>
+              <!-- 기존 댓글 내용 -->
+              <div th:id="'comment' + ${comment.comment_id}" th:text="${comment.comment}"></div>
+
+              <!-- 수정할 때 나타날 input 필드 (초기에는 숨김 처리) -->
+              <textarea
+                     class="input-a"
+                     th:id="'commentInput' + ${comment.comment_id}"
+                     th:text="${comment.comment}"
+                     style="display: none; width: 100%;">
+              </textarea>
+            </td>
+            <td>
+              <span th:text="${#strings.replace(comment.created_at, 'T', ' ')}"></span>
+              <br> <!-- 줄바꿈 추가 -->
+              <th:block th:if="${user!=null and comment.username == user.username}">
+                <!-- 수정 버튼 -->
+                <a href="#" th:id="'editBtn' + ${comment.comment_id}"
+                   th:attr="onclick='editComment(' + ${comment.comment_id} + ')'" >수정</a>
+
+                <!-- 저장 버튼 (초기에는 숨김 처리) -->
+                <a href="#" th:id="'saveBtn' + ${comment.comment_id}"
+                   th:attr="onclick='saveComment(' + ${comment.comment_id} + ')'"
+                   style="display: none;">저장</a> |
+                <a href="#" id="commentDeleteBtn" th:data-comment-id="${comment.comment_id}" class="delete-comment-btn">삭제</a>
+              </th:block>
+            </td>
+
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 댓글 -->
+    <th:block th:if="${user != null}">
+    <form id="commentForm">
+      <textarea id="comment" class="input-a" name="comment" style="width: 100%; margin-bottom: 10px" placeholder="댓글을 입력해주세요"></textarea>
+      <input type="submit" class="btn-b" style="width: 95px; height: 35px; margin-bottom: 10px" value="작성"/>
+    </form>
+    </th:block>
   </div>
 </div>
 <script src="/js/ajy/board/board_detail.js"></script>
