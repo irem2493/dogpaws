@@ -56,12 +56,30 @@
 
           <tr th:if="${commentList.size() > 0 }" th:each="comment : ${commentList}">
             <td th:text="${comment.nickname}"></td>
-            <td th:text="${comment.comment}"></td>
+            <td>
+              <!-- 기존 댓글 내용 -->
+              <div th:id="'comment' + ${comment.comment_id}" th:text="${comment.comment}"></div>
+
+              <!-- 수정할 때 나타날 input 필드 (초기에는 숨김 처리) -->
+              <textarea
+                     class="input-a"
+                     th:id="'commentInput' + ${comment.comment_id}"
+                     th:text="${comment.comment}"
+                     style="display: none; width: 100%;">
+              </textarea>
+            </td>
             <td>
               <span th:text="${#strings.replace(comment.created_at, 'T', ' ')}"></span>
               <br> <!-- 줄바꿈 추가 -->
               <th:block th:if="${user!=null and comment.username == user.username}">
-                <a href="#" >수정</a> |
+                <!-- 수정 버튼 -->
+                <a href="#" th:id="'editBtn' + ${comment.comment_id}"
+                   th:attr="onclick='editComment(' + ${comment.comment_id} + ')'" >수정</a>
+
+                <!-- 저장 버튼 (초기에는 숨김 처리) -->
+                <a href="#" th:id="'saveBtn' + ${comment.comment_id}"
+                   th:attr="onclick='saveComment(' + ${comment.comment_id} + ')'"
+                   style="display: none;">저장</a> |
                 <a href="#" id="commentDeleteBtn" th:data-comment-id="${comment.comment_id}" class="delete-comment-btn">삭제</a>
               </th:block>
             </td>
@@ -75,7 +93,7 @@
     <!-- 댓글 -->
     <th:block th:if="${user != null}">
     <form id="commentForm">
-      <textarea id="comment" name="comment" style="width: 100%;" placeholder="댓글을 입력해주세요"></textarea>
+      <textarea id="comment" class="input-a" name="comment" style="width: 100%; margin-bottom: 10px" placeholder="댓글을 입력해주세요"></textarea>
       <input type="submit" class="btn-b" style="width: 95px; height: 35px; margin-bottom: 10px" value="작성"/>
     </form>
     </th:block>
