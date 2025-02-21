@@ -71,8 +71,14 @@ public class CalendarService {
     //공유받은 캘린더 등록
     public int insertSharedCalendar(ShareDto shareDto) {
         int result = calendarDao.insertShareCalendar(shareDto);
-        System.out.println("Dao. result" + result);
         return result;
     }
+
+    public CalendarDto getCalendarById(int calendarId) {
+        CalendarDto calendar = calendarDao.getCalendarById(calendarId);
+        System.out.println("Dao. calendar" + calendar);
+        return calendar;
+    }
+
 
 }
