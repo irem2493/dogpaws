@@ -433,15 +433,25 @@ function closeAndOpenShareForm(button) {
     }, 100);
 }
 
-function closeModal(button) {
-    const modal = button.closest('.pawsModal');
-    const overlay = modal.parentElement;
 
-    if (modal && overlay.classList.contains('pawsModal-overlay')) {
-        document.body.appendChild(modal);
-        overlay.remove();
-        modal.style.display = 'none';
+// 모달 닫기 함수 수정
+function calendarCloseModal(target) {
+    let modal;
+
+    if (typeof target === "string") {
+        // ID로 모달 찾기
+        modal = document.getElementById(target);
+    } else {
+        // 버튼으로 모달 찾기
+        modal = target.closest('.pawsModal');
     }
 
-    return false;  // ✅ 기본 동작 방지
+    if (modal) {
+        const overlay = modal.parentElement;
+        if (overlay && overlay.classList.contains('pawsModal-overlay')) {
+            document.body.appendChild(modal); // 모달을 원래 위치로 되돌림
+            overlay.remove(); // 오버레이 제거
+        }
+        modal.style.display = 'none';
+    }
 }
