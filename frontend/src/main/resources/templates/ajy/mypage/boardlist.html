@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout-mypage}">
+<head>
+    <link rel="stylesheet" href="/css/ajy/board/board_register.css" />
+    <link rel="stylesheet" href="/css/ajy/board/board_list.css" />
+
+    <title>내가 쓴 게시물 보기</title>
+</head>
+<body layout:fragment="content" style="min-height: 100vh">
+<div class="container">
+    <div class="board-container">
+        <input type="hidden" name="username" id="username" th:value="${user!= null ? user.username : ''}"/>
+        <div th:replace="~{ajy/mypage/boardheader :: mypageBoardHeader}"></div>
+        <table style="margin-bottom: 80px">
+            <thead>
+            <tr>
+                <th>글번호</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>조회수</th>
+                <th>작성일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${boardList.size() > 0}" th:each="board, stat : ${boardList}">
+                <input type="hidden" name="boardId" id="boardId" th:value="${board.boardId}"/>
+                <td th:text="${boardList.size()-stat.index}"></td>
+                <td><a th:href="@{/board/boardDetail/{boardId}/{category}(boardId=${board.boardId}, category=${category})}">[[${board.title}]]</a></td>
+                <td th:text="${board.nickname}"></td>
+                <td th:text="${board.view_count}"></td>
+                <td th:text="${#strings.replace(board.created_at, 'T', ' ')}"></td>
+            </tr>
+
+            <tr th:if="${boardList.size() == 0}">
+                <td colspan="5" style="text-align: center">게시글이 없습니다</td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+</body>
+</html>
