@@ -10,6 +10,13 @@
 <div class="container">  <!-- 컨테이너 div.. 지우지 마세요 !-->
     <!-- 여기서부터 작성하시면 됩니다. !-->
 
+    <!-- 세션에서 유저값 받기 !-->
+    <th:block th:if="${session.user != null && session.dog != null}">
+        <input type="hidden" id="sessionUsername" th:value="${session.user.username}">
+        <input type="hidden" id="sessionDogId" th:value="${session.dog.dogId}">
+        <input type="hidden" id="sessionDogName" th:value="${session.dog.dogName}">
+    </th:block>
+
     <div class="like-list-container">
 
         <!-- 토글 영역 -->

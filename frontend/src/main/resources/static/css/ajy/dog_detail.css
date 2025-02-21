@@ -122,3 +122,8 @@
     border: 1px solid #aaa; /* 테두리 색 변경 */
     opacity: 0.6; /* 흐리게 */
 }
+
+.like-img img{
+    max-width: 40px;
+    max-height: 40px;
+}

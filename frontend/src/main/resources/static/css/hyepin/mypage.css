@@ -1,0 +1,41 @@
+.mypage-container {
+    max-width: 600px;
+    margin: 50px auto;
+    text-align: center;
+}
+.mypage-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.mypage-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+.mypage-item {
+    padding: 15px 10px 15px 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+    transition: all 0.3s ease;
+    background: white;
+}
+.mypage-item:hover {
+    background: #f8f9fa;
+    transform: scale(1.05);
+}
+.mypage-item img {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 10px;
+}
+.mypage-item div {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+a{
+    text-decoration: none;
+    color: inherit;
+}
