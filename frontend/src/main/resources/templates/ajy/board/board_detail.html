@@ -16,6 +16,8 @@
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <input type="hidden" name="boardId" id="boardId" th:value="${boardId}"/>
       <input type="hidden" name="category" id="category" th:value="${category}"/>
+      <input type="hidden" name="username" id="username" th:value="${user!= null ? user.username : null}"/>
+      <input type="hidden" name="nickname" id="nickname" th:value="${user!= null ? user.nickname : null}"/>
       <div class="post-header" th:text="${board.title}"></div>
       <!-- 수정 및 삭제 버튼 -->
       <div class="button-group" th:if="${user!= null and user.username == board.username}">
@@ -42,6 +44,41 @@
     <!-- 게시글 내용 -->
     <div class="post-content" th:utext="${board.content}"></div>
 
+    <!-- 댓글 목록 -->
+    <div class="comments-section">
+      <h3><span id="commentTotal" th:text="${commentList.size()}"></span> 개의 댓글</h3>
+      <table class="comment-table">
+        <tbody id="commentList">
+          <tr th:if="${commentList.size() == 0 }">
+             <td colspan="2" style="font-weight: normal">등록된 댓글이 없습니다.</td>
+            <td></td>
+          </tr>
+
+          <tr th:if="${commentList.size() > 0 }" th:each="comment : ${commentList}">
+            <td th:text="${comment.nickname}"></td>
+            <td th:text="${comment.comment}"></td>
+            <td>
+              <span th:text="${#strings.replace(comment.created_at, 'T', ' ')}"></span>
+              <br> <!-- 줄바꿈 추가 -->
+              <th:block th:if="${user!=null and comment.username == user.username}">
+                <a href="#" >수정</a> |
+                <a href="#" >삭제</a>
+              </th:block>
+            </td>
+
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 댓글 -->
+    <th:block th:if="${user != null}">
+    <form id="commentForm">
+      <textarea id="comment" name="comment" style="width: 100%;" placeholder="댓글을 입력해주세요"></textarea>
+      <input type="submit" class="btn-b" style="width: 95px; height: 35px; margin-bottom: 10px" value="작성"/>
+    </form>
+    </th:block>
   </div>
 </div>
 <script src="/js/ajy/board/board_detail.js"></script>
