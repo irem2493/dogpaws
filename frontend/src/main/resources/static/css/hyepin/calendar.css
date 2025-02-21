@@ -32,5 +32,24 @@ a{
 }
 
 #calendarDescription {
+    width: 400px;
+    height: 200px;
+}
+
+.pawsModal-content-container {
+    margin-top: 20px;
+    margin-left: 80px;
+}
+
+#calendar-map{
+    border-radius:10px;
+    width: 400px;
+    height: 200px;
+    margin: 10px 0px 10px 0px;
+    display:none;
+}
+
+#sample5_address {
     width: 300px;
 }
+
