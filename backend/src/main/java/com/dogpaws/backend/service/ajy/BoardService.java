@@ -8,6 +8,7 @@ import com.dogpaws.backend.repository.jpa.ajy.BoardRepository;
 import com.dogpaws.backend.repository.jpa.ajy.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,6 +89,7 @@ public class BoardService {
     public List<BoardResponseDto> getBoardsByCategory(String category) {
         List<Board> bList = boardRepository.findByCategoryOrderByBoardIdDesc(category);
 
+
         List<BoardResponseDto> boardList = new ArrayList<>();
         if(!bList.isEmpty()){
 
@@ -99,6 +101,10 @@ public class BoardService {
                 dto.setCategory(b.getCategory());
                 dto.setCreatedAt(b.getCreatedAt().toString());
                 dto.setTitle(b.getTitle());
+
+               List<Comment> commentList = commentRepository.findByBoardIdAndCategory(b.getBoardId(), category, Sort.by(Sort.Order.desc("commentId")));
+                dto.setCommentCount(commentList.size());
+
                 dto.setContent(b.getContent());
                 dto.setViewCount(b.getViewCount());
                 boardList.add(dto);
@@ -128,5 +134,26 @@ public class BoardService {
         }
 
         return null;
+    }
+
+    //마이페이지 게시글 조회
+    public List<BoardResponseDto> getMyBoardsByCategory(String username, String category) {
+        List<Board> bList = boardRepository.findByUsernameAndCategory(username, category, Sort.by(Sort.Order.desc("boardId")));
+        List<BoardResponseDto> boardList = new ArrayList<>();
+        if(!bList.isEmpty()){
+            for (Board b : bList) {
+                BoardResponseDto dto = new BoardResponseDto();
+                dto.setBoardId(b.getBoardId());
+                dto.setUsername(b.getUsername());
+                dto.setNickname(b.getNickname());
+                dto.setTitle(b.getTitle());
+                dto.setContent(b.getContent());
+                dto.setViewCount(b.getViewCount());
+                dto.setCreatedAt(b.getCreatedAt().toString());
+                dto.setCategory(b.getCategory());
+                boardList.add(dto);
+            }
+        }
+        return boardList;
     }
 }

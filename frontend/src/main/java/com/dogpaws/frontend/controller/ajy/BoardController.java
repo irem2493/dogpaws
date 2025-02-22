@@ -27,12 +27,12 @@ public class BoardController {
     private final ApiRequestService apiRequestService;
 
     @GetMapping("/{category}")
-    public String board(@PathVariable("category")String category, Model model, HttpSession session) {
+    public String getBoards(@PathVariable("category")String category, Model model, HttpSession session) {
 
         UserDto user  = SessionUtil.getUser(session);
 
-            var boardResponse = apiRequestService.fetchData("/api/board/boards/"+category);
-            var bList = boardResponse.getBody();
+        var boardResponse = apiRequestService.fetchData("/api/board/boards/"+category);
+        var bList = boardResponse.getBody();
 
         if (!(bList instanceof Map)) {
             throw new RuntimeException("잘못된 응답 형식입니다.");
@@ -170,6 +170,35 @@ public class BoardController {
 
         return "redirect:/login";
 
+    }
+
+    @GetMapping("/mypage/boardlist/{category}")
+    public String mypageBoardList(@PathVariable("category")String category, Model model, HttpSession session) {
+        UserDto user  = SessionUtil.getUser(session);
+        if(user != null) {
+
+            var boardResponse = apiRequestService.fetchData("/api/board/mypage/"+user.getUsername()+"/"+category);
+            var bList = boardResponse.getBody();
+
+            if (!(bList instanceof Map)) {
+                throw new RuntimeException("잘못된 응답 형식입니다.");
+            }
+
+            // 2️⃣ 내부 "body" 필드 추출
+            Map<String, Object> bodyMap = (Map<String, Object>) bList;
+            Object innerBodyObj = bodyMap.get("body");
+            if (!(innerBodyObj instanceof List)) {
+                throw new RuntimeException("잘못된 응답 형식입니다.");
+            }
+
+            // 3️⃣ 게시글 리스트를 가져와서 모델에 추가
+            List<Map<String, Object>> boardList = (List<Map<String, Object>>) innerBodyObj;
+
+            model.addAttribute("user", user);
+            model.addAttribute("category", category);
+            model.addAttribute("boardList", boardList);
+        }
+        return "/ajy/mypage/boardlist";
     }
 
 
