@@ -5,8 +5,8 @@
   <mapper namespace="com.dogpaws.backend.repository.dao.common.AlarmDao">
 
     <insert id="insertAlarm">
-      INSERT INTO tbl_alarm (username, alarm_type, gubn_id, message)
-      VALUES (#{username}, #{alarmType}, #{gubnId}, #{message})
+      INSERT INTO tbl_alarm (username, alarm_type, gubn_id, message, dog_id)
+      VALUES (#{username}, #{alarmType}, #{gubnId}, #{message}, #{dogId})
     </insert>
 
 </mapper>
