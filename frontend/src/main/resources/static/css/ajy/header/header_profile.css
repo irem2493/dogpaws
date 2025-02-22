@@ -1,3 +1,11 @@
+.mypage-index {
+    width: 30px !important;
+    height: auto !important;
+    max-width: unset !important;
+    display: block;
+    margin-top: 5px;
+}
+
 .profile-dropdown {
     position: relative;
     display: inline-block;
