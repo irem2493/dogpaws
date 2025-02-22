@@ -14,7 +14,7 @@
     <input type="hidden" id="username" th:value="${username}">
     <input type="hidden" id="nickname" th:value="${nickname}">
     <input type="hidden" id="dogId" th:value="${dogId}">
-        <input type="hidden" id="dogName" th:value="${dogName}">
+    <input type="hidden" id="dogName" th:value="${dogName}">
     <input type="hidden" id="dogProfile" th:value="${dogProfile}">
     <input type="hidden" id="inviteId" th:value="${inviteId}">
     <!-- 1번 페이지 : 채팅방 목록 -->
@@ -45,7 +45,8 @@
 
                 <div class="title">
                     <p id="main-title" style="font-weight: bold;">일정 등록</p>
-                    <div class="close-btn" style="cursor: pointer"><img  src="/img/icon/modal/modal-delete.svg" alt="" width="15"></div>
+                    <div class="close-btn" style="cursor: pointer"><img src="/img/icon/modal/modal-delete.svg" alt=""
+                                                                        width="15"></div>
                 </div>
 
                 <div class="content">
@@ -78,11 +79,15 @@
                             </div>
                         </div>
                         <div class="location-box">
-                            <div class="location-icon" id="location-icon"><img src="/img/icon/modal/locationModal.svg" alt="">
+                            <div class="location-icon" id="location-icon"><img src="/img/icon/modal/locationModal.svg"
+                                                                               alt="">
                             </div>
                             <div class="location-content">
-                                <input type="text" id="address" placeholder="장소를 입력하세요" style="width: 200px; height: 30px;" readonly>
-                                <button class="modal-btn" id="search-location" onclick="sample5_execDaumPostcode()">주소검색</button>
+                                <input type="text" id="address" placeholder="장소를 입력하세요"
+                                       style="width: 200px; height: 30px;" readonly>
+                                <button class="modal-btn" id="search-location" onclick="sample5_execDaumPostcode()">
+                                    주소검색
+                                </button>
                             </div>
                         </div>
                         <div class="schedule-content-box">
@@ -94,18 +99,21 @@
                 </div>
 
                 <div class="footer">
-                    <button class="modal-btn" id="insert-btn" onclick="goSchedule()" style="width: 90px; color: white; margin-right: 30px;">등록</button>
+                    <button class="modal-btn" id="insert-btn" onclick="goSchedule()"
+                            style="width: 90px; color: white; margin-right: 30px;">등록
+                    </button>
                 </div>
             </div>
         </div>
         <!-- 일정 등록 모달창 완-->
-<!--        일정 상세 모달-->
+        <!--        일정 상세 모달-->
         <div class="modal-all" id="detailModal-all" style="display: none">
             <div class="Modal">
 
                 <div class="title">
                     <p style="font-weight: bold;">일정 상세</p>
-                    <div class="close-btn" id="close-btn" style="cursor: pointer"><img  src="/img/icon/modal/modal-delete.svg" alt="" width="15"></div>
+                    <div class="close-btn" id="close-btn" style="cursor: pointer"><img
+                            src="/img/icon/modal/modal-delete.svg" alt="" width="15"></div>
                 </div>
 
                 <div class="content">
@@ -121,20 +129,22 @@
                                    style="height: 35px; width: 250px;" readonly>
                         </div>
                         <div class="date-box">
-                            <div class="date-icon" >
+                            <div class="date-icon">
                                 <img src="/img/icon/modal/scheduleModal.svg" alt="">
                             </div>
                             <div class="date-content">
                                 <div class="start-date">
-                                    <input type="datetime-local" id="detailStartDate" style="width: 247px; height: 30px;" readonly>
+                                    <input type="datetime-local" id="detailStartDate"
+                                           style="width: 247px; height: 30px;" readonly>
                                 </div>
                                 <div class="end-date">
-                                    <input type="datetime-local" id="detailEndDate" style="width: 247px; height: 30px;" readonly>
+                                    <input type="datetime-local" id="detailEndDate" style="width: 247px; height: 30px;"
+                                           readonly>
                                 </div>
                             </div>
                         </div>
                         <div class="location-box">
-                            <div class="location-icon" ><img src="/img/icon/modal/locationModal.svg" alt="">
+                            <div class="location-icon"><img src="/img/icon/modal/locationModal.svg" alt="">
                             </div>
                             <div class="location-content">
                             </div>
@@ -143,17 +153,20 @@
                         <div class="schedule-content-box">
                             <p>일정내용</p>
                             <textarea name="" id="detailDescription"
-                                      style="width: 325px; height: 120px; resize: none; padding: 10px;" readonly></textarea>
+                                      style="width: 325px; height: 120px; resize: none; padding: 10px;"
+                                      readonly></textarea>
                         </div>
                     </div>
                 </div>
 
                 <div class="footer">
-                    <button class="modal-btn" id="shared-btn"  onclick="sharedCalendar(this)" style="width: 90px; color: white; margin-right: 30px;">일정 추가</button>
+                    <button class="modal-btn" id="shared-btn" onclick="sharedCalendar(this)"
+                            style="width: 90px; color: white; margin-right: 30px;">일정 추가
+                    </button>
                 </div>
             </div>
         </div>
-<!--        일정 상세 모달 완-->
+        <!--        일정 상세 모달 완-->
 
         <!--                채팅방 생성 모달-->
         <div id="chatRoomModal" class="modal-overlay" style="display: none;">
@@ -165,14 +178,15 @@
                 <div class="modal-body">
                     <div class="modal-icon">
                         <input type="file" id="fileInput" style="display: none;">
-                        <img src="/img/groupchat.png" id="uploadImage" alt="채팅방 아이콘" style="width: 80px; height: 80px; object-fit: cover">
+                        <img src="/img/groupchat.png" id="uploadImage" alt="채팅방 아이콘"
+                             style="width: 80px; height: 80px; object-fit: cover">
                     </div>
                     <input type="text" id="chatRoomName" placeholder="채팅방 이름을 입력하세요" class="chatroom-input">
                     <button id="createChatRoomBtn" class="create-chatroom-btn">생성</button>
                 </div>
             </div>
         </div>
-<!--        채팅방 생성 모달 완-->
+        <!--        채팅방 생성 모달 완-->
 
         <div class="chat-main">
 
@@ -193,50 +207,56 @@
 
         <div class="detail-background">
             <div class="profile">
-<!--                <img src="/img/groupchat.png" class="profile-img-3" alt="">-->
+                <img src="/img/groupchat.png" class="profile-img-3" alt="">
             </div>
-            <div class="title-box">
-                <div class="detail-title"></div>
-                <button class="star-btn">멍바닥 주기</button>
-                <button class="link-btn" onclick="linkModal()" style="min-width: 60px;">초대 링크</button>
-            </div>
-
-            <div class="linkBox" style="display: none"></div>
-
-            <div class="participants" style="display: none">
-                <div class="participants-title">
-                    <div class="text">참여자</div>
-                    <div class="plus">+</div>
+                <div class="title-box">
+                    <div class="detail-title"></div>
+                    <button class="star-btn" style="display: none">멍바닥 주기</button>
+                    <button class="link-btn" onclick="linkModal()" style="min-width: 60px; display: none">초대 링크</button>
                 </div>
+
+                <div class="linkBox" style="display: none"></div>
+
+                <div class="participants" style="display: none">
+                    <div class="modalDetailParticipants" style="display: none">
+                        <div class="allParticipants-modal-list">
+
+                        </div>
+                    </div>
+
+                    <div class="participants-title">
+                        <div class="text">참여자</div>
+                        <div class="plus" onclick="openParticipantList()">+</div>
+                    </div>
                     <div class="participants-list">
 
                     </div>
-            </div>
-            <div class="media">
-                <div class="modalMedia" style="display: none">
-                    <div class="allMedia-modal-list" >
+                </div>
+                <div class="media">
+                    <div class="modalMedia" style="display: none">
+                        <div class="allMedia-modal-list">
+
+                        </div>
+                    </div>
+
+                    <div class="media-title">
+                        <div class="text">미디어</div>
+                        <div class="plus" onclick="openMediaList()">+</div>
+                    </div>
+                    <div class="media-list">
 
                     </div>
                 </div>
+                <div class="calender">
+                    <div class="calender-title" style="width: 100%;">가까운 일정</div>
+                    <div class="today-btn-box"></div>
+                    <!--                <button class="today-btn">오늘</button>-->
+                    <div class="calender-content">
 
-                <div class="media-title">
-                    <div class="text">미디어</div>
-                    <div class="plus" onclick="openMediaList()">+</div>
+                    </div>
                 </div>
-                <div class="media-list">
-
-                </div>
+                <div class="out-chat" style="color:red; cursor: pointer;">나가기</div>
             </div>
-            <div class="calender">
-                <div class="calender-title" style="width: 100%;">가까운 일정</div>
-                <div class="today-btn-box"></div>
-<!--                <button class="today-btn">오늘</button>-->
-                <div class="calender-content">
-
-                </div>
-            </div>
-            <div class="out-chat" style="color:red; cursor: pointer;">나가기</div>
-        </div>
     </section>
 </div>
 </body>
