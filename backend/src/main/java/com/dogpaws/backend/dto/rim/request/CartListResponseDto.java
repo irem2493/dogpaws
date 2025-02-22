@@ -23,7 +23,7 @@ public class CartListResponseDto {
     // 총 금액 계산 메서드
     public int getTotalPrice() {
         return cartOptions.stream()
-                .mapToInt(option -> (productPrice + option.getOptionPrice()) * option.getQuantity())
+                .mapToInt(option -> option.getOptionPrice() * option.getQuantity())
                 .sum();
     }
 

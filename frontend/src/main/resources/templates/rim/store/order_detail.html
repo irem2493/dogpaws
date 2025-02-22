@@ -53,7 +53,6 @@
         </div>
 
         <!-- 주문 상품 목록 -->
-        <!-- 주문 상품 목록 -->
         <div class="card">
             <div class="card-body">
                 <div class="row" th:each="item : ${order.orderItems}">
@@ -67,7 +66,7 @@
                         <div th:if="${item.options != null and !item.options.empty}">
                             <p class="mb-2" th:each="option : ${item.options}">
                                 <span th:text="${option.optionName}"></span>
-                                <span th:text="'(' + ${#numbers.formatDecimal(option.optionPrice, 0, 'COMMA', 0, 'POINT')} + '원)'"></span>
+                                <span th:text="'(' + ${#numbers.formatDecimal(item.productPrice -  option.optionPrice, 0, 'COMMA', 0, 'POINT')} + '원)'"></span>
                                 <span th:text="' ' + ${option.quantity} + '개'"></span>
                             </p>
                         </div>

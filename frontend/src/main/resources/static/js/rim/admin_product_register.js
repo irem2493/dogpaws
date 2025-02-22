@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function (){
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="preview-image">`;
                 };
                 reader.readAsDataURL(file);
             }
@@ -74,7 +74,10 @@ document.addEventListener('DOMContentLoaded', function (){
                 <input type="text" placeholder="옵션명" class="option-name form-control" required>
             </div>
             <div class="col-md-4">
-                <input type="number" placeholder="추가금액" class="option-price form-control" required>
+                <input type="number" placeholder="입고가(원가)" class="cost-price form-control" required>
+            </div>
+            <div class="col-md-4">
+                <input type="number" placeholder="판매가" class="option-price form-control" required>
             </div>
             <div class="col-md-4">
                 <input type="number" placeholder="재고수량" class="option-stock form-control" required>
@@ -247,8 +250,10 @@ document.addEventListener('DOMContentLoaded', function (){
             mainCategory: mainCat,
             subCategory: document.getElementById('subCategory').value,
             name: document.getElementById('productName').value,
+            costPrice : document.getElementById('costPrice').value,
             price: parseInt(document.getElementById('price').value),
-            stockQuantity: parseInt(document.getElementById('stockQuantity').value),
+            stockQuantity: calculateTotalStock(),
+            basicOptionQuantity : parseInt(document.getElementById('stockQuantity').value),
             description: document.getElementById('description').value,
             status: document.getElementById('status').value,
             origin: document.getElementById('origin').value || null,
@@ -269,7 +274,8 @@ document.addEventListener('DOMContentLoaded', function (){
             const optionData = {
                 optionName: item.querySelector('.option-name').value,
                 optionPrice: parseInt(item.querySelector('.option-price').value),
-                optionStock: parseInt(item.querySelector('.option-stock').value)
+                optionStock: parseInt(item.querySelector('.option-stock').value),
+                costPrice : parseInt(item.querySelector('.cost-price').value)
             };
 
             // 선택된 추가 필드만 데이터 수집
@@ -283,6 +289,7 @@ document.addEventListener('DOMContentLoaded', function (){
         });
 
         console.log('옵션 정보:', options);
+
 
         // JSON 문자열로 변환하여 FormData에 추가
         formData.append('productDtoString', JSON.stringify(productData));
@@ -306,4 +313,24 @@ document.addEventListener('DOMContentLoaded', function (){
             alert('상품 등록에 실패했습니다.');
         }
     });
+});
+
+// 총 재고 수량 계산 함수 추가
+function calculateTotalStock() {
+    let totalStock = parseInt(document.getElementById('stockQuantity').value) || 0;
+
+    // 모든 옵션의 재고 수량 합산
+    document.querySelectorAll('.option-item').forEach(item => {
+        const optionStock = parseInt(item.querySelector('.option-stock').value) || 0;
+        totalStock += optionStock;
+    });
+
+    return totalStock;
+}
+// 실시간 재고 수량 업데이트를 위한 이벤트 리스너 추가
+document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('option-stock') || e.target.id === 'stockQuantity') {
+        const totalStock = calculateTotalStock();
+        console.log('총 재고 수량:', totalStock);
+    }
 });

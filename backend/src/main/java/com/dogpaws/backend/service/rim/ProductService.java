@@ -6,8 +6,10 @@ import com.dogpaws.backend.dto.rim.ProductListDto;
 import com.dogpaws.backend.dto.rim.ProductOptionDto;
 import com.dogpaws.backend.dto.rim.ProductSearchDto;
 import com.dogpaws.backend.entity.rim.Product;
+import com.dogpaws.backend.entity.rim.ProductInbound;
 import com.dogpaws.backend.entity.rim.ProductOption;
 import com.dogpaws.backend.repository.dao.rim.ProductDao;
+import com.dogpaws.backend.repository.jpa.rim.ProductInboundRepository;
 import com.dogpaws.backend.repository.jpa.rim.ProductOptionRepository;
 import com.dogpaws.backend.repository.jpa.rim.ProductRepository;
 import com.dogpaws.backend.utils.FileUploadUtil;
@@ -36,6 +38,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductOptionRepository productOptionRepository;
+    private final ProductInboundRepository productInboundRepository;
 
     private final ProductDao productDao;
 
@@ -45,7 +48,11 @@ public class ProductService {
      * 상품 등록 (JPA)
      */
     public void registProduct(ProductDto productDto, List<ProductOptionDto> optionDtos, MultipartFile thumbnailImage, MultipartFile detailImage, String userId) throws IOException {
-        log.info("상품 등록 시작. 상품명: {}, 사용자: {}", productDto.getName(), userId);
+        log.info("상품 등록 시작. 상품: {}, 사용자: {}", productDto.toString(), userId);
+
+        // 총 재고 수량 계산 TODO : 메서드로 분리
+        int baseStock = productDto.getStockQuantity();
+        int totalStock = 0;
 
         Product product = Product.builder()
                 //notnull
@@ -72,33 +79,50 @@ public class ProductService {
         ProductOption baseOption = ProductOption.builder()
                 .product(finalProduct)
                 .optionName(finalProduct.getName() + " (기본)")
-                .optionPrice(0)
-                .optionStock(finalProduct.getStockQuantity())
+                .optionPrice(finalProduct.getPrice())
+                .optionStock(productDto.getBasicOptionQuantity())
                 .isBaseOption(true)
                 .build();
         productOptionRepository.save(baseOption);
 
+        // 기본 옵션 입고 처리
+        ProductInbound baseInbound = ProductInbound.builder()
+                .optionId(baseOption.getOptionId().longValue())
+                .quantity(productDto.getBasicOptionQuantity())
+                .costPrice(productDto.getCostPrice())
+                .build();
+        productInboundRepository.save(baseInbound);
+
         if(optionDtos != null && !optionDtos.isEmpty()) {
             log.info("  {} 개 상품 옵션 생성중 ", optionDtos.size());
-            List<ProductOption> productOptions = optionDtos.stream()
-                    .map(optionDto -> ProductOption.builder()
-                            .product(finalProduct)
-                            .optionName(optionDto.getOptionName())
-                            .optionPrice(optionDto.getOptionPrice())
-                            .optionStock(optionDto.getOptionStock())
-                            // 추가된 옵션 필드들
-                            .optionSize(optionDto.getOptionSize())
-                            .optionColor(optionDto.getOptionColor())
-                            .optionWeight(optionDto.getOptionWeight())
-                            .optionMaterial(optionDto.getOptionMaterial())
-                            .optionExpirationDate(StringUtil.stringToLocalDate(optionDto.getOptionExpirationDate()))
-                            .optionStorageInfo(optionDto.getOptionStorageInfo())
-                            .optionManufacturer(optionDto.getOptionManufacturer())
-                            .optionOrigin(optionDto.getOptionOrigin())
-                            .build())
-                    .collect(Collectors.toList());
-            productOptionRepository.saveAll(productOptions);  // 옵션 저장 추가
-            log.debug("상품 옵션 생성됨: {}", productOptions);
+            for (ProductOptionDto optionDto : optionDtos) {
+                ProductOption option = ProductOption.builder()
+                        .product(finalProduct)
+                        .optionName(optionDto.getOptionName())
+                        .optionPrice(optionDto.getOptionPrice())
+                        .optionStock(optionDto.getOptionStock())
+                        // 추가된 옵션 필드들
+                        .optionSize(optionDto.getOptionSize())
+                        .optionColor(optionDto.getOptionColor())
+                        .optionWeight(optionDto.getOptionWeight())
+                        .optionMaterial(optionDto.getOptionMaterial())
+                        .optionExpirationDate(StringUtil.stringToLocalDate(optionDto.getOptionExpirationDate()))
+                        .optionStorageInfo(optionDto.getOptionStorageInfo())
+                        .optionManufacturer(optionDto.getOptionManufacturer())
+                        .optionOrigin(optionDto.getOptionOrigin())
+                        .build();
+
+                        ProductOption savedOption = productOptionRepository.save(option);
+                        log.debug("상품 옵션 생성됨: {}", option);
+
+                        // 각 옵션별 입고 처리
+                        ProductInbound optionInbound = ProductInbound.builder()
+                                .optionId(savedOption.getOptionId().longValue())
+                                .quantity(optionDto.getOptionStock())
+                                .costPrice(optionDto.getCostPrice())
+                                .build();
+                        productInboundRepository.save(optionInbound);
+            }
         }
 
         if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
@@ -522,7 +546,9 @@ public class ProductService {
             productDto.setSize(product.getSize());
             productDto.setMaterial(product.getMaterial());
             productDto.setOrigin(product.getOrigin());
-            productDto.setExpirationDate(product.getExpirationDate().toString());
+            if(product.getExpirationDate() != null) {
+                productDto.setExpirationDate(product.getExpirationDate().toString());
+            }
             productDto.setColor(product.getColor());
             productDto.setCreatedAt(product.getCreatedAt());
             productDto.setUpdatedAt(product.getUpdatedAt());

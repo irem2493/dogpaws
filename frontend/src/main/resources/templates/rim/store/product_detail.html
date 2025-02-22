@@ -129,7 +129,7 @@
                                 th:data-name="${option.option_name}"
                                 th:data-price="${option.option_price}"
                                 th:data-is-base="${option.base_option}"
-                                th:text="${option.option_name + ' (+' + #numbers.formatInteger(option.option_price, 0, 'COMMA') + '원)'}">
+                                th:text="${option.option_name + ' (+' + #numbers.formatInteger(product.price - option.option_price, 0, 'COMMA') + '원)'}">
                         </option>
                     </th:block>
                 </select>

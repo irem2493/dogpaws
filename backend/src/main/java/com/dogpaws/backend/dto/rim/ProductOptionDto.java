@@ -29,6 +29,8 @@ public class ProductOptionDto {
     private String optionOrigin;
     private boolean isBaseOption;
 
+    private Integer costPrice; //옵션 원가
+
     public boolean isBaseOption() {
         return isBaseOption;
     }

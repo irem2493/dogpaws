@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const optionId = baseOption.value;
         const optionName = baseOption.getAttribute('data-name');
         const optionPrice = parseInt(baseOption.getAttribute('data-price'));
-        const totalOptionPrice = basePrice + optionPrice;
+        const totalOptionPrice = optionPrice;
 
         // 기본 옵션을 selectedItems에 추가
         selectedItems.set(optionId, {
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const optionName = selectedOption.getAttribute('data-name');
         const optionPrice = parseInt(selectedOption.getAttribute('data-price'));
-        const totalOptionPrice = basePrice + optionPrice; // 기본 가격 + 옵션 가격
+        const totalOptionPrice = optionPrice; // 기본 가격 + 옵션 가격
 
         addSelectedOption(optionId, optionName, totalOptionPrice);
     });

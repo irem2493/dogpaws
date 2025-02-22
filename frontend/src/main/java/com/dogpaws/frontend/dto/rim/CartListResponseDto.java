@@ -36,7 +36,7 @@ public class CartListResponseDto {
 
     public int getTotalPrice() {
         return cartOptions.stream()
-                .mapToInt(option -> (productPrice + option.getOptionPrice()) * option.getQuantity())
+                .mapToInt(option -> option.getOptionPrice() * option.getQuantity())
                 .sum();
     }
 }
