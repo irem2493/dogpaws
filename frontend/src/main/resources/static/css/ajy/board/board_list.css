@@ -45,3 +45,53 @@
     text-decoration: none;
     color: black;
 }
+
+/* 닉네임 아래에 위치하는 모달 */
+.board-container .modal {
+    display: none; /* 기본적으로 숨김 */
+    position: absolute; /* 부모 요소에 상대적인 위치 */
+    top: 100%; /* 부모 요소 아래로 위치 */
+    left: 0;
+    margin-top: 10px; /* 부모 요소 아래 10px 간격 */
+    width: 100%; /* 모달의 너비는 부모 요소에 맞춤 */
+    height: auto;
+    max-width: 400px; /* 최대 너비 설정 */
+    background-color: #fff; /* 배경 색 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    padding: 15px;
+    z-index: 999; /* 다른 요소 위에 표시되도록 */
+}
+
+.board-container .petList {
+    list-style: none;
+    padding: 10px;
+    margin: 5px;
+}
+
+.board-container .paging {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.board-container .paging a, .paging span {
+    margin: 0 8px;  /* 숫자 간의 적절한 간격 */
+    font-size: 16px;
+    text-decoration: none;
+    color: #333;
+}
+
+.board-container .current-page {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 50%;
+    background-color: orange; /* 오렌지색 원 */
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+}
