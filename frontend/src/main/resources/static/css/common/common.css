@@ -9,14 +9,14 @@
     --store_color: #FBFAF9;
 }
 body {
-    font-family: 'Noto Sans KR', 'Noto Sans', sans-serif;
+    font-family: 'Noto Sans KR', 'Noto Sans', sans-serif !important;
     font-size: 16px;
     margin:0;
     padding:0;
 }
 
 button, input, textarea, select {
-    font-family: 'Noto Sans KR', 'Noto Sans', sans-serif;
+    font-family: 'Noto Sans KR', 'Noto Sans', sans-serif !important;
     font-size: 1rem;
     color: var(--black);
     margin: 0;
