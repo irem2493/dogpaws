@@ -1,0 +1,13 @@
+<header th:fragment="mypageBoardHeader">
+
+    <div class="board-container">
+        <!-- 상단 메뉴 -->
+        <div class="menu" style="padding-top:40px">
+            <a href="/board/mypage/boardlist/F" th:classappend="${category == 'F'} ? 'active'">자유게시판</a>
+            <a href="/board/mypage/boardlist/I" th:classappend="${category == 'I'} ? 'active'">강아지 정보 교환</a>
+            <a href="/board/mypage/boardlist/G" th:classappend="${category == 'G'} ? 'active'">그룹채팅</a>
+            <a href="/board/mypage/boardlist/V" th:classappend="${category == 'V'} ? 'active'">봉사활동</a>
+        </div>
+    </div>
+
+</header>

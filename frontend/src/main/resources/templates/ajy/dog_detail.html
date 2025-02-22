@@ -4,7 +4,7 @@
       layout:decorate="~{layout/layout}">
 <head>
     <link rel="stylesheet" href="/css/ajy/dog_detail.css" />
-
+    <link rel="stylesheet" href="/css/hyepin/matching.css">
     <title>강아지 상세 정보</title>
 </head>
 <body layout:fragment="content" style="min-height: 100vh">
@@ -26,7 +26,7 @@
             <span>
             <div style="display: flex; gap: 10px;">
                 <span th:text="${dog.dog_name}"></span>
-                <th:block th:if="${user == dog.username}">
+                <th:block th:if="${username == dog.username}">
                     <button class="btn-b" style="width: 85px; height: 35px;"
                             th:onclick="'window.location.href=\'/dog/dogEidt/' + ${dog.dog_id} + '\''">수정</button>
 
@@ -37,22 +37,22 @@
                             삭제
                     </button>
                 </th:block>
-                        <div>
-                            <th:block th:if="${user != dog.username}"></th:block>
-                        </div>
-                        <th:block th:if="${user != dog.username}">
-                        <div class="like-img">
-                            <img id="friendlikeIcon" th:src="${dog.friend_liked ? '/img/icon/like-push.svg' : '/img/icon/like.svg'}" alt="friend-like-icon" data-like-code="F" onclick="likeToggle(this)">
-                        </div>
-                        <div class="like-img">
-                            <img id="matinglikeIcon" th:src="${dog.mating_liked ? '/img/icon/mating-push.svg' : '/img/icon/mating.svg'}" alt="mating-like-icon" data-like-code="P" onclick="likeToggle(this)">
-                        </div>
-                        </th:block>
+
+                <th:block th:if="${username != dog.username}">
+                    <div class="like-img">
+                        <img id="friendlikeIcon" th:src="${dog.friend_liked ? '/img/icon/like-push.svg' : '/img/icon/like.svg'}" alt="friend-like-icon" data-like-code="F" onclick="likeToggle(this)">
+                    </div>
+                    <div class="like-img">
+                        <img id="matinglikeIcon" th:src="${dog.mating_liked ? '/img/icon/mating-push.svg' : '/img/icon/mating.svg'}" alt="mating-like-icon" data-like-code="P" onclick="likeToggle(this)">
+                    </div>
+                </th:block>
             </div>
             </span>
             <span>
-                <button class="btn-b" style="width: 100px; height: 35px;">1:1 채팅</button>
-                <button class="btn-b" style="width: 100px; height: 35px;">그룹채팅</button>
+                <th:block th:if="${username != dog.username}">
+                    <button type="button" class="btn-b" th:data-dog-id="${dog.dog_id}" th:data-username="${dog.username}" onclick="chatForm(this)" style="width: 100px; height: 35px;">1:1 채팅</button>
+                    <button class="btn-b" th:data-dog-id="${dog.dog_id}" th:data-username="${dog.username}" onclick="openModal('groupChat'); getGroupChatRoom(this)" style="width: 100px; height: 35px;">그룹채팅</button>
+                 </th:block>
             </span>
         </h2>
         <div class="profile-card">
@@ -223,6 +223,17 @@
         </div>
     </div>
 
+    <!-- 채팅방으로 공유 모달창 -->
+    <div class="pawsModal" id="groupChat" style="display: none;">
+        <h2 class="pawsModal-title">그룹채팅 초대하기
+            <div class="pw-title" id="pw-title"></div>
+        </h2>
+        <button class="pawsModal-close" onclick="closeModal(this)"></button>
+        <div class="pawsModal-content" id="chatList" style="margin: 0 auto; text-align: center;">
+            <!-- 채팅방 삽입 영역 -->
+        </div>
+    </div>   <!-- 채팅방으로 공유 모달창 -->
+
 </div>
 <script>
     function confirmDownload(element) {
@@ -232,5 +243,6 @@
 </script>
 <script src="/js/ajy/mypage/doglist.js"></script>
 <script src="/js/hyepin/likeList/dog_detali_like_toggle.js"></script>
+<script type="module"  src="/js/hyepin/friendMatching/chat.js"></script>
 </body>
 </html>
