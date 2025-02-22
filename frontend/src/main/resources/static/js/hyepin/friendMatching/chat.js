@@ -195,7 +195,8 @@ function groupChatSubmit(element){
     console.log("그룹채팅 초대 완료 / username: " + username +  " / otherDogId : ", otherDogId + " / roomId: " + roomId + "/ otherUsername: " + otherUsername);
 
     const formData = new FormData();
-    formData.append("username", otherDogId);
+    formData.append("username", otherUsername);
+    formData.append("dogId", otherDogId);
     formData.append("alarmType", "G");
     formData.append("gubnId", roomId);
     formData.append("message", message);
