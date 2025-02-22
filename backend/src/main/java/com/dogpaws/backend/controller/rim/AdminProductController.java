@@ -171,7 +171,30 @@ public class AdminProductController {
     }
 
     /**
-     * 상품 수정
+     * 상품 간단 수정
+     */
+    @PutMapping("/{productId}/simple")
+    public ApiResponse<String> updateProductSimple(
+            @PathVariable Long productId,
+            @RequestBody Map<String, Object> request) {
+        try {
+            productService.updateProductSimple(
+                    productId,
+                    (String) request.get("name"),
+                    (Integer) request.get("price"),
+                    (String) request.get("status"),
+                    (String) request.get("description")
+            );
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "상품 수정 성공");
+        } catch (Exception e) {
+            log.error("상품 수정 실패: {}", e.getMessage(), e);
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "상품 수정 실패");
+        }
+    }
+
+
+    /**
+     * 상품 수정 TODO: 고치는중
      */
     @PutMapping("/{productId}")
     public ApiResponse<String> updateProduct(

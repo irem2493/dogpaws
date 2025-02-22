@@ -256,6 +256,31 @@ public class ProductService {
     }
 
     /**
+     * 상품 간단 수정
+     */
+    @Transactional
+    public void updateProductSimple(Long productId, String name, Integer price, String status, String description) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        product.update(
+                name,
+                price,
+                product.getStockQuantity(),
+                description,
+                status,
+                product.getMainCategory(),
+                product.getSubCategory(),
+                product.getMaterial(),
+                product.getOrigin(),
+                product.getExpirationDate(),
+                product.getWeight()
+        );
+
+        productRepository.save(product);
+    }
+
+    /**
      * 상품 수정 (JPA) - 재고 제외 상품정보만 
      */
     @Transactional

@@ -278,8 +278,8 @@
                     </td>
                     <td th:text="${product.stock_quantity}">총 재고</td>
                     <td>
-                        <button type="button" class="btn-normal"
-                                th:onclick="'location.href=\'/admin/products/edit/' + ${product.product_id} + '\''">수정</button>
+                        <button type="button" class="btn-normal edit-btn" 
+                                th:data-product-id="${product.product_id}">수정</button>
                     </td>
                     <td>
                         <button type="button" class="btn-normal"
@@ -313,6 +313,39 @@
             </div>
         </div>
 
+        <!-- 상품 수정 모달 -->
+        <div id="editModal" class="pawsModal" style="display: none">
+            <button class="pawsModal-close" onclick="closeModal(this)"></button>
+            <div class="pawsModal-title">상품 정보 수정</div>
+            <div class="pawsModal-content">
+                <div class="box">
+                    <div class="form-group">
+                        <label class="required">상품명</label>
+                        <input type="text" id="editName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">판매가</label>
+                        <input type="number" id="editPrice" class="form-control numeric-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">상태</label>
+                        <select id="editStatus" class="form-control">
+                            <option value="O">판매중</option>
+                            <option value="S">품절</option>
+                            <option value="D">판매중지</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>상품 설명</label>
+                        <textarea id="editDescription" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="pawsModal-footer">
+                    <button class="pawsModal-confirm" id="confirmEdit">수정</button>
+                    <button class="pawsModal-cancel" onclick="closeModal(this)">취소</button>
+                </div>
+            </div>
+        </div>
 
         <!-- 재고 관리 모달 수정 -->
         <div id="stockModal" class="pawsModal" style="display: none">
