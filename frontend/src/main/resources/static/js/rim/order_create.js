@@ -201,7 +201,7 @@ function convertCartItemsToOrderItems(cartItems) {
             option_id: option.option_id,
             option_item_id: option.option_item_id,
             option_name: option.option_name,
-            option_price:  cartItem.product_price + option.option_price,
+            option_price:  option.option_price,
             quantity: option.quantity
         })),
     }));

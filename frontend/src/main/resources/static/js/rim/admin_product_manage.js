@@ -34,23 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('searchKeyword').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') loadFilteredProducts(0, true);
     });
-
-    // 페이지네이션 이벤트 리스너 설정
-    initializePaginationListeners();
-
-    initializeEventListeners();
 });
-
-// 페이지네이션 이벤트 리스너 초기화
-function initializePaginationListeners() {
-    document.querySelectorAll('.page-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const newPage = this.getAttribute('data-page');
-            loadFilteredProducts(newPage, true);
-        });
-    });
-}
 
 // 필터링된 상품 목록 로드
 async function loadFilteredProducts(page = 0, useAjax = false) {
@@ -62,11 +46,10 @@ async function loadFilteredProducts(page = 0, useAjax = false) {
     // URL 파라미터 설정
     const params = new URLSearchParams();
     
-    if (category) params.append('category', category);
+    if (category) params.append('mainCategory', category); 
     if (status) params.append('status', status);
     if (sortBy) params.append('sortBy', sortBy);
     if (keyword) params.append('keyword', keyword);
-    if (page > 0) params.append('page', page);
 
     // URL 업데이트
     const queryString = params.toString();
@@ -83,21 +66,11 @@ async function loadFilteredProducts(page = 0, useAjax = false) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             const newTableBody = doc.querySelector('.product-table tbody');
-            const newPagination = doc.querySelector('.pagination');
 
             // 테이블 본문 업데이트
             if (newTableBody) {
                 document.querySelector('.product-table tbody').innerHTML = newTableBody.innerHTML;
             }
-
-            // 페이지네이션 업데이트
-            if (newPagination) {
-                document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
-            }
-
-            // 이벤트 리스너 재설정
-            initializeEventListeners();
-            initializePaginationListeners();
 
         } catch (error) {
             console.error('데이터 로드 실패:', error);
@@ -109,144 +82,3 @@ async function loadFilteredProducts(page = 0, useAjax = false) {
     }
 }
 
-// 이벤트 리스너 초기화
-function initializeEventListeners() {
-    // 수정 버튼 클릭 이벤트
-    document.querySelectorAll('.edit-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const productId = this.getAttribute('data-product-id');
-            initializeEditModal(productId);
-        });
-    });
-
-    // 상태 변경 버튼 이벤트
-    document.querySelectorAll('[data-current-status]').forEach(button => {
-        button.addEventListener('click', function() {
-            const productId = this.getAttribute('data-product-id');
-            const currentStatus = this.getAttribute('data-current-status');
-            handleStatusChange(productId, currentStatus);
-        });
-    });
-
-    // 삭제 버튼 이벤트
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const productId = this.getAttribute('data-product-id');
-            handleDelete(productId);
-        });
-    });
-}
-
-// 상품 수정 모달 초기화
-async function initializeEditModal(productId) {
-    try {
-        const data = await api.get(`/api/admin/products/${productId}`);
-        
-        if (data.status === 'SUCCESS') {
-            const product = data.body;
-            
-            document.getElementById('editName').value = product.name;
-            document.getElementById('editPrice').value = product.price;
-            document.getElementById('editStatus').value = product.status;
-            document.getElementById('editDescription').value = product.description;
-            
-            document.getElementById('editModal').style.display = 'block';
-            
-            document.getElementById('confirmEdit').onclick = async () => {
-                const updatedProduct = {
-                    name: document.getElementById('editName').value,
-                    price: parseInt(document.getElementById('editPrice').value),
-                    status: document.getElementById('editStatus').value,
-                    description: document.getElementById('editDescription').value
-                };
-                await updateProduct(productId, updatedProduct);
-            };
-        }
-    } catch (error) {
-        console.error('상품 정보 로드 실패:', error);
-        alert('상품 정보를 불러오는데 실패했습니다.');
-    }
-}
-
-// 상품 수정 처리
-async function updateProduct(productId, productData) {
-    try {
-        const data = await api.put(`/api/admin/products/${productId}/simple`, productData);
-        
-        if (data.status === 'SUCCESS') {
-            alert('상품이 성공적으로 수정되었습니다.');
-            closeModal(document.querySelector('#editModal .pawsModal-close'));
-            loadFilteredProducts();
-        } else {
-            alert('상품 수정에 실패했습니다.');
-        }
-    } catch (error) {
-        console.error('상품 수정 실패:', error);
-        alert('상품 수정 중 오류가 발생했습니다.');
-    }
-}
-
-// 상품 상태 변경 처리
-async function handleStatusChange(productId, currentStatus) {
-    const statusModal = document.getElementById('statusModal');
-    statusModal.style.display = 'block';
-    
-    document.getElementById('confirmStatus').onclick = async () => {
-        try {
-            const newStatus = getNextStatus(currentStatus);
-            const data = await api.put(`/api/admin/products/${productId}/status`, { status: newStatus });
-            
-            if (data.status === 'SUCCESS') {
-                alert('상품 상태가 변경되었습니다.');
-                closeModal(document.querySelector('#statusModal .pawsModal-close'));
-                loadFilteredProducts();
-            } else {
-                alert('상태 변경에 실패했습니다.');
-            }
-        } catch (error) {
-            console.error('상태 변경 실패:', error);
-            alert('상태 변경 중 오류가 발생했습니다.');
-        }
-    };
-    
-    document.getElementById('cancelStatus').onclick = () => {
-        closeModal(document.querySelector('#statusModal .pawsModal-close'));
-    };
-}
-
-// 상품 삭제 처리
-async function handleDelete(productId) {
-    const deleteModal = document.getElementById('deleteModal');
-    deleteModal.style.display = 'block';
-    
-    document.getElementById('confirmDelete').onclick = async () => {
-        try {
-            const data = await api.delete(`/api/admin/products/${productId}`);
-            
-            if (data.status === 'SUCCESS') {
-                alert('상품이 삭제되었습니다.');
-                closeModal(document.querySelector('#deleteModal .pawsModal-close'));
-                loadFilteredProducts();
-            } else {
-                alert('삭제에 실패했습니다.');
-            }
-        } catch (error) {
-            console.error('삭제 실패:', error);
-            alert('삭제 중 오류가 발생했습니다.');
-        }
-    };
-    
-    document.getElementById('cancelDelete').onclick = () => {
-        closeModal(document.querySelector('#deleteModal .pawsModal-close'));
-    };
-}
-
-// 상태 순환 함수
-function getNextStatus(currentStatus) {
-    const statusCycle = {
-        'O': 'S',  // 판매중 -> 품절
-        'S': 'D',  // 품절 -> 판매중지
-        'D': 'O'   // 판매중지 -> 판매중
-    };
-    return statusCycle[currentStatus] || 'O';
-}

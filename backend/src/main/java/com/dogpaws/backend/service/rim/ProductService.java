@@ -164,22 +164,6 @@ public class ProductService {
         return convertProductToProductDto(product);
     }
 
-
-
-    /**
-     * 상품 목록 조회 (MyBatis + JPA 페이징)
-     */
-    @Transactional(readOnly = true)
-    public Page<ProductListDto> getProducts(String category, int page, int size) {
-        ProductSearchDto searchDto = new ProductSearchDto();
-        searchDto.setMainCategory(category);
-        searchDto.setPage(page + 1);
-        searchDto.setPageSize(size);
-        searchDto.setStatus("O"); // 판매중인 상품만 조회
-
-        return searchProducts(searchDto);
-    }
-
     public Page<ProductListDto> searchProducts(ProductSearchDto searchDto) {
         // offset 계산
         searchDto.setOffset((searchDto.getPage() - 1) * searchDto.getPageSize());
@@ -255,92 +239,6 @@ public class ProductService {
         log.info("상품 삭제 완료. productId: {}", productId);
     }
 
-    /**
-     * 상품 간단 수정
-     */
-    @Transactional
-    public void updateProductSimple(Long productId, String name, Integer price, String status, String description) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
-
-        product.update(
-                name,
-                price,
-                product.getStockQuantity(),
-                description,
-                status,
-                product.getMainCategory(),
-                product.getSubCategory(),
-                product.getMaterial(),
-                product.getOrigin(),
-                product.getExpirationDate(),
-                product.getWeight()
-        );
-
-        productRepository.save(product);
-    }
-
-    /**
-     * 상품 수정 (JPA) - 재고 제외 상품정보만 
-     */
-    @Transactional
-    public void updateProduct(Long productId, ProductDto productDto, MultipartFile thumbnailImage, MultipartFile detailImage, String userId) throws IOException {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(()-> new IllegalArgumentException("상품을 찾을 수 없습니다."));
-
-        // 현재 재고 수량 유지
-        int currentStock = product.getStockQuantity();
-        
-        product.update(
-                productDto.getName(),
-                productDto.getPrice(),
-                currentStock,
-                productDto.getDescription(),
-                productDto.getStatus(),
-                productDto.getMainCategory(),
-                productDto.getSubCategory(),
-                productDto.getMaterial(),
-                productDto.getOrigin(),
-                StringUtil.stringToLocalDate(productDto.getExpirationDate()),
-                productDto.getWeight()
-        );
-
-        // 썸네일 이미지 처리
-        if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
-            // 기존 이미지가 있다면 삭제
-            if (product.getImageUrl() != null) {
-                fileUploadUtil.deleteFile(product.getImageUrl());
-            }
-
-            // 새 이미지 저장
-            FileDto thumbnailFile = fileUploadUtil.saveFile(
-                    thumbnailImage, "PM",
-                    productId.toString(),
-                    userId
-            );
-            product.updateImages(thumbnailFile.getFileUrl(), product.getImageDetailUrl());
-        }
-
-        // 상세 이미지 처리
-        if (detailImage != null && !detailImage.isEmpty()) {
-            // 기존 이미지가 있다면 삭제
-            if (product.getImageDetailUrl() != null) {
-                fileUploadUtil.deleteFile(product.getImageDetailUrl());
-            }
-
-            // 새 이미지 저장
-            FileDto detailFile = fileUploadUtil.saveFile(
-                    detailImage, "PD",
-                    productId.toString(),
-                    userId
-            );
-            product.updateImages(
-                    product.getImageUrl(),
-                    detailFile.getFileUrl()
-            );
-        }
-    }
-
 
     /**
      * 옵션 추가 (JPA)
@@ -392,6 +290,7 @@ public class ProductService {
                 })
                 .collect(Collectors.toList());
     }
+
     /**
      * 옵션의 진행중인 주문 여부 확인
      */
@@ -414,7 +313,6 @@ public class ProductService {
             productDao.updateOption(optionDto);
         }
     }
-
 
     /**
      * 옵션 soft 삭제 (MyBatis)
@@ -683,6 +581,8 @@ public class ProductService {
                     searchDto.setSortBy(null); // 잘못된 값이면 기본 정렬 사용
                 }
             }
+
+            log.info("ProductSearchDto 검색파라미터 {}", searchDto.getSearchKeyword());
 
             // 페이징 관련 파라미터 제거
             searchDto.setPage(null);
