@@ -3,6 +3,7 @@ package com.dogpaws.backend.service.ajy;
 import com.dogpaws.backend.dto.ajy.BoardRequestDto;
 import com.dogpaws.backend.dto.ajy.CommentRequestDto;
 import com.dogpaws.backend.dto.ajy.CommentResponseDto;
+import com.dogpaws.backend.dto.ajy.DogDto;
 import com.dogpaws.backend.entity.ajy.Board;
 import com.dogpaws.backend.entity.ajy.Comment;
 import com.dogpaws.backend.repository.jpa.ajy.CommentRepository;
@@ -23,6 +24,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final BoardService boardService;
+    private final DogService dogService;
 
    public void save(CommentRequestDto commentRequestDto) {
        log.info("comment : {}", commentRequestDto);
@@ -49,18 +51,22 @@ public class CommentService {
            commentResponseDto.setNickname(comment.getNickname());
            commentResponseDto.setComment(comment.getComment());
            commentResponseDto.setCreatedAt(comment.getCreatedAt().toString());
+
+           List<DogDto> dogList = dogService.getDogs(comment.getUsername());
+           commentResponseDto.setDogList(dogList);
+
            commentResponseDtos.add(commentResponseDto);
        }
 
        return commentResponseDtos;
    }
 
-   //특정 게시글 조회
+   //특정 댓글 조회
     public Comment getCommentById(Integer commentId) {
        return commentRepository.findByCommentId(commentId);
     }
 
-    //특정 게시글 삭제
+    //특정 댓글 삭제
     public void deleteCommentById(Integer commentId) {
        commentRepository.deleteById(commentId);
     }
