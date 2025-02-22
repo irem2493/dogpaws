@@ -11,5 +11,6 @@ public class AlarmDto {
     private String gubnId; //알림과 관련된 ID (구체적인 알림 대상에 따라 달라짐)
     private String message; //알림 메시지 내용
     private String readStatus; //읽음여부
+    private int dogId; // 강아지 ID
 
 }
