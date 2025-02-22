@@ -63,56 +63,70 @@
             <p style="font-size: 1.3rem; margin: 0">배송 정보</p>
         </div>
         <div class="card-body">
-
-            <div class="shipping-buttons">
-                <button type="button" class="btn btn-sm btn-orange-dark" onclick="openModal('shippingModal')">
-                    배송정보 입력
-                </button>
-            </div>
-            <div class="shipping-section">
-                <table class="info-table">
-                    <colgroup>
-                        <col width="150px">
-                        <col width="auto">
-                    </colgroup>
-                    <tbody>
-                    <tr>
-                        <th>받는 사람</th>
-                        <td id="displayReceiverName">배송지 정보를 설정하세요</td>
-                    </tr>
-                    <tr>
-                        <th>연락처</th>
-                        <td id="displayReceiverPhone">배송지 정보를 설정하세요</td>
-                    </tr>
-                    <tr>
-                        <th>주소</th>
-                        <td id="displayFullAddress">배송지 정보를 설정하세요</td>
-                    </tr>
-                    <tr style="border-top: 1px solid #DDBC98;">
-                        <th>배송 메모</th>
-                        <td>
-                            <select class="select-a" id="shippingMemo" name="shippingMemo">
-                                <option value="">배송 메모를 선택해주세요</option>
-                                <option value="문 앞에 놓아주세요">문 앞에 놓아주세요</option>
-                                <option value="경비실에 맡겨주세요">경비실에 맡겨주세요</option>
-                                <option value="배송 전 연락 부탁드립니다">배송 전 연락 부탁드립니다</option>
-                                <option value="">직접 입력</option>
-                            </select>
-                            <input type="text" class="input-a mt-2" id="directShippingMemo"
-                                   style="display: none;" placeholder="배송메모를 입력해주세요">
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="row mb-3">
+                <div class="col-10">
+                    <table class="info-table">
+                        <colgroup>
+                            <col width="150px">
+                            <col width="auto">
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <th>받는 사람</th>
+                            <td id="displayReceiverName">-</td>
+                        </tr>
+                        <tr>
+                            <th>연락처</th>
+                            <td id="displayReceiverPhone">-</td>
+                        </tr>
+                        <tr>
+                            <th>주소</th>
+                            <td id="displayFullAddress">-</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-2 d-flex align-items-center justify-content-center">
+                    <button type="button" class="btn-status" style="width: fit-content; padding: 16px;" onclick="openModal('shippingModal')">
+                        배송정보 입력
+                    </button>
+                </div>
             </div>
 
+
+            <div class="row">
+                <div class="col-12">
+                    <table class="info-table">
+                        <colgroup>
+                            <col width="150px">
+                            <col width="auto">
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <th>배송 요청사항</th>
+                            <td>
+                                <select class="select-a" id="shippingMemo" name="shippingMemo">
+                                    <option value="">배송 메모를 선택해주세요</option>
+                                    <option value="문 앞에 놓아주세요">문 앞에 놓아주세요</option>
+                                    <option value="경비실에 맡겨주세요">경비실에 맡겨주세요</option>
+                                    <option value="배송 전 연락 부탁드립니다">배송 전 연락 부탁드립니다</option>
+                                    <option value="direct">직접 입력</option>
+                                </select>
+                                <input type="text" class="input-a mt-2" id="directShippingMemo"
+                                       style="display: none;" placeholder="배송메모를 입력해주세요">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
 
     <!-- 배송정보 입력 모달 -->
     <div id="shippingModal" class="pawsModal" style="display: none;">
-        <button type="button" class="pawsModal-close" onclick="closeModal(this)">&times;</button>
+        <button type="button" class="pawsModal-close" onclick="closeModal(this)"></button>
         <h3 class="pawsModal-title">배송 정보 입력</h3>
         <div class="pawsModal-content">
             <div class="form-check mb-3">
@@ -257,21 +271,24 @@
 
 <!-- 결제 모달 -->
 <div id="paymentModal" class="pawsModal" style="display: none;">
-    <div class="modal-content">
-        <button type="button" class="pawsModal-close" onclick="closeModal(this)">&times;</button>
-        <h3 class="modal-title">결제 수단 선택</h3>
+    <h3 class="pawsModal-title">결제 수단 선택</h3>
+    <div class="pawsModal-content">
+        <button type="button" class="pawsModal-close" onclick="closeModal(this)"></button>
 
         <div class="wrapper">
-            <div class="box_section" style="padding: 40px 30px 50px 30px; margin-top: 30px; margin-bottom: 50px">
+            <div class="box_section" style="margin-top: 15px;">
 
                 <!-- 결제 UI -->
                 <div id="payment-method"></div>
                 <!-- 이용약관 UI -->
                 <div id="agreement"></div>
 
-                <button class="button" id="payment-button" style="margin-top: 30px">결제하기</button>
+
             </div>
         </div>
+    </div>
+    <div class="pawsModal-footer">
+        <button class="btn-orange-dark" id="payment-button" style="margin-top: 30px; width: 400px; border-radius: 15px;">결제하기</button>
     </div>
 </div>
 

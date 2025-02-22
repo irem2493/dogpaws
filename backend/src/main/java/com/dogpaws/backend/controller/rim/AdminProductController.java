@@ -30,6 +30,9 @@ public class AdminProductController {
 
     private final ProductService productService;
 
+    /**
+     * 상품 등록
+     */
     @PostMapping
     public ApiResponse<String> registerProduct(@ModelAttribute ProductRegistRequest request) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -54,30 +57,29 @@ public class AdminProductController {
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "상품 등록 성공");
     }
 
+    /**
+     * 상품 조회
+     */
     @GetMapping("/manage")
-    public ApiResponse<Page<ProductListDto>> getProductList(
+    public ApiResponse<List<ProductListDto>> getProductList(
             @RequestParam(required = false) String mainCategory,
-            @RequestParam(required = false) String subCategory,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String sortBy,
-            @RequestParam(required = false) String searchKeyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(required = false) String keyword) {
 
         ProductSearchDto searchDto = new ProductSearchDto();
         searchDto.setMainCategory(mainCategory);
-        searchDto.setSubCategory(subCategory);
         searchDto.setStatus(status);
         searchDto.setSortBy(sortBy);
-        searchDto.setSearchKeyword(searchKeyword);
-        searchDto.setPage(page + 1);
-        searchDto.setPageSize(size);
+        searchDto.setSearchKeyword(keyword);
 
-        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS,
-                productService.searchProducts(searchDto));
+        List<ProductListDto> products = productService.searchAllProducts(searchDto);
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, products);
     }
 
-    // 상품 상태 변경
+    /**
+     * 상품 상태 변경
+     */
     @PutMapping("/{productId}/status")
     public ApiResponse<String> updateProductStatus(
             @PathVariable Long productId,
@@ -144,8 +146,63 @@ public class AdminProductController {
         }
     }
 
+    /**
+     * 상품 상세 조회
+     */
+    @GetMapping("/{productId}")
+    public ApiResponse<ProductDto> getProduct(@PathVariable Long productId) {
+        try {
+            ProductDto product = productService.getProduct(productId);
 
-    // 상품 삭제
+            // 각 옵션별 주문 진행 여부 확인
+            List<ProductOptionDto> options = product.getOptions();
+            if (options != null) {
+                for (ProductOptionDto option : options) {
+                    boolean hasActiveOrders = productService.checkActiveOrders(productId, option.getOptionId().longValue());
+                    option.setHasActiveOrders(hasActiveOrders);
+                }
+            }
+
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, product);
+        } catch (Exception e) {
+            log.error("상품 조회 실패: {}", e.getMessage(), e);
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, null);
+        }
+    }
+
+    /**
+     * 상품 수정
+     */
+    @PutMapping("/{productId}")
+    public ApiResponse<String> updateProduct(
+            @PathVariable Long productId,
+            @ModelAttribute ProductRegistRequest request) throws IOException {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            ProductDto productDto = mapper.readValue(request.getProductDtoString(), ProductDto.class);
+
+            // 현재 로그인한 사용자 정보 가져오기
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+
+            productService.updateProduct(
+                    productId,
+                    productDto,
+                    request.getThumbnailImage(),
+                    request.getDetailImage(),
+                    username
+            );
+
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "상품 수정 성공");
+        } catch (Exception e) {
+            log.error("상품 수정 실패: {}", e.getMessage(), e);
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "상품 수정 실패: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 상품 삭제
+     */
     @DeleteMapping("/{productId}")
     public ApiResponse<String> deleteProduct(@PathVariable Long productId) {
         try {

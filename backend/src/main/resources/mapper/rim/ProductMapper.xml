@@ -80,7 +80,9 @@
                 ORDER BY p.created_at DESC
             </otherwise>
         </choose>
-        LIMIT #{pageSize} OFFSET #{offset}
+        <if test="pageSize != null and offset != null">
+            LIMIT #{pageSize} OFFSET #{offset}
+        </if>
     </select>
 
     <select id="getTotalCount" resultType="int">

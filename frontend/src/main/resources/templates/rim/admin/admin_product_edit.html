@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout-admin}">
+<head>
+    <title>상품 수정</title>
+    <style>
+        .options-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .option-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+
+        .option-item input {
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .option-item input[readonly] {
+            background-color: #f5f5f5;
+        }
+
+        .active-order-badge {
+            background-color: #ffd700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .new-option {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body layout:fragment="content">
+<div class="container">
+    <div class="admin-container">
+        <div class="nav-path">HOME > 스토어 관리 > 상품 수정</div>
+        <div class="pw-title">상품수정</div>
+        <form class="productEditForm" id="productEditForm">
+            <!-- 카테고리 섹션 -->
+            <div class="category-section">
+                <select name="mainCategory" id="mainCategory" th:value="${product.main_category}">
+                    <option value="">대분류 선택</option>
+                    <option value="F" th:selected="${product.main_category == 'F'}">사료</option>
+                    <option value="N" th:selected="${product.main_category == 'N'}">간식</option>
+                    <option value="T" th:selected="${product.main_category == 'T'}">장난감</option>
+                </select>
+
+                <select name="subCategory" id="subCategory" th:value="${product.sub_category}" style="display: none;">
+                    <option value="">소분류 선택</option>
+                    <option value="D" th:selected="${product.sub_category == 'D'}">건식 사료</option>
+                    <option value="W" th:selected="${product.sub_category == 'W'}">습식 사료</option>
+                </select>
+            </div>
+
+            <!-- 공통 필드 -->
+            <div id="commonFields">
+                <div class="basic-info-section">
+                    <input type="text" id="productName" placeholder="상품명" th:value="${product.name}">
+                    <input type="number" id="price" placeholder="판매가" th:value="${product.price}">
+<!--                    <input type="number" id="stockQuantity" placeholder="기본 옵션 재고량" th:value="${product.stock_quantity}">-->
+                    <input type="text" id="origin" placeholder="원산지" th:value="${product.origin}">
+                    <input type="text" id="size" placeholder="크기" th:value="${product.size}">
+                    <input type="text" id="weight" placeholder="무게" th:value="${product.weight}">
+                    <input type="text" id="manufacturer" placeholder="제조사(브랜드)" th:value="${product.manufacturer}">
+                </div>
+            </div>
+
+            <!-- 사료/간식 전용 필드 -->
+            <div id="foodFields" style="display: none;">
+                <div class="food-info-section">
+                    <input type="date" id="expirationDate" placeholder="유통기한" th:value="${product.expiration_date}">
+                    <input type="text" id="storageInfo" placeholder="보관방법" th:value="${product.storage_info}">
+                </div>
+            </div>
+
+            <!-- 장난감 전용 필드 -->
+            <div id="toyFields" style="display: none;">
+                <div class="toy-info-section">
+                    <input type="text" id="color" placeholder="기본 옵션 색상" th:value="${product.color}">
+                </div>
+            </div>
+
+            <!-- 이미지 섹션 -->
+            <div class="image-section">
+                <div class="thumbnail-upload">
+                    <p>상품 썸네일</p>
+                    <input type="file" id="thumbnailImage" accept="image/*">
+                    <div id="thumbnailPreview" class="image-preview">
+                        <img th:if="${product.image_url}" th:src="${product.image_url}" alt="썸네일 이미지">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 옵션 섹션 -->
+            <div class="options-section">
+                <h3>상품 옵션</h3>
+                <button type="button" id="addOptionBtn">새 옵션 추가</button>
+                
+                <div class="options-container">
+                    <div th:each="option : ${product.options}" 
+                         class="option-item" 
+                         th:data-option-id="${option.option_id}">
+                        
+                        <input type="hidden" class="optionId" th:value="${option.option_id}">
+                        <input type="text" class="optionName" 
+                               th:value="${option.option_name}"
+                               th:readonly="${option.has_active_orders}">
+                        <input type="number" class="optionPrice" 
+                               th:value="${option.option_price}"
+                               th:readonly="${option.has_active_orders}">
+                        <input type="text" class="option_weight"
+                               th:value="${option.option_weight}"
+                               th:readonly="${option.has_active_orders}">
+                        
+                        <!-- 주문이 없는 경우에만 수정/삭제 버튼 표시 -->
+                        <div th:if="${!option.has_active_orders}" class="option-actions">
+                            <button type="button" class="update-option"
+                                    th:onclick="handleOptionUpdate([[${option.option_id}]], [[${product.product_id}]])">
+                                수정
+                            </button>
+                            <button type="button" class="delete-option"
+                                    th:onclick="handleOptionDelete([[${option.option_id}]], [[${product.product_id}]])">
+                                삭제
+                            </button>
+                        </div>
+                        
+                        <!-- 주문이 있는 경우 상태 표시 -->
+                        <div th:if="${option.has_active_orders}" class="option-status">
+                            <span class="active-order-badge">진행중인 주문 있음</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 상품 설명 섹션 -->
+            <div class="description-section">
+                <textarea id="description" placeholder="상품 설명" th:text="${product.description}"></textarea>
+                <div class="detail-image-upload">
+                    <p>상품 상세 이미지 (1개만 등록 가능합니다.)</p>
+                    <input type="file" id="detailImage" accept="image/*">
+                    <div id="detailPreview" class="image-preview">
+                        <img th:if="${product.image_detail_url}" th:src="${product.image_detail_url}" alt="상세 이미지">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 상태 섹션 -->
+            <div class="status-section">
+                <select id="status" th:value="${product.status}">
+                    <option value="O" th:selected="${product.status == 'O'}">판매중</option>
+                    <option value="S" th:selected="${product.status == 'S'}">품절</option>
+                    <option value="D" th:selected="${product.status == 'D'}">판매중지</option>
+                </select>
+            </div>
+
+            <button type="submit">상품 수정</button>
+        </form>
+    </div>
+</div>
+<script src="/js/rim/admin_product_edit.js"></script>
+</body>
+</html>

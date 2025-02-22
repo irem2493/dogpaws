@@ -83,6 +83,111 @@
         .pawsModal-footer{
             margin-top: 30px;
         }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .form-control {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .numeric-input {
+            text-align: right;
+        }
+
+        .required::after {
+            content: "*";
+            color: red;
+            margin-left: 4px;
+        }
+
+        .selected-product-info {
+            border: 1px solid #ddd;
+        }
+
+        .selected-products {
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .selected-product-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .selected-product-item:last-child {
+            border-bottom: none;
+        }
+
+        .btn-remove {
+            padding: 5px 10px;
+            background-color: #ff5252;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-remove:hover {
+            background-color: #ff1744;
+        }
+
+        .btn-primary {
+            padding: 8px 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: #1976D2;
+        }
+
+        .table-container {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .product-table th {
+            border-bottom: 2px solid #ddd;
+            box-shadow: 0 2px 2px rgba(0,0,0,0.05);
+        }
     </style>
 </head>
 <body layout:fragment="content">
@@ -94,6 +199,7 @@
         <!-- 상단 버튼 영역 -->
         <div class="manage-header">
             <button type="button" id="stockHistoryBtn">입고 내역</button>
+            <button type="button" id="bulkInboundBtn" class="btn-primary" style="margin-left: 10px;">선택 상품 입고</button>
         </div>
 
         <!-- 필터 영역 -->
@@ -128,164 +234,216 @@
             <button type="button" id="searchBtn">검색</button>
         </div>
 
+
         <!-- 상품 목록 테이블 -->
-        <table class="product-table">
-            <thead>
-            <tr>
-                <th>상품명</th>
-                <th>판매가</th>
-                <th>판매상태</th>
-                <th>현재재고</th>
-                <th>재고변경</th>
-                <th>상태변경</th>
-                <th>삭제</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="product : ${productList.body.content}">
-                <td>
-                    <div class="product-info">
-                        <img th:if="${product.image_url}" th:src="${product.image_url}"
-                             alt="상품 이미지" class="product-thumb">
-                        <span th:text="${product.name}">상품명</span>
-                    </div>
-                </td>
-                <td th:text="${#numbers.formatInteger(product.price, 0, 'COMMA') + '원'}">가격</td>
-                <td>
-            <span th:switch="${product.status}">
-                <span th:case="'O'">판매중</span>
-                <span th:case="'S'">품절</span>
-                <span th:case="'D'">판매중지</span>
-            </span>
-                </td>
-                <td th:text="${product.stock_quantity}">재고</td>
-                <td>
-                    <button type="button" class="btn-normal"
-                            th:data-product-id="${product.product_id}">재고</button>
-                </td>
-                <td>
-                    <button type="button" class="btn-normal"
-                            th:data-product-id="${product.product_id}"
-                            th:data-current-status="${product.status}">상태</button>
-                </td>
-                <td>
-                    <button type="button" class="btn-normal"
-                            th:data-product-id="${product.product_id}">삭제</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <!-- 페이징 처리도 수정 -->
-        <div th:if="${productList.body.total_elements > 0}" class="pagination">
-    <span th:if="${!productList.body.first}">
-        <a href="#" class="page-link" th:data-page="0">처음</a>
-    </span>
-            <span th:each="pageNum : ${#numbers.sequence(0, productList.body.total_pages - 1)}">
-        <a href="#" class="page-link"
-           th:classappend="${pageNum == productList.body.number} ? 'active'"
-           th:text="${pageNum + 1}"
-           th:data-page="${pageNum}">1</a>
-    </span>
-            <span th:if="${!productList.body.last}">
-        <a href="#" class="page-link"
-           th:data-page="${productList.body.total_pages - 1}">마지막</a>
-    </span>
+        <div class="table-container" style="max-height: 600px; overflow-y: auto;">
+            <table class="product-table">
+                <thead>
+                <tr>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">
+                        <input type="checkbox" id="selectAllProducts">
+                    </th>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">상품명</th>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">판매가</th>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">판매상태</th>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">재고(옵션포함)</th>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">수정</th>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">상태변경</th>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">입고</th>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">삭제</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="product : ${productList}">
+                    <td>
+                        <input type="checkbox" class="product-checkbox"
+                               th:data-product-id="${product.product_id}"
+                               th:data-product-name="${product.name}"
+                               th:data-image-url="${product.image_url}">
+                    </td>
+                    <td>
+                        <div class="product-info">
+                            <img th:if="${product.image_url}" th:src="${product.image_url}"
+                                 alt="상품 이미지" class="product-thumb">
+                            <span th:text="${product.name}">상품명</span>
+                        </div>
+                    </td>
+                    <td th:text="${#numbers.formatInteger(product.price, 0, 'COMMA') + '원'}">가격</td>
+                    <td>
+                <span th:switch="${product.status}">
+                    <span th:case="'O'">판매중</span>
+                    <span th:case="'S'">품절</span>
+                    <span th:case="'D'">판매중지</span>
+                </span>
+                    </td>
+                    <td th:text="${product.stock_quantity}">총 재고</td>
+                    <td>
+                        <button type="button" class="btn-normal"
+                                th:onclick="'location.href=\'/admin/products/edit/' + ${product.product_id} + '\''">수정</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn-normal"
+                                th:data-product-id="${product.product_id}"
+                                th:data-current-status="${product.status}">상태</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn-normal stock-in-btn"
+                                th:data-product-id="${product.product_id}"
+                                th:data-product-name="${product.name}"
+                                th:data-current-stock="${product.stock_quantity}">입고</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn-normal"
+                                th:data-product-id="${product.product_id}">삭제</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
 
-        <!--        <p th:text="${productList}"></p>-->
-
-    </div>
-</div>
-
-<!-- 상태 변경 모달 -->
-<div id="statusModal" class="pawsModal" style="display: none">
-    <div class="modal-content">
-        <h3>판매상태 변경</h3>
-        <p>판매상태를 변경하시겠습니까?</p>
-        <div class="modal-buttons">
-            <button type="button" id="confirmStatus">확인</button>
-            <button type="button" id="cancelStatus">취소</button>
-        </div>
-    </div>
-</div>
-
-
-<!-- 재고 관리 모달 수정 -->
-<div id="stockModal" class="pawsModal" style="display: none">
-    <button class="pawsModal-close" onclick="closeModal(this)"></button>
-    <div class="pawsModal-title">재고 관리</div>
-    <div class="pawsModal-content">
-        <div class="box" style="width: 90%; margin: 0 auto">
-            <!-- 재고 정보 표시 영역 -->
-            <div class="stock-info">
-                <!-- JavaScript로 동적 추가됨 -->
+        <!-- 상태 변경 모달 -->
+        <div id="statusModal" class="pawsModal" style="display: none">
+            <div class="modal-content">
+                <h3>판매상태 변경</h3>
+                <p>판매상태를 변경하시겠습니까?</p>
+                <div class="modal-buttons">
+                    <button type="button" id="confirmStatus">확인</button>
+                    <button type="button" id="cancelStatus">취소</button>
+                </div>
             </div>
+        </div>
 
-            <div class="option-stock-management">
-                <h4>재고 수정</h4>
-                <!-- 옵션 선택 영역 -->
-                <div class="option-selector">
-                    <select id="optionSelect">
-                        <option value="">옵션 선택</option>
+
+        <!-- 재고 관리 모달 수정 -->
+        <div id="stockModal" class="pawsModal" style="display: none">
+            <button class="pawsModal-close" onclick="closeModal(this)"></button>
+            <div class="pawsModal-title">재고 관리</div>
+            <div class="pawsModal-content">
+                <div class="box" style="width: 90%; margin: 0 auto">
+                    <!-- 재고 정보 표시 영역 -->
+                    <div class="stock-info">
+                        <!-- JavaScript로 동적 추가됨 -->
+                    </div>
+
+                    <div class="option-stock-management">
+                        <h4>재고 수정</h4>
+                        <!-- 옵션 선택 영역 -->
+                        <div class="option-selector">
+                            <select id="optionSelect">
+                                <option value="">옵션 선택</option>
+                            </select>
+                        </div>
+                        <!-- 선택된 옵션들의 수량 입력 영역 -->
+                        <div class="selected-options">
+                            <!-- JavaScript로 동적 추가됨 -->
+                        </div>
+                    </div>
+                </div>
+                <div class="pawsModal-footer">
+                    <button class="pawsModal-confirm" id="confirmStock">확인</button>
+                    <button class="pawsModal-cancel" id="cancelStock" onclick="closeModal(this)">취소</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 재고 내역 모달 -->
+        <div id="stockHistoryModal" class="pawsModal" style="display: none">
+            <div class="modal-content">
+                <h3>재고 관리 내역</h3>
+                <div class="stock-history-filters">
+                    <select id="historyOptionSelect">
+                        <option value="">전체 옵션</option>
+                    </select>
+                    <select id="historyTypeSelect">
+                        <option value="">전체 유형</option>
+                        <option value="in">입고</option>
+                        <option value="out">출고</option>
                     </select>
                 </div>
-                <!-- 선택된 옵션들의 수량 입력 영역 -->
-                <div class="selected-options">
-                    <!-- JavaScript로 동적 추가됨 -->
+                <table class="stock-history-table">
+                    <thead>
+                    <tr>
+                        <th>일시</th>
+                        <th>옵션명</th>
+                        <th>유형</th>
+                        <th>수량</th>
+                        <th>처리자</th>
+                    </tr>
+                    </thead>
+                    <tbody id="stockHistoryList">
+                    </tbody>
+                </table>
+                <div class="modal-buttons">
+                    <button type="button" id="closeStockHistory">닫기</button>
                 </div>
             </div>
         </div>
-        <div class="pawsModal-footer">
-            <button class="pawsModal-confirm" id="confirmStock">확인</button>
-            <button class="pawsModal-cancel" id="cancelStock" onclick="closeModal(this)">취소</button>
-        </div>
-    </div>
-</div>
-
-<!-- 재고 내역 모달 -->
-<div id="stockHistoryModal" class="pawsModal" style="display: none">
-    <div class="modal-content">
-        <h3>재고 관리 내역</h3>
-        <div class="stock-history-filters">
-            <select id="historyOptionSelect">
-                <option value="">전체 옵션</option>
-            </select>
-            <select id="historyTypeSelect">
-                <option value="">전체 유형</option>
-                <option value="in">입고</option>
-                <option value="out">출고</option>
-            </select>
-        </div>
-        <table class="stock-history-table">
-            <thead>
-            <tr>
-                <th>일시</th>
-                <th>옵션명</th>
-                <th>유형</th>
-                <th>수량</th>
-                <th>처리자</th>
-            </tr>
-            </thead>
-            <tbody id="stockHistoryList">
-            </tbody>
-        </table>
-        <div class="modal-buttons">
-            <button type="button" id="closeStockHistory">닫기</button>
-        </div>
-    </div>
-</div>
 
 
-<!-- 삭제 확인 모달 -->
-<div id="deleteModal" class="pawsModal" style="display: none">
-    <div class="modal-content">
-        <h3>상품 삭제</h3>
-        <p>상품을 삭제하시겠습니까?</p>
-        <div class="modal-buttons">
-            <button type="button" id="confirmDelete">확인</button>
-            <button type="button" id="cancelDelete">취소</button>
+        <!-- 삭제 확인 모달 -->
+        <div id="deleteModal" class="pawsModal" style="display: none">
+            <div class="modal-content">
+                <h3>상품 삭제</h3>
+                <p>상품을 삭제하시겠습니까?</p>
+                <div class="modal-buttons">
+                    <button type="button" id="confirmDelete">확인</button>
+                    <button type="button" id="cancelDelete">취소</button>
+                </div>
+            </div>
         </div>
+
+        <!-- 입고 처리 모달 -->
+        <div id="inboundModal" class="pawsModal" style="display: none">
+            <button class="pawsModal-close" onclick="closeModal(this)"></button>
+            <div class="pawsModal-title">입고 처리</div>
+            <div class="pawsModal-content">
+                <div class="box">
+                    <!-- 선택된 상품 목록 -->
+                    <div id="selectedProductsList" style="margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 10px;">선택된 상품</h4>
+                        <div class="selected-products" style="max-height: 200px; overflow-y: auto;">
+                            <!-- 선택된 상품들이 여기에 동적으로 추가됨 -->
+                        </div>
+                    </div>
+
+                    <!-- 입고 항목 추가 영역 -->
+                    <div id="inboundItems">
+                        <!-- 입고 항목 템플릿 -->
+                        <div class="inbound-item" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 4px;">
+                            <div class="form-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                                <div class="form-group">
+                                    <label class="required">상품 및 옵션</label>
+                                    <select class="product-option-select form-control">
+                                        <option value="">상품/옵션 선택</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="required">입고 수량</label>
+                                    <input type="number" class="quantity-input form-control numeric-input" min="1" placeholder="수량">
+                                </div>
+                                <div class="form-group">
+                                    <label class="required">입고가(원)</label>
+                                    <input type="number" class="cost-price-input form-control numeric-input" min="0" placeholder="입고가">
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <button type="button" class="btn-remove">삭제</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 입고 항목 추가 버튼 -->
+                    <div style="text-align: right; margin-top: 15px;">
+                        <button type="button" class="btn-normal" id="addInboundItem">+ 입고 항목 추가</button>
+                    </div>
+                </div>
+                <div class="pawsModal-footer">
+                    <button class="pawsModal-confirm" id="confirmInbound">입고 처리</button>
+                    <button class="pawsModal-cancel" onclick="closeModal(this)">취소</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 

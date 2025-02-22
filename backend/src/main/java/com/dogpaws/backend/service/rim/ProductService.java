@@ -8,6 +8,7 @@ import com.dogpaws.backend.dto.rim.ProductSearchDto;
 import com.dogpaws.backend.entity.rim.Product;
 import com.dogpaws.backend.entity.rim.ProductInbound;
 import com.dogpaws.backend.entity.rim.ProductOption;
+import com.dogpaws.backend.repository.dao.rim.OrderDao;
 import com.dogpaws.backend.repository.dao.rim.ProductDao;
 import com.dogpaws.backend.repository.jpa.rim.ProductInboundRepository;
 import com.dogpaws.backend.repository.jpa.rim.ProductOptionRepository;
@@ -39,7 +40,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductOptionRepository productOptionRepository;
     private final ProductInboundRepository productInboundRepository;
-
+    private final OrderDao orderDao;
     private final ProductDao productDao;
 
     private final FileUploadUtil fileUploadUtil;
@@ -163,6 +164,8 @@ public class ProductService {
         return convertProductToProductDto(product);
     }
 
+
+
     /**
      * 상품 목록 조회 (MyBatis + JPA 페이징)
      */
@@ -253,18 +256,20 @@ public class ProductService {
     }
 
     /**
-     * 상품 수정 (JPA)
-     * TODO : 재고관리 로직
+     * 상품 수정 (JPA) - 재고 제외 상품정보만 
      */
     @Transactional
     public void updateProduct(Long productId, ProductDto productDto, MultipartFile thumbnailImage, MultipartFile detailImage, String userId) throws IOException {
         Product product = productRepository.findById(productId)
                 .orElseThrow(()-> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
+        // 현재 재고 수량 유지
+        int currentStock = product.getStockQuantity();
+        
         product.update(
                 productDto.getName(),
                 productDto.getPrice(),
-                productDto.getStockQuantity(),
+                currentStock,
                 productDto.getDescription(),
                 productDto.getStatus(),
                 productDto.getMainCategory(),
@@ -361,6 +366,45 @@ public class ProductService {
                     return dto;
                 })
                 .collect(Collectors.toList());
+    }
+    /**
+     * 옵션의 진행중인 주문 여부 확인
+     */
+    public boolean checkActiveOrders(Long productId, Long optionId) {
+        return orderDao.hasActiveOrders(productId, optionId);
+    }
+
+    /**
+     * 옵션 수정 (MyBatis)
+     */
+    public void updateProductOption(ProductOptionDto optionDto) {
+        // 진행중인 주문 확인
+        boolean hasActiveOrders = orderDao.hasActiveOrders(optionDto.getProductId() ,optionDto.getOptionId().longValue());
+
+        if (hasActiveOrders) {
+            // 진행중인 주문이 있으면 옵션명만 수정 가능
+            productDao.updateOptionName(optionDto.getOptionId().longValue(), optionDto.getOptionName());
+        } else {
+            // 진행중인 주문이 없으면 모든 정보 수정 가능
+            productDao.updateOption(optionDto);
+        }
+    }
+
+
+    /**
+     * 옵션 soft 삭제 (MyBatis)
+     */
+    public void deleteProductOption(Long productId, Long optionId) {
+        // 진행중인 주문 확인
+        boolean hasActiveOrders = orderDao.hasActiveOrders(productId, optionId);
+
+        if (hasActiveOrders) {
+            // 진행중인 주문이 있으면 상태만 '판매중지'로 변경
+            productDao.updateOptionStatus(optionId, "D");
+        } else {
+            // 진행중인 주문이 없으면 실제 삭제 가능
+            productDao.deleteOption(optionId);
+        }
     }
 
     /**
@@ -545,6 +589,7 @@ public class ProductService {
             productDto.setStatus(product.getStatus());
             productDto.setSize(product.getSize());
             productDto.setMaterial(product.getMaterial());
+            productDto.setManufacturer(product.getManufacturer());
             productDto.setOrigin(product.getOrigin());
             if(product.getExpirationDate() != null) {
                 productDto.setExpirationDate(product.getExpirationDate().toString());
@@ -600,5 +645,31 @@ public class ProductService {
                         status.equals(ProductDto.Status.SOLD_OUT.getCode()) ||
                         status.equals(ProductDto.Status.DISCONTINUED.getCode())
         );
+    }
+
+    /**
+     * 모든 상품 검색
+     */
+    public List<ProductListDto> searchAllProducts(ProductSearchDto searchDto) {
+        try {
+            // sortBy 파라미터 검증
+            if (searchDto.getSortBy() != null) {
+                if (!searchDto.getSortBy().matches("^(stock_asc|stock_desc)$")) {
+                    searchDto.setSortBy(null); // 잘못된 값이면 기본 정렬 사용
+                }
+            }
+
+            // 페이징 관련 파라미터 제거
+            searchDto.setPage(null);
+            searchDto.setPageSize(null);
+            searchDto.setOffset(null);
+
+            // 데이터 조회
+            return productDao.searchProducts(searchDto);
+
+        } catch (Exception e) {
+            log.error("상품 검색 중 오류 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("상품 검색 실패", e);
+        }
     }
 }

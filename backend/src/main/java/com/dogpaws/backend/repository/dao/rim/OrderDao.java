@@ -25,6 +25,8 @@ public interface OrderDao {
     void insertOrderItemOption(OrderItemOptionDto option);
 
 
+    // 옵션의 진행중인 주문 여부 확인
+    boolean hasActiveOrders(@Param("productId") Long productId, @Param("optionId") Long optionId);
 
     OrderDto selectOrderByQlId(String qlId); //주문 1건 조회
 

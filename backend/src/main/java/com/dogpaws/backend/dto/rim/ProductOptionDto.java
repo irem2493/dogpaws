@@ -29,6 +29,10 @@ public class ProductOptionDto {
     private String optionOrigin;
     private boolean isBaseOption;
 
+    private String status;  // 'O': 판매중, 'S': 품절, 'D': 판매중지
+
+    private boolean hasActiveOrders;
+
     private Integer costPrice; //옵션 원가
 
     public boolean isBaseOption() {
