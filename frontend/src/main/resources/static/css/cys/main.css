@@ -1,3 +1,14 @@
+.mobile-main{
+    display: none;
+}
+
+.mobile-main img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto; /* 중앙 정렬 */
+}
+
 .all-container{
     margin: 0 auto;
     display: flex;
@@ -234,26 +245,63 @@
     display: flex;
 }
 
-.volunteer{
+.volunteer {
     margin: 30px;
 }
 
-.volunteer img{
-    width: 450px; height: 300px;
+.volunteer img {
+    width: 450px;
+    height: 300px;
     overflow: hidden;
     border-radius: 20px;
 }
 
-.volunteer p{
+.volunteer p {
     font-size: 24px;
     text-align: start;
     margin: 20px 10px 10px 10px;
     font-weight: 100;
 }
 
-.volunteer a{
+.volunteer a {
     display: block; /* 줄바꿈 처리 */
     color: gray;
     text-align: left; /* 왼쪽 정렬 */
     margin-left: 10px; /* 텍스트와 동일한 간격 유지 */
+}
+
+
+.volunteer-mobile img{
+    overflow: hidden;
+    border-radius: 20px;
+}
+
+.volunteer-mobile p {
+    font-size: 20px;
+    text-align: start;
+    margin: 0px 10px 0px 10px;
+    font-weight: 100;
+}
+
+.volunteer-mobile a {
+    display: block;
+    color: gray;
+    text-align: left;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+
+/* 모바일 화면에서 박스를 보이게 설정 */
+@media (max-width: 768px) {
+
+    .all-container{
+        display: none;
+    }
+
+    .mobile-main{
+        display: block;
+    }
+
+
 }

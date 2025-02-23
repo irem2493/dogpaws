@@ -33,7 +33,25 @@
     <!-- 작성자 정보 및 날짜 -->
     <div class="post-meta">
       <div class="post-meta-left">
-        <strong>[[${board.nickname}]]</strong> <img src="/img/icon/dog-filter/clock.svg" alt="clock-icon">
+        <strong style="position: relative;">
+          <a href="javascript:void(0);" class="username" th:data-username="${board.username}" th:data-boardId="${board.boardId}">
+            <span th:text="${board.nickname}"></span>
+          </a>
+
+          <div class="modal" th:id="|modal-${board.username}-${board.boardId}|">
+            <h6>등록된 반려견</h6>
+            <ul class="petList" th:id="|petList-${board.username}-${board.boardId}|" th:each="dog : ${board.dog_list}">
+              <li>
+                <a th:href="@{/dog/detail/{dogId}(dogId=${dog.dog_id})}">
+                  <img th:src="${dog.profile_url}" style="width: 50px; height: 50px; border-radius: 50%;" onerror="this.src='/img/dog_foot2.png';">
+                </a>
+                [[${dog.dog_name}]]
+              </li>
+            </ul>
+          </div>
+
+        </strong>
+        <img src="/img/icon/dog-filter/clock.svg" alt="clock-icon">
         <span th:text="${#strings.replace(board.created_at, 'T', ' ')}"></span>
       </div>
       <div class="post-meta-right">
@@ -46,7 +64,7 @@
 
     <!-- 댓글 목록 -->
     <div class="comments-section">
-      <h3><span id="commentTotal" th:text="${commentList.size()}"></span> 개의 댓글</h3>
+      <h3><span id="commentTotal" th:text="${cList.size()}"></span> 개의 댓글</h3>
       <table class="comment-table">
         <tbody id="commentList">
           <tr th:if="${commentList.size() == 0 }">
@@ -55,7 +73,25 @@
           </tr>
 
           <tr th:if="${commentList.size() > 0 }" th:each="comment : ${commentList}">
-            <td th:text="${comment.nickname}"></td>
+            <td style="position: relative;">
+
+              <a href="javascript:void(0);" class="nickname" th:data-username="${comment.username}" th:data-commentId="${comment.comment_id}">
+                <span th:text="${comment.nickname}"></span>
+              </a>
+
+              <div class="modal" th:id="|modal-${comment.username}-${comment.comment_id}|">
+                <h6>등록된 반려견</h6>
+                <ul class="petList" th:id="|petList-${comment.username}-${comment.comment_id}|" th:each="dog : ${comment.dog_list}">
+                  <li>
+                    <a th:href="@{/dog/detail/{dogId}(dogId=${dog.dog_id})}">
+                      <img th:src="${dog.profile_url}" style="width: 50px; height: 50px; border-radius: 50%;" onerror="this.src='/img/dog_foot2.png';">
+                    </a>
+                    [[${dog.dog_name}]]
+                  </li>
+                </ul>
+              </div>
+
+            </td>
             <td>
               <!-- 기존 댓글 내용 -->
               <div th:id="'comment' + ${comment.comment_id}" th:text="${comment.comment}"></div>
@@ -88,6 +124,38 @@
 
         </tbody>
       </table>
+
+      <!-- 페이지 네비게이션 부분 (Thymeleaf 템플릿) -->
+      <div class="paging">
+        <!-- 첫 페이지 및 이전 버튼 -->
+        <span th:if="${pagingBtn.firstPageBtn}">
+                <a th:href="@{/board/boardDetail/{boardId}/{category}(boardId=${boardId},category=${category}, page=1)}"><img src="/img/paging_pre.svg"></a>
+              </span>
+        <span th:if="${pagingBtn.prevBtn}">
+                <a th:href="@{/board/boardDetail/{boardId}/{category}(boardId=${boardId},category=${category}, page=${pagingBtn.startPage - 1})}">
+                    <img src="/img/paging_pre.svg">
+                </a>
+              </span>
+
+        <!-- 페이지 번호 버튼 -->
+        <span th:each="pageNum : ${#numbers.sequence(pagingBtn.startPage, pagingBtn.endPage)}">
+                <a th:if="${pageNum != pagingBtn.currentPage}"
+                   th:href="@{/board/boardDetail/{boardId}/{category}(boardId=${boardId},category=${category}, page=${pageNum})}"
+                   th:text="${pageNum}"
+                   class="page-link"></a>
+                <span th:if="${pageNum == pagingBtn.currentPage}"
+                      class="current-page"
+                      th:text="${pageNum}"></span>
+              </span>
+
+        <!-- 다음 버튼 및 마지막 페이지 버튼 -->
+        <span th:if="${pagingBtn.nextBtn}">
+                <a th:href="@{/board/boardDetail/{boardId}/{category}(boardId=${boardId},category=${category}, page=${pagingBtn.endPage + 1})}"><img src="/img/paging_pre.svg"></a>
+              </span>
+        <span th:if="${pagingBtn.lastPageBtn}">
+                <a th:href="@{/board/boardDetail/{boardId}/{category}(boardId=${boardId},category=${category}, page=${pagingBtn.totalPage})}"><img src="/img/paging_next.svg"></a>
+              </span>
+      </div>
     </div>
 
     <!-- 댓글 -->
@@ -100,5 +168,6 @@
   </div>
 </div>
 <script src="/js/ajy/board/board_detail.js"></script>
+<script src="/js/ajy/board/board_list.js"></script>
 </body>
 </html>
