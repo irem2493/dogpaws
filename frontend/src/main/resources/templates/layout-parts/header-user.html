@@ -76,21 +76,38 @@
 
                         // 상대 시간 변환 함수 수정
                         function getRelativeTimeString(dateString) {
+                            // 현재 시간을 KST로 가져오기
                             const now = new Date();
-                            const date = new Date(dateString);
-                            const diffInMilliseconds = now - date;
-                            const diffInMinutes = diffInMilliseconds / (1000 * 60);
-                            const diffInHours = diffInMinutes / 60;
-                            const diffInDays = diffInHours / 24;
+                            const koreaTimeDiff = 9 * 60 * 60 * 1000; // 9시간을 밀리초로 변환
+                            const nowKST = new Date(now.getTime() + koreaTimeDiff);
+                            
+                            // 서버에서 받은 시간 문자열을 파싱
+                            const [datePart, timePart] = dateString.split(' ');
+                            const [year, month, day] = datePart.split('-');
+                            const [hours, minutes, seconds] = timePart.split(':');
+                            
+                            // 서버 시간을 Date 객체로 생성 (이미 KST)
+                            const date = new Date(year, month - 1, day, hours, minutes, seconds);
 
-                            if (diffInMinutes < 10) {
+                            const diffInMilliseconds = date - nowKST;
+                            const diffInMinutes = Math.floor(Math.abs(diffInMilliseconds) / (1000 * 60));
+                            const diffInHours = Math.floor(diffInMinutes / 60);
+                            const diffInDays = Math.floor(diffInHours / 24);
+
+                            console.log('현재시간(KST):', nowKST);
+                            console.log('알림시간:', date);
+                            console.log('시차(분):', diffInMinutes);
+
+                            if (diffInMinutes < 1) {
                                 return '방금 전';
-                            } else if (diffInHours < 1) {
-                                return `${Math.floor(diffInMinutes)}분 전`;
+                            } else if (diffInMinutes < 60) {
+                                return `${diffInMinutes}분 전`;
                             } else if (diffInHours < 24) {
-                                return `${Math.floor(diffInHours)}시간 전`;
+                                return `${diffInHours}시간 전`;
+                            } else if (diffInDays < 7) {
+                                return `${diffInDays}일 전`;
                             } else {
-                                return `${Math.floor(diffInDays)}일 전`;
+                                return `${year}년 ${month}월 ${day}일`;
                             }
                         }
 
@@ -98,11 +115,16 @@
                         function renderNotifications(notifications) {
                             const container = document.getElementById('notifications');
                             container.innerHTML = notifications.body.map(notification => `
-                            <div class="notification-item ${notification.isRead ? 'read' : 'unread'}"
+                            <div class="notification-item ${notification.read_status === 'N' ? 'unread' : 'read'}"
                                  data-id="${notification.alarm_id}">
-                                <div class="notification-content">
-                                    <p>${notification.message}</p>
-                                    <small>${getRelativeTimeString(notification.created_at)}</small>
+                                <div class="notification-content" style="display: flex; gap: 10px; align-items: flex-start;">
+                                    <img src="/img/icon/alarm_${notification.alarm_type.toLowerCase()}_icon.svg" 
+                                         alt="알림 아이콘" 
+                                         style="width: 20px; height: 20px; margin-top: 3px;">
+                                    <div>
+                                        <p>${notification.message}</p>
+                                        <small>${getRelativeTimeString(notification.created_at)}</small>
+                                    </div>
                                 </div>
                             </div>
                         `).join('');

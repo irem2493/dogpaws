@@ -8,9 +8,13 @@ import com.dogpaws.backend.repository.jpa.ajy.UserRepository;
 import com.dogpaws.frontend.dto.hyepin.AlarmDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,13 +31,19 @@ public class NotificationService {
 
     private final NotificationScheduleDao scheduleDao;
 
+    private final TaskScheduler taskScheduler;
 
     // 즉시 알림 발송
     public void sendNotification(String username, String message, String alarmType, String gubnId) {
         // FCM 발송
         String fcmToken = fcmTokenDao.getFcmToken(username);
         if (fcmToken != null) {
-            fcmService.sendMessage(fcmToken, "알림", message);
+            // 알림 타입에 따라 제목 설정
+            String title = alarmType.equals("C") ? "내일 일정이 있습니다" : 
+                          message.contains("배송이 시작") ? "배송이 시작되었습니다" :
+                          message.contains("배송이 완료") ? "배송이 완료되었습니다" : "주문 알림";
+            
+            fcmService.sendMessage(fcmToken, title, message);
         }
         // DB 저장
         saveAlarm(username, message, alarmType, gubnId);
@@ -94,6 +104,62 @@ public class NotificationService {
         alarm.setGubnId(gubnId);
         alarm.setMessage(message);
         alarmDao.insertAlarm(alarm);
+    }
+
+    /**
+     * 캘린더 알림 예약 처리
+     */
+    public void scheduleCalendarNotification(
+            String username,
+            String message,
+            String alarmType,
+            LocalDateTime startDate,
+            Long calendarId
+    ) {
+        // 하루 전 시간 계산
+        LocalDateTime notificationTime = startDate.minusDays(1);
+        
+        NotificationScheduleDto schedule = NotificationScheduleDto.builder()
+                .username(username)
+                .calendarId(calendarId)
+                .scheduleTime(notificationTime)
+                .alarmType(alarmType)
+                .gubnId(calendarId.toString())
+                .message(message)
+                .status("PENDING")
+                .build();
+
+        scheduleDao.insertSchedule(schedule);
+        log.info("알림 예약 완료: username={}, calendarId={}, 예약시간={}", 
+                username, calendarId, notificationTime);
+                
+        // 3초 후에 예약된 알림 체크 실행
+        Instant executionTime = Instant.now().plusSeconds(3);
+        taskScheduler.schedule(() -> checkScheduledNotifications(), executionTime);
+    }
+
+    // 예약된 알림 체크 및 발송
+    public void checkScheduledNotifications() {
+        List<NotificationScheduleDto> schedules = scheduleDao
+                .findPendingSchedules(LocalDateTime.now());
+
+        for (NotificationScheduleDto schedule : schedules) {
+            try {
+                // 알림 발송
+                sendNotification(
+                    schedule.getUsername(),
+                    schedule.getMessage(),
+                    schedule.getAlarmType(),
+                    schedule.getGubnId()
+                );
+                
+                // 상태 업데이트
+                scheduleDao.updateStatus(schedule.getId(), "SENT");
+                log.info("예약 알림 발송 완료: scheduleId={}", schedule.getId());
+            } catch (Exception e) {
+                log.error("예약 알림 발송 실패: {}", e.getMessage(), e);
+            }
+        }
     }
 
 }

@@ -18,8 +18,8 @@ public class NotificationScheduler {
     private final NotificationScheduleDao scheduleDao;
     private final NotificationService notificationService;
 
-//    @Scheduled(cron = "0/30 * * * * *") //test용
     @Scheduled(cron = "0 0 * * * *")
+//    @Scheduled(cron = "0/30 * * * * *") //test용
     public void checkScheduledNotifications() {
         List<NotificationScheduleDto> schedules = scheduleDao
                 .findPendingSchedules(LocalDateTime.now());

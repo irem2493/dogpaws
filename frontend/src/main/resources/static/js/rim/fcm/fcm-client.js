@@ -123,16 +123,72 @@ const FCMClient = {
     // FCMClient 객체 내부에 추가
     showToast(title, message) {
         const toast = document.createElement('div');
-        toast.className = 'toast-notification';
-        toast.innerHTML = `
-        <h4>${title}</h4>
-        <p>${message}</p>
+        toast.className = 'pawsModal';
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: -320px;
+            width: 300px;
+            height: 150px;
+            z-index: 9999;
+            display: block;
+            transition: right 0.5s ease;
+            background: rgba(255, 252, 250, 0.95);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 12px rgba(255, 236, 179, 0.3);
         `;
-        document.body.appendChild(toast);
+        
+        // 알림 타입에 따른 아이콘 결정 (A: 주문/배송, C: 캘린더)
+        const alarmType = title.includes('주문') || title.includes('배송') ? 'a' : 'c';
+        
+        // 메시지 처리
+        let displayTitle = title;  // 서버에서 받은 title 그대로 사용
+        let displayContent = '';
+        
+        if (alarmType === 'c') {
+            displayContent = message.split(': ')[1];
+        } else {
+            // 배송 알림 메시지 처리
+            if (message.includes('배송이 시작되었습니다')) {
+                const match = message.match(/\(운송장번호: (.*?)\)/);
+                displayContent = match ? `운송장번호: ${match[1]}` : message;
+            } else {
+                displayContent = message;
+            }
+        }
+        
+        toast.innerHTML = `
+            <!-- 닫기 버튼 -->
+            <div class="pawsModal-content-center" style="height: 100%; justify-content: left;">
+                <div style="display: flex; gap: 15px; align-items: flex-start;">
+                    <img src="/img/icon/alarm_${alarmType}_icon.svg" 
+                         alt="알림 아이콘" 
+                         style="width: 50px; height: 50px;">
+                    <div style="flex: 1;">
+                        <p style="font-weight: bold; margin: 0 0 8px 0; font-size: 16px;">
+                            ${displayTitle}
+                        </p>
+                        <p style="margin: 0; color: #666; font-size: 14px;">
+                            ${displayContent}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
 
-        // 3초 후 토스트 제거
+        document.body.appendChild(toast);
+        
         setTimeout(() => {
-            toast.remove();
+            toast.style.right = '20px';
+        }, 100);
+
+        setTimeout(() => {
+            if (document.body.contains(toast)) {
+                toast.style.right = '-320px';
+                setTimeout(() => {
+                    toast.remove();
+                }, 500);
+            }
         }, 3000);
     },
     addNewNotification(notification) {
@@ -142,12 +198,21 @@ const FCMClient = {
         const notificationElement = document.createElement('div');
         notificationElement.className = 'notification-item unread';
         notificationElement.setAttribute('data-id', notification.alarmId);
+        
+        // 알림 타입에 따른 아이콘 결정 (A: 주문/배송, C: 캘린더)
+        const alarmType = notification.alarmId.toString().startsWith('2') ? 'A' : 'C';
+        
         notificationElement.innerHTML = `
-        <div class="notification-content">
-            <p>${notification.message}</p>
-            <small>${getRelativeTimeString(notification.createdAt)}</small>
-        </div>
-    `;
+            <div class="notification-content" style="display: flex; gap: 10px; align-items: flex-start;">
+                <img src="/img/icon/alarm_${alarmType.toLowerCase()}_icon.svg" 
+                     alt="알림 아이콘" 
+                     style="width: 20px; height: 20px; margin-top: 3px;">
+                <div>
+                    <p>${notification.message}</p>
+                    <small>${getRelativeTimeString(notification.createdAt)}</small>
+                </div>
+            </div>
+        `;
 
         // 목록 최상단에 추가
         container.insertBefore(notificationElement, container.firstChild);
@@ -163,21 +228,29 @@ const FCMClient = {
 
 // 상대 시간 변환 함수 수정
 function getRelativeTimeString(dateString) {
+    // 현재 시간을 KST로 가져오기
     const now = new Date();
-    const date = new Date(dateString);
-    const diffInMilliseconds = now - date;
-    const diffInMinutes = diffInMilliseconds / (1000 * 60);
-    const diffInHours = diffInMinutes / 60;
-    const diffInDays = diffInHours / 24;
+    const koreaTimeDiff = 9 * 60 * 60 * 1000; // 9시간을 밀리초로 변환
+    const nowKST = new Date(now.getTime() + koreaTimeDiff);
+    
+    // 날짜가 Date 객체인 경우 처리
+    const date = dateString instanceof Date ? dateString : new Date(dateString);
 
-    if (diffInMinutes < 10) {
+    const diffInMilliseconds = date - nowKST;
+    const diffInMinutes = Math.floor(Math.abs(diffInMilliseconds) / (1000 * 60));
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInMinutes < 1) {
         return '방금 전';
-    } else if (diffInHours < 1) {
-        return `${Math.floor(diffInMinutes)}분 전`;
+    } else if (diffInMinutes < 60) {
+        return `${diffInMinutes}분 전`;
     } else if (diffInHours < 24) {
-        return `${Math.floor(diffInHours)}시간 전`;
+        return `${diffInHours}시간 전`;
+    } else if (diffInDays < 7) {
+        return `${diffInDays}일 전`;
     } else {
-        return `${Math.floor(diffInDays)}일 전`;
+        return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
     }
 }
 

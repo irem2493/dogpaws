@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -31,11 +32,11 @@ public class CalendarService {
         //알림 시작 -rim
         if (result > 0) {
             Long calendarId = calendarDao.getLastInsertedCalendarId(calendarDto.getUsername());
-            notificationService.scheduleNotification(
+            notificationService.scheduleCalendarNotification(
                     calendarDto.getUsername(),
                     String.format("내일 일정이 있습니다: %s", calendarDto.getCalendarTitle()),
                     "C",
-                    calendarDto.getCalendarStartDate(),
+                    LocalDateTime.parse(calendarDto.getCalendarStartDate()),
                     calendarId
             );
         }
