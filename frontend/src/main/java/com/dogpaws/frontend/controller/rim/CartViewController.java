@@ -6,6 +6,7 @@ import com.dogpaws.frontend.dto.rim.CartSummaryResponseDto;
 import com.dogpaws.frontend.dto.rim.ProductOptionDto;
 import com.dogpaws.frontend.global.ApiResponse;
 import com.dogpaws.frontend.service.ApiRequestService;
+import com.dogpaws.frontend.utils.SessionUtil;
 import com.dogpaws.frontend.utils.TokenUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,70 +39,73 @@ public class CartViewController {
     @GetMapping("/list")
     public String cartListView(Model model, HttpServletRequest request, HttpSession session) {
 
-        String token = TokenUtil.getTokenFromCookies(request);
-        UserDto user = TokenUtil.verifyTokenAndSetSession(token, apiRequestService, session, request);
 
-        log.info("세션에 저장된 username = {}", user.getUsername());
+        UserDto user = SessionUtil.getUser(session);
 
-        ApiResponse response = apiRequestService.fetchData("/api/cart", Map.of("username", user.getUsername()), false);
+        if(user != null) {
 
-        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+            log.info("세션에 저장된 username = {}", user.getUsername());
 
-        CartSummaryResponseDto cartSummary = objectMapper.convertValue(
-                responseBody,
-                CartSummaryResponseDto.class
-        );
+            ApiResponse response = apiRequestService.fetchData("/api/cart", Map.of("username", user.getUsername()), false);
 
-        // 각 상품의 전체 옵션 목록 조회
-        if (cartSummary != null && !cartSummary.getCartItems().isEmpty()) {
-            cartSummary.getCartItems().forEach(item -> {
-                try {
-                    ApiResponse optionsResponse = apiRequestService.fetchData(
-                            "/api/products/" + item.getProductId() + "/options",
-                            null,
-                            false
-                    );
+            Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
 
-                    if (optionsResponse.getStatus() == ApiResponse.ApiStatus.SUCCESS) {
-                        // 응답 구조에 맞게 body에서 실제 옵션 목록 추출
-                        Map<String, Object> responseMap = (Map<String, Object>) optionsResponse.getBody();
-                        List<ProductOptionDto> allOptions = objectMapper.convertValue(
-                                responseMap.get("body"),  // body 필드에서 실제 옵션 목록 가져오기
-                                new TypeReference<List<ProductOptionDto>>() {}
+            CartSummaryResponseDto cartSummary = objectMapper.convertValue(
+                    responseBody,
+                    CartSummaryResponseDto.class
+            );
+
+            // 각 상품의 전체 옵션 목록 조회
+            if (cartSummary != null && !cartSummary.getCartItems().isEmpty()) {
+                cartSummary.getCartItems().forEach(item -> {
+                    try {
+                        ApiResponse optionsResponse = apiRequestService.fetchData(
+                                "/api/products/" + item.getProductId() + "/options",
+                                null,
+                                false
                         );
 
-                        // 현재 장바구니에 없는 옵션만 필터링
-                        Set<Long> existingOptionIds = item.getCartOptions().stream()
-                                .map(CartOptionResponseDto::getOptionId)
-                                .collect(Collectors.toSet());
+                        if (optionsResponse.getStatus() == ApiResponse.ApiStatus.SUCCESS) {
+                            // 응답 구조에 맞게 body에서 실제 옵션 목록 추출
+                            Map<String, Object> responseMap = (Map<String, Object>) optionsResponse.getBody();
+                            List<ProductOptionDto> allOptions = objectMapper.convertValue(
+                                    responseMap.get("body"),  // body 필드에서 실제 옵션 목록 가져오기
+                                    new TypeReference<List<ProductOptionDto>>() {}
+                            );
 
-                        List<ProductOptionDto> availableOptions = allOptions.stream()
-                                .filter(option -> !existingOptionIds.contains(option.getOptionId()))
-                                .collect(Collectors.toList());
+                            // 현재 장바구니에 없는 옵션만 필터링
+                            Set<Long> existingOptionIds = item.getCartOptions().stream()
+                                    .map(CartOptionResponseDto::getOptionId)
+                                    .collect(Collectors.toSet());
 
-                        // 사용 가능한 추가 옵션 목록 설정
-                        item.setAvailableOptions(availableOptions);
+                            List<ProductOptionDto> availableOptions = allOptions.stream()
+                                    .filter(option -> !existingOptionIds.contains(option.getOptionId()))
+                                    .collect(Collectors.toList());
 
-                        log.info("상품 ID: {}, 사용 가능한 옵션 수: {}",
-                                item.getProductId(), availableOptions.size());
+                            // 사용 가능한 추가 옵션 목록 설정
+                            item.setAvailableOptions(availableOptions);
+
+                            log.info("상품 ID: {}, 사용 가능한 옵션 수: {}",
+                                    item.getProductId(), availableOptions.size());
+                        }
+                    } catch (Exception e) {
+                        log.error("상품 옵션 조회 실패 - productId: {}, error: {}",
+                                item.getProductId(), e.getMessage(), e);
                     }
-                } catch (Exception e) {
-                    log.error("상품 옵션 조회 실패 - productId: {}, error: {}",
-                            item.getProductId(), e.getMessage(), e);
-                }
-            });
-        }
+                });
+            }
 
 
-        log.info("길이 : {}", cartSummary.getCartItems().size());
-        log.info("cartSummary : {}", cartSummary.toString());
-        model.addAttribute("cartSummary", cartSummary);
+            log.info("길이 : {}", cartSummary.getCartItems().size());
+            log.info("cartSummary : {}", cartSummary.toString());
+            model.addAttribute("cartSummary", cartSummary);
 
-        log.info("response : {}",response);
-        log.info("response.status : {}",response.getStatus());
-        log.info("response.body : {}",response.getBody());
+            log.info("response : {}",response);
+            log.info("response.status : {}",response.getStatus());
+            log.info("response.body : {}",response.getBody());
 
-        return "rim/store/cart_list";
+            return "rim/store/cart_list";
+        } return "redirect:/login";
     }
 
 }

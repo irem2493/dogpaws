@@ -51,9 +51,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화 (테스트 환경)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/login","/join","/board/*","/board/boardDetail/","/store/*").permitAll() // /admin/login은 필터 제외
+                        .requestMatchers("/social/**","/naver/**","/kakao/**","/google/**").permitAll() // /admin/login은 필터 제외
+                        .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/admin/login").permitAll() // /admin/login은 필터 제외
                         .requestMatchers("/admin/**").authenticated() // /admin/* 경로는 인증 필요
-                        .anyRequest().permitAll() // 모든 요청 허용 (테스트 환경)
+                        .anyRequest().authenticated() // 모든 요청 허용 (테스트 환경)
                 );
 
         http

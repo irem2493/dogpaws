@@ -18,9 +18,12 @@ public class DbtiController {
     @GetMapping("/dbti-question")
     public String dogMbtiQuestion(HttpSession session, Model model) {
         DogDto dog = (DogDto) session.getAttribute("dog");
-        int dogId = dog.getDogId();
-        model.addAttribute("dogId", dogId);
-        return "cys/dbti_question";
+        if(dog != null) {
+
+            int dogId = dog.getDogId();
+            model.addAttribute("dogId", dogId);
+            return "cys/dbti_question";
+        }return "redirect:/dbti-main";
     }
 
     @GetMapping("/dbti-final")

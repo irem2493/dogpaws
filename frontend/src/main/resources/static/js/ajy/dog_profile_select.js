@@ -1,5 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+    // ✅ 현재 페이지 URL 확인
+    let currentPath = window.location.pathname;
+
+    // ✅ 강아지 선택 페이지(`/dogProfileSelect`)에서만 헤더 숨기기
+    if (currentPath === "/dog/dogProfileSelect") {
+        let header = document.querySelector(".header-container");
+        if (header) {
+            header.style.visibility = "hidden";  // ✅ 헤더 숨기기 (공간 유지, 기능 유지)
+        }
+    }
+
+
     // ✅ URL에서 Query Parameters 가져오기
     const params = new URLSearchParams(window.location.search);
     const accessToken = params.get("accessToken");
