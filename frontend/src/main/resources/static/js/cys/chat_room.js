@@ -240,6 +240,7 @@ window.room = function (roomId) {
 }
 
 function subscribeToMessages(roomId) {
+    if (selectedRoomId !== roomId) return; // 🔥 현재 사용자가 보고 있는 채팅방이 아니면 이동하지 않음!
 
     const q = query(collection(db, "chatRooms", roomId, "messages"), orderBy("timestamp"));
 
