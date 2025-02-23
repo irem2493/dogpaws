@@ -62,4 +62,8 @@ public class ChatService {
     public List<CalendarSharedResponseDto> getSharedCalendar(String roomId) {
         return chatDao.getSharedCalendar(roomId);
     }
+
+    public void registStr(String userStar, String reviewerId, String recipientId) {
+        chatDao.registStr(userStar, reviewerId, recipientId);
+    }
 }

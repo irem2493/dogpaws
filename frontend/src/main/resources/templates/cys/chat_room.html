@@ -209,54 +209,69 @@
             <div class="profile">
                 <img src="/img/groupchat.png" class="profile-img-3" alt="">
             </div>
-                <div class="title-box">
-                    <div class="detail-title"></div>
-                    <button class="star-btn" style="display: none">멍바닥 주기</button>
-                    <button class="link-btn" onclick="linkModal()" style="min-width: 60px; display: none">초대 링크</button>
-                </div>
-
-                <div class="linkBox" style="display: none"></div>
-
-                <div class="participants" style="display: none">
-                    <div class="modalDetailParticipants" style="display: none">
-                        <div class="allParticipants-modal-list">
-
-                        </div>
-                    </div>
-
-                    <div class="participants-title">
-                        <div class="text">참여자</div>
-                        <div class="plus" onclick="openParticipantList()">+</div>
-                    </div>
-                    <div class="participants-list">
-
-                    </div>
-                </div>
-                <div class="media">
-                    <div class="modalMedia" style="display: none">
-                        <div class="allMedia-modal-list">
-
-                        </div>
-                    </div>
-
-                    <div class="media-title">
-                        <div class="text">미디어</div>
-                        <div class="plus" onclick="openMediaList()">+</div>
-                    </div>
-                    <div class="media-list">
-
-                    </div>
-                </div>
-                <div class="calender">
-                    <div class="calender-title" style="width: 100%;">가까운 일정</div>
-                    <div class="today-btn-box"></div>
-                    <!--                <button class="today-btn">오늘</button>-->
-                    <div class="calender-content">
-
-                    </div>
-                </div>
-                <div class="out-chat" style="color:red; cursor: pointer;">나가기</div>
+            <div class="title-box">
+                <div class="detail-title"></div>
+                <button class="star-btn" style="display: none">멍바닥 주기</button>
+                <button class="link-btn" onclick="linkModal()" style="min-width: 60px; display: none">초대 링크</button>
             </div>
+
+            <!--                멍바닥 모달-->
+            <div class="rating-container" style="display: none;">
+                <div class="rating-title">
+                    멍바닥 주기<span class="rating-value" id="ratingValue"></span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="1" max="5" step="0.5" value="3.0" class="slider" id="ratingSlider">
+                    <img src="/img/icon/ratingIcon.svg" class="paw-icon" id="pawIcon" alt="">
+                </div>
+                <div class="btn-zone">
+                    <button class="rating-btn" onclick="registStr()">등록</button>
+                    <button class="rating-close-btn">닫기</button>
+                </div>
+            </div>
+
+            <div class="linkBox" style="display: none"></div>
+
+            <div class="participants" style="display: none">
+                <div class="modalDetailParticipants" style="display: none">
+                    <div class="allParticipants-modal-list">
+
+                    </div>
+                </div>
+
+                <div class="participants-title">
+                    <div class="text">참여자</div>
+                    <div class="plus" onclick="openParticipantList()">+</div>
+                </div>
+                <div class="participants-list">
+
+                </div>
+            </div>
+            <div class="media">
+                <div class="modalMedia" style="display: none">
+                    <div class="allMedia-modal-list">
+
+                    </div>
+                </div>
+
+                <div class="media-title">
+                    <div class="text">미디어</div>
+                    <div class="plus" onclick="openMediaList()">+</div>
+                </div>
+                <div class="media-list">
+
+                </div>
+            </div>
+            <div class="calender">
+                <div class="calender-title" style="width: 100%;">가까운 일정</div>
+                <div class="today-btn-box"></div>
+                <!--                <button class="today-btn">오늘</button>-->
+                <div class="calender-content">
+
+                </div>
+            </div>
+            <div class="out-chat" style="color:red; cursor: pointer;">나가기</div>
+        </div>
     </section>
 </div>
 </body>

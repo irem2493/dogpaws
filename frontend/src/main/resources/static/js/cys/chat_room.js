@@ -120,6 +120,13 @@ async function openFirstChatRoom() {
 
 }
 
+function getUsernameById(participantsId){
+    // 프로필 데이터에서 해당 ID의 보호자 id 찾기
+    const profile = chatProfiles.find(profile => profile.dog_id === parseInt(participantsId));
+
+    return profile.username;
+}
+
 function getProfileById(participantsId){
     // 프로필 데이터에서 해당 ID의 프로필 찾기
     const profile = chatProfiles.find(profile => profile.dog_id === parseInt(participantsId));
@@ -1197,4 +1204,117 @@ outChat.addEventListener('click', async function () {
     window.location.href = "/chat-room";
 })
 
+// 멍바닥 주기
+const slider = document.getElementById("ratingSlider");
+const ratingValue = document.getElementById("ratingValue");
+const pawIcon = document.getElementById("pawIcon");
 
+const ratingModal = document.querySelector('.rating-container');
+const starBtn = document.querySelector('.star-btn');
+
+starBtn.addEventListener('click', function (){
+    ratingModal.style.display = 'flex';
+
+})
+
+let isDragging = false;
+
+// 아이콘 위치 업데이트 함수
+function updateRating(value) {
+    ratingValue.textContent = value.toFixed(1); // 0.5 단위 표시
+    slider.value = value;
+
+    // 슬라이더 위치 업데이트 (0~5 범위에 맞게 이동)
+    const percentage = ((value-1) / 4) * 100;
+    pawIcon.style.left = `calc(${percentage}% - 15px)`;
+}
+
+// 🔥 드래그 시작 (mousedown) → `mousemove` 이벤트 추가
+pawIcon.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    pawIcon.style.cursor = "grabbing";
+
+    // `mousemove` 이벤트 리스너 추가
+    document.addEventListener("mousemove", onMouseMove);
+});
+
+// 🔥 드래그 중 (mousemove) → `requestAnimationFrame()`으로 즉각 반응!
+function onMouseMove(e) {
+    if (!isDragging) return;  // 🚨 드래그 중일 때만 실행!
+
+    const sliderRect = slider.getBoundingClientRect();
+    let newX = e.clientX - sliderRect.left;
+
+    // 범위 제한 (0 ~ 슬라이더 길이)
+    if (newX < 0) newX = 0;
+    if (newX > sliderRect.width) newX = sliderRect.width;
+
+    // 0.5 단위 반올림 처리
+    let value = ((newX / sliderRect.width) * 4) + 1;
+    value = Math.round(value * 2) / 2; // 🚀 0.5 단위로 반올림
+
+    requestAnimationFrame(() => updateRating(value));
+}
+
+// 🔥 드래그 종료 (`mouseup`) → `mousemove` 이벤트 제거!
+function stopDragging() {
+    if (!isDragging) return;
+
+    console.log("🔥 마우스 놓음 (mouseup 감지됨)");
+
+    // 🚀 `setTimeout()`을 사용하여 `isDragging = false`를 비동기적으로 실행
+    setTimeout(() => {
+        isDragging = false;
+        console.log("🛑 드래그 종료됨, isDragging 초기화 완료");
+    });
+
+    pawIcon.style.cursor = "grab";
+
+    // 🚨 `mousemove` 이벤트 리스너 제거 → 더 이상 아이콘이 따라오지 않음!
+    document.removeEventListener("mousemove", onMouseMove);
+}
+
+// 🔥 `mouseup`을 `document`에서 항상 감지! → 드래그 도중에도 확실하게 적용
+document.addEventListener("mouseup", stopDragging);
+
+// 초기 위치 설정
+updateRating(3.0);
+
+//별점 등록
+window.registStr = async function () {
+    const ratingModal = document.querySelector('.rating-container');
+
+
+    const ratingValue = document.querySelector('.slider').value;
+    console.log(ratingValue);
+
+    const docRef = await getDoc(doc(db, 'chatRooms', selectedRoomId))
+    console.log(selectedRoomId);
+    const participants = docRef.data().participants;
+    console.log(participants);
+    let otherId;
+
+    participants.forEach(dogId => {
+        if(dogId !== currentDogId){
+            otherId = dogId;
+            console.log(otherId);
+        }
+    })
+
+    const otherUser = getUsernameById(otherId);
+
+    api.post('/api/chat/star', {
+        user_star: ratingValue,
+        reviewer_id : currentUser,
+        recipient_id : otherUser
+    })
+        .then(data => {
+            ratingModal.style.display='none';
+            console.log("별점 등록 완료")
+        })
+        .catch(error => console.error(error));
+}
+
+document.querySelector('.rating-close-btn').addEventListener('click', function (){
+    document.querySelector('.rating-container').style.display = 'none';
+})
