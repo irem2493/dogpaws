@@ -4,13 +4,16 @@ import com.dogpaws.backend.dto.rim.*;
 import com.dogpaws.backend.repository.dao.rim.OrderDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.dogpaws.backend.dto.rim.OrderItemOptionDto;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
@@ -20,6 +23,98 @@ public class OrderService {
 
     private final OrderDao orderDao;
     private final CartService cartService;
+    private final NotificationService notificationService;
+    private final ThreadPoolTaskScheduler taskScheduler;
+
+    /**
+     * 관리자용 주문 조회 메서드
+     */
+    public List<OrderDto> getOrdersForAdmin(
+            String orderStatus,
+            String searchKeyword,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            int page,
+            int size) {
+        int offset = page * size;
+        return orderDao.selectOrdersForAdmin(
+                orderStatus,
+                searchKeyword,
+                startDate,
+                endDate,
+                offset,
+                size
+        );
+    }
+
+    /**
+     * 관리자 운송장 번호 업데이트
+     */
+    @Transactional
+    public void updateTrackingNumber(String qlId, String trackingNumber) {
+        orderDao.updateTrackingNumber(qlId, trackingNumber);
+        
+            // 주문 정보 조회
+            OrderDto order = orderDao.selectOrderByQlId(qlId);
+            
+            // 알림 등록
+            notificationService.sendNotification(
+                order.getUsername(),
+                String.format("주문하신 상품의 배송이 시작되었습니다. (운송장번호: %s)", trackingNumber),
+                "A",
+                    qlId
+            );
+
+        // 1분 후 배송완료 처리 예약
+        scheduleAutoDeliveryComplete(qlId);
+    }
+
+    /**
+     * 10초 후 배송완료 자동 처리
+     */
+    private void scheduleAutoDeliveryComplete(String qlId) {
+        Instant executionTime = Instant.now().plusSeconds(10);
+
+        taskScheduler.schedule(() -> {
+            try {
+                // 주문 정보 조회
+                OrderDto order = orderDao.selectOrderByQlId(qlId);
+
+                // 배송완료 처리
+                orderDao.updateAdminOrderStatus(qlId, "DELIVERED");
+
+                // 배송완료 알림
+                notificationService.sendNotification(
+                        order.getUsername(),
+                        "주문하신 상품의 배송이 완료되었습니다.",
+                        "A",
+                        qlId
+                );
+
+                log.info("주문 {} 배송완료 처리 완료", qlId);
+            } catch (Exception e) {
+                log.error("배송완료 처리 중 오류 발생: {}", e.getMessage(), e);
+            }
+        }, executionTime);
+    }
+
+    /**
+     * 주문 상태 변경
+     */
+    @Transactional
+    public void updateAdminOrderStatus(String qlId, OrderStatus newStatus) {
+        OrderDto order = getOrder(qlId);
+        if (order == null) {
+            throw new IllegalArgumentException("주문을 찾을 수 없습니다.");
+        }
+
+        // 상태 변경 가능 여부 검증
+        if (!order.getOrderStatus().canChangeTo(newStatus)) {
+            throw new IllegalStateException("해당 상태로 변경할 수 없습니다.");
+        }
+
+        orderDao.updateAdminOrderStatus(qlId, newStatus.name());
+    }
 
 
     /**

@@ -9,8 +9,10 @@ import com.dogpaws.backend.global.common.ApiResponse;
 import com.dogpaws.backend.service.rim.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,40 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
+
+    /**
+     * 관리자용 주문 조회 API
+     */
+    @GetMapping
+    public ApiResponse<?> getOrders(
+            @RequestParam(required = false) String orderStatus,
+            @RequestParam(required = false) String searchKeyword,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<OrderDto> orders = orderService.getOrdersForAdmin(
+                orderStatus,
+                searchKeyword,
+                startDate,
+                endDate,
+                page,
+                size
+        );
+
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, orders);
+    }
+
+    @PutMapping("/{qlId}/tracking")
+    public ApiResponse<?> updateTrackingNumber(
+            @PathVariable String qlId,
+            @RequestParam String trackingNumber) {
+        orderService.updateTrackingNumber(qlId, trackingNumber);
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "운송장 번호가 업데이트되었습니다.");
+    }
+
+
 
     /**
      * 주문 생성 (결제 전)

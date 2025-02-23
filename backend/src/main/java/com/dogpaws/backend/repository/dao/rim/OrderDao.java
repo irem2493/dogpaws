@@ -5,6 +5,7 @@ import com.dogpaws.backend.dto.rim.OrderItemDto;
 import com.dogpaws.backend.dto.rim.OrderItemOptionDto;
 import org.apache.ibatis.annotations.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -47,12 +48,6 @@ public interface OrderDao {
             @Param("size") int size
     );
 
-
-
-
-
-
-
     List<OrderDto> selectOrdersByStatus(String status);
     List<OrderDto> selectRecentOrders(@Param("limit") int limit);
 
@@ -67,4 +62,27 @@ public interface OrderDao {
     // 주문 통계
     int getTotalOrderAmount(@Param("username") String username); // 사용자 별 총 주문금액
     int getMonthlyOrderCount(@Param("username") String username, @Param("yearMonth") String yearMonth); //월별 주문 건수
+
+
+    //관리자용 주문 조회 메서드
+    List<OrderDto> selectOrdersForAdmin(
+            @Param("orderStatus") String orderStatus,
+            @Param("searchKeyword") String searchKeyword,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            @Param("offset") int offset,
+            @Param("size") int size
+    );
+
+    void updateTrackingNumber(
+            @Param("qlId") String qlId,
+            @Param("trackingNumber") String trackingNumber
+    );
+
+    void updateAdminOrderStatus(
+            @Param("qlId") String qlId,
+            @Param("status") String status
+    );
+
+
 }

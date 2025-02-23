@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout-mypage}">
+      layout:decorate="~{layout/layout-store}">
 <head>
     <title>상품 목록</title>
     <meta charset="utf-8" />
@@ -81,6 +81,13 @@
         font-size: 28px;
         font-weight: 700;
         color: #333;
+    }
+    /* 제조사와 상품명 말줄임표 처리를 위한 스타일 추가 */
+    .manufacturer, .product-name {
+        white-space: nowrap;        /* 텍스트를 한 줄로 표시 */
+        overflow: hidden;           /* 넘치는 텍스트 숨김 */
+        text-overflow: ellipsis;    /* 말줄임표 표시 */
+        max-width: 100%;           /* 부모 요소 너비를 넘지 않도록 설정 */
     }
 </style>
 </body>

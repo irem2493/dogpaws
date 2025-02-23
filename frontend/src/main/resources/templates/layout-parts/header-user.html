@@ -16,24 +16,6 @@
         </div>
         
         <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-            <!-- 기본 종 모양 -->
-            <div id="header-bell-block" style="display: none;">
-                <i class="bi bi-bell" style="font-size: 24px;"></i>
-            </div>
-
-            <!-- 알림 종 모양 -->
-            <div id="header-redbell-block" style="position: relative; display: inline-block; margin-left: 20px;" onclick="bellClick()">
-                <i class="bi bi-bell-fill" style="font-size: 24px;"></i>
-                <span class="header-redbell"></span>
-            </div>
-
-
-
-
-
-
-
-
 
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
@@ -154,7 +136,7 @@
                     <span id="unreadCount" class="badge">0</span>
                 </button>
 
-                <div id="notificationList" class="notification-list">
+                <div id="notificationList" class="notification-list hidden">
                     <div class="notification-header">
                         <h3>알림</h3>
                         <button id="closeNotification">×</button>
@@ -198,6 +180,9 @@
                     border: none;
                     cursor: pointer;
                     position: relative;
+                }
+                .notification-btn i{
+                    font-size: 25px;
                 }
 
                 .badge {
@@ -333,11 +318,6 @@
         <div> <a href="/"> <img src="/img/로고.png" alt="로고이미지" width="130px" /> </a></div>
         
         <div style="display: flex; gap: 10px; justify-content: center; align-items: center;">
-        <!-- 기본 종 모양 -->
-            <div id="header-bell-block">
-                <i class="bi bi-bell" style="font-size: 24px;"></i>
-            </div>
-
             <div >
                 <img src="/img/증명사진.jpg"
                     width="50px"

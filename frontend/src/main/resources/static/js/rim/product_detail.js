@@ -122,6 +122,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const username = sessionStorage.getItem('username');
 
+            if(!username){
+                alert('로그인 후 이용해주세요.');
+                window.location.href = '/login';
+                return;
+            }
+
+
             // 사용자 권한 확인
             // if (!await verifyUserRole()) {
             //     return;
@@ -163,7 +170,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await api.post('/api/cart', requestData);
 
             if (response.status === 'SUCCESS') {
-                alert(response.body.body.message);
+
+                openModal('cartModal');
+
+                // alert(response.body.body.message);
                 // 선택된 옵션 초기화
                 selectedItems.clear();
                 selectedOptions.innerHTML = '';
@@ -178,3 +188,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 });
+
+// 장바구니 페이지로 이동
+function goToCart() {
+    window.location.href = '/cart/list';
+}

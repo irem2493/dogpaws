@@ -18,7 +18,7 @@ public class NotificationScheduler {
     private final NotificationScheduleDao scheduleDao;
     private final NotificationService notificationService;
 
-//    @Scheduled(cron = "0/20 * * * * *") //test용
+//    @Scheduled(cron = "0/30 * * * * *") //test용
     @Scheduled(cron = "0 0 * * * *")
     public void checkScheduledNotifications() {
         List<NotificationScheduleDto> schedules = scheduleDao
@@ -31,6 +31,8 @@ public class NotificationScheduler {
                     schedule.getAlarmType(),
                     schedule.getGubnId()
             );
+
+
             scheduleDao.updateStatus(schedule.getId(), "SENT");
         }
     }
