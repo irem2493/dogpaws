@@ -6,13 +6,8 @@ import com.dogpaws.backend.repository.dao.rim.FCMTokenDao;
 import com.dogpaws.backend.repository.dao.rim.NotificationScheduleDao;
 import com.dogpaws.backend.repository.jpa.ajy.UserRepository;
 import com.dogpaws.frontend.dto.hyepin.AlarmDto;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

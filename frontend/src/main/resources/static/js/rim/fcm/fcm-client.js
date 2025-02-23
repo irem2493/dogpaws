@@ -145,7 +145,7 @@ const FCMClient = {
         notificationElement.innerHTML = `
         <div class="notification-content">
             <p>${notification.message}</p>
-            <small>${new Date().toLocaleString('ko-KR')}</small>
+            <small>${getRelativeTimeString(notification.createdAt)}</small>
         </div>
     `;
 
@@ -160,5 +160,25 @@ const FCMClient = {
         }
     }
 };
+
+// 상대 시간 변환 함수 수정
+function getRelativeTimeString(dateString) {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInMilliseconds = now - date;
+    const diffInMinutes = diffInMilliseconds / (1000 * 60);
+    const diffInHours = diffInMinutes / 60;
+    const diffInDays = diffInHours / 24;
+
+    if (diffInMinutes < 10) {
+        return '방금 전';
+    } else if (diffInHours < 1) {
+        return `${Math.floor(diffInMinutes)}분 전`;
+    } else if (diffInHours < 24) {
+        return `${Math.floor(diffInHours)}시간 전`;
+    } else {
+        return `${Math.floor(diffInDays)}일 전`;
+    }
+}
 
 window.FCMClient = FCMClient;

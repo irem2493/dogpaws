@@ -73,7 +73,7 @@ public class OrderService {
      * 10초 후 배송완료 자동 처리
      */
     private void scheduleAutoDeliveryComplete(String qlId) {
-        Instant executionTime = Instant.now().plusSeconds(10);
+        Instant executionTime = Instant.now().plusSeconds(20);
 
         taskScheduler.schedule(() -> {
             try {
