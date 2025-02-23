@@ -210,6 +210,10 @@ public class MatchingService {
 
         //매칭필터 가져오기
         MatchingCriteriaDto criteria = dogMatchDao.getMatchingCriteria(dogId, username, matchType);
+<<<<<<< HEAD
+        System.out.println("여기 매칭 서비스!@@@@@@@@@@@@@@@@@@@@@ 매칭 타입 어떻게 되냐? " + criteria);
+=======
+>>>>>>> origin/REQ-68-관리자
         //후보리스트 초기화
         List<DogCandidateDto> candidates;
 

@@ -16,16 +16,339 @@
         </div>
         
         <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-            <!-- 기본 종 모양 -->
-            <div id="header-bell-block" style="display: none;">
-                <i class="bi bi-bell" style="font-size: 24px;"></i>
-            </div>
 
-            <!-- 알림 종 모양 -->
-            <div id="header-redbell-block" style="position: relative; display: inline-block; margin-left: 20px;" onclick="bellClick()">
-                <i class="bi bi-bell-fill" style="font-size: 24px;"></i>
-                <span class="header-redbell"></span>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    // 로그인 상태 확인
+                    const username = document.getElementById('pawsUsername');
+
+                    if(username){
+                        console.log('fcm.js - 사용자 인증 완료')
+                    }else{
+                        console.log('fcm.js - 사용자 인증 실패')
+                    }
+
+
+                    if (username) {  // 로그인한 경우에만 알림 기능 초기화
+                        document.getElementById('paws-notification-box').classList.remove('hidden');
+
+
+                        const notificationBtn = document.getElementById('notificationBtn');
+                        const notificationList = document.getElementById('notificationList');
+                        const notifications = document.getElementById('notifications');
+                        const unreadCount = document.getElementById('unreadCount');
+                        const closeBtn = document.getElementById('closeNotification');
+
+                        // FCM 초기화 및 토큰 설정
+                        FCMClient.init();
+
+                        // 알림 목록 로드
+                        loadNotifications();
+
+                        // 알림 버튼 클릭 이벤트
+                        notificationBtn.addEventListener('click', function() {
+                            notificationList.classList.toggle('hidden');
+                            if (!notificationList.classList.contains('hidden')) {
+                                loadNotifications();
+                            }
+                        });
+
+                        // 닫기 버튼
+                        closeBtn.addEventListener('click', function() {
+                            notificationList.classList.add('hidden');
+                        });
+                        // 알림 목록 로드 함수
+                        async function loadNotifications() {
+                            try {
+                                const username = sessionStorage.getItem('username');
+
+                                const notifications = await api.get('/api/notifications/notifications?username='+ username );
+
+                                console.log('fcm-notifications',notifications);
+
+                                renderNotifications(notifications);
+                                updateUnreadCount(notifications);
+                            } catch (error) {
+                                console.error('알림 로드 실패:', error);
+                            }
+                        }
+
+                        // 상대 시간 변환 함수 수정
+                        function getRelativeTimeString(dateString) {
+                            // 현재 시간을 KST로 가져오기
+                            const now = new Date();
+                            const koreaTimeDiff = 9 * 60 * 60 * 1000; // 9시간을 밀리초로 변환
+                            const nowKST = new Date(now.getTime() + koreaTimeDiff);
+
+                            // 서버에서 받은 시간 문자열을 파싱
+                            const [datePart, timePart] = dateString.split(' ');
+                            const [year, month, day] = datePart.split('-');
+                            const [hours, minutes, seconds] = timePart.split(':');
+
+                            // 서버 시간을 Date 객체로 생성 (이미 KST)
+                            const date = new Date(year, month - 1, day, hours, minutes, seconds);
+
+                            const diffInMilliseconds = date - nowKST;
+                            const diffInMinutes = Math.floor(Math.abs(diffInMilliseconds) / (1000 * 60));
+                            const diffInHours = Math.floor(diffInMinutes / 60);
+                            const diffInDays = Math.floor(diffInHours / 24);
+
+                            console.log('현재시간(KST):', nowKST);
+                            console.log('알림시간:', date);
+                            console.log('시차(분):', diffInMinutes);
+
+                            if (diffInMinutes < 1) {
+                                return '방금 전';
+                            } else if (diffInMinutes < 60) {
+                                return `${diffInMinutes}분 전`;
+                            } else if (diffInHours < 24) {
+                                return `${diffInHours}시간 전`;
+                            } else if (diffInDays < 7) {
+                                return `${diffInDays}일 전`;
+                            } else {
+                                return `${year}년 ${month}월 ${day}일`;
+                            }
+                        }
+
+                        // 알림 렌더링 함수 수정
+                        function renderNotifications(notifications) {
+                            const container = document.getElementById('notifications');
+                            container.innerHTML = notifications.body.map(notification => `
+                            <div class="notification-item ${notification.read_status === 'N' ? 'unread' : 'read'}"
+                                 data-id="${notification.alarm_id}">
+                                <div class="notification-content" style="display: flex; gap: 10px; align-items: flex-start;">
+                                    <img src="/img/icon/alarm_${notification.alarm_type.toLowerCase()}_icon.svg"
+                                         alt="알림 아이콘"
+                                         style="width: 20px; height: 20px; margin-top: 3px;">
+                                    <div>
+                                        <p>${notification.message}</p>
+                                        <small>${getRelativeTimeString(notification.created_at)}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+
+                            // 알림 클릭 이벤트 추가
+                            container.querySelectorAll('.notification-item').forEach(item => {
+                                item.addEventListener('click', function() {
+                                    markAsRead(item.dataset.id);
+                                });
+                            });
+                        }
+
+                        // 읽음 처리 함수
+                        async function markAsRead(alarmId) {
+                            try {
+                                await api.post(`/api/notifications/mark-read/${alarmId}`);
+                                loadNotifications(); // 목록 새로고침
+                            } catch (error) {
+                                console.error('읽음 처리 실패:', error);
+                            }
+                        }
+
+                        // 안읽은 알림 수 업데이트
+                        function updateUnreadCount(notifications) {
+                            const unreadCount = notifications.body.filter(n => !n.isRead).length;
+                            document.getElementById('unreadCount').textContent = unreadCount;
+                        }
+                    }else {
+                        // 로그인하지 않은 경우 알림 영역 숨기기
+                        document.getElementById('paws-notification-box').classList.add('hidden')
+                    }
+                });
+            </script>
+            <!-- 테스트 시작 -->
+            <div class="notification-area hidden" id="paws-notification-box">
+                <button id="notificationBtn" class="notification-btn" th:if="${session.user != null}">
+                    <i class="fas fa-bell"></i>
+                    <span id="unreadCount" class="badge">0</span>
+                </button>
+
+                <div id="notificationList" class="notification-list hidden">
+                    <div class="notification-header">
+                        <h3>알림</h3>
+                        <button id="closeNotification"></button>
+                    </div>
+                    <div id="notifications" class="notifications-container">
+                        <!-- 알림 내용이 동적으로 추가됨 -->
+                    </div>
+                </div>
             </div>
+            <!-- 테스트 -->
+            <style>
+                .toast-notification {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: white;
+                    padding: 15px;
+                    border-radius: 4px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease-out;
+                }
+
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                .notification-area {
+                    position: relative;
+                    display: inline-block;
+
+                }
+
+                .notification-btn {
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    position: relative;
+                }
+                .notification-btn i{
+                    font-size: 25px;
+                }
+
+                .badge {
+                    position: absolute;
+                    top: -5px;
+                    right: -5px;
+                    background: red;
+                    color: white;
+                    border-radius: 50%;
+                    padding: 2px 6px;
+                    font-size: 12px;
+                }
+
+                .notification-list {
+                    position: absolute;
+                    top: 100%;
+                    right: 0;
+                    width: 300px;
+                    background: white;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    z-index: 1000;
+                    overflow: hidden;
+                    border-top: 3px solid #FFA03A;    /* 상단 테두리 */
+                    border-left: 1px solid #FFA03A;   /* 좌측 테두리 */
+                    border-right: 1px solid #FFA03A;  /* 우측 테두리 */
+                    border-bottom: 1px solid #FFA03A; /* 하단 테두리 */
+                }
+
+                .notification-header {
+                    padding: 15px 20px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+
+                .notification-header h3 {
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: #333333;
+                    margin: 0;
+                }
+
+                #closeNotification {
+                    background: none;
+                    border: none;
+                    padding: 0;
+                    cursor: pointer;
+                    width: 18px;
+                    height: 16px;
+                    background-image: url('/img/icon/button/cancel.svg');
+                    background-repeat: no-repeat;
+                    background-position: center;
+                }
+
+                .notifications-container {
+                    max-height: 400px;
+                    overflow-y: auto;
+                    padding: 0;
+                }
+
+                /* 스크롤바 스타일링 */
+                .notifications-container::-webkit-scrollbar {
+                    width: 6px;  /* 스크롤바 너비 */
+                }
+
+                .notifications-container::-webkit-scrollbar-track {
+                    background: #f1f1f1;  /* 스크롤바 트랙 배경색 */
+                    border-radius: 3px;
+                }
+
+                .notifications-container::-webkit-scrollbar-thumb {
+                    background: #CCCCCC;  /* 스크롤바 색상 */
+                    border-radius: 3px;
+                }
+
+                .notifications-container::-webkit-scrollbar-thumb:hover {
+                    background: #999999;  /* 스크롤바 호버 시 색상 */
+                }
+
+                /* Firefox를 위한 스크롤바 스타일링 */
+                .notifications-container {
+                    scrollbar-width: thin;
+                    scrollbar-color: #CCCCCC #f1f1f1;
+                }
+
+                .notification-item {
+                    padding: 15px 20px;
+                    border-bottom: 1px solid #EEEEEE;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                }
+
+                .notification-item:last-child {
+                    border-bottom: none;
+                }
+
+                .notification-item:hover {
+                    background-color: #F8F8F8;
+                }
+
+                .notification-item.unread {
+                    background-color: #F8F8F8;
+                }
+
+                .notification-item .notification-content p {
+                    margin: 0 0 5px 0;
+                    color: #333333;
+                    font-size: 14px;
+                }
+
+                .notification-item .notification-content small {
+                    color: #999999;
+                    font-size: 12px;
+                }
+
+                .hidden {
+                    display: none;
+                }
+            </style>
+
+            <!-- 테스트 끝 -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             <div th:if="${session.user != null and session.dog != null}">
                 <img th:src="${session.dog.profileUrl}"
                      width="50px"
@@ -42,7 +365,11 @@
                 <!-- 로그인 상태 -->
                 <span th:if="${session.user != null}" class="profile-dropdown"  style="cursor: pointer;">
                     <span th:text="${session.dog != null and session.dog.dogName != null ? session.dog.dogName + ' 님' :
+<<<<<<< HEAD
+                                    (session.user != null and session.user.username != null ? session.user.nickname + '님' : 'Guest')}" id="pawsUsername"></span>
+=======
                                     (session.user != null and session.user.username != null ? session.user.nickname + '님' : 'Guest')}"></span>
+>>>>>>> origin/REQ-68-관리자
                     <img src="/img/icon/button/down-sign.svg" alt="dropdown img" style="width: 12px; height: 12px"/>
                     <!--<button id="logoutButton">로그아웃</button>-->
 
@@ -74,7 +401,7 @@
     <div class="header-menu">
         <p id="fmatching" onclick="handleClick(event)">친구 매칭</p>
         <p id="pmatching" onclick="handleClick(event)">교배 매칭</p>
-        <p id="chat" onclick="handleClick(event)">채팅하기</p>
+        <p id="header-chat" onclick="handleClick(event)">채팅하기</p>
         <p id="map" onclick="handleClick(event)">근처 강아지 보기</p>
         <p id="store" onclick="handleClick(event)">스토어</p>
         <p id="board" onclick="handleClick(event)">커뮤니티</p>
@@ -93,21 +420,33 @@
         <div> <a href="/"> <img src="/img/로고.png" alt="로고이미지" width="130px" /> </a></div>
         
         <div style="display: flex; gap: 10px; justify-content: center; align-items: center;">
-        <!-- 기본 종 모양 -->
-            <div id="header-bell-block">
-                <i class="bi bi-bell" style="font-size: 24px;"></i>
-            </div>
 
-            <div >
-                <img src="/img/증명사진.jpg"
-                    width="50px"
-                    height="50px"
-                    style="border-radius: 50%; width: 50px !important; height: 50px !important;"
-                    onerror="this.src='/img/증명사진.jpg';"
-                    alt="사용자 프로필 이미지">
+            <div th:if="${session.user != null and session.dog != null}">
+                <a href="/dog/dogProfileSelect">
+                    <img th:src="${session.dog.profileUrl}"
+                         width="50px"
+                         height="50px"
+                         style="border-radius: 50%; width: 50px !important; height: 50px !important;"
+                         onerror="this.src='/img/증명사진.jpg';"
+                         alt="사용자 프로필 이미지">
+                </a>
             </div>
-            <div class="header-username">
-                목록
+            <div class="profile-dropdown"  style="cursor: pointer;">
+                <!-- 로그인 상태 -->
+                <span th:if="${session.user != null}" class="profile-dropdown"  style="cursor: pointer;">
+                    <span>
+                        <a href="/mypage">
+                            <img class="mypage-index" src="/img/icon/mypage/mypage-index2.svg" alt="index-icon">
+                        </a>
+                    </span>
+                </span>
+
+                <!-- 비로그인 상태 -->
+                <div th:if="${session.user == null}" class="header-auth-links">
+                    <a href="/login" style="text-decoration: none; color: black">로그인</a>
+                    <span>|</span>
+                    <a href="/join" style="text-decoration: none; color: black">회원가입</a>
+                </div>
             </div>
         </div>  
     </div>
@@ -120,7 +459,7 @@
     <div class="header-menu-mobile" style="display: flex; gap: 13px;">
         <p id="fmatching" onclick="handleClick(event)">친구매칭</p>
         <p id="pmatching" onclick="handleClick(event)">교배매칭</p>
-        <p id="chat" onclick="handleClick(event)">채팅</p>
+        <p id="header-chat" onclick="handleClick(event)">채팅</p>
         <p id="map" onclick="handleClick(event)" >지도</p>
         <p id="store" onclick="handleClick(event)">스토어</p>
         <p id="board" onclick="handleClick(event)">커뮤니티</p>

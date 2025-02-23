@@ -20,7 +20,7 @@ public class CalendarDto {
     private String calendarDescription;  // 일정 설명 (NULL 가능)
     private LocalDateTime createdAt;   // 일정 생성일 (현재 시간으로 기본 설정)
     private LocalDateTime updatedAt;  // 일정 수정일 (현재 시간으로 기본 설정)
-    private Integer roomId; // 채팅방 번호 (NULL 가능)
+    private String roomId; // 채팅방 번호 (NULL 가능)
     private String scheduleType; // P: 개인, S: 공유받은
     private char sharedYn; // 공유 여부
     private Integer sharedId; // 공유 ID

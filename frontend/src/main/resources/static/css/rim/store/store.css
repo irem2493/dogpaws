@@ -172,4 +172,45 @@
 
 .pagination .page-item:not(.active) .page-link:hover {
     background-color: #f8f9fa;
+<<<<<<< HEAD
+}
+
+.payment-summary {
+    width: 100%;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 43px;
+}
+
+.summary-divider {
+    height: 1px;
+    background-color: #e8d7c4;
+    margin: 8px 0;
+}
+
+.summary-label {
+    font-size: 16px;
+    color: #333;
+}
+
+.summary-value {
+    font-size: 16px;
+    color: #333;
+}
+
+/* 총 결제금액 스타일 */
+.summary-row.total {
+    font-size: 19.2px; /* 1.2배 크기 */
+    font-weight: 700;
+    color: #000;
+}
+
+.summary-row.total .summary-value strong {
+    color: #EF7E06; /* 강조색상 적용 */
+=======
+>>>>>>> origin/REQ-68-관리자
 }

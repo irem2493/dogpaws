@@ -47,10 +47,17 @@ public class DogController {
         return dogService.getDogList(username);
     }
 
+<<<<<<< HEAD
+    @GetMapping("/detail/{dogId}/{myDogId}")
+    public DogResponseDto getDog(@PathVariable Integer dogId, @PathVariable Integer myDogId) {
+        System.out.println(dogService.getDog(dogId, myDogId));
+        return dogService.getDog(dogId, myDogId);
+=======
     @GetMapping("/detail/{dogId}")
     public DogResponseDto getDog(@PathVariable Integer dogId) {
         System.out.println(dogService.getDog(dogId));
         return dogService.getDog(dogId);
+>>>>>>> origin/REQ-68-관리자
     }
 
     //강아지 정보 삭제

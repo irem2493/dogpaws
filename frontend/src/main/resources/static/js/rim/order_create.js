@@ -201,7 +201,11 @@ function convertCartItemsToOrderItems(cartItems) {
             option_id: option.option_id,
             option_item_id: option.option_item_id,
             option_name: option.option_name,
+<<<<<<< HEAD
+            option_price:  option.option_price,
+=======
             option_price:  cartItem.product_price + option.option_price,
+>>>>>>> origin/REQ-68-관리자
             quantity: option.quantity
         })),
     }));
@@ -244,7 +248,11 @@ function validateOrderData(elements) {
 // 배송메모 직접입력 처리
 document.getElementById('shippingMemo').addEventListener('change', function() {
     const directInput = document.getElementById('directShippingMemo');
+<<<<<<< HEAD
+    directInput.style.display = this.value === '' ? 'block' : 'none';
+=======
     directInput.style.display = this.value === 'direct' ? 'block' : 'none';
+>>>>>>> origin/REQ-68-관리자
 });
 
 // 배송정보 저장
@@ -274,12 +282,29 @@ function saveShippingInfo() {
         return;
     }
 
+<<<<<<< HEAD
+
+    // 화면에 표시
+    document.querySelector('#displayReceiverName').textContent = receiverName;
+    document.querySelector('#displayReceiverPhone').textContent = receiverPhone;
+
+    // 주소 조합
+    const zipcode = document.getElementById('shippingZipcode').textContent;
+    const address1 = document.getElementById('shippingAddress1').textContent;
+    const address2 = document.getElementById('shippingAddress2').textContent;
+
+    // 우편번호를 제외한 전체 주소 조합
+    document.getElementById('displayFullAddress').textContent = `우편번호 (${shippingZipcode}), ${shippingAddress1}, ${shippingAddress2}`;
+
+    // 모달 닫기
+=======
     // 화면에 표시
     document.querySelector('#displayReceiverName').textContent = receiverName;
     document.querySelector('#displayReceiverPhone').textContent = receiverPhone;
     document.querySelector('#displayShippingZipcode').textContent = shippingZipcode;
     document.querySelector('#displayShippingAddress1').textContent = shippingAddress1;
     document.querySelector('#displayShippingAddress2').textContent = shippingAddress2;
+>>>>>>> origin/REQ-68-관리자
 
     // 모달 닫기
 

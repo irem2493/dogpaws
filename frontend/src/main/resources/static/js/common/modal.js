@@ -37,6 +37,19 @@ function closeModal(button) {
     }
 }
 
+function closeModalById(modalId) {
+    const modal = document.getElementById(modalId);
+    const overlay = modal.parentElement;
+
+    if (modal && overlay.classList.contains('pawsModal-overlay')) {
+        // 모달을 원래 위치로 되돌림
+        document.body.appendChild(modal);
+        // 오버레이 제거
+        overlay.remove();
+        modal.style.display = 'none';
+    }
+}
+
 // ESC 키로 모달 닫기
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {

@@ -36,7 +36,11 @@ public class CartListResponseDto {
 
     public int getTotalPrice() {
         return cartOptions.stream()
+<<<<<<< HEAD
+                .mapToInt(option -> option.getOptionPrice() * option.getQuantity())
+=======
                 .mapToInt(option -> (productPrice + option.getOptionPrice()) * option.getQuantity())
+>>>>>>> origin/REQ-68-관리자
                 .sum();
     }
 }

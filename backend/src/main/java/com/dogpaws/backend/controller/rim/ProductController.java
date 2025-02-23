@@ -47,7 +47,11 @@ public class ProductController {
 
     @GetMapping
     public ApiResponse<Page<ProductListDto>> getProducts(
+<<<<<<< HEAD
+            @RequestParam(required = false, name = "main_category") String category,
+=======
             @RequestParam(required = false) String category,
+>>>>>>> origin/REQ-68-관리자
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 

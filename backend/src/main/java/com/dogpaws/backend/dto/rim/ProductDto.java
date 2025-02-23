@@ -1,12 +1,20 @@
 package com.dogpaws.backend.dto.rim;
 
 import lombok.Data;
+<<<<<<< HEAD
+import lombok.ToString;
+=======
+>>>>>>> origin/REQ-68-관리자
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+<<<<<<< HEAD
+@ToString
+=======
+>>>>>>> origin/REQ-68-관리자
 public class ProductDto {
     private Long productId;          // 상품 ID
     private String name;                // 상품명
@@ -29,6 +37,12 @@ public class ProductDto {
     private String weight;              // 무게
     private String manufacturer; //브랜드
 
+<<<<<<< HEAD
+    private Integer costPrice; //기본 옵션 원가
+    private Integer basicOptionQuantity;
+
+=======
+>>>>>>> origin/REQ-68-관리자
     private List<ProductOptionDto> options;  // 상품 옵션 목록
 
     // 판매 상태 enum

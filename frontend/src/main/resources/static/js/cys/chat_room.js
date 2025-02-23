@@ -11,7 +11,14 @@ import {
     query,
     serverTimestamp,
     updateDoc,
+<<<<<<< HEAD
+    where,
+    arrayUnion,
+    arrayRemove,
+    deleteDoc
+=======
     where
+>>>>>>> origin/REQ-68-관리자
 } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
 
@@ -24,7 +31,8 @@ const currentDogProfile = document.querySelector("#dogProfile").value;
 console.log("현재 사용자 강아지:", currentDogId);
 const chatListElement = document.querySelector(".chat-list");
 
-let chatProfiles=[];
+// let chatProfiles=[];
+let chatProfiles = JSON.parse(localStorage.getItem("chatProfiles")) || [];
 const match = document.querySelector('#match');
 const group = document.querySelector('#group');
 
@@ -65,7 +73,8 @@ async function subscribeToNotifications() {
                 chatRooms.push({id: doc.id, ...doc.data()})
 
                 const filteredParticipants
-                    = doc.data().participants.filter(user => user !== currentDogId);
+                    = doc.data().participants;
+            // .filter(user => user !== currentDogId)
 
                 filteredParticipants.forEach(participants => {
                     if (!otherParticipants.includes(participants)) {
@@ -74,7 +83,7 @@ async function subscribeToNotifications() {
                 })
             });
 
-            console.log('참여자 목록 : ' + otherParticipants);
+            console.log('❌참여자 목록 : ' + otherParticipants);
 
             api.post('/api/chat/profile', {otherParticipants : otherParticipants},
                 {
@@ -82,7 +91,13 @@ async function subscribeToNotifications() {
                 })
                 .then(response => {
                     chatProfiles = response.body;
+<<<<<<< HEAD
+                    console.log("❌❌❌❌ chatProfiles:", chatProfiles);
+
+                    localStorage.setItem("chatProfiles", JSON.stringify(chatProfiles));
+=======
                     console.log("응답 데이터 chatProfiles:", chatProfiles);
+>>>>>>> origin/REQ-68-관리자
 
                     chatCategory(currentFilterStatus);
                 })
@@ -94,6 +109,32 @@ async function subscribeToNotifications() {
     }
 }
 
+<<<<<<< HEAD
+async function openFirstChatRoom() {
+
+    const main = document.querySelector('.chat-main');
+    const detail = document.querySelector('.detail-background');
+
+    main.innerHTML ='';
+    document.querySelector('.out-chat').style.display = 'none';
+    document.querySelector('.media').style.display = 'none';
+    document.querySelector('.calender').style.display = 'none';
+
+    main.innerHTML = `
+        <div class="defaultMainBox">
+            <img src = "/img/chatDefault.png" id="mainDefault" width="314">
+            <p id="mainDefaultText">채팅을 시작해 보세요!</p>
+        </div>
+    `;
+
+}
+
+function getUsernameById(participantsId){
+    // 프로필 데이터에서 해당 ID의 보호자 id 찾기
+    const profile = chatProfiles.find(profile => profile.dog_id === parseInt(participantsId));
+
+    return profile.username;
+=======
 async function openLatestChatRoom() {
     const q = query(collection(db, "chatRooms"), where('participants', 'array-contains', currentDogId), orderBy("lastMessage.timestamp", "desc"), limit(1)); // 최신순 정렬 + 1개만 가져옴
 
@@ -114,6 +155,7 @@ async function openLatestChatRoom() {
     } catch (error) {
         console.log("채팅방 불러오기 실패 : ", error);
     }
+>>>>>>> origin/REQ-68-관리자
 }
 
 function getProfileById(participantsId){
@@ -125,7 +167,12 @@ function getProfileById(participantsId){
 
 function getNicknameById(participantsId){
     // 프로필 데이터에서 해당 ID의 프로필 찾기
+    console.log(chatProfiles);
     const profile = chatProfiles.find(profile => profile.dog_id === parseInt(participantsId));
+    if (!profile) {
+        console.log("❌ 닉네임을 찾을 수 없음!", participantsId);
+        return "알 수 없음"; // 기본 닉네임 반환
+    }
     return profile.nickname;
 }
 
@@ -170,7 +217,7 @@ function chatCategory(filterStatus) {
                 listItem.innerHTML = `
                     <div class="chat-one" onclick="room('${chatRoom.id}')">
                         <div class="">
-                            <img src="${chatRoom.roomImage}" width="50" class="profile-img-2" alt="프로필">
+                            <img src="${chatRoom.roomProfile}" width="50" height="50" class="profile-img-2" alt="프로필">
                         </div>
                         <div class="pre-chat-content">
                             <div class="pre-chat-with">${chatRoom.roomName}</div>
@@ -214,11 +261,22 @@ window.room = function (roomId) {
     console.log(selectedRoomId);
     subscribeToMessages(roomId);
     detailProfile();
+<<<<<<< HEAD
+    detailParticipants();
     detailPageMedia(roomId);
     detailPageCalendar();
+    document.querySelector('.out-chat').style.display = 'flex';
+    document.querySelector('.media').style.display = 'flex';
+    document.querySelector('.calender').style.display = 'flex';
+
+=======
+    detailPageMedia(roomId);
+    detailPageCalendar();
+>>>>>>> origin/REQ-68-관리자
 }
 
 function subscribeToMessages(roomId) {
+
     const q = query(collection(db, "chatRooms", roomId, "messages"), orderBy("timestamp"));
 
     onSnapshot(q, (snapshot) => {
@@ -361,7 +419,11 @@ function scrollToBottom() {
 
 // 함수 호출 (페이지 로드 시 실행)
 window.onload = function () {
+<<<<<<< HEAD
+    openFirstChatRoom();
+=======
     openLatestChatRoom();
+>>>>>>> origin/REQ-68-관리자
     subscribeToNotifications();
 }
 
@@ -590,7 +652,12 @@ window.scheduleDetail = function (button){
 
 //공유 일정 추가
 window.sharedCalendar = function (button){
+<<<<<<< HEAD
+    const roomId = selectedRoomId;
+    localStorage.setItem("lastVisitedRoom", roomId);
+=======
 
+>>>>>>> origin/REQ-68-관리자
     detailModal.style.display = 'none';
 
     const calendarId = button.getAttribute("data-calendar-id");
@@ -607,6 +674,9 @@ window.sharedCalendar = function (button){
         .then(async data => {
             console.log(data);
             alert("일정에 추가되었습니다.")
+<<<<<<< HEAD
+            // window.location.reload();
+=======
             window.location.reload();
             // await updateDoc(doc(db, "chatRooms", selectedRoomId, "messages", messageId), { sharedStatus: 'Y'})
             // const updated = await getDoc(doc(db, "chatRooms", selectedRoomId, "messages", messageId));
@@ -620,6 +690,7 @@ window.sharedCalendar = function (button){
             //     sharedBtn.preventDefault();
             //         alert("이미 추가된 일정입니다.");
             // }
+>>>>>>> origin/REQ-68-관리자
 
         })
         .catch(error => console.error(error));
@@ -693,13 +764,22 @@ window.fileUpload = function (){
 
 }
 
+<<<<<<< HEAD
+=======
 //상세정보 페이지
+>>>>>>> origin/REQ-68-관리자
     
 //이름 불러오기
 window.detailProfile = async function () {
 
     const roomSnap = await getDoc(doc(db, 'chatRooms', selectedRoomId));
     const participants = roomSnap.data().participants;
+<<<<<<< HEAD
+    const filterStatus = roomSnap.data().status;
+    const roomName = roomSnap.data().roomName;
+    const roomProfile = roomSnap.data().roomProfile;
+=======
+>>>>>>> origin/REQ-68-관리자
     console.log('상대 id//'+participants);
 
     const otherDogId = participants.find(id => id !== currentDogId);
@@ -707,6 +787,125 @@ window.detailProfile = async function () {
     const profile = document.querySelector('.profile');
 
     profile.innerHTML = '';
+<<<<<<< HEAD
+    if(filterStatus === 'G'){
+        profile.innerHTML = `
+        <img src="${roomProfile}" class="profile-img-3" alt="">
+    `
+    }else{
+        profile.innerHTML = `
+        <img src="${profileUrl}" class="profile-img-3" alt="">
+    `
+    }
+
+    const detailUserName = document.querySelector('.detail-title');
+
+    const starBtn = document.querySelector('.star-btn');
+    const linkBtn = document.querySelector('.link-btn');
+
+    detailUserName.innerText = '';
+    if (filterStatus === 'G'){
+        detailUserName.innerText = `${roomName}`;
+        starBtn.style.display='none';
+        linkBtn.style.display='flex';
+    }else{
+        const profileNickName = getNicknameById(otherDogId);
+        detailUserName.innerText = `${profileNickName}`;
+        starBtn.style.display='flex';
+        linkBtn.style.display='none';
+    }
+
+    console.log("🟢 participants:", participants);
+    console.log("🟢 status:", filterStatus);
+    console.log("🟢 roomName:", roomName);
+    console.log("🟢 roomProfile:", roomProfile);
+
+
+}
+
+//참여자 목록
+window.detailParticipants = async function () {
+
+    const roomSnap = await getDoc(doc(db, 'chatRooms', selectedRoomId));
+    const participants = roomSnap.data().participants;
+    const filterStatus = roomSnap.data().status;
+    console.log('채팅방 참여자 상세 목록 : '+participants);
+
+    const participantsDetail = document.querySelector('.participants');
+    const participantsList = document.querySelector('.participants-list');
+    let detailUrlList =[];
+        for (const participantId of participants) {
+            const profileUrl = await getProfileById(participantId);
+            detailUrlList.push(profileUrl);
+        }
+
+    if(filterStatus === 'G'){
+        participantsDetail.style.display = 'flex';
+            participantsList.innerHTML = '';
+// 🔥 프로필 이미지를 동적으로 추가
+        detailUrlList.slice(0, 4).forEach(url => {
+            const profileItem = document.createElement('div'); // 각 프로필을 감쌀 div
+            profileItem.classList.add('profile-item'); // 스타일을 위한 클래스 추가
+
+            profileItem.innerHTML = `
+                <img src="${url}" class="detail-profile-img" alt="참여자 프로필">
+            `;
+            participantsList.appendChild(profileItem); // 리스트에 추가
+        });
+    }else{
+        participantsDetail.style.display = 'none';
+    }
+    console.log("참여자 프로필 url 목록 : "+detailUrlList);
+
+}
+
+// +버튼 누를시 전체 참여자 리스트
+window.openParticipantList = async function () {
+
+    const modalOverlay = document.querySelector('.modalDetailParticipants');
+    const modalContent = document.querySelector('.allParticipants-modal-list');
+    const roomId = selectedRoomId;
+
+    modalOverlay.style.display = 'flex';
+
+    const roomSnap = await getDoc(doc(db, 'chatRooms', selectedRoomId));
+    const participants = roomSnap.data().participants;
+    console.log('채팅방 참여자 상세 목록 : ' + participants);
+
+    let detailUrlList2 = [];
+    for (const participantId of participants) {
+        const profileUrl = await getProfileById(participantId);
+        const nickname = await getNicknameById(participantId) || '알 수 없음';
+        detailUrlList2.push({ id: participantId, url: profileUrl, nickname : nickname });
+    }
+
+    modalContent.innerHTML = '';
+// 🔥 프로필 이미지를 동적으로 추가
+    detailUrlList2.forEach(participant  => {
+        const profileItem = document.createElement('div'); // 각 프로필을 감쌀 div
+        profileItem.classList.add('profile-plus-item'); // 스타일을 위한 클래스 추가
+
+        profileItem.innerHTML = `
+            <img src="${participant.url}" class="detail-profile-img" alt="프로필 이미지">
+            <p>${participant.nickname}</p>
+        `;
+
+        modalContent.appendChild(profileItem); // 리스트에 추가
+    });
+
+    modalOverlay.style.display = 'flex';
+
+    setTimeout(() => {
+        window.addEventListener('click', function closeModal(event) {
+            if (modalOverlay.style.display === 'flex' && !modalContent.contains(event.target)) {
+                modalOverlay.style.display = 'none';
+
+                // 🔥 이벤트 리스너를 제거해서 불필요한 이벤트 감지 방지
+                window.removeEventListener('click', closeModal);
+            }
+        });
+    }, 100);
+=======
     profile.innerHTML = `
         <img src="${profileUrl}" class="profile-img-3" alt="">
     `
@@ -715,6 +914,7 @@ window.detailProfile = async function () {
 
     detailUserName.innerText = '';
     detailUserName.innerText = `${profileNickName}`;
+>>>>>>> origin/REQ-68-관리자
 }
 
 //미디어
@@ -784,18 +984,41 @@ window.openMediaList = function (){
                 mediaItem.classList.add('media-item');
 
                 mediaItem.innerHTML = `
+<<<<<<< HEAD
+                <img src="${url}" alt="미디어" class="media-img"">
+=======
                 <img src="${url}" alt="미디어" class="media-img" onclick="openMedia('${url}')">
+>>>>>>> origin/REQ-68-관리자
             `;
 
                 mediaModalList.appendChild(mediaItem);
 
             });
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> origin/REQ-68-관리자
         })
         .catch(error => console.error(error));
 
     setTimeout(() => {
+<<<<<<< HEAD
+        window.addEventListener('click', function closeModal(event) {
+            if (modalOverlay.style.display === 'flex' && !modalContent.contains(event.target)) {
+                modalOverlay.style.display = 'none';
+
+                // 🔥 이벤트 리스너를 제거해서 불필요한 이벤트 감지 방지
+                window.removeEventListener('click', closeModal);
+            }
+        });
+    }, 100);
+
+
+}
+
+//상세 공유된 일정 불러오기
+=======
         window.addEventListener('click', function (event) {
             if (modalOverlay.style.display === 'flex' && !modalContent.contains(event.target)) {
                 modalOverlay.style.display = 'none';
@@ -813,6 +1036,7 @@ window.openMediaList = function (){
 // }
 
 //공유된 일정 불러오기
+>>>>>>> origin/REQ-68-관리자
 window.detailPageCalendar = function (){
 
     api.get('/api/chat/sharedCalendar', { roomId: selectedRoomId })
@@ -840,8 +1064,11 @@ window.detailPageCalendar = function (){
                     todayBtn.innerHTML = `
                         <button class="today-btn">오늘</button>
                     `;
+<<<<<<< HEAD
+=======
 
 
+>>>>>>> origin/REQ-68-관리자
                 }
 
                 calendarItem.innerHTML = `
@@ -851,6 +1078,416 @@ window.detailPageCalendar = function (){
                         <div class="calender-date" style="font-size: 13px; color: #656565">${formatDateTime(calendar.calendar_start_date)}</div>
                     </div>
             `;
+<<<<<<< HEAD
+                calendarContent.appendChild(calendarItem);
+            });
+
+        })
+        .catch(error => console.error(error));
+}
+
+//////// 그룹채팅방 생성 /////////
+const createChat = document.querySelector('.create-chat');
+
+const chatRoomModal = document.getElementById("chatRoomModal");
+const closeModalBtn = document.querySelector(".close-modal");
+
+// 모달 닫기
+closeModalBtn.addEventListener("click", function () {
+    chatRoomModal.style.display = "none";
+});
+
+
+createChat.addEventListener('click', function (){
+    chatRoomModal.style.display = "flex";
+
+    const fileInput = document.querySelector('#fileInput');
+    const uploadImg = document.querySelector('#uploadImage');
+
+    const createChatRoomBtn = document.querySelector('#createChatRoomBtn');
+
+    uploadImg.addEventListener('click', function () {
+        fileInput.click();
+    });
+
+
+
+    fileInput.addEventListener('change', function (e){
+        const file = e.target.files[0];
+        if(file){
+            const reader = new FileReader();
+            reader.onload = function (e){
+                uploadImg.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    })
+
+    createChatRoomBtn.addEventListener('click', function (){
+        chatRoomModal.style.display = "none";
+        const chatRoom = document.querySelector('#chatRoomName').value;
+
+        const file = fileInput.files[0]; // 🔥 파일 선택 후 가져오기
+        if (!file) {
+            alert("파일을 선택해주세요!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('files',file);
+        formData.append('dogId', currentDogId);
+        formData.append('roomId', "newRoom");
+
+        api.post('/api/chat/fileUpload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then(async response => {
+                console.log("응답 데이터 fileUrl:", response);
+                const fileUrl = response.body;
+
+                const NewMessage = {
+                    timestamp : serverTimestamp(),
+                    nickname : 'system',
+                    sender : 'system',
+                    status : 'system',
+                    text : '채팅방이 생성되었습니다.'
+                }
+
+                const newChatRoom = {
+                    createdBy : currentDogId,
+                    participants : [currentDogId],
+                    roomName : chatRoom,
+                    roomProfile : fileUrl,
+                    status : 'G',
+                    lastMessage : NewMessage
+                }
+
+                const docRef = await addDoc(collection(db, "chatRooms"), newChatRoom);
+                const newRoomId = docRef.id;
+                await addDoc(collection(db, "chatRooms", newRoomId, "messages"), NewMessage);
+
+                console.log("채팅방 생성 성공, ID:", docRef.id);
+                alert("채팅방이 생성되었습니다!");
+                window.location.href = `/chat-room`;
+
+            })
+            .catch(error => console.error(error));
+    })
+})
+
+
+let inviteLink;
+
+//초대링크 생성 및 참여자 추가
+async function generateInviteLink(roomId) {
+    try {
+        const inviteRef = await addDoc(collection(db, "chatInvites"), {
+            roomId: roomId,
+            inviter: currentDogId,
+            createdAt: serverTimestamp()
+        });
+
+        const inviteId = inviteRef.id; // Firestore에서 자동 생성된 문서 ID
+        inviteLink = `localhost:2000/chat-invite?id=${inviteId}`;
+
+        console.log("✅ 초대 링크 생성 완료:", inviteLink);
+        return inviteLink;
+    } catch (error) {
+        console.error("❌ 초대 링크 생성 실패:", error);
+    }
+}
+
+//클릭시 join
+// 초대 링크를 입력하면 Firestore에서 `roomId`를 찾아 참가 처리
+async function handleInviteLink(inviteId, dogId) {
+    console.log('handleInviteLink실행')
+    const inviteRef = doc(db, "chatInvites", inviteId);
+    const inviteSnap = await getDoc(inviteRef);
+
+
+    if (inviteSnap.exists()) {
+        const roomId = inviteSnap.data().roomId;
+
+        // 🔥 Firestore에서 채팅방 `participants`에 사용자 추가
+        const roomRef = doc(db, "chatRooms", roomId);
+        await updateDoc(roomRef, {
+            participants: arrayUnion(dogId) // 기존 참가자 목록에 추가 (중복 방지)
+        });
+
+        const NewParticipants = {
+            timestamp : serverTimestamp(),
+            nickname : 'system',
+            sender : 'system',
+            status : 'system',
+            text : currentUserNickname +'님이 참여하였습니다.'
+        }
+
+        await addDoc(collection(db, "chatRooms", roomId, "messages"), NewParticipants);
+
+        console.log("✅ 채팅방 참가 완료:", roomId);
+
+        // // 🔥 Firestore에서 `roomId`를 찾아서 `/chat-room?id=roomId`로 이동
+        // window.location.href = `/chat-room`;
+    } else {
+        console.log("❌ 유효하지 않은 초대 링크");
+        alert("유효하지 않은 초대 링크입니다.");
+    }
+}
+
+
+// 초대 링크를 브라우저 주소창에 입력하면 자동 처리
+document.addEventListener("DOMContentLoaded", () => {
+    const inviteId = document.querySelector('#inviteId').value;
+
+    console.log('invitedId'+inviteId);
+    console.log("🔥 초대 ID 확인:", inviteId); // ✅ 로그 찍어서 확인하기
+
+    if (inviteId) {
+        handleInviteLink(inviteId, currentDogId);
+    } else {
+        console.log("❌ 초대 ID가 없음.");
+    }
+});
+
+
+//초대링크 모달(view)
+window.linkModal = async function () {
+    const linkBox = document.querySelector('.linkBox');
+    linkBox.style.display = 'flex';
+    inviteLink = await generateInviteLink(selectedRoomId);
+    console.log(inviteLink)
+    setTimeout(() => {
+        window.addEventListener('click', function closeModal(event) {
+            if (linkBox.style.display === 'flex' && !linkBox.contains(event.target)) {
+                linkBox.style.display = 'none';
+
+                // 🔥 이벤트 리스너를 제거해서 불필요한 이벤트 감지 방지
+                window.removeEventListener('click', closeModal);
+            }
+        });
+
+    }, 100);
+
+    linkBox.innerText = '';
+    linkBox.innerText = `${inviteLink}`;
+
+}
+
+//채팅방 나가기
+const outChat = document.querySelector('.out-chat');
+
+outChat.addEventListener('click', async function () {
+
+    const isConfirmed = confirm("채팅방을 나가시겠습니까?");
+    if(!isConfirmed){
+        return;
+    }
+
+
+    const roomRef = doc(db, "chatRooms", selectedRoomId);
+    const roomSnap = await getDoc(roomRef);
+
+
+    const outMessage = {
+        timestamp : serverTimestamp(),
+        nickname : 'system',
+        sender : 'system',
+        status : 'system',
+        text : currentUserNickname +'님이 나가셨습니다.'
+    }
+
+    await addDoc(collection(db, "chatRooms", selectedRoomId, "messages"), outMessage);
+
+    await updateDoc(roomRef, {
+        participants: arrayRemove(currentDogId)
+    });
+
+    const updateRoomSnap = await getDoc(roomRef);
+    const participants = updateRoomSnap.data().participants;
+
+    //participants 없을 때 채팅방 삭제
+    if(participants.length === 0){
+        await deleteDoc(roomRef);
+    }
+
+
+    window.location.href = "/chat-room";
+})
+
+// 멍바닥 주기
+const slider = document.getElementById("ratingSlider");
+const ratingValue = document.getElementById("ratingValue");
+const pawIcon = document.getElementById("pawIcon");
+
+const ratingModal = document.querySelector('.rating-container');
+const ratingResultModal = document.querySelector('.rating-result-container');
+const starBtn = document.querySelector('.star-btn');
+
+starBtn.addEventListener('click', async function () {
+
+    const docRef = await getDoc(doc(db, 'chatRooms', selectedRoomId))
+    console.log(selectedRoomId);
+    const participants = docRef.data().participants;
+    console.log(participants);
+    let otherId;
+
+    participants.forEach(dogId => {
+        if (dogId !== currentDogId) {
+            otherId = dogId;
+            console.log(otherId);
+        }
+    })
+
+    const otherUser = getUsernameById(otherId);
+
+    api.get('/api/chat/star', {
+        reviewer_id: currentUser,
+        recipient_id: otherUser
+    })
+        .then(data => {
+            console.log(data)
+            let dto = data.body;
+            console.log(dto);
+
+            if (dto.str_cnt === 1) {
+                ratingResultModal.style.display = 'flex';
+            } else if(dto.str_cnt === 0){
+                ratingModal.style.display = 'flex';
+            }
+
+        const rating = document.querySelector('.rating');
+        rating.innerText = '';
+        rating.innerText = `${dto.rating}`;
+
+        })
+        .catch(error => console.error(error));
+})
+
+let isDragging = false;
+
+// 아이콘 위치 업데이트 함수
+function updateRating(value) {
+    ratingValue.textContent = value.toFixed(1); // 0.5 단위 표시
+    slider.value = value;
+
+    // 슬라이더 위치 업데이트 (0~5 범위에 맞게 이동)
+    const percentage = ((value-1) / 4) * 100;
+    pawIcon.style.left = `calc(${percentage}% - 15px)`;
+}
+
+// 🔥 드래그 시작 (mousedown) → `mousemove` 이벤트 추가
+pawIcon.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    pawIcon.style.cursor = "grabbing";
+
+    // `mousemove` 이벤트 리스너 추가
+    document.addEventListener("mousemove", onMouseMove);
+});
+
+// 🔥 드래그 중 (mousemove) → `requestAnimationFrame()`으로 즉각 반응!
+function onMouseMove(e) {
+    if (!isDragging) return;  // 🚨 드래그 중일 때만 실행!
+
+    const sliderRect = slider.getBoundingClientRect();
+    let newX = e.clientX - sliderRect.left;
+
+    // 범위 제한 (0 ~ 슬라이더 길이)
+    if (newX < 0) newX = 0;
+    if (newX > sliderRect.width) newX = sliderRect.width;
+
+    // 0.5 단위 반올림 처리
+    let value = ((newX / sliderRect.width) * 4) + 1;
+    value = Math.round(value * 2) / 2; // 🚀 0.5 단위로 반올림
+
+    requestAnimationFrame(() => updateRating(value));
+}
+
+// 🔥 드래그 종료 (`mouseup`) → `mousemove` 이벤트 제거!
+function stopDragging() {
+    if (!isDragging) return;
+
+    console.log("🔥 마우스 놓음 (mouseup 감지됨)");
+
+    // 🚀 `setTimeout()`을 사용하여 `isDragging = false`를 비동기적으로 실행
+    setTimeout(() => {
+        isDragging = false;
+        console.log("🛑 드래그 종료됨, isDragging 초기화 완료");
+    });
+
+    pawIcon.style.cursor = "grab";
+
+    // 🚨 `mousemove` 이벤트 리스너 제거 → 더 이상 아이콘이 따라오지 않음!
+    document.removeEventListener("mousemove", onMouseMove);
+}
+
+// 🔥 `mouseup`을 `document`에서 항상 감지! → 드래그 도중에도 확실하게 적용
+document.addEventListener("mouseup", stopDragging);
+
+// 초기 위치 설정
+updateRating(3.0);
+
+//별점 등록
+window.registStr = async function () {
+    const ratingModal = document.querySelector('.rating-container');
+
+    const ratingValue = document.querySelector('.slider').value;
+    console.log(ratingValue);
+
+    const docRef = await getDoc(doc(db, 'chatRooms', selectedRoomId))
+    console.log(selectedRoomId);
+    const participants = docRef.data().participants;
+    console.log(participants);
+    let otherId;
+
+    participants.forEach(dogId => {
+        if(dogId !== currentDogId){
+            otherId = dogId;
+            console.log(otherId);
+        }
+    })
+
+    const otherUser = getUsernameById(otherId);
+
+    api.post('/api/chat/star', {
+        user_star: ratingValue,
+        reviewer_id : currentUser,
+        recipient_id : otherUser
+    })
+        .then(data => {
+            ratingModal.style.display='none';
+            alert("별점 등록 완료");
+        })
+        .catch(error => console.error(error));
+}
+
+document.querySelector('.rating-close-btn').addEventListener('click', function (){
+    document.querySelector('.rating-container').style.display = 'none';
+})
+
+document.querySelector('.rating-result-close-btn').addEventListener('click', function (){
+    document.querySelector('.rating-result-container').style.display = 'none';
+})
+
+
+document.addEventListener("click", function(event) {
+    const screenWidth = window.innerWidth;
+    const ratingResultModal = document.querySelector(".rating-container");
+    const ratingResultModal2 = document.querySelector(".rating-result-container");
+
+    if (ratingResultModal && ratingResultModal.style.display === "flex" && event.clientX < screenWidth / 2) {
+        console.log("✅ 왼쪽 화면 클릭 감지! 모달 닫기 실행");
+        ratingResultModal.style.display = "none"; // 모달 닫기
+    }
+
+    if (ratingResultModal2 && ratingResultModal2.style.display === "flex" && event.clientX < screenWidth / 2) {
+        console.log("✅ 왼쪽 화면 클릭 감지! 모달 닫기 실행");
+        ratingResultModal2.style.display = "none"; // 모달 닫기
+    }
+});
+
+=======
 
                 calendarContent.appendChild(calendarItem);
 
@@ -860,3 +1497,4 @@ window.detailPageCalendar = function (){
         })
         .catch(error => console.error(error));
 }
+>>>>>>> origin/REQ-68-관리자

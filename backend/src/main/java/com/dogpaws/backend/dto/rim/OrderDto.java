@@ -41,6 +41,11 @@ public class OrderDto {
     private String paymentStatus;         // 결제 상태
     private LocalDateTime paidAt;         // 결제 완료 시간
 
+<<<<<<< HEAD
+    private String trackingNumber;
+
+=======
+>>>>>>> origin/REQ-68-관리자
     // 장바구니 상품 id 비우기용
     private List<Long> cartItemIds;
 }

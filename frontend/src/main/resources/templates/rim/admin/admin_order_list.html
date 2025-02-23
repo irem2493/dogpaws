@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout-admin}">
+<head>
+    <title>주문 관리</title>
+    <style>
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .order-table th,
+        .order-table td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .btn-normal {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+
+        .btn-normal:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .page-link {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .page-link.active {
+            background-color: #2196F3;
+            color: white;
+            border-color: #2196F3;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .form-control {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .numeric-input {
+            text-align: right;
+        }
+
+        .required::after {
+            content: "*";
+            color: red;
+            margin-left: 4px;
+        }
+
+        .table-container {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .order-table th {
+            border-bottom: 2px solid #ddd;
+            box-shadow: 0 2px 2px rgba(0,0,0,0.05);
+        }
+
+        .filter-section {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-section select,
+        .filter-section input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .filter-section button {
+            padding: 8px 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .filter-section button:hover {
+            background-color: #1976D2;
+        }
+    </style>
+</head>
+<body layout:fragment="content">
+<div class="container">
+    <div class="admin-container">
+        <div class="nav-path">홈 > 주문 관리</div>
+        <div class="pw-title">주문 관리</div>
+
+        <!-- 필터 영역 -->
+        <div class="filter-section">
+            <select name="orderStatus" class="auto-submit">
+                <option value="">전체 상태</option>
+                <option value="READY" th:selected="${orderStatus == 'READY'}">주문접수</option>
+                <option value="PAID" th:selected="${orderStatus == 'PAID'}">결제완료</option>
+                <option value="PREPARING" th:selected="${orderStatus == 'PREPARING'}">상품준비중</option>
+                <option value="SHIPPING" th:selected="${orderStatus == 'SHIPPING'}">배송중</option>
+                <option value="COMPLETED" th:selected="${orderStatus == 'COMPLETED'}">배송완료</option>
+                <option value="CANCELLED" th:selected="${orderStatus == 'CANCELLED'}">주문취소</option>
+            </select>
+
+            <input type="date" name="startDate" th:value="${startDate}" class="form-control">
+            <input type="date" name="endDate" th:value="${endDate}" class="form-control">
+            
+            <input type="text" name="searchKeyword" 
+                   th:value="${searchKeyword}" 
+                   placeholder="주문자명/주문번호 검색" 
+                   class="form-control">
+            <button type="button" id="searchBtn">검색</button>
+        </div>
+
+        <!-- 주문 목록 테이블 -->
+        <div class="table-container" style="max-height: 600px; overflow-y: auto;">
+            <table class="order-table">
+                <thead>
+                <tr>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">주문번호</th>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">주문일시</th>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">주문자</th>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">결제금액</th>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">주문상태</th>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">운송장번호</th>
+                    <th style="position: sticky; top: 0; background: white; z-index: 1;">관리</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${order.qlId}"></td>
+                    <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${order.orderName}"></td>
+                    <td th:text="${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')}">원</td>
+                    <td>
+                    <span th:text="${
+                        order.orderStatus == 'READY' ? '결제대기' :
+                        order.orderStatus == 'PAID' ? '결제완료' :
+                        order.orderStatus == 'CANCELLED' ? '주문취소' :
+                        order.orderStatus == 'PREPARING' ? '배송준비중' :
+                        order.orderStatus == 'SHIPPING' ? '배송중' :
+                        order.orderStatus == 'DELIVERED' ? '배송완료' : order.orderStatus
+                    }"></span>
+                    </td>
+                    <td>
+                        <div th:if="${order.trackingNumber != null}">
+                            <span th:text="${order.trackingNumber}"></span>
+                        </div>
+                        <div th:unless="${order.trackingNumber != null}">
+                            <button class="btn btn-sm btn-outline-primary tracking-btn"
+                                    th:data-ql-id="${order.qlId}">
+                                운송장번호 입력
+                            </button>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn-normal update-status"
+                                th:data-ql-id="${order.qlId}">상태변경</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination" th:if="${totalPages > 0}">
+            <a class="page-link" th:href="@{/admin/orders(page=0, size=${size},
+               orderStatus=${orderStatus}, searchKeyword=${searchKeyword},
+               startDate=${startDate}, endDate=${endDate})}"
+               th:classappend="${currentPage == 0 ? 'disabled' : ''}">처음</a>
+            
+            <a class="page-link" 
+               th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+               th:href="@{/admin/orders(page=${pageNum}, size=${size},
+               orderStatus=${orderStatus}, searchKeyword=${searchKeyword},
+               startDate=${startDate}, endDate=${endDate})}"
+               th:text="${pageNum + 1}"
+               th:classappend="${pageNum == currentPage ? 'active' : ''}"></a>
+            
+            <a class="page-link" 
+               th:href="@{/admin/orders(page=${totalPages - 1}, size=${size},
+               orderStatus=${orderStatus}, searchKeyword=${searchKeyword},
+               startDate=${startDate}, endDate=${endDate})}"
+               th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">마지막</a>
+        </div>
+
+        <!-- 상태 변경 모달 -->
+        <div id="statusModal" class="pawsModal" style="display: none">
+            <button class="pawsModal-close" onclick="closeModal(this)"></button>
+            <div class="pawsModal-title">주문 상태 변경</div>
+            <div class="pawsModal-content">
+                <div class="box">
+                    <div class="form-group">
+                        <label class="required">주문 상태</label>
+                        <select id="orderStatus" class="form-control">
+                            <option value="READY">주문접수</option>
+                            <option value="PAID">결제완료</option>
+                            <option value="PREPARING">상품준비중</option>
+                            <option value="SHIPPING">배송중</option>
+                            <option value="COMPLETED">배송완료</option>
+                            <option value="CANCELLED">주문취소</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="pawsModal-footer">
+                    <button class="pawsModal-confirm" id="confirmStatus">확인</button>
+                    <button class="pawsModal-cancel" onclick="closeModal(this)">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 운송장번호 입력 모달 -->
+<div id="trackingModal" class="pawsModal" style="display: none">
+    <button class="pawsModal-close" onclick="closeModal(this)"></button>
+    <div class="pawsModal-title">운송장번호 입력</div>
+    <div class="pawsModal-content">
+        <div class="box">
+            <div class="form-group">
+                <label class="required">운송장번호</label>
+                <input type="text" id="trackingNumber" class="form-control" 
+                       placeholder="운송장번호를 입력하세요">
+            </div>
+        </div>
+        <div class="pawsModal-footer">
+            <button class="pawsModal-confirm" id="confirmTracking">확인</button>
+            <button class="pawsModal-cancel" onclick="closeModal(this)">취소</button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/rim/admin_order_list.js"></script>
+</body>
+</html>

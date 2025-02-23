@@ -62,4 +62,21 @@ public class ChatService {
     public List<CalendarSharedResponseDto> getSharedCalendar(String roomId) {
         return chatDao.getSharedCalendar(roomId);
     }
+<<<<<<< HEAD
+
+    public void registStr(String userStar, String reviewerId, String recipientId) {
+        chatDao.registStr(userStar, reviewerId, recipientId);
+    }
+
+    public int getCntStrById(String reviewerId, String recipientId) {
+        return chatDao.getCntStrById(reviewerId, recipientId);
+    }
+
+    public Double getStrById(String reviewerId, String recipientId) {
+        Double rating =  chatDao.getStrById(reviewerId, recipientId);
+        return (rating != null) ? rating : 0.0; // ✅ NULL이면 0.0 반환
+    }
+
+=======
+>>>>>>> origin/REQ-68-관리자
 }

@@ -25,5 +25,13 @@ public interface ChatDao {
     List<String> getAllMediaUrl(@Param("roomId") String roomId);
 
     List<CalendarSharedResponseDto> getSharedCalendar(String roomId);
+<<<<<<< HEAD
+
+    void registStr(@Param("userStar") String userStar, @Param("reviewerId") String reviewerId, @Param("recipientId") String recipientId);
+    int getCntStrById (@Param("reviewerId") String reviewerId, @Param("recipientId") String recipientId);
+    Double getStrById(@Param("reviewerId") String reviewerId, @Param("recipientId") String recipientId);
+
+=======
+>>>>>>> origin/REQ-68-관리자
 }
 

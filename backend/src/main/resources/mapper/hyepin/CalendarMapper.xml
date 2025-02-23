@@ -41,7 +41,13 @@
         FROM tbl_calendar_shared s
         JOIN tbl_calendar c ON s.calendar_id = c.calendar_id
         JOIN tbl_users u ON c.username = u.username
-        WHERE s.username = #{username};
+        WHERE s.username = #{username}
+    </select>
+
+    <select id="getCalendarById" resultType="com.dogpaws.backend.dto.hyepin.CalendarDto">
+        SELECT *
+        FROM tbl_calendar
+        WHERE calendar_id = #{calendarId}
     </select>
 
     <insert id="insertCalendar">
@@ -93,4 +99,13 @@
         WHERE shared_id = #{sharedId}
     </delete>
 
+    <!--    알림용 rim -->
+    <select id="getLastInsertedCalendarId" resultType="Long">
+        SELECT calendar_id
+        FROM tbl_calendar
+        WHERE username = #{username}
+        ORDER BY created_at DESC
+        LIMIT 1
+    </select>
+    <!--    알림용 끝 -->
 </mapper>

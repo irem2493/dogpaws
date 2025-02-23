@@ -11,8 +11,11 @@ public class AdminViewController {
     public String adminMainView() {
         return "rim/admin/admin_main";
     }
+<<<<<<< HEAD
+=======
     @GetMapping("/manage")
     public String productManageView() {
         return "rim/admin/admin_product_manage";
     }
+>>>>>>> origin/REQ-68-관리자
 }

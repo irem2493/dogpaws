@@ -17,7 +17,11 @@ public class ProductSearchDto {
     private Integer offset;         // 페이지 오프셋
 
     // 정렬 옵션
+<<<<<<< HEAD
+    private String sortBy;  // 정렬 기준
+=======
     private String sortBy = "created_at";  // 정렬 기준
+>>>>>>> origin/REQ-68-관리자
     private String sortDirection = "DESC"; // 정렬 방향
 
     // Spring Data JPA Pageable 생성

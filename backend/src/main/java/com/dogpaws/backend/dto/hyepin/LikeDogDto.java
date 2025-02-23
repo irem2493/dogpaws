@@ -19,7 +19,11 @@ public class LikeDogDto {
     private String isNeutered;  // 중성화 여부 (Y/N)
     private String profileUrl;  // 강아지 프로필 이미지 URL
 
+<<<<<<< HEAD
+    private boolean liked; //좋아요 여부
+=======
 
+>>>>>>> origin/REQ-68-관리자
 
     private String dogPersonalGbnCds;
     private String dogPlayGbnCds;

@@ -38,5 +38,5 @@ out/
 
 # Firebase 서비스 계정 JSON 파일 숨기기
 frontend/src/main/resources/paws2-6ce51-firebase-adminsdk-fbsvc-*.json
-
+backend/src/main/resources/paws2-6ce51-firebase-adminsdk-fbsvc-*.json
 docs/

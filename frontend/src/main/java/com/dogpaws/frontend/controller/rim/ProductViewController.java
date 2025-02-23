@@ -28,6 +28,12 @@ public class ProductViewController {
     private static final String PRODUCT_API_PATH = "/api/products";
     private final ObjectMapper objectMapper;
 
+<<<<<<< HEAD
+    /**
+     * 상품 상세페이지
+     */
+=======
+>>>>>>> origin/REQ-68-관리자
     @GetMapping("/{productId}")
     public String getProductDetail(@PathVariable Long productId, Model model) {
         String url = "/api/products/" + productId;
@@ -45,6 +51,12 @@ public class ProductViewController {
         return "rim/store/product_detail";
     }
 
+<<<<<<< HEAD
+    /**
+     * 상품 메인페이지 
+     */
+=======
+>>>>>>> origin/REQ-68-관리자
     @GetMapping
     public String getMainPage(Model model) {
         try {
@@ -80,6 +92,12 @@ public class ProductViewController {
         }
     }
 
+<<<<<<< HEAD
+    /**
+     * 상품조회 - 카테고리필터링
+     */
+=======
+>>>>>>> origin/REQ-68-관리자
     @GetMapping("/category/{category}")
     public String getProductList(@PathVariable String category,
                                  @RequestParam(defaultValue = "0") int page,
@@ -118,4 +136,9 @@ public class ProductViewController {
             return "rim/store/product_list";
         }
     }
+<<<<<<< HEAD
+
 }
+=======
+}
+>>>>>>> origin/REQ-68-관리자

@@ -1,6 +1,10 @@
 /* 기본 컨테이너 스타일 */
 .admin-container {
+<<<<<<< HEAD
+    max-width: 100%;
+=======
     max-width: 800px;
+>>>>>>> origin/REQ-68-관리자
     margin: 0;
     padding: 20px;
 }
@@ -8,14 +12,22 @@
 /* 네비게이션 경로 */
 .nav-path {
     font-size: 14px;
+<<<<<<< HEAD
+    color: #131313;
+=======
     color: #666;
+>>>>>>> origin/REQ-68-관리자
     margin-bottom: 20px;
 }
 
 /* 페이지 제목 */
 .pw-title {
     font-size: 24px;
+<<<<<<< HEAD
+    font-weight: 500;
+=======
     font-weight: 600;
+>>>>>>> origin/REQ-68-관리자
     margin-bottom: 30px;
     color: #333;
 }
@@ -278,3 +290,185 @@ button[type="submit"]:hover {
     font-weight: 500;
 }
 
+<<<<<<< HEAD
+
+.stock-type-selector {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.stock-type-selector label {
+    margin-right: 20px;
+}
+
+.option-selector {
+    margin-bottom: 15px;
+}
+
+.option-selector select {
+    width: 100%;
+    padding: 8px;
+}
+
+.stock-info {
+    background-color: #f8f9fa;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.stock-input {
+    margin-bottom: 15px;
+}
+
+.stock-input input {
+    width: 100%;
+    padding: 8px;
+}
+
+.stock-history-table {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.stock-history-table th,
+.stock-history-table td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.stock-history-filters {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.stock-history-filters select {
+    padding: 6px;
+}
+
+.stock-info {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.option-selector {
+    margin-bottom: 15px;
+}
+
+#optionSelect {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.selected-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.option-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.option-info {
+    flex: 1;
+}
+
+.option-name {
+    font-weight: 500;
+}
+
+.current-stock {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.quantity-input {
+    width: 100px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.remove-option {
+    color: #dc3545;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+.option-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.option-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+}
+
+.option-info {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.current-stock {
+    color: #666;
+    font-weight: normal;
+    margin-left: 8px;
+}
+
+.quantity-input {
+    width: 150px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.remove-option {
+    color: #dc3545;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 18px;
+}
+.image-preview {
+    width: 200px;
+    height: 200px;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+    background: #f9f9f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+=======
+>>>>>>> origin/REQ-68-관리자

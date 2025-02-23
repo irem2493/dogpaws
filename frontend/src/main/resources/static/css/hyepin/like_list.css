@@ -65,11 +65,20 @@
 .content-item-container{
     display: flex;
     gap: 20px;
+<<<<<<< HEAD
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.item-profile{
+=======
     justify-content: center;
 }
 
 
 .item-profile, .item-like{
+>>>>>>> origin/REQ-68-관리자
     display: flex;
     justify-content: center;
     align-items: center;
@@ -77,11 +86,31 @@
 }
 
 .item-like{
+<<<<<<< HEAD
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 40px;
+}
+
+.item-like img {
+    cursor: pointer;
+    max-width: 100%; /* 부모 요소보다 커지지 않게!!! */
+    height: auto; /* 가로 비율 유지!!! */
+    object-fit: contain; /* 이미지 비율 유지하면서 맞춤 */
+}
+
+
+.item-profile {
+    max-height: 170px;
+    max-width: 170px;
+=======
     width: 100px;
 }
 
 .item-profile {
     max-height: 170px;   /* 가로 비율에 맞춰 자동 조정 */
+>>>>>>> origin/REQ-68-관리자
     overflow: hidden; /* 넘치는 부분 숨김 */
     display: flex; /* 이미지 중앙 정렬을 위해 flex 사용 */
     justify-content: center;
@@ -105,6 +134,15 @@
     padding: 20px 0px 20px 0px;
 }
 
+<<<<<<< HEAD
+.item-name, .item-breed{
+    font-size: 18px;
+}
+.item-name{
+    font-size: 24px;
+}
+
+=======
 .content-items-moblie{
     padding-top: 20px;
 }
@@ -112,6 +150,7 @@
 .item-name, .item-breed{
     font-size: 18px;
 }
+>>>>>>> origin/REQ-68-관리자
 
 .item-gender, .item-birth{
     font-size: 17px;
@@ -124,6 +163,29 @@
     padding: 5px 16px
 }
 
+<<<<<<< HEAD
+.item-personal, .item-play, .item-play-mobile {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.content-item{
+    align-items: center;
+}
+
+.content-item, .item-personal{
+    margin-bottom: 10px;
+}
+
+.dog-filter{
+    font-size: 16px;
+}
+
+.content-items{
+    width: 600px;
+}
+=======
 
 
 
@@ -135,6 +197,7 @@
 
 
 
+>>>>>>> origin/REQ-68-관리자
 
 @media (max-width: 768px) {
     .like-list-container{
@@ -163,6 +226,10 @@
 
 
     .item-profile {
+<<<<<<< HEAD
+        max-width: 120px;   /* 가로 비율에 맞춰 자동 조정 */
+=======
+>>>>>>> origin/REQ-68-관리자
         max-height: 120px;   /* 가로 비율에 맞춰 자동 조정 */
     }
 

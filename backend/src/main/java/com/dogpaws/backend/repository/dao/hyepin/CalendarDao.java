@@ -11,6 +11,10 @@ import java.util.List;
 public interface CalendarDao {
 
     public List<CalendarDto> getCalendarByUsername(@Param("username") String username);
+<<<<<<< HEAD
+    public CalendarDto getCalendarById(@Param("calendarId") int calendarId);
+=======
+>>>>>>> origin/REQ-68-관리자
     public Integer insertCalendar(CalendarDto calendarDto);
     public Integer updateCalendar(CalendarDto calendarDto);
     public Integer deleteCalendar(CalendarDto calendarDto);
@@ -20,4 +24,10 @@ public interface CalendarDao {
     public Integer insertShareCalendar(ShareDto shareDto);
     public Integer updateShareCalendar(CalendarDto calendarDto);
     public Integer deleteShareCalendar(CalendarDto calendarDto);
+<<<<<<< HEAD
+
+    //알림 - rim
+    Long getLastInsertedCalendarId(@Param("username") String username);
+=======
+>>>>>>> origin/REQ-68-관리자
 }

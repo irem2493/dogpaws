@@ -175,7 +175,11 @@ function chatCategory() {
                     <div class="img-container">
                         <img src="${chatRoom.roomImage}" onerror="this.src='/img/증명사진.jpg'" width="50" class="profile-img-2" alt="프로필">
                     </div>
+<<<<<<< HEAD
+                    <input type="button" value="(${chatRoom.participants.length}명) ${chatRoom.roomName}" title="${chatRoom.roomName}" data-room-id="${chatRoom.id}" data-room-name="${chatRoom.roomName}" onclick="groupChatSubmit(this)" class="unstyled-button"> 
+=======
                     <input type="button" value="${chatRoom.roomName}" title="${chatRoom.roomName}" data-room-id="${chatRoom.id}" data-room-name="${chatRoom.roomName}" onclick="groupChatSubmit(this)" class="unstyled-button"> 
+>>>>>>> origin/REQ-68-관리자
                 </div>
             `;
             chatListElement.appendChild(listItem);
@@ -195,7 +199,12 @@ function groupChatSubmit(element){
     console.log("그룹채팅 초대 완료 / username: " + username +  " / otherDogId : ", otherDogId + " / roomId: " + roomId + "/ otherUsername: " + otherUsername);
 
     const formData = new FormData();
+<<<<<<< HEAD
+    formData.append("username", otherUsername);
+    formData.append("dogId", otherDogId);
+=======
     formData.append("username", otherDogId);
+>>>>>>> origin/REQ-68-관리자
     formData.append("alarmType", "G");
     formData.append("gubnId", roomId);
     formData.append("message", message);

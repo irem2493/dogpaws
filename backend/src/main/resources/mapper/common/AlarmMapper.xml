@@ -5,8 +5,62 @@
   <mapper namespace="com.dogpaws.backend.repository.dao.common.AlarmDao">
 
     <insert id="insertAlarm">
+<<<<<<< HEAD
+        INSERT INTO tbl_alarm (
+            username, 
+            alarm_type, 
+            gubn_id, 
+            message, 
+            created_at
+            <if test="dogId != null">
+                , dog_id
+            </if>
+        )
+        VALUES (
+            #{username}, 
+            #{alarmType}, 
+            #{gubnId}, 
+            #{message}, 
+            CONVERT_TZ(NOW(), 'UTC', 'Asia/Seoul')
+            <if test="dogId != null">
+                , #{dogId}
+            </if>
+        )
+    </insert>
+
+    <!-- 읽지 않은 알림 목록 조회 -->
+    <select id="getAlarms" resultType="com.dogpaws.frontend.dto.hyepin.AlarmDto">
+      SELECT
+      alarm_id as alarmId,
+      username,
+      alarm_type as alarmType,
+      gubn_id as gubnId,
+      message,
+      read_status as readStatus,
+      CONVERT_TZ(created_at, 'UTC', 'Asia/Seoul') as createdAt
+      FROM tbl_alarm
+      WHERE username = #{username} AND read_status = 'N'
+      ORDER BY created_at DESC
+    </select>
+
+    <!-- 읽지 않은 알림 개수 조회 -->
+    <select id="getUnreadAlarmCount" resultType="Integer">
+      SELECT COUNT(*)
+      FROM tbl_alarm
+      WHERE username = #{username}
+      AND is_read = false
+    </select>
+
+    <!-- 알림 읽음 처리 -->
+    <update id="markAlarmAsRead">
+      UPDATE tbl_alarm
+      SET read_status = 'Y'
+      WHERE alarm_id = #{alarmId}
+    </update>
+=======
       INSERT INTO tbl_alarm (username, alarm_type, gubn_id, message)
       VALUES (#{username}, #{alarmType}, #{gubnId}, #{message})
     </insert>
 
+>>>>>>> origin/REQ-68-관리자
 </mapper>

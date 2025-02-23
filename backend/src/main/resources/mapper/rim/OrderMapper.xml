@@ -4,6 +4,61 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dogpaws.backend.repository.dao.rim.OrderDao">
 
+<<<<<<< HEAD
+    <!-- -->
+
+
+
+    <!-- 관리자용 주문 조회 쿼리 -->
+    <select id="selectOrdersForAdmin" resultType="com.dogpaws.backend.dto.rim.OrderDto">
+        SELECT
+        o.order_id as orderId,
+        o.ql_id as qlId,
+        o.payment_key as paymentKey,
+        o.username,
+        o.total_price as totalPrice,
+        o.order_name as orderName,
+        o.order_phone as orderPhone,
+        o.shipping_zipcode as shippingZipcode,
+        o.shipping_address1 as shippingAddress1,
+        o.shipping_address2 as shippingAddress2,
+        o.receiver_name as receiverName,
+        o.receiver_phone as receiverPhone,
+        o.tracking_number as trackingNumber,
+        o.order_status as orderStatus,
+        o.order_date as orderDate
+        FROM tbl_orders o
+        WHERE 1=1
+        <if test="orderStatus != null and orderStatus != ''">
+            AND o.order_status = #{orderStatus}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND (
+            o.order_name LIKE CONCAT('%', #{searchKeyword}, '%')
+            OR o.receiver_name LIKE CONCAT('%', #{searchKeyword}, '%')
+            OR o.ql_id LIKE CONCAT('%', #{searchKeyword}, '%')
+            )
+        </if>
+        <if test="startDate != null">
+            AND o.order_date >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND o.order_date &lt;= #{endDate}
+        </if>
+        ORDER BY o.order_date DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+    <update id="updateAdminOrderStatus">
+        UPDATE tbl_orders
+        SET
+        order_status = #{status}
+        WHERE ql_id = #{qlId}
+    </update>
+
+
+
+=======
+>>>>>>> origin/REQ-68-관리자
     <!-- 주문 생성 -->
     <insert id="insertOrder" parameterType="com.dogpaws.backend.dto.rim.OrderDto" useGeneratedKeys="true" keyProperty="orderId">
         INSERT INTO tbl_orders (
@@ -130,6 +185,10 @@
         FROM tbl_orders o
         WHERE o.ql_id = #{qlId}
     </select>
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/REQ-68-관리자
     <!-- 사용자의 전체 주문 수 조회 -->
     <select id="countOrdersByUsername" resultType="int">
         SELECT COUNT(*)
@@ -137,6 +196,35 @@
         WHERE username = #{username}
     </select>
 
+<<<<<<< HEAD
+    <!-- 옵션의 진행중인 주문 여부 확인 -->
+    <select id="hasActiveOrders" parameterType="long" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM tbl_order_item_options oo
+        JOIN tbl_order_items oi ON oo.order_item_id = oi.order_item_id
+        JOIN tbl_orders o ON oi.ql_id = o.ql_id
+        WHERE oo.option_id = #{optionId}
+        AND o.order_status IN ('ORDER', 'PAID', 'SHIPPING')
+    </select>
+
+    <!-- 옵션 상태 업데이트 -->
+    <update id="updateOptionStatus">
+        UPDATE tbl_product_options 
+        SET status = #{status}
+        WHERE option_id = #{optionId}
+    </update>
+
+    <!-- 운송장번호 업데이트 -->
+    <update id="updateTrackingNumber">
+        UPDATE tbl_orders
+        SET
+        tracking_number = #{trackingNumber},
+        order_status = 'SHIPPING'
+        WHERE ql_id = #{qlId}
+    </update>
+
+=======
+>>>>>>> origin/REQ-68-관리자
     <!-- 사용자의 주문 목록 조회 (페이징) -->
     <select id="selectOrdersByUsernameWithPaging" resultType="com.dogpaws.backend.dto.rim.OrderDto">
         SELECT

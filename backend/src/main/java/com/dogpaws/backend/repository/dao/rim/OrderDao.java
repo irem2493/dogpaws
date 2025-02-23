@@ -5,6 +5,10 @@ import com.dogpaws.backend.dto.rim.OrderItemDto;
 import com.dogpaws.backend.dto.rim.OrderItemOptionDto;
 import org.apache.ibatis.annotations.*;
 
+<<<<<<< HEAD
+import java.time.LocalDateTime;
+=======
+>>>>>>> origin/REQ-68-관리자
 import java.util.List;
 
 @Mapper
@@ -25,6 +29,11 @@ public interface OrderDao {
     void insertOrderItemOption(OrderItemOptionDto option);
 
 
+<<<<<<< HEAD
+    // 옵션의 진행중인 주문 여부 확인
+    boolean hasActiveOrders(@Param("productId") Long productId, @Param("optionId") Long optionId);
+=======
+>>>>>>> origin/REQ-68-관리자
 
     OrderDto selectOrderByQlId(String qlId); //주문 1건 조회
 
@@ -45,12 +54,15 @@ public interface OrderDao {
             @Param("size") int size
     );
 
+<<<<<<< HEAD
+=======
 
 
 
 
 
 
+>>>>>>> origin/REQ-68-관리자
     List<OrderDto> selectOrdersByStatus(String status);
     List<OrderDto> selectRecentOrders(@Param("limit") int limit);
 
@@ -65,4 +77,30 @@ public interface OrderDao {
     // 주문 통계
     int getTotalOrderAmount(@Param("username") String username); // 사용자 별 총 주문금액
     int getMonthlyOrderCount(@Param("username") String username, @Param("yearMonth") String yearMonth); //월별 주문 건수
+<<<<<<< HEAD
+
+
+    //관리자용 주문 조회 메서드
+    List<OrderDto> selectOrdersForAdmin(
+            @Param("orderStatus") String orderStatus,
+            @Param("searchKeyword") String searchKeyword,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            @Param("offset") int offset,
+            @Param("size") int size
+    );
+
+    void updateTrackingNumber(
+            @Param("qlId") String qlId,
+            @Param("trackingNumber") String trackingNumber
+    );
+
+    void updateAdminOrderStatus(
+            @Param("qlId") String qlId,
+            @Param("status") String status
+    );
+
+
+=======
+>>>>>>> origin/REQ-68-관리자
 }

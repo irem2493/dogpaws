@@ -10,4 +10,14 @@ import java.util.List;
 @Mapper
 public interface AlarmDao {
     public Integer insertAlarm(AlarmDto alarmDto);
+<<<<<<< HEAD
+
+
+    // (읽지않은) 알림 조회 메서드 추가
+    List<AlarmDto> getAlarms(@Param("username") String username);
+
+    // 알림 읽음 처리
+    void markAlarmAsRead(@Param("alarmId") Long alarmId);
+=======
+>>>>>>> origin/REQ-68-관리자
 }

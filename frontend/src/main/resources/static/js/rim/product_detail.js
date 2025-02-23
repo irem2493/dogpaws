@@ -17,7 +17,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const optionId = baseOption.value;
         const optionName = baseOption.getAttribute('data-name');
         const optionPrice = parseInt(baseOption.getAttribute('data-price'));
+<<<<<<< HEAD
+        const totalOptionPrice = optionPrice;
+=======
         const totalOptionPrice = basePrice + optionPrice;
+>>>>>>> origin/REQ-68-관리자
 
         // 기본 옵션을 selectedItems에 추가
         selectedItems.set(optionId, {
@@ -50,7 +54,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const optionName = selectedOption.getAttribute('data-name');
         const optionPrice = parseInt(selectedOption.getAttribute('data-price'));
+<<<<<<< HEAD
+        const totalOptionPrice = optionPrice; // 기본 가격 + 옵션 가격
+=======
         const totalOptionPrice = basePrice + optionPrice; // 기본 가격 + 옵션 가격
+>>>>>>> origin/REQ-68-관리자
 
         addSelectedOption(optionId, optionName, totalOptionPrice);
     });
@@ -122,6 +130,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const username = sessionStorage.getItem('username');
 
+<<<<<<< HEAD
+            if(!username){
+                alert('로그인 후 이용해주세요.');
+                window.location.href = '/login';
+                return;
+            }
+
+
+=======
+>>>>>>> origin/REQ-68-관리자
             // 사용자 권한 확인
             // if (!await verifyUserRole()) {
             //     return;
@@ -163,7 +181,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await api.post('/api/cart', requestData);
 
             if (response.status === 'SUCCESS') {
+<<<<<<< HEAD
+
+                openModal('cartModal');
+
+                // alert(response.body.body.message);
+=======
                 alert(response.body.body.message);
+>>>>>>> origin/REQ-68-관리자
                 // 선택된 옵션 초기화
                 selectedItems.clear();
                 selectedOptions.innerHTML = '';
@@ -177,4 +202,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+<<<<<<< HEAD
 });
+
+// 장바구니 페이지로 이동
+function goToCart() {
+    window.location.href = '/cart/list';
+}
+=======
+});
+>>>>>>> origin/REQ-68-관리자

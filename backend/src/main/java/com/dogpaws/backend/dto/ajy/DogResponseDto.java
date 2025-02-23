@@ -48,4 +48,10 @@ public class DogResponseDto {
     private File peFile;    //혈통증명서
     private File vaFile;    //예방접종증명서
     private File heFile;    //건강검진증명서
+<<<<<<< HEAD
+
+    private boolean friendLiked; //친구 좋아요
+    private boolean matingLiked; //교배 좋아요
+=======
+>>>>>>> origin/REQ-68-관리자
 }

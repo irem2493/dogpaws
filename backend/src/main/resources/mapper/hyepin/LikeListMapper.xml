@@ -6,6 +6,31 @@
 
     <select id="getLikeList" resultType="com.dogpaws.backend.dto.hyepin.LikeDogDto">
         SELECT
+<<<<<<< HEAD
+        d.dog_id, d.username, d.dog_name, d.is_mix, d.birth_year, d.birth_month, d.gender, d.is_neutered, d.profile_url,
+        gb.gubn_name AS breed,
+
+        (SELECT GROUP_CONCAT(DISTINCT gp.gubn_name ORDER BY gp.gubn_name SEPARATOR ',')
+        FROM tbl_dog_personal ps
+        JOIN tbl_gubn gp ON gp.gubn_code = ps.dog_personal_gbn_cd
+        WHERE ps.dog_id = d.dog_id
+        AND gp.group_code = 'dog_personal_code') AS dogPersonalGbnCds,
+
+        (SELECT GROUP_CONCAT(DISTINCT gpl.gubn_name ORDER BY gpl.gubn_name SEPARATOR ',')
+        FROM tbl_dog_play pl
+        JOIN tbl_gubn gpl ON gpl.gubn_code = pl.dog_play_gbn_cd
+        WHERE pl.dog_id = d.dog_id
+        AND gpl.group_code = 'dog_play_code') AS dogPlayGbnCds,
+
+        TRUE AS liked
+
+        FROM tbl_likes l
+        JOIN tbl_dogs d ON d.dog_id = l.dog_id
+
+        LEFT JOIN tbl_gubn gb ON gb.gubn_code = d.breed AND gb.group_code = 'breed_code'
+
+        WHERE l.my_dog_id = #{myDogId} AND like_code = #{likeCode};
+=======
         d.*,
         (SELECT GROUP_CONCAT(DISTINCT ps.dog_personal_gbn_cd ORDER BY ps.dog_personal_gbn_cd SEPARATOR ',')
         FROM tbl_dog_personal ps WHERE ps.dog_id = d.dog_id) AS dogPersonalGbnCds,
@@ -14,6 +39,7 @@
         FROM tbl_likes l
         JOIN tbl_dogs d ON d.dog_id = l.dog_id
         WHERE l.my_dog_id = #{myDogId} AND like_code = #{likeCode}
+>>>>>>> origin/REQ-68-관리자
     </select>
 
 </mapper>

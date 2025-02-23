@@ -20,4 +20,15 @@ public class OrderItemDto {
     private int amount;           // 수량
     private int itemPrice;        // 상품 가격
     private List<OrderItemOptionDto> options;  // 상품 옵션 목록
+<<<<<<< HEAD
+
+    int getTotalPrice(){
+        int totalPrice = 0;
+        for(OrderItemOptionDto option : options){
+            totalPrice += option.getOptionPrice();
+        }
+        return totalPrice;
+    }
+=======
+>>>>>>> origin/REQ-68-관리자
 }

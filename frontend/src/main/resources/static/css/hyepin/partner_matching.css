@@ -1,3 +1,17 @@
+<<<<<<< HEAD
+.filter-container {
+    background-color: #F7DCDC;
+}
+
+.filter-container-none, .filter-container{
+    justify-content: center;
+    border-radius: 10px;
+    padding: 3px 8px;
+    height: 30px;
+}
+
+=======
+>>>>>>> origin/REQ-68-관리자
 .pw-title{
     border-bottom: 2px solid #FF4B63;
 }

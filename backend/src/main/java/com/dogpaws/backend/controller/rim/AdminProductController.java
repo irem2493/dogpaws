@@ -18,6 +18,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+<<<<<<< HEAD
+import java.util.HashMap;
+=======
+>>>>>>> origin/REQ-68-관리자
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +33,12 @@ public class AdminProductController {
 
     private final ProductService productService;
 
+<<<<<<< HEAD
+    /**
+     * 상품 등록
+     */
+=======
+>>>>>>> origin/REQ-68-관리자
     @PostMapping
     public ApiResponse<String> registerProduct(@ModelAttribute ProductRegistRequest request) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -53,6 +63,45 @@ public class AdminProductController {
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "상품 등록 성공");
     }
 
+<<<<<<< HEAD
+    /**
+     * 상품 조회
+     */
+    @GetMapping("/manage")
+    public ApiResponse<List<ProductListDto>> getProductList(
+            @RequestParam(required = false) String mainCategory,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, name = "searchKeyword") String keyword) {
+
+        log.info("keyword: {}", keyword);
+
+        ProductSearchDto searchDto = new ProductSearchDto();
+        searchDto.setMainCategory(mainCategory);
+        searchDto.setStatus(status);
+        searchDto.setSortBy(sortBy);
+        searchDto.setSearchKeyword(keyword);
+
+        List<ProductListDto> products = productService.searchAllProducts(searchDto);
+        return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, products);
+    }
+
+    /**
+     * 상품 상태 변경
+     */
+    @PutMapping("/{productId}/status")
+    public ApiResponse<String> updateProductStatus(
+            @PathVariable Long productId,
+            @RequestBody Map<String, String> request) {
+        try {
+            String status = request.get("status");
+            productService.updateProductStatus(productId, status);
+            return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, "상품 상태 변경 성공");
+        } catch (Exception e) {
+            log.error("상품 상태 변경 실패: {}", e.getMessage(), e);
+            return new ApiResponse<>(ApiResponse.ApiStatus.ERROR, "상품 상태 변경 실패");
+        }
+=======
     @GetMapping("/manage")
     public ApiResponse<Page<ProductListDto>> getProductList(
             @RequestParam(required = false) String mainCategory,
@@ -74,5 +123,6 @@ public class AdminProductController {
 
         return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS,
                 productService.searchProducts(searchDto));
+>>>>>>> origin/REQ-68-관리자
     }
 }
