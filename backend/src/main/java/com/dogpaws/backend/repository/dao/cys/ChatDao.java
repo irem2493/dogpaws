@@ -27,5 +27,8 @@ public interface ChatDao {
     List<CalendarSharedResponseDto> getSharedCalendar(String roomId);
 
     void registStr(@Param("userStar") String userStar, @Param("reviewerId") String reviewerId, @Param("recipientId") String recipientId);
+    int getCntStrById (@Param("reviewerId") String reviewerId, @Param("recipientId") String recipientId);
+    Double getStrById(@Param("reviewerId") String reviewerId, @Param("recipientId") String recipientId);
+
 }
 
