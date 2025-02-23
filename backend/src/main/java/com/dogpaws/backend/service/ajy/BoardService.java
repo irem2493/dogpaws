@@ -6,6 +6,7 @@ import com.dogpaws.backend.entity.ajy.Board;
 import com.dogpaws.backend.entity.ajy.Comment;
 import com.dogpaws.backend.repository.jpa.ajy.BoardRepository;
 import com.dogpaws.backend.repository.jpa.ajy.CommentRepository;
+import com.dogpaws.backend.dto.ajy.DogDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -23,6 +24,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final DogService dogService;
 
     //게시글 저장
     public void save(BoardRequestDto boardRequestDto) {
@@ -105,6 +107,9 @@ public class BoardService {
                List<Comment> commentList = commentRepository.findByBoardIdAndCategory(b.getBoardId(), category, Sort.by(Sort.Order.desc("commentId")));
                 dto.setCommentCount(commentList.size());
 
+                List<DogDto> dogList = dogService.getDogs(b.getUsername());
+                dto.setDogList(dogList);
+
                 dto.setContent(b.getContent());
                 dto.setViewCount(b.getViewCount());
                 boardList.add(dto);
@@ -130,6 +135,10 @@ public class BoardService {
             dto.setTitle(board.getTitle());
             dto.setContent(board.getContent());
             dto.setViewCount(board.getViewCount());
+
+            List<DogDto> dogList = dogService.getDogs(board.getUsername());
+            dto.setDogList(dogList);
+
             return dto;
         }
 
