@@ -98,7 +98,7 @@ public class ChatController {
 
     @PostMapping("/star")
     public void registStr(@RequestBody Map<String, String> requestData) throws IOException {
-        String userStar = requestData.get("username");
+        String userStar = requestData.get("user_star");
         String reviewerId = requestData.get("reviewer_id");
         String recipientId = requestData.get("recipient_id");
 
