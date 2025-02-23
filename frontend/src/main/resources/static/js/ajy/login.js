@@ -38,6 +38,21 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         sessionStorage.setItem('username', loginResponse.body.username);
         sessionStorage.setItem('role', loginResponse.body.role);
         sessionStorage.setItem('nickname', loginResponse.body.nickname);
+
+
+        //경림 추가 2.21
+        if(sessionStorage.getItem('username'));
+        try {
+            // FCM 초기화 및 알림 권한 요청
+            FCMClient.init();
+            await FCMClient.requestNotificationPermission();  // await 추가
+            console.log('FCM 설정 완료');
+        } catch (error) {
+            console.warn('FCM 설정 실패:', error);
+            // FCM 설정 실패해도 로그인은 계속 진행
+        }
+        //경림 추가 끝 2.21
+
         alert('로그인 성공!');
 
         if (loginResponse.body.role === 'ROLE_USER') {
