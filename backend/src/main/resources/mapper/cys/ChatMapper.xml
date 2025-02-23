@@ -64,4 +64,16 @@
         INSERT INTO tbl_ratings (user_star, reviewer_id, recipient_id)
         VALUES (#{userStar}, #{reviewerId}, #{recipientId})
     </insert>
+
+    <select id="getCntStrById" resultType="_int">
+        SELECT COUNT(*)
+        FROM tbl_ratings
+        WHERE reviewer_id = #{reviewerId} AND recipient_id = #{recipientId}
+    </select>
+
+    <select id="getStrById" resultType="double">
+        SELECT COALESCE(user_star, 0.0)
+        FROM tbl_ratings
+        WHERE reviewer_id = #{reviewerId} AND recipient_id = #{recipientId}
+    </select>
 </mapper>

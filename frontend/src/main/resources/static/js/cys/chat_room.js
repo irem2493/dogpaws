@@ -1210,11 +1210,47 @@ const ratingValue = document.getElementById("ratingValue");
 const pawIcon = document.getElementById("pawIcon");
 
 const ratingModal = document.querySelector('.rating-container');
+const ratingResultModal = document.querySelector('.rating-result-container');
 const starBtn = document.querySelector('.star-btn');
 
-starBtn.addEventListener('click', function (){
-    ratingModal.style.display = 'flex';
+starBtn.addEventListener('click', async function () {
 
+    const docRef = await getDoc(doc(db, 'chatRooms', selectedRoomId))
+    console.log(selectedRoomId);
+    const participants = docRef.data().participants;
+    console.log(participants);
+    let otherId;
+
+    participants.forEach(dogId => {
+        if (dogId !== currentDogId) {
+            otherId = dogId;
+            console.log(otherId);
+        }
+    })
+
+    const otherUser = getUsernameById(otherId);
+
+    api.get('/api/chat/star', {
+        reviewer_id: currentUser,
+        recipient_id: otherUser
+    })
+        .then(data => {
+            console.log(data)
+            let dto = data.body;
+            console.log(dto);
+
+            if (dto.str_cnt === 1) {
+                ratingResultModal.style.display = 'flex';
+            } else if(dto.str_cnt === 0){
+                ratingModal.style.display = 'flex';
+            }
+
+        const rating = document.querySelector('.rating');
+        rating.innerText = '';
+        rating.innerText = `${dto.rating}`;
+
+        })
+        .catch(error => console.error(error));
 })
 
 let isDragging = false;
@@ -1284,7 +1320,6 @@ updateRating(3.0);
 window.registStr = async function () {
     const ratingModal = document.querySelector('.rating-container');
 
-
     const ratingValue = document.querySelector('.slider').value;
     console.log(ratingValue);
 
@@ -1310,7 +1345,6 @@ window.registStr = async function () {
     })
         .then(data => {
             ratingModal.style.display='none';
-            console.log("별점 등록 완료")
             alert("별점 등록 완료");
         })
         .catch(error => console.error(error));
@@ -1319,3 +1353,25 @@ window.registStr = async function () {
 document.querySelector('.rating-close-btn').addEventListener('click', function (){
     document.querySelector('.rating-container').style.display = 'none';
 })
+
+document.querySelector('.rating-result-close-btn').addEventListener('click', function (){
+    document.querySelector('.rating-result-container').style.display = 'none';
+})
+
+
+document.addEventListener("click", function(event) {
+    const screenWidth = window.innerWidth;
+    const ratingResultModal = document.querySelector(".rating-container");
+    const ratingResultModal2 = document.querySelector(".rating-result-container");
+
+    if (ratingResultModal && ratingResultModal.style.display === "flex" && event.clientX < screenWidth / 2) {
+        console.log("✅ 왼쪽 화면 클릭 감지! 모달 닫기 실행");
+        ratingResultModal.style.display = "none"; // 모달 닫기
+    }
+
+    if (ratingResultModal2 && ratingResultModal2.style.display === "flex" && event.clientX < screenWidth / 2) {
+        console.log("✅ 왼쪽 화면 클릭 감지! 모달 닫기 실행");
+        ratingResultModal2.style.display = "none"; // 모달 닫기
+    }
+});
+

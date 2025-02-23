@@ -3,6 +3,7 @@ package com.dogpaws.backend.controller.cys;
 import com.dogpaws.backend.dto.cys.CalendarSharedDto;
 import com.dogpaws.backend.dto.cys.CalendarSharedResponseDto;
 import com.dogpaws.backend.dto.cys.DogResponseDto;
+import com.dogpaws.backend.dto.cys.RatingResponseDto;
 import com.dogpaws.backend.dto.hyepin.CalendarDto;
 import com.dogpaws.backend.service.common.FileService;
 import com.dogpaws.backend.service.cys.ChatService;
@@ -101,9 +102,21 @@ public class ChatController {
         String userStar = requestData.get("user_star");
         String reviewerId = requestData.get("reviewer_id");
         String recipientId = requestData.get("recipient_id");
-
         chatService.registStr(userStar, reviewerId, recipientId);
+    }
 
+    @GetMapping("/star")
+    public RatingResponseDto getCntStrById(@RequestParam("reviewer_id") String reviewerId,
+                                           @RequestParam("recipient_id") String recipientId) throws IOException {
+
+        int strCnt = chatService.getCntStrById(reviewerId, recipientId);
+        double rating = chatService.getStrById(reviewerId, recipientId);
+
+        RatingResponseDto dto = new RatingResponseDto();
+        dto.setStrCnt(strCnt);
+        dto.setRating(rating);
+
+        return dto;
     }
 
 }
