@@ -11,6 +11,7 @@ import java.util.List;
 public interface AlarmDao {
     public Integer insertAlarm(AlarmDto alarmDto);
 
+
     // (읽지않은) 알림 조회 메서드 추가
     List<AlarmDto> getAlarms(@Param("username") String username);
 

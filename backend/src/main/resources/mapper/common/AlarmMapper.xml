@@ -5,13 +5,26 @@
   <mapper namespace="com.dogpaws.backend.repository.dao.common.AlarmDao">
 
     <insert id="insertAlarm">
-      INSERT INTO tbl_alarm (username, alarm_type, gubn_id, message, dog_id)
-      VALUES (#{username}, #{alarmType}, #{gubnId}, #{message}, #{dogId})
-    </insert>
-
-    <insert id="insertRimtAlarm">
-        INSERT INTO tbl_alarm (username, alarm_type, gubn_id, message, created_at)
-        VALUES (#{username}, #{alarmType}, #{gubnId}, #{message}, CONVERT_TZ(NOW(), 'UTC', 'Asia/Seoul'))
+        INSERT INTO tbl_alarm (
+            username, 
+            alarm_type, 
+            gubn_id, 
+            message, 
+            created_at
+            <if test="dogId != null">
+                , dog_id
+            </if>
+        )
+        VALUES (
+            #{username}, 
+            #{alarmType}, 
+            #{gubnId}, 
+            #{message}, 
+            CONVERT_TZ(NOW(), 'UTC', 'Asia/Seoul')
+            <if test="dogId != null">
+                , #{dogId}
+            </if>
+        )
     </insert>
 
     <!-- 읽지 않은 알림 목록 조회 -->
