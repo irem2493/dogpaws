@@ -1311,6 +1311,7 @@ window.registStr = async function () {
         .then(data => {
             ratingModal.style.display='none';
             console.log("별점 등록 완료")
+            alert("별점 등록 완료");
         })
         .catch(error => console.error(error));
 }
