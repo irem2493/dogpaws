@@ -4,10 +4,10 @@ import com.dogpaws.backend.dto.cys.CalendarSharedDto;
 import com.dogpaws.backend.dto.cys.CalendarSharedResponseDto;
 import com.dogpaws.backend.dto.cys.DogResponseDto;
 import com.dogpaws.backend.dto.hyepin.CalendarDto;
-import com.dogpaws.backend.service.ajy.DogService;
 import com.dogpaws.backend.service.common.FileService;
 import com.dogpaws.backend.service.cys.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -94,6 +94,16 @@ public class ChatController {
     @GetMapping("/sharedCalendar")
     public List<CalendarSharedResponseDto> getSharedCalendar(@RequestParam("roomId") String roomId) throws IOException {
         return chatService.getSharedCalendar(roomId);
+    }
+
+    @PostMapping("/star")
+    public void registStr(@RequestBody Map<String, String> requestData) throws IOException {
+        String userStar = requestData.get("username");
+        String reviewerId = requestData.get("reviewer_id");
+        String recipientId = requestData.get("recipient_id");
+
+        chatService.registStr(userStar, reviewerId, recipientId);
+
     }
 
 }

@@ -755,3 +755,135 @@
     font-weight: bold;
     color: #6e5438;
 }
+
+/*별점 주기*/
+.rating-container {
+    width: 350px;
+    height: 150px;
+    background-color: #f7931e;
+    padding: 20px 30px;
+    border-radius: 15px 15px 15px 0;
+    text-align: center;
+    position: absolute;
+    top: -12%;
+    left: 75%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.rating-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.slider-container {
+    position: relative;
+    margin: 15px 0;
+}
+
+/* 슬라이더 트랙에 눈금 추가 */
+.slider {
+    width: 100%;
+    height: 6px;
+    background: white;
+    border-radius: 5px;
+    outline: none;
+    appearance: none;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 슬라이더에 눈금(라인) 추가 */
+.slider-track {
+    width: 100%;
+    height: 6px;
+    background: white;
+    border-radius: 5px;
+    position: relative;
+}
+
+/* 눈금 추가 */
+.slider-track::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+            to right,
+            white 0%,
+            white 18%,
+            transparent 18%,
+            transparent 20%
+    );
+}
+
+/* 슬라이더 핸들 스타일 */
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+    cursor: pointer;
+}
+
+/* 멍바닥 아이콘 */
+.paw-icon {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-color: #660000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: white;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: left 0.2s ease-in-out;
+}
+
+/* 별점 표시 */
+.rating-value {
+
+    font-weight: bold;
+    color: white;
+
+}
+
+.btn-zone{
+    display: flex;
+    justify-content: center;
+}
+
+.rating-btn{
+    width: 70px;
+    align-self: center;
+    background-color: #660000;
+    color: white;
+    font-weight: bold;
+    margin: 20px 10px 0 10px;
+    padding: 3px;
+    border-radius: 5px;
+    border-style: none;
+}
+
+.rating-close-btn{
+    width: 70px;
+    align-self: center;
+    border: 1px solid #660000;
+    background-color: #ffffff;
+    color: #660000;
+    font-weight: bold;
+    margin: 20px 10px 0 10px;
+    padding: 3px;
+    border-radius: 5px;
+}

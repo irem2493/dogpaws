@@ -60,4 +60,8 @@
         LIMIT 2
     </select>
 
+    <insert id="registStr">
+        INSERT INTO tbl_rating (user_star, reviewer_id, recipient_id)
+        VALUES (#{userStar}, #{reviewerId}, #{recipientId})
+    </insert>
 </mapper>
