@@ -11,6 +11,7 @@ import java.util.List;
 public interface CalendarDao {
 
     public List<CalendarDto> getCalendarByUsername(@Param("username") String username);
+    public CalendarDto getCalendarById(@Param("calendarId") int calendarId);
     public Integer insertCalendar(CalendarDto calendarDto);
     public Integer updateCalendar(CalendarDto calendarDto);
     public Integer deleteCalendar(CalendarDto calendarDto);

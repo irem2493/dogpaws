@@ -14,5 +14,6 @@ public class AlarmDto {
     private String message; //알림 메시지 내용
     private String readStatus; //읽음여부
     private String createdAt;//알림생성시각
+    private int dogId; // 강아지 ID
 
 }

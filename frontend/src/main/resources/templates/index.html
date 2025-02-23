@@ -9,7 +9,6 @@
         }
     </style>
     <title>Title</title>
-    <link rel="stylesheet" href="/css/common/common.css">
     <link rel="stylesheet" href="/css/cys/main.css">
 </head>
 <body layout:fragment="content" style="min-height: 100vh">
@@ -138,7 +137,65 @@
         </div>
     </div>
 
+
 </div>
+
+<div class="container">
+
+    <div class="row mobile-main">
+        <div class="col-sm-12" onclick="goMatching()">
+            <img src="/img/main1.jpg" class="img-fluid" alt="친구매칭">
+        </div>
+        <th:block th:if="${user != null}">
+            <div class="col-sm-12" onclick="goDbti()">
+                <img src="/img/main2.jpg" class="img-fluid" alt="견bti">
+            </div>
+        </th:block>
+        <div class="col-sm-12">
+            <img src="/img/main3.jpg" class="img-fluid" alt="지도찾기">
+        </div>
+        <div class="col-sm-12">
+            <img src="/img/main4.jpg" class="img-fluid" alt="댕개팅">
+        </div>
+        <div class="col-sm-12" onclick="goStore()">
+            <img src="/img/main5.jpg" class="img-fluid" alt="스토어">
+        </div>
+        <div class="col-sm-12">
+            <img src="/img/main6.jpg" class="img-fluid">
+        </div>
+
+        <div class="container">
+            <div class="row justify-content-center align-items-center text-center">
+                <div class="volunteer-mobile col-sm-12 d-flex flex-column align-items-center">
+                    <img src="/img/강릉%20동물보호센터.jpg" alt="" class="img-fluid">
+                    <p>강릉 동물보호센터</p>
+                    <a href="https://www.gnanilove.or.kr/www/index.do" class="text-muted">
+                        https://www.gnanilove.or.kr/www/index.do
+                    </a>
+                </div>
+                <div class="volunteer-mobile col-sm-12 d-flex flex-column align-items-center">
+                    <img src="/img/양평군 품 유기동물보호센터.jpg" alt="" class="img-fluid">
+                    <p>양평군 품 유기동물보호센터</p>
+                    <a href="https://www.animal.go.kr/front/index.do" class="text-muted">
+                        https://www.animal.go.kr/front/index.do
+                    </a>
+                </div>
+                <div class="volunteer-mobile col-sm-12 d-flex flex-column align-items-center">
+                    <img src="/img/통영%20유기동물보호소.jpg" alt="" class="img-fluid">
+                    <p>통영 유기동물 보호센터</p>
+                    <a href="https://tongyeong.go.kr/pet/main/main.php" class="text-muted">
+                        https://tongyeong.go.kr/pet/main/main.php
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+
 <script>
     function goMatching(){
         window.location.href = '/matching/friend';

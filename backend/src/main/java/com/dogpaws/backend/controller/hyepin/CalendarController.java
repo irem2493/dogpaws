@@ -55,6 +55,13 @@ public class CalendarController {
         }
     }
 
+    //일정 하나 가져오기
+    @GetMapping("one")
+    public CalendarDto getCalendarById(@RequestParam int calendarId) throws IOException {
+        CalendarDto calendar = calendarService.getCalendarById(calendarId);
+        return calendar;
+    }
+
     //일정 리스트
     @GetMapping
     public ApiResponse<List<CalendarDto>> getCalendar(@RequestParam String username) throws IOException {
@@ -67,6 +74,7 @@ public class CalendarController {
     public ApiResponse<String> shareCalendar(@ModelAttribute CalendarDto calendarDto) throws IOException {
         //채팅방으로 연결 -> 채팅방에 일정이 공유됨.
         //상대방 알림 테이블에 등록(알림유형 - C / 구분코드 - SH(calendar_code)
+        //일정 테이블에 공유 현황 업데이트
         log.info("shareCalendar / calendarDto 값: {}", calendarDto);
         System.out.println("calendarDto: " + calendarDto);
         int result = calendarService.shareCalendar(calendarDto);

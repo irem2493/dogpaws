@@ -3,6 +3,8 @@ package com.dogpaws.backend.dto.ajy;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class BoardResponseDto {
 
@@ -15,6 +17,8 @@ public class BoardResponseDto {
     private String title;
 
     private Integer commentCount;
+
+    private List<DogDto> dogList;
 
     private String content;
     private Integer viewCount;

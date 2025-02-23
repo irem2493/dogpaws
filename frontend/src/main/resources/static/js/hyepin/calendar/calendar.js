@@ -171,6 +171,19 @@ const updateBtn = document.getElementById("update");
 const shareBtn = document.getElementById("share");
 const deleteBtn = document.getElementById("delete");
 
+
+var mapContainer = document.getElementById('calendar-map');
+var mapOption = {
+    center: new kakao.maps.LatLng(37.537187, 127.005476), // 초기 중심좌표
+    level: 5
+};
+var map = new kakao.maps.Map(mapContainer, mapOption);
+var geocoder = new kakao.maps.services.Geocoder();
+var marker = new kakao.maps.Marker({
+    position: new kakao.maps.LatLng(37.537187, 127.005476),
+    map: map
+});
+
 // 일정 추가 폼 띄우기
 function showCalendarForm(selectedDate) {
     resetForm();
@@ -185,34 +198,35 @@ function showCalendarForm(selectedDate) {
     shareBtn.style.display = "none";
     deleteBtn.style.display = "none";
 
-    calendarTitleField.value = "";  // 제목 초기화
-    calendarStartDateField.value = selectedDate + "T00:00";  // 기본 시작일 설정
-    calendarEndDateField.value = selectedDate + "T23:59";    // 기본 종료일 설정
-    addressField.value = ""; // 주소 초기화
-    calendarDescriptionField.value = ""; // 일정상세 초기화
+    calendarTitleField.value = "";
+    calendarStartDateField.value = selectedDate + "T00:00";
+    calendarEndDateField.value = selectedDate + "T23:59";
+    addressField.value = "";
+    calendarDescriptionField.value = "";
     calendarTypeField.value = "W";
     dogIdField.value = "1";
 
     calendarTitleField.removeAttribute('readonly');
     calendarStartDateField.removeAttribute('readonly');
     calendarEndDateField.removeAttribute('readonly');
-    //addressField.removeAttribute('readonly');
     calendarDescriptionField.removeAttribute('readonly');
     calendarTypeField.removeAttribute('disabled');
     dogIdField.removeAttribute('disabled');
-}
 
+    // 일정 등록 시 지도 숨김!
+    mapContainer.style.display = "none";
+}
 // 일정 상세 폼 띄우기
 function editEventForm(event, scheduleType) {
     document.getElementById("scheduleType").value = event.extendedProps?.scheduleType;
     document.getElementById("sharedYn").value = event.extendedProps?.sharedYn;
     document.getElementById("sharedId").value = event.extendedProps?.sharedId;
-    currentEventId = event.id;  // 수정할 이벤트 ID 저장
+    currentEventId = event.id;
     openModal('calendarForm');
 
     if(scheduleType === "my"){
         shareBtn.style.display = "block";
-    }else if(scheduleType === "oth"){
+    } else if(scheduleType === "oth"){
         shareBtn.style.display = "none";
         const shareUserField = document.getElementById("shareUserField");
         shareUserField.style.display = "block";
@@ -228,19 +242,14 @@ function editEventForm(event, scheduleType) {
 
     calendarTitleField.value = event.title;
     calendarTitleField.setAttribute('readonly', true);
-
     calendarTypeField.value = event.extendedProps?.calendarType;
     dogIdField.value = event.extendedProps?.dogId || 1;
 
-    // 서버에서 받은 시간
     const startDate = new Date(event.start);
     const endDate = event.end ? new Date(event.end) : startDate;
-
-    // 클라이언트에서 시간을 로컬 타임존에 맞게 변환
     const startDateLocal = startDate.toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(" ", "T").slice(0, 16);
     const endDateLocal = endDate.toLocaleString("sv-SE", { timeZone: "Asia/Seoul" }).replace(" ", "T").slice(0, 16);
 
-    // 시작일과 종료일 설정 및 읽기 전용
     calendarStartDateField.value = startDateLocal;
     calendarStartDateField.setAttribute('readonly', true);
     calendarEndDateField.value = endDateLocal;
@@ -249,14 +258,53 @@ function editEventForm(event, scheduleType) {
     calendarTypeField.setAttribute('disabled', true);
     dogIdField.setAttribute('disabled', true);
 
-    // 주소
+    //기존 주소 설정
     addressField.value = event.extendedProps?.address || '';
-    //addressField.setAttribute('readonly', true); // 읽기 전용 설정
 
-    // 상세 설명
+    //상세 설명 설정
     calendarDescriptionField.value = event.extendedProps?.description || '';
-    calendarDescriptionField.setAttribute('readonly', true); // 읽기 전용 설정
+    calendarDescriptionField.setAttribute('readonly', true);
 
+    //주소가 있으면 지도 표시
+    if (addressField.value) {
+        updateMapWithAddress(addressField.value);
+    } else {
+        mapContainer.style.display = "none"; // 주소 없으면 지도 숨김
+    }
+}
+
+
+//주소 검색 버튼 클릭 시 지도 표시
+function sample5_execDaumPostcode() {
+    new daum.Postcode({
+        oncomplete: function (data) {
+            var addr = data.address; // 최종 주소 변수
+
+            // 📍 주소 입력 필드에 값 설정
+            document.getElementById("sample5_address").value = addr;
+
+            // 📍 지도 업데이트 함수 호출 (주소 기반)
+            updateMapWithAddress(addr);
+        }
+    }).open();
+}
+
+// 주소를 기반으로 지도 업데이트하는 함수
+function updateMapWithAddress(address) {
+    geocoder.addressSearch(address, function (results, status) {
+        if (status === kakao.maps.services.Status.OK) {
+            var result = results[0];
+            var coords = new kakao.maps.LatLng(result.y, result.x);
+
+            // 📍 지도 표시
+            mapContainer.style.display = "block";
+            map.relayout();
+            map.setCenter(coords);
+            marker.setPosition(coords);
+        } else {
+            console.error("주소 변환 실패:", status);
+        }
+    });
 }
 
 // 일정 수정 폼 열기
@@ -279,7 +327,6 @@ function calendarModify(){
         alert("일정 수정");
         dogIdField.removeAttribute('disabled');
     }
-
 }
 
 // 폼 초기화
@@ -376,54 +423,35 @@ function calendarDelete(){
         });
 }
 
-//일정 공유
-function openShareForm(){
-    updateBtn.style.display = "none";
-    alert("일정 공유");
-    openModal('shareForm');
-    // 공유 폼 띄우기
-    // 해당 사용자의 일반채팅, 그룹채팅 값 가져오기 (api 연결)
+// 🔥 `closeModal()` 실행 후 `openShareForm()`을 호출하는 함수
+function closeAndOpenShareForm(button) {
+    closeModal(button);  // ✅ 모달 닫기 먼저 실행
 
-    // 받는 사람은 알림에서 확인
-    // 알림에서 공유받을 때 다른 정보는 읽기로 확인 가능하고, 반려견 선택할 수 있게.
+    // 🔥 100ms 후 `openShareForm()` 실행해서 충돌 방지
+    setTimeout(() => {
+        openShareForm();
+    }, 100);
 }
 
-function calendarShare(){
-    alert("일정 공유");
-    // 선택한 채팅방에 공유 api
-    // 사용자 이름, 채팅방 번호(이거 개인톡, 그룹톡 안나눠도 번호로 나눠지겠지?), 일정 번호
-    const username = sessionUsername.value;
-    var calendarId = parseInt(document.querySelector('input[name="calendarId"]').value, 10);  // 문자열을 Integer로 변환
-    var roomId = 1;
-    /*
-    const data = {
-        username: username,
-        calendarId: calendarId,
-        roomId: roomId
+
+// 모달 닫기 함수 수정
+function calendarCloseModal(target) {
+    let modal;
+
+    if (typeof target === "string") {
+        // ID로 모달 찾기
+        modal = document.getElementById(target);
+    } else {
+        // 버튼으로 모달 찾기
+        modal = target.closest('.pawsModal');
     }
-    */
 
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("calendarId", calendarId);
-    formData.append("roomId", roomId);
-
-
-
-    //폼데이터 보내기
-    api.post('/api/calendar/share', formData, {
-    })
-        .then(res => {
-            if (res.body.body == '일정 공유 성공') {  // res.body.body 로 받아야합니다..
-                alert("공유 성공");
-                resetForm();  // 폼 초기화
-                window.location.reload();
-            } else {
-                alert("공유 실패");
-            }
-        })
-        .catch(error => {
-            console.error("오류:", error);
-            alert("공유 오류");
-        });
+    if (modal) {
+        const overlay = modal.parentElement;
+        if (overlay && overlay.classList.contains('pawsModal-overlay')) {
+            document.body.appendChild(modal); // 모달을 원래 위치로 되돌림
+            overlay.remove(); // 오버레이 제거
+        }
+        modal.style.display = 'none';
+    }
 }

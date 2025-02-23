@@ -8,16 +8,15 @@
     --store_border_color: #D97000;
     --store_color: #FBFAF9;
 }
-*{
-    font-family: 'Noto Sans KR', 'Noto Sans', sans-serif;
-}
-
 body {
+    font-family: 'Noto Sans KR', 'Noto Sans', sans-serif !important;
     font-size: 16px;
     margin:0;
     padding:0;
 }
+
 button, input, textarea, select {
+    font-family: 'Noto Sans KR', 'Noto Sans', sans-serif !important;
     font-size: 1rem;
     color: var(--black);
     margin: 0;
@@ -740,4 +739,3 @@ hr {
     background: var(--white);
     color: var(--black);
 }
-

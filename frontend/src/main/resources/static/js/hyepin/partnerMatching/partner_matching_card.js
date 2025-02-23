@@ -103,7 +103,7 @@ function updateCards() {
                     <img id="likeIcon" src="${dog.liked ? '/img/icon/mating-push.svg' : '/img/icon/mating.svg'}" alt="mating-icon" data-target="${dog.dog_id}" onclick="likeToggle(this)">
                 </div>
                 <div class="card-bottom-items">
-                    <img src="/img/icon/partner-messege.svg" alt="messege-icon" data-dog-id="${dog.dog_id}" data-username="${dog.username}" onclick="chatForm(this)">
+                    <img src="/img/icon/partner-messege.svg" alt="messege-icon"  >
                 </div>
                 <div class="card-bottom-items">
                     <img src="/img/icon/partner-wechat-logo.svg" alt="wechat-logo-icon" data-dog-id="${dog.dog_id}" data-username="${dog.username}" onclick="openModal('groupChat'); getGroupChatRoom(this)">
