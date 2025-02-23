@@ -37,7 +37,7 @@ public class HyepinDogController {
 
     // 예: POST /dogs/insertAll 호출 시 DB에 전체 데이터 삽입
     @GetMapping("/insertAll")
-    public String insertAllDogs() {
+    public void insertAllDogs() {
         // 전체 리스트에서 첫 번째 건만 선택
         /*
         TestDogDto oneDog = DogDataGenerator.generateDogList().get(0);
@@ -46,7 +46,6 @@ public class HyepinDogController {
         */
         List<TestDogDto> dogList = DogDataGenerator.generateDogList();
         dogService.insertDogs(dogList);
-        return "Inserted " + dogList.size() + " dogs.";
 
 
     }
