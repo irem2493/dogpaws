@@ -313,17 +313,20 @@ function subscribeToMessages(roomId) {
 
             else if (message.status === 'M') {
 
-                let imagesHtml = "";
-                message.text.forEach(url => {
-                    imagesHtml += `<img src="${url}" alt="" width="230" style="border-radius: 15px">`;
-                });
+                // let imagesHtml = "";
+                // message.text.forEach(url => {
+                //     imagesHtml += `<img src="${url}" alt="" width="230" style="border-radius: 15px">`;
+                // });
 
                 if (message.sender === currentDogId) {
                     messageDiv.className = "chat-message right";
                     messageDiv.innerHTML = `
                         <div class="message-content">
                             <div class="message-time">${formatTime(message.timestamp)}</div>
-                            <div class="message-img">${imagesHtml}</div>
+                            <div class="message-img"><img src="data:image/jpeg;base64,${message.text}" 
+                             alt="이미지" 
+                             width="230" 
+                             style="border-radius: 15px;"></div>
                         </div>
                     `;
                 } else {
@@ -334,7 +337,10 @@ function subscribeToMessages(roomId) {
                         <div class="chat-not-profile">
                             <div class="chat-name">${message.nickname}</div>
                             <div class="message-content">
-                                <div class="message-img">${imagesHtml}</div>
+                                <div class="message-img"><img src="data:image/jpeg;base64,${message.text}" 
+                             alt="이미지" 
+                             width="230" 
+                             style="border-radius: 15px;"></div>
                                 <div class="message-time">${formatTime(message.timestamp)}</div>
                             </div>
                         </div>
@@ -645,10 +651,11 @@ document.querySelector('#file-icon')
 });
 
 // 파일 선택 후 자동 업로드
-document.querySelector('#mediaUpload')
-    .addEventListener('change', function () {
-        fileUpload(); // 파일 선택하면 자동 업로드 🚀
-    });
+// document.querySelector('#mediaUpload')
+//     .addEventListener('change', function (event) {
+//         uploadImageToFirestore(event);
+//         // fileUpload(); // 파일 선택하면 자동 업로드 🚀
+//     });
 
 window.fileUpload = function (){
 
@@ -874,7 +881,7 @@ window.detailPageMedia = function (roomId){
                 mediaItem.classList.add('media-item');
 
                 mediaItem.innerHTML = `
-            <img src="${url}" alt="미디어" class="media-img" >
+            <img src="data:image/jpeg;base64,${url}" alt="미디어" class="media-img" >
         `;
 
                 mediaModalList.appendChild(mediaItem);
@@ -1375,4 +1382,39 @@ document.addEventListener("click", function(event) {
         ratingResultModal2.style.display = "none"; // 모달 닫기
     }
 });
+
+
+//채팅 미디어
+// 파일 선택 시 Base64 변환 후 Firestore 저장
+async function uploadImageToFirestore(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = async function () {
+        const base64String = reader.result.split(",")[1]; // Base64 데이터만 추출
+        console.log("✅ 변환된 Base64:", base64String);
+
+        // Firestore에 이미지 메시지 저장 (채팅 메시지와 동일한 로직)
+        try {
+            await addDoc(collection(db, "chatRooms", selectedRoomId, "messages"), {
+                sender: currentDogId,  // 보낸 사람
+                text: base64String,    // Base64 인코딩된 이미지
+                nickname: currentUserNickname,
+                timestamp: serverTimestamp(),
+                status: "M" // 미디어 메시지
+            });
+
+            console.log("🚀 Firestore에 Base64 이미지 저장 완료!");
+        } catch (error) {
+            console.error("❌ Firestore 저장 오류:", error);
+        }
+    };
+
+    if (file) {
+        reader.readAsDataURL(file);
+    }
+}
+
+// 파일 선택 이벤트 리스너 추가
+document.querySelector("#mediaUpload").addEventListener("change", uploadImageToFirestore);
 
