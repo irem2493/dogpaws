@@ -196,15 +196,20 @@
             const options = Array.from(optionList.querySelectorAll('.option-item'));
             let total = 0;
 
-            options.forEach((option, index) => {
-                const quantity = parseInt(option.querySelector('.quantity-input').value);
-                const optionPrice = parseInt(option.dataset.optionPrice) || 0;
+            // 기본 옵션이 있는지 확인
+            const hasBaseOption = options.some(option => 
+                option.dataset.isBaseOption === 'true'
+            );
 
-                if (index === 0) {
-                    // 첫 번째 옵션은 기본가격만 적용
-                    total += basePrice * quantity;
+            options.forEach(option => {
+                const quantity = parseInt(option.querySelector('.quantity-input').value);
+                const optionPrice = parseInt(option.dataset.optionPrice);
+
+                if (!hasBaseOption) {
+                    // 기본 옵션이 없는 경우, 각 옵션에 대해 기본가격을 더함
+                    total += (basePrice + (optionPrice - basePrice)) * quantity;
                 } else {
-                    // 두 번째 옵션부터는 옵션가격만 적용
+                    // 기본 옵션이 있는 경우, 옵션 가격 그대로 사용
                     total += optionPrice * quantity;
                 }
             });
@@ -475,7 +480,8 @@
                         optionId: optionDiv.dataset.optionId,
                         optionName: optionDiv.dataset.optionName,
                         optionPrice: parseInt(optionDiv.dataset.optionPrice) || 0,
-                        quantity: parseInt(optionDiv.dataset.quantity)
+                        quantity: parseInt(optionDiv.dataset.quantity),
+                        isBaseOption: optionDiv.dataset.optionPrice === basePrice.toString() // 기본 옵션 여부 추가
                     }));
 
                     // 모달 내용 설정
@@ -492,14 +498,15 @@
 
 
                     optionList.innerHTML = `
-                        ${options.map((option, index) => `
+                        ${options.map((option) => `
                             <div class="d-flex align-items-center mb-2 option-item"
                                  data-cart-item-id="${cartItemId}"
                                  data-option-id="${option.optionId}"
-                                 data-option-price="${index === 0 ? 0 : option.optionPrice}">
+                                 data-option-price="${option.optionPrice}"
+                                 data-is-base-option="${option.isBaseOption}">
                                 <span class="me-2">${option.optionName}</span>
                                 <span class="text-muted me-2">
-                                    ${index === 0 ? '' : option.optionPrice ? `(+${option.optionPrice.toLocaleString()}원)` : ''}
+                                    ${!option.isBaseOption ? `(+${(option.optionPrice - basePrice).toLocaleString()}원)` : ''}
                                 </span>
                                 <div class="input-group" style="width: 150px;">
                                     <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn"
@@ -571,8 +578,8 @@
                             const optEl = document.createElement('option');
                             optEl.value = option.optionId;
                             optEl.dataset.price = option.optionPrice;
-                            optEl.textContent = `${option.optionName} ${option.optionPrice > 0 ?
-                                `(+${option.optionPrice.toLocaleString()}원)` : ''}`;
+                            optEl.textContent = `${option.optionName} ${option.optionPrice > basePrice ? 
+                                `(+${(option.optionPrice - basePrice).toLocaleString()}원)` : ''}`;
                             newOptionSelect.appendChild(optEl);
                         });
                     }
@@ -635,20 +642,29 @@
                 return;
             }
 
-            // 만약 이 옵션이 이전에 삭제된 옵션이라면 deletions 배열에서 제거
+            // deletions 배열에서 해당 옵션 찾기
+            let wasDeleted = false;
             if (window.deletions) {
-                window.deletions = window.deletions.filter(
-                    item => !(item.cartItemId === cartItemId && item.optionId === option.value)
+                wasDeleted = window.deletions.some(
+                    item => item.cartItemId === cartItemId && item.optionId === option.value
                 );
+                // 찾았다면 deletions 배열에서 제거만 하고 additions에는 추가하지 않음
+                if (wasDeleted) {
+                    window.deletions = window.deletions.filter(
+                        item => !(item.cartItemId === cartItemId && item.optionId === option.value)
+                    );
+                }
             }
 
-            // 새로 추가된 옵션 정보를 additions 배열에 추가
-            if (!window.additions) window.additions = [];
-            window.additions.push({
-                cartItemId: cartItemId,
-                optionId: option.value,
-                quantity: 1
-            });
+            // 삭제된 적이 없는 완전히 새로운 옵션인 경우에만 additions 배열에 추가
+            if (!wasDeleted) {
+                if (!window.additions) window.additions = [];
+                window.additions.push({
+                    cartItemId: cartItemId,
+                    optionId: option.value,
+                    quantity: 1
+                });
+            }
 
             // 현재 옵션 개수 확인
             const currentOptions = optionList.querySelectorAll('.option-item');
