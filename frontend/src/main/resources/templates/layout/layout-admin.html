@@ -72,6 +72,54 @@
             justify-content: start;
             align-items: center;
         }
+        
+        /* 컨텐츠 영역 스타일 수정 */
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            min-height: 100vh;
+        }
+        
+        /* 최상단 헤더 스타일 */
+        .admin-header {
+            height: 60px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 40px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 260px; /* 사이드바 너비만큼 띄우기 */
+            z-index: 100;
+        }
+        
+        .admin-header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .admin-header .user-name {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .admin-header .logout-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        /* 사이드바 숨김 시 헤더 조정 */
+        .body-container.hide-sidebar .admin-header {
+            left: 0;
+        }
     </style>
     <title>관리자페이지</title>
 </head>
@@ -80,8 +128,31 @@
     <div class="body-container" th:classappend="${hideSidebar} ? 'hide-sidebar' ">
         <!-- 사이드바 영역 -->
         <aside th:replace="/layout-parts/sidebar-admin :: sidebar"></aside>
-        <!-- 컨텐츠 영역 -->
-        <div layout:fragment="content"></div>
+        
+        <!-- 컨텐츠 래퍼 -->
+        <div class="content-wrapper">
+            <!-- 최상단 헤더 -->
+            <header class="admin-header">
+                <div class="user-info">
+                    <span class="user-name">관리자</span>
+                    <button class="logout-btn" id = "logoutButton">로그아웃</button>
+                </div>
+            </header>
+
+
+            <script>
+                const logoutButton = document.getElementById('logoutButton');
+                logoutButton.addEventListener('click', function (e){
+                    e.preventDefault()
+                    logout();
+                    window.location.href = "/admin/login";
+                });
+            </script>
+            <!-- 컨텐츠 영역 -->
+            <div layout:fragment="content"></div>
+
+
+        </div>
     </div>
 </body>
 </html>

@@ -170,10 +170,8 @@ public class ProductService {
 
         try {
             // sortBy 파라미터 검증
-            if (searchDto.getSortBy() != null) {
-                if (!searchDto.getSortBy().matches("^(stock_asc|stock_desc)$")) {
-                    searchDto.setSortBy(null); // 잘못된 값이면 기본 정렬 사용
-                }
+            if (!isValidSortBy(searchDto.getSortBy())) {
+                searchDto.setSortBy(null); // 잘못된 값이면 기본 정렬 사용
             }
 
             // 데이터 조회
@@ -188,6 +186,10 @@ public class ProductService {
             log.error("상품 검색 중 오류 발생: {}", e.getMessage(), e);
             throw new RuntimeException("상품 검색 실패", e);
         }
+    }
+
+    private boolean isValidSortBy(String sortBy) {
+        return sortBy == null || sortBy.matches("^(stock_asc|stock_desc|price_asc|price_desc)$");
     }
 
     /**

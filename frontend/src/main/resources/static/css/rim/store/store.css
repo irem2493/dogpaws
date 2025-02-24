@@ -13,7 +13,7 @@
 
 /* 카테고리 페이지 그리드 */
 .product-list-container .product-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
 }
 

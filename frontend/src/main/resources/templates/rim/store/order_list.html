@@ -28,7 +28,7 @@
             <div th:if="${not #lists.isEmpty(orders)}" class="order-list">
                 <!-- 헤더 -->
                 <div class="top-actions">
-                    <div class="row text-center">
+                    <div class="row text-center" style="height: 50px; display: flex; align-items: center;">
                         <div class="col-2">주문 번호</div>
                         <div class="col-7">상품 정보</div>
                         <div class="col-3">진행 상황</div>
@@ -45,7 +45,8 @@
                                 <br>
                                 <a th:href="@{/orders/detail/{qlId}(qlId=${order.qlId})}"
                                    th:text="${order.qlId}"
-                                   class="text-primary text-decoration-none">
+                                   class="text-decoration-none"
+                                   style="color: #ff8e49;">
                                 </a>
                             </div>
 
@@ -54,29 +55,40 @@
                                 <div class="d-flex align-items-center">
                                     <!-- 상품 이미지 -->
                                     <div class="me-4" style="width: 130px;">
-                                        <img th:if="${not #lists.isEmpty(order.orderItems)}"
-                                             th:src="${order.orderItems[0].imageUrl}"
-                                             class="img-fluid rounded" alt="상품이미지">
+                                        <a th:href="@{/store/{id}(id=${order.orderItems[0].productId})}">
+                                            <img th:if="${not #lists.isEmpty(order.orderItems)}"
+                                                 th:src="${order.orderItems[0].imageUrl}"
+                                                 class="img-fluid rounded" 
+                                                 alt="상품이미지"
+                                                 style="cursor: pointer;">
+                                        </a>
                                     </div>
                                     <!-- 상품 상세 정보 -->
                                     <div class="flex-grow-1">
                                         <div class="d-flex flex-column">
                                             <small class="text-muted mb-1" th:text="${order.orderItems[0].manufacturer}"></small>
-                                            <h5 class="card-title mb-2" th:text="${order.orderItems[0].productName}"></h5>
+                                            <h5 class="card-title mb-2">
+                                                <a th:href="@{/store/{id}(id=${order.orderItems[0].productId})}"
+                                                   class="text-decoration-none"
+                                                   style="color: inherit;"
+                                                   th:text="${order.orderItems[0].productName}">
+                                                </a>
+                                                <span th:if="${#lists.size(order.orderItems) > 1}"
+                                                      class="text-muted small"
+                                                      style="font-size: 0.8em; margin-left: 8px;"
+                                                      th:text="'외 ' + (${#lists.size(order.orderItems)} - 1) + '건'">
+                                                </span>
+                                            </h5>
                                             <span class="card-title mb-2 price-display">
-                                            <span class="price-text" th:text="${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')}"></span>원
-                                        </span>
-                                            <span th:if="${#lists.size(order.orderItems) > 1}"
-                                                  class="text-muted small"
-                                                  th:text="'외 ' + (${#lists.size(order.orderItems)} - 1) + '건'">
-                                        </span>
+                                                <span class="price-text" th:text="${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')}"></span>원
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- 진행상황 -->
-                            <div class="col-3 text-center">
+                            <div class="col-3 text-center d-flex justify-content-center align-items-center">
                             <span class="btn-status" style="width: fit-content"
                                   th:classappend="${
                                     order.orderStatus == 'READY' ? 'status-warning' :
@@ -113,7 +125,7 @@
     <div class="d-flex justify-content-center" th:if="${totalPages > 0}">
         <ul class="pagination">
             <!-- 이전 페이지 -->
-            <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+            <li class="page-item">
                 <a class="page-link"
                    th:href="@{/orders/list(page=${currentPage - 1})}"
                    th:onclick="${currentPage == 0} ? 'alert(\'첫 페이지입니다.\'); return false;' : ''">
@@ -131,7 +143,7 @@
             </li>
 
             <!-- 다음 페이지 -->
-            <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+            <li class="page-item">
                 <a class="page-link"
                    th:href="@{/orders/list(page=${currentPage + 1})}"
                    th:onclick="${currentPage >= totalPages - 1} ? 'alert(\'마지막 페이지입니다.\'); return false;' : ''">
@@ -149,7 +161,6 @@
         font-size: 14px;
         font-weight: 500;
     }
-
 
     .paws-card {
         border-bottom: 1px solid #DDBC98;

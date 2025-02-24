@@ -57,10 +57,16 @@ public class OrderService {
             // 주문 정보 조회
             OrderDto order = orderDao.selectOrderByQlId(qlId);
             
+            String productName = order.getOrderItems().get(0).getProductName();
+
+            if(productName.length() > 10){
+                productName = productName.substring(0, 10) + "...";
+            }
+
             // 알림 등록
             notificationService.sendNotification(
                 order.getUsername(),
-                String.format("주문하신 상품의 배송이 시작되었습니다. (운송장번호: %s)", trackingNumber),
+                String.format("[%s]%s의 배송이 시작되었습니다. (운송장번호: %s)", order.getQlId(), productName, trackingNumber),
                 "A",
                     qlId
             );
@@ -80,13 +86,18 @@ public class OrderService {
                 // 주문 정보 조회
                 OrderDto order = orderDao.selectOrderByQlId(qlId);
 
+                String productName = order.getOrderItems().get(0).getProductName();
+                if(productName.length() > 10){
+                    productName = productName.substring(0, 10) + "...";
+                }
+
                 // 배송완료 처리
                 orderDao.updateAdminOrderStatus(qlId, "DELIVERED");
 
                 // 배송완료 알림
                 notificationService.sendNotification(
                         order.getUsername(),
-                        "주문하신 상품의 배송이 완료되었습니다.",
+                        String.format("[%s]%s의 배송이 완료되었습니다.",order.getQlId(), productName),
                         "A",
                         qlId
                 );

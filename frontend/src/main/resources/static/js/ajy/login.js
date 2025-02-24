@@ -1,3 +1,10 @@
+// 페이지 로드 시 세션스토리지 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    sessionStorage.removeItem('nickname');
+    sessionStorage.removeItem('role');
+    sessionStorage.removeItem('username');
+});
+
 document.getElementById('loginForm').addEventListener('submit', async function (event) {
     event.preventDefault(); // 기본 폼 제출 방지
 

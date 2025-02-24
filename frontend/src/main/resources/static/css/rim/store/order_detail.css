@@ -1,0 +1,40 @@
+.info-table {
+    width: 100%;
+}
+
+.info-table th {
+    padding: 15px;
+    color: #666;
+    vertical-align: top;
+}
+
+.info-table td {
+    padding: 15px;
+}
+
+.payment-summary {
+    width: 100%;
+    padding: 20px 40px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 40px;
+}
+
+.summary-divider {
+    height: 1px;
+    background-color: #DDBC98;
+    margin: 8px 0;
+}
+
+.summary-row.total {
+    font-size: 19.2px;
+    font-weight: 700;
+}
+
+.summary-row.total .summary-value strong {
+    color: #EF7E06;
+}

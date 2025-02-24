@@ -14,7 +14,10 @@
                 <i class="bi bi-search"></i>
             </div>
         </div>
-        
+
+
+
+        <!-- 테스트 시작 -->
         <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
 
             <script>
@@ -114,20 +117,36 @@
                         // 알림 렌더링 함수 수정
                         function renderNotifications(notifications) {
                             const container = document.getElementById('notifications');
-                            container.innerHTML = notifications.body.map(notification => `
-                            <div class="notification-item ${notification.read_status === 'N' ? 'unread' : 'read'}"
-                                 data-id="${notification.alarm_id}">
-                                <div class="notification-content" style="display: flex; gap: 10px; align-items: flex-start;">
-                                    <img src="/img/icon/alarm_${notification.alarm_type.toLowerCase()}_icon.svg"
-                                         alt="알림 아이콘"
-                                         style="width: 20px; height: 20px; margin-top: 3px;">
-                                    <div>
-                                        <p>${notification.message}</p>
-                                        <small>${getRelativeTimeString(notification.created_at)}</small>
+                            container.innerHTML = notifications.body.map(notification => {
+                                // 알림 타입에 따른 링크 URL 설정
+                                let linkUrl = '';
+                                if (notification.alarm_type === 'A') {  // 주문 관련 알림
+                                    linkUrl = `/orders/detail/${notification.gubn_id}`;
+                                } else if (notification.alarm_type === 'C') {  // 캘린더 관련 알림
+                                    linkUrl = '/calendar';
+                                }
+
+                                // 클릭 이벤트를 위한 onclick 속성 추가
+                                const clickHandler = linkUrl ? `onclick="window.location.href='${linkUrl}'"` : '';
+                                const cursorStyle = linkUrl ? 'cursor: pointer;' : '';
+
+                                return `
+                                <div class="notification-item ${notification.read_status === 'N' ? 'unread' : 'read'}"
+                                     data-id="${notification.alarm_id}"
+                                     ${clickHandler}
+                                     style="${cursorStyle}">
+                                    <div class="notification-content" style="display: flex; gap: 10px; align-items: flex-start;">
+                                        <img src="/img/icon/alarm_${notification.alarm_type.toLowerCase()}_icon.svg"
+                                             alt="알림 아이콘"
+                                             style="width: 40px; height: 40px; margin-top: 3px;">
+                                        <div>
+                                            <p>${notification.message}</p>
+                                            <small>${getRelativeTimeString(notification.created_at)}</small>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        `).join('');
+                                `;
+                            }).join('');
 
                             // 알림 클릭 이벤트 추가
                             container.querySelectorAll('.notification-item').forEach(item => {
@@ -150,7 +169,13 @@
                         // 안읽은 알림 수 업데이트
                         function updateUnreadCount(notifications) {
                             const unreadCount = notifications.body.filter(n => !n.isRead).length;
-                            document.getElementById('unreadCount').textContent = unreadCount;
+                            const unreadCountElement = document.getElementById('unreadCount');
+                            if (unreadCount > 0) {
+                                unreadCountElement.textContent = unreadCount;
+                                unreadCountElement.style.display = 'block';
+                            } else {
+                                unreadCountElement.style.display = 'none';
+                            }
                         }
                     }else {
                         // 로그인하지 않은 경우 알림 영역 숨기기
@@ -162,7 +187,7 @@
             <div class="notification-area hidden" id="paws-notification-box">
                 <button id="notificationBtn" class="notification-btn" th:if="${session.user != null}">
                     <i class="fas fa-bell"></i>
-                    <span id="unreadCount" class="badge">0</span>
+                    <span id="unreadCount" class="badge" style="display: none">0</span>
                 </button>
 
                 <div id="notificationList" class="notification-list hidden">

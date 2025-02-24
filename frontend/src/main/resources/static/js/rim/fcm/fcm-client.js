@@ -39,6 +39,9 @@ const FCMClient = {
                     alarmId: payload.data?.alarmId,
                     createdAt: new Date()
                 });
+
+                // unreadCount 증가
+                this.increaseUnreadCount();
             });
 
             this.isInitialized = true;
@@ -142,19 +145,34 @@ const FCMClient = {
         const alarmType = title.includes('주문') || title.includes('배송') ? 'a' : 'c';
         
         // 메시지 처리
-        let displayTitle = title;  // 서버에서 받은 title 그대로 사용
+        let displayTitle = title;
         let displayContent = '';
-        
-        if (alarmType === 'c') {
-            displayContent = message.split(': ')[1];
+        let linkUrl = '';
+
+        if (message.includes('배송이 시작되었습니다')) {
+            const orderMatch = message.match(/\[(.*?)\]/);
+            const trackingMatch = message.match(/\(운송장번호: (.*?)\)/);
+            
+            const orderId = orderMatch ? orderMatch[1] : '';
+            const trackingNumber = trackingMatch ? trackingMatch[1] : '';
+            
+            displayContent = `주문번호: ${orderId}\n운송장번호: ${trackingNumber}`;
+            linkUrl = `/orders/detail/${orderId}`;
+
+        } else if (message.includes('배송이 완료되었습니다')) {
+            const orderMatch = message.match(/\[(.*?)\]/);
+            const orderId = orderMatch ? orderMatch[1] : '';
+            
+            displayContent = `주문번호: ${orderId}`;
+            linkUrl = `/orders/detail/${orderId}`;
+
+        } else if (title === "내일 일정이 있습니다") {
+            // "내일 일정이 있습니다: " 이후의 텍스트를 추출
+            const scheduleMatch = message.match(/내일 일정이 있습니다: (.*)/);
+            displayContent = scheduleMatch ? scheduleMatch[1] : message;
+            linkUrl = '/calendar';
         } else {
-            // 배송 알림 메시지 처리
-            if (message.includes('배송이 시작되었습니다')) {
-                const match = message.match(/\(운송장번호: (.*?)\)/);
-                displayContent = match ? `운송장번호: ${match[1]}` : message;
-            } else {
-                displayContent = message;
-            }
+            displayContent = message;
         }
         
         toast.innerHTML = `
@@ -189,11 +207,40 @@ const FCMClient = {
                     toast.remove();
                 }, 500);
             }
-        }, 3000);
+        }, 5000);
+    },
+    // unreadCount 증가 함수 추가
+    increaseUnreadCount() {
+        const unreadCount = document.getElementById('unreadCount');
+        if (unreadCount) {
+            // 현재 값을 가져와서 1 증가
+            const currentCount = parseInt(unreadCount.textContent || '0', 10);
+            const newCount = currentCount + 1;
+
+            // UI 업데이트
+            unreadCount.textContent = newCount;
+            unreadCount.style.display = 'block';
+            
+            console.log('알림 수 증가:', newCount);
+
+            // 알림 목록이 열려있는 경우 새로고침
+            const notificationList = document.getElementById('notificationList');
+            if (notificationList && !notificationList.classList.contains('hidden')) {
+                // 전역 함수 loadNotifications 호출
+                if (typeof window.loadNotifications === 'function') {
+                    window.loadNotifications();
+                }
+            }
+        } else {
+            console.error('unreadCount 엘리먼트를 찾을 수 없습니다.');
+        }
     },
     addNewNotification(notification) {
         const container = document.getElementById('notifications');
-        if (!container) return;
+        if (!container) {
+            console.error('notifications 컨테이너를 찾을 수 없습니다.');
+            return;
+        }
 
         const notificationElement = document.createElement('div');
         notificationElement.className = 'notification-item unread';
@@ -214,15 +261,8 @@ const FCMClient = {
             </div>
         `;
 
-        // 목록 최상단에 추가
+        // 새 알림을 목록 최상단에 추가
         container.insertBefore(notificationElement, container.firstChild);
-
-        // 안읽은 알림 수 업데이트
-        const unreadCount = document.getElementById('unreadCount');
-        if (unreadCount) {
-            const currentCount = parseInt(unreadCount.textContent || '0');
-            unreadCount.textContent = currentCount + 1;
-        }
     }
 };
 

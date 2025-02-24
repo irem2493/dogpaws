@@ -15,8 +15,12 @@
         }
 
         .product-detail-image {
-            width: 100%;
-            max-width: 500px;
+            width: 500px;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-self: center;
+            margin-top: 20px;
         }
 
         .product-info {
@@ -31,16 +35,19 @@
         .product-name {
             font-size: 24px;
             margin-bottom: 15px;
+            font-weight: bold;
         }
 
         .price {
             font-size: 28px;
             font-weight: bold;
             margin-bottom: 20px;
+            color: #EF7E06;
         }
 
         .delivery-info {
-            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
             padding: 10px;
             margin-bottom: 20px;
         }
@@ -50,10 +57,11 @@
         }
 
         .selected-option {
-            background-color: #f8f9fa;
+            background-color: #F5E8CF;
             padding: 15px;
             margin-bottom: 10px;
-            border-radius: 5px;
+            border-radius: 9px;
+            margin-top: 15px;
         }
 
         .quantity-control {
@@ -62,11 +70,55 @@
             gap: 10px;
         }
 
-        .quantity-control button {
-            width: 30px;
-            height: 30px;
-            border: 1px solid #ddd;
-            background: #fff;
+        .quantity-control button.decrease,
+        .quantity-control button.increase {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background-color: transparent;
+            background-position: center;
+            background-repeat: no-repeat;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .quantity-control button.decrease {
+            background-image: url('/img/store/store_minus_button.svg');
+        }
+
+        .quantity-control button.increase {
+            background-image: url('/img/store/store_plus_button.svg');
+        }
+
+        .quantity-control input[type="number"] {
+            width: 40px;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-size: 16px;
+            padding: 0;
+            -moz-appearance: textfield;
+        }
+
+        .quantity-control input[type="number"]::-webkit-outer-spin-button,
+        .quantity-control input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .quantity-control .remove {
+            border: none;
+            background: transparent;
+            color: #666;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .option-price {
+            margin-left: auto;
+            font-weight: bold;
+            color: #333;
         }
 
         .total-price {
@@ -97,101 +149,139 @@
         .description-text {
             line-height: 1.6;
         }
+        .product-detail-container{
+
+        }
+
+        .nav-path {
+            display: flex;
+            margin: 20px 0;
+            color: #666;
+            font-size: 14px;
+            gap: 5px;
+        }
+
+        .nav-path .nav-link {
+            text-decoration: none;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .nav-path .nav-link:hover {
+            color: #EF7E06;
+        }
+
+        .nav-path strong {
+            color: #EF7E06;
+        }
     </style>
 </head>
 <body layout:fragment="content">
 <div class="container">
-    <!-- 상단 섹션 -->
-    <div class="row product-main">
-        <!-- 상품 이미지 -->
-        <div class="col-md-6">
-            <img th:src="${product.image_url}" alt="상품 상세 이미지" class="product-detail-image">
+    <div class="product-detail-container">
+        <!-- 네비게이션 경로 -->
+        <div class="nav-path">
+            <a href="/store" class="nav-link">카테고리</a>  <span>></span>
+            <a th:href="@{/store/category/{category}(category=${product.main_category})}" class="nav-link">
+                <strong th:text="${product.main_category == 'F' ? '사료' : 
+                                 (product.main_category == 'N' ? '간식' : '산책용품')}">
+                </strong>
+            </a>
         </div>
-        <!-- 상품 정보 -->
-        <div class="col-md-6 product-info">
-            <div class="manufacturer" th:text="${product.manufacturer}">제조사</div>
-            <input type="hidden" id="productId" th:value="${product.product_id}">
-            <h2 class="product-name" th:text="${product.name}">상품명</h2>
-            <div class="price" th:text="${#numbers.formatInteger(product.price, 0, 'COMMA') + '원'}">가격</div>
 
-            <div class="delivery-info">
-                오늘 주문시 내일 출발
+        <!-- 상단 섹션 -->
+        <div class="row product-main">
+            <!-- 상품 이미지 -->
+            <div class="col-md-6">
+                <img th:src="${product.image_url}" alt="상품 상세 이미지" class="product-detail-image">
             </div>
+            <!-- 상품 정보 -->
+            <div class="col-md-6 product-info">
+                <div class="manufacturer" th:text="${product.manufacturer}">제조사</div>
+                <input type="hidden" id="productId" th:value="${product.product_id}">
+                <h2 class="product-name" th:text="${product.name}">상품명</h2>
+                <div class="price" th:text="${#numbers.formatInteger(product.price, 0, 'COMMA') + '원'}">가격</div>
 
-            <!-- 옵션 선택 -->
-            <div th:with="baseOption=${product.options.?[base_option].get(0)}">
-                <input type="hidden" id="baseOptionId" th:value="${IsbaseOption?.option_id}">
-                <select id="productOption" class="form-select">
-                    <option value="">선택하세요</option>
-                    <th:block th:each="option : ${product.options}">
-                        <option
-                                th:value="${option.option_id}"
-                                th:data-name="${option.option_name}"
-                                th:data-price="${option.option_price}"
-                                th:data-is-base="${option.base_option}"
-                                th:text="${option.option_name + ' (+' + #numbers.formatInteger(product.price - option.option_price, 0, 'COMMA') + '원)'}">
-                        </option>
-                    </th:block>
-                </select>
+                <div class="delivery-info">
+                    <p style="margin: 0"><strong>배송</strong></p>
+                    오늘 주문시 내일 출발
+                </div>
+
+                <!-- 옵션 선택 -->
+                <div th:with="baseOption=${product.options.?[base_option].get(0)}">
+                    <input type="hidden" id="baseOptionId" th:value="${IsbaseOption?.option_id}">
+                    <select id="productOption" class="select-a" style="width: 100%;">
+                        <option value="">선택하세요</option>
+                        <th:block th:each="option : ${product.options}">
+                            <option
+                                    th:value="${option.option_id}"
+                                    th:data-name="${option.option_name}"
+                                    th:data-price="${option.option_price}"
+                                    th:data-is-base="${option.base_option}"
+                                    th:text="${option.option_name + ' (' + (option.option_price > product.price ? '+' : '') + #numbers.formatInteger(option.option_price - product.price, 0, 'COMMA') + '원)'}">
+                            </option>
+                        </th:block>
+                    </select>
+                </div>
+
+                <!-- 선택된 옵션들 표시 영역 -->
+                <div id="selectedOptions">
+                    <!-- 자바스크립트로 동적 추가됨 -->
+                </div>
+
+                <!-- 총 주문금액 -->
+                <div class="total-price">
+                    <span>총 주문금액</span>
+                    <span id="totalPrice">0원</span>
+                </div>
+
+                <!-- 장바구니 버튼 -->
+                <button type="button" id="addToCart" class="btn-orange" style="background-color: #EF7E06">장바구니 담기</button>
             </div>
-
-            <!-- 선택된 옵션들 표시 영역 -->
-            <div id="selectedOptions">
-                <!-- 자바스크립트로 동적 추가됨 -->
-            </div>
-
-            <!-- 총 주문금액 -->
-            <div class="total-price">
-                <span>총 주문금액</span>
-                <span id="totalPrice">0원</span>
-            </div>
-
-            <!-- 장바구니 버튼 -->
-            <button type="button" id="addToCart" class="btn-orange" style="background-color: #EF7E06">장바구니 담기</button>
         </div>
-    </div>
 
-    <!-- 상품 정보 테이블 -->
-    <div class="row product-details">
-        <table class="table">
-            <tbody>
-            <tr th:if="${product.manufacturer}">
-                <th>제조사</th>
-                <td th:text="${product.manufacturer}"></td>
-            </tr>
-            <tr th:if="${product.origin}">
-                <th>원산지</th>
-                <td th:text="${product.origin}"></td>
-            </tr>
-            <tr th:if="${product.weight}">
-                <th>중량/용량</th>
-                <td th:text="${product.weight}"></td>
-            </tr>
-            <tr th:if="${product.expiration_date}">
-                <th>유통기한</th>
-                <td th:text="${product.expiration_date}"></td>
-            </tr>
-            <tr th:if="${product.storage_info}">
-                <th>보관방법</th>
-                <td th:text="${product.storage_info}"></td>
-            </tr>
-            <!-- 장난감 전용 필드 -->
-            <tr th:if="${product.size}">
-                <th>크기</th>
-                <td th:text="${product.size}"></td>
-            </tr>
-            <tr th:if="${product.material}">
-                <th>재질</th>
-                <td th:text="${product.material}"></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+        <!-- 상품 정보 테이블 -->
+        <div class="row product-details">
+            <table class="table">
+                <tbody>
+                <tr th:if="${product.manufacturer}">
+                    <th>제조사</th>
+                    <td th:text="${product.manufacturer}"></td>
+                </tr>
+                <tr th:if="${product.origin}">
+                    <th>원산지</th>
+                    <td th:text="${product.origin}"></td>
+                </tr>
+                <tr th:if="${product.weight}">
+                    <th>중량/용량</th>
+                    <td th:text="${product.weight}"></td>
+                </tr>
+                <tr th:if="${product.expiration_date}">
+                    <th>유통기한</th>
+                    <td th:text="${product.expiration_date}"></td>
+                </tr>
+                <tr th:if="${product.storage_info}">
+                    <th>보관방법</th>
+                    <td th:text="${product.storage_info}"></td>
+                </tr>
+                <!-- 장난감 전용 필드 -->
+                <tr th:if="${product.size}">
+                    <th>크기</th>
+                    <td th:text="${product.size}"></td>
+                </tr>
+                <tr th:if="${product.material}">
+                    <th>재질</th>
+                    <td th:text="${product.material}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <!-- 상품 상세 이미지 -->
-    <div class="row product-description">
-        <img th:src="${product.image_detail_url}" alt="상품 상세 설명 이미지" class="full-width">
-        <div th:utext="${product.description}" class="description-text"></div>
+        <!-- 상품 상세 이미지 -->
+        <div class="row product-description">
+            <img th:src="${product.image_detail_url}" alt="상품 상세 설명 이미지" class="full-width">
+            <div th:utext="${product.description}" class="description-text"></div>
+        </div>
     </div>
 </div>
 <!-- 장바구니 모달 추가 -->
