@@ -873,3 +873,10 @@
     padding: 3px;
     border-radius: 5px;
 }
+
+.message-img img {
+    width: 230px;  /* 기존 값 유지 */
+    height: auto; /* 높이를 자동으로 맞추기 */
+    display: block; /* 혹시 display: none이 적용되어 있을 경우 해결 */
+    max-height: 300px; /* 너무 크면 제한 */
+}
