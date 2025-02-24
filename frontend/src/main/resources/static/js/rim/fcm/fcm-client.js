@@ -189,7 +189,7 @@ const FCMClient = {
                     toast.remove();
                 }, 500);
             }
-        }, 3000);
+        }, 5000);
     },
     addNewNotification(notification) {
         const container = document.getElementById('notifications');
