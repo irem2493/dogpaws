@@ -12,12 +12,30 @@
 <div class="container" style="margin: 0">
     <div class="product-list-container mt-5">
         <!-- 메인 컨텐츠 영역 -->
-        <div class="product-list-header">
+        <div class="product-list-header" style="flex-direction: column; gap: 10px">
             <h2 th:text="${category == 'F' ? '사료' : (category == 'N' ? '간식' : '산책용품')}">카테고리</h2>
+
+            <div class="search-and-sort" style="width: 100%">
+                <div class="sort-options">
+                    <select id="sortSelect" class="select-a" style="width: 200px;">
+                        <option value="">기본 정렬</option>
+                        <option value="price_asc" th:selected="${sortBy == 'price_asc'}">가격 낮은순</option>
+                        <option value="price_desc" th:selected="${sortBy == 'price_desc'}">가격 높은순</option>
+                    </select>
+                </div>
+                <div class="search-form">
+                    <input type="text" id="searchInput" name="keyword" th:value="${keyword}"
+                           placeholder="상품명 검색..." class="input-a" style=" height: auto;">
+                    <button type="button" id="searchBtn" class="btn-b">검색</button>
+                </div>
+            </div>
         </div>
 
         <!-- 상품 그리드 -->
-        <div class="product-grid">
+        <div id="productGrid" class="product-grid">
+            <div th:if="${#lists.isEmpty(products)}" class="no-products">
+                검색 결과가 없습니다.
+            </div>
             <div th:each="product : ${products}" class="product-card">
                 <a th:href="@{/store/{id}(id=${product.productId})}">
                     <img th:src="${product.imageUrl}" class="product-image" alt="상품 이미지">
@@ -25,7 +43,7 @@
                         <div class="manufacturer" th:text="${product.manufacturer}">제조사</div>
                         <div class="product-name" th:text="${product.name}">상품명</div>
                         <div class="product-price">
-                            <span th:text="${#numbers.formatInteger(product.price, 0, 'COMMA')}">0</span>원
+                            <span th:text="${#numbers.formatInteger(product.price, 0, 'COMMA')}">가격</span>원
                         </div>
                     </div>
                 </a>
@@ -36,27 +54,27 @@
         <div class="d-flex justify-content-center" th:if="${totalPages > 0}">
             <ul class="pagination">
                 <!-- 이전 페이지 -->
-                <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                    <a class="page-link" 
-                       th:href="@{/store/category/{category}(category=${category}, page=${currentPage - 1})}"
+                <li class="page-item">
+                    <a class="page-link"
+                       th:href="@{/store/category/{category}(category=${category}, page=${currentPage - 1}, sortBy=${sortBy})}"
                        th:onclick="${currentPage == 0} ? 'alert(\'첫 페이지입니다.\'); return false;' : ''">
                         <span>&laquo;</span>
                     </a>
                 </li>
-                
+
                 <!-- 페이지 번호 -->
-                <li class="page-item" 
+                <li class="page-item"
                     th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
                     th:classappend="${pageNum == currentPage ? 'active' : ''}">
-                    <a class="page-link" 
-                       th:href="@{/store/category/{category}(category=${category}, page=${pageNum})}"
+                    <a class="page-link"
+                       th:href="@{/store/category/{category}(category=${category}, page=${pageNum}, sortBy=${sortBy})}"
                        th:text="${pageNum + 1}">1</a>
                 </li>
-                
+
                 <!-- 다음 페이지 -->
-                <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
-                    <a class="page-link" 
-                       th:href="@{/store/category/{category}(category=${category}, page=${currentPage + 1})}"
+                <li class="page-item">
+                    <a class="page-link"
+                       th:href="@{/store/category/{category}(category=${category}, page=${currentPage + 1}, sortBy=${sortBy})}"
                        th:onclick="${currentPage >= totalPages - 1} ? 'alert(\'마지막 페이지입니다.\'); return false;' : ''">
                         <span>&raquo;</span>
                     </a>
@@ -65,7 +83,6 @@
         </div>
     </div>
 </div>
-
 <style>
     .container {
         padding: 0 20px;
@@ -75,7 +92,10 @@
         margin: 0 auto;
     }
     .product-list-header {
+        display: flex;
+        justify-content: space-between;
         margin-bottom: 30px;
+        padding: 0 20px;
     }
     .product-list-header h2 {
         font-size: 28px;
@@ -89,6 +109,168 @@
         text-overflow: ellipsis;    /* 말줄임표 표시 */
         max-width: 100%;           /* 부모 요소 너비를 넘지 않도록 설정 */
     }
+    .search-and-sort {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .search-form {
+        display: flex;
+        gap: 10px;
+    }
+    .search-input {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 200px;
+    }
+    .search-button {
+        padding: 8px 16px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .search-button:hover {
+        background-color: #45a049;
+    }
+    .sort-options select {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: white;
+        font-size: 14px;
+    }
+    .pagination {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .page-link {
+        color: #666;
+        background-color: #fff;
+        border: 1px solid #DDBC98;
+        padding: 8px 16px;
+    }
+
+    .page-link:hover {
+        color: #EF7E06;
+        background-color: #fff3e0;
+        border-color: #DDBC98;
+    }
+
+    .page-item.active .page-link {
+        background-color: #DDBC98;
+        border-color: #DDBC98;
+        color: white;
+    }
+
+    .page-item.active .page-link:hover {
+        color: white;
+    }
+
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 10px;
+    }
+
+    .quantity-control button {
+        width: 28px;
+        height: 28px;
+        border: none;
+        background: transparent;
+        padding: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .quantity-control button img {
+        width: 28px;
+        height: 28px;
+    }
+
+    .quantity-control input {
+        width: 50px;
+        height: 28px;
+        border: none;
+        background: transparent;
+        text-align: center;
+        font-size: 14px;
+        -moz-appearance: textfield; /* Firefox */
+    }
+
+    .quantity-control input::-webkit-outer-spin-button,
+    .quantity-control input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* 수량 input 포커스 시 아웃라인 제거 */
+    .quantity-control input:focus {
+        outline: none;
+    }
 </style>
+
+<script th:inline="javascript">
+    const category = /*[[${category}]]*/ 'F';
+    
+    function loadProducts(page = 0) {
+        const params = new URLSearchParams();
+        const keyword = document.getElementById('searchInput').value.trim();
+        const sortBy = document.getElementById('sortSelect').value;
+        
+        params.append('page', page);
+        params.append('size', '12');
+        if (keyword) params.append('keyword', keyword);
+        if (sortBy) params.append('sortBy', sortBy);
+
+        // URL 업데이트
+        const queryString = params.toString();
+        const newUrl = `${window.location.pathname}?${queryString}`;
+        window.history.pushState({}, '', newUrl);
+
+        // 엔드포인트 수정
+        fetch(`/store/category/${category}?${params}`)
+            .then(response => response.text())  // HTML 응답을 받음
+            .then(html => {
+                // HTML 파싱
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // 상품 그리드와 페이지네이션 업데이트
+                const newProductGrid = doc.querySelector('#productGrid');
+                const newPagination = doc.querySelector('#pagination');
+                
+                if (newProductGrid) {
+                    document.getElementById('productGrid').innerHTML = newProductGrid.innerHTML;
+                }
+                if (newPagination) {
+                    document.getElementById('pagination').innerHTML = newPagination.innerHTML;
+                }
+            })
+            .catch(error => console.error('상품 로드 실패:', error));
+    }
+
+    // 이벤트 리스너 등록
+    document.addEventListener('DOMContentLoaded', function() {
+        // 검색 버튼 클릭
+        document.getElementById('searchBtn').addEventListener('click', () => loadProducts(0));
+        
+        // 검색어 엔터 키
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') loadProducts(0);
+        });
+        
+        // 정렬 변경
+        document.getElementById('sortSelect').addEventListener('change', () => loadProducts(0));
+    });
+</script>
 </body>
 </html>

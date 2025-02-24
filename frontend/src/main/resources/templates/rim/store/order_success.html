@@ -3,117 +3,152 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout-mypage}">
 <head>
-
-    <script src="https://js.tosspayments.com/v2/standard"></script>
-
     <title>결제 완료</title>
     <meta charset="utf-8" />
+    <!-- CSS 파일 추가 -->
+    <link rel="stylesheet" href="/css/rim/store/store.css">
+    <link rel="stylesheet" href="/css/rim/store/cart_list.css">
+    <link rel="stylesheet" href="/css/rim/store/order_detail.css">
+    <script src="https://js.tosspayments.com/v2/standard"></script>
 </head>
 <body layout:fragment="content" style="min-height: 100vh">
 
-
-<div class="container">
-    <div class="order-success-container mt-5">
-        <div class="text-center mb-4">
-            <h2>주문이 완료되었습니다</h2>
-            <p>주문번호: <span th:text="${order.qlId}"></span></p>
-        </div>
-
-        <!-- 주문 상품 정보 -->
-        <div class="card mb-4">
-            <div class="card-header">주문 상품</div>
-            <div class="card-body">
-                <div th:each="item : ${order.orderItems}" class="mb-3 border-bottom pb-3">
-                    <div class="row align-items-center">
-                        <div class="col-md-2">
-                            <img th:src="${item.imageUrl}" class="img-fluid" alt="상품 이미지">
-                        </div>
-                        <div class="col-md-10">
-                            <h5 th:text="${item.productName}" class="mb-2">상품명</h5>
-                            <div th:each="option : ${item.options}" class="mb-2">
-                                <p class="mb-1">
-                                    <span th:text="${option.optionName}">옵션명</span>
-                                    <span th:text="${option.quantity}">수량</span>개
-                                    <span th:text="${#numbers.formatInteger(option.optionPrice, 0, 'COMMA')}">0</span>원
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 주문자 정보 -->
-        <div class="card mb-4">
-            <div class="card-header">주문자 정보</div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p>주문일시: <span th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
-                        <p>주문자: <span th:text="${order.orderName}"></span></p>
-                        <p>연락처: <span th:text="${order.orderPhone}"></span></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 배송 정보 -->
-        <div class="card mb-4">
-            <div class="card-header">배송 정보</div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p>수령인: <span th:text="${order.receiverName}"></span></p>
-                        <p>수령인 연락처: <span th:text="${order.receiverPhone}"></span></p>
-                        <p>배송지: <span th:text="${order.shippingZipcode}"></span></p>
-                        <p><span th:text="${order.shippingAddress1 + ' ' + order.shippingAddress2}"></span></p>
-                        <p>배송 요청사항: <span th:text="${order.shippingMemo}"></span></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 결제 정보 -->
-        <div class="card mb-4">
-            <div class="card-header">결제 정보</div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <table class="table table-borderless">
-                            <tr>
-                                <td>상품 금액</td>
-                                <td class="text-end">
-                                    <span th:text="${#numbers.formatInteger(order.totalPrice - order.deliveryFee, 0, 'COMMA')}">0</span>원
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>배송비</td>
-                                <td class="text-end">
-                                    <span th:text="${#numbers.formatInteger(order.deliveryFee, 0, 'COMMA')}">0</span>원
-                                </td>
-                            </tr>
-                            <tr class="border-top">
-                                <td><strong>총 결제금액</strong></td>
-                                <td class="text-end">
-                                    <strong><span th:text="${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')}">0</span>원</strong>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center mb-5">
-            <a href="/orders/list" class="btn btn-primary">주문 목록 보기</a>
-            <a href="/" class="btn btn-secondary">쇼핑 계속하기</a>
+<div class="container" style="justify-content: left; padding-top: 28px; margin: 0px 141px 120px 75px;">
+    <!-- 주문 완료 타이틀 -->
+    <div class="pw-title" style="width: 100%; justify-content: left; border-color: #DDBC98">
+        <div style="height: 70px; width: 150px; border-bottom: 8px; justify-content: left; line-height: 65px">
+            주문완료
         </div>
     </div>
+
+    <!-- 네비게이션 경로 -->
+    <div class="nav-path">
+        01 장바구니 > 02 주문결제 ><strong style="color: #EF7E06;"> 03 결제완료</strong>
+    </div>
+
+    <!-- 주문 완료 메시지 -->
+    <div class="text-center mb-4" style="margin-bottom: 40px !important;">
+        <h2 style="font-size: 2rem; margin-bottom: 15px;">주문이 완료되었습니다</h2>
+        <p style="font-size: 1.1rem; color: #666;">
+            주문번호: <span th:text="${order.qlId}"></span>
+        </p>
+    </div>
+
+    <!-- 배송 정보 -->
+    <div class="cart-list-box">
+        <div class="card-body">
+            <table class="info-table">
+                <colgroup>
+                    <col width="150px">
+                    <col width="auto">
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th>받는 사람</th>
+                    <td th:text="${order.receiverName}"></td>
+                </tr>
+                <tr>
+                    <th>연락처</th>
+                    <td th:text="${order.receiverPhone}"></td>
+                </tr>
+                <tr>
+                    <th>주소</th>
+                    <td>
+                        <div th:text="${order.shippingAddress1 + ' ' + order.shippingAddress2}"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>배송 메모</th>
+                    <td th:text="${order.shippingMemo ?: '없음'}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 결제 금액 -->
+    <div class="card-body">
+        <div class="payment-summary">
+            <div class="summary-row">
+                <span class="summary-label">총 상품금액</span>
+                <span class="summary-value">
+                    <span th:text="${#numbers.formatInteger(order.totalPrice - order.deliveryFee, 0, 'COMMA')}">0</span>원
+                </span>
+            </div>
+            <div class="summary-divider"></div>
+
+            <div class="summary-row">
+                <span class="summary-label">배송비</span>
+                <span class="summary-value">
+                    <span th:text="${#numbers.formatInteger(order.deliveryFee, 0, 'COMMA')}">0</span>원
+                </span>
+            </div>
+            <div class="summary-divider"></div>
+
+            <div class="summary-row total">
+                <span class="summary-label">총 결제금액</span>
+                <span class="summary-value">
+                    <strong>
+                        <span th:text="${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')}">0</span>원
+                    </strong>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 주문 상품 -->
+    <div class="cart-list-box">
+        <div class="top-actions">
+            <p style="font-size: 1.3rem; margin: 0">주문 상품</p>
+        </div>
+        <div th:each="item : ${order.orderItems}" class="border-bottom" style="padding: 30px 30px;">
+            <div class="row">
+                <!-- 상품 이미지 -->
+                <div class="col-md-2">
+                    <img th:src="${item.imageUrl}" class="img-fluid" style="border-radius: 20px;" alt="상품 이미지">
+                </div>
+                <!-- 상품 정보 -->
+                <div class="col-md-10">
+                    <div class="d-flex flex-column">
+                        <small class="text-muted mb-1" th:text="${item.manufacturer}">제조사명</small>
+                        <h5 class="card-title mb-2" th:text="${item.productName}">상품명</h5>
+                        <span class="card-title mb-2 price-display">
+                            <span class="price-text" th:text="${#numbers.formatInteger(item.options[0].getOptionPrice(), 0, 'COMMA')}"></span>원
+                        </span>
+
+                        <!-- 옵션 목록 -->
+                        <div th:each="option : ${item.options}" class="mb-2">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <span th:text="${option.optionName}">옵션명</span>
+                                    <span th:if="${option.optionPrice > 0}" class="ms-2">
+                                        (+<span th:text="${#numbers.formatInteger(option.optionPrice, 0, 'COMMA')}">0</span>원)
+                                    </span>
+                                    <span class="ms-2">수량: <span th:text="${option.quantity}">0</span>개</span>
+                                </div>
+                                <div class="text-end">
+                                    <span th:text="${#numbers.formatInteger(option.optionPrice * option.quantity, 0, 'COMMA')}">0</span>원
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 상품별 합계 -->
+                        <div class="mt-3 text-end">
+                            <strong>상품 합계: <span th:text="${#numbers.formatInteger(item.itemPrice , 0, 'COMMA')}">0</span>원</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 버튼 영역 -->
+    <div class="text-center mt-4">
+        <a href="/orders/list" class="btn btn-primary">주문 목록 보기</a>
+        <a href="/store" class="btn btn-secondary">쇼핑 계속하기</a>
+    </div>
+
 </div>
 
-
-</div>
-<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script src="/js/rim/order_create.js"></script>
 </body>
 </html>

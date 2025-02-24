@@ -92,21 +92,33 @@ public class ProductViewController {
     @GetMapping("/category/{category}")
     public String getProductList(@PathVariable String category,
                                  @RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(required = false) String sortBy,
+                                 @RequestParam(required = false) String keyword,
                                  Model model) {
         try {
             Map<String, String> params = new HashMap<>();
             params.put("page", String.valueOf(page));
             params.put("size", "12");
             params.put("main_category", category);
+            
+            // 정렬 파라미터 추가
+            if (sortBy != null && !sortBy.isEmpty()) {
+                params.put("sortBy", sortBy);
+                log.info("정렬 옵션 적용: {}", sortBy);
+            }
+
+            // 검색 키워드 추가
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                params.put("searchKeyword", keyword.trim());
+                log.info("검색 키워드 적용: {}", keyword);
+            }
 
             log.info("카테고리 필터 적용: {}", category);
 
             ApiResponse response = apiRequestService.fetchData(PRODUCT_API_PATH, params, true);
             log.debug("API 응답: {}", response);
 
-
             Map<String, Object> outerBody = (Map<String, Object>) response.getBody();
-
             Map<String, Object> innerBody = (Map<String, Object>) outerBody.get("body");
             List<ProductListDto> products = objectMapper.convertValue(
                     innerBody.get("content"),
@@ -118,6 +130,8 @@ public class ProductViewController {
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", innerBody.get("total_pages"));
             model.addAttribute("category", category);
+            model.addAttribute("sortBy", sortBy);
+            model.addAttribute("keyword", keyword);
 
             return "rim/store/product_list";
 

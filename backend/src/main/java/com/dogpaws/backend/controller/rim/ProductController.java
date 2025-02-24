@@ -49,7 +49,9 @@ public class ProductController {
     public ApiResponse<Page<ProductListDto>> getProducts(
             @RequestParam(required = false, name = "main_category") String category,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, name = "searchKeyword") String keyword) {
 
         log.info("상품 목록 조회 요청: category={}, page={}, size={}", category, page, size);
 
@@ -57,9 +59,11 @@ public class ProductController {
             // ProductSearchDto 생성 및 설정
             ProductSearchDto searchDto = new ProductSearchDto();
             searchDto.setMainCategory(category);
-            searchDto.setPage(page + 1); // 0-based를 1-based로 변환
+            searchDto.setPage(page + 1);
             searchDto.setPageSize(size);
+            searchDto.setSortBy(sortBy);
             searchDto.setStatus("O"); // 판매중인 상품만 조회
+            searchDto.setSearchKeyword(keyword); // 판매중인 상품만 조회
 
             Page<ProductListDto> products = productService.searchProducts(searchDto);
             return new ApiResponse<>(ApiResponse.ApiStatus.SUCCESS, products);
