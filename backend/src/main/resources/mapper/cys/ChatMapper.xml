@@ -38,7 +38,7 @@
         WHERE calendar_id = #{calendarId}
     </update>
 
-    <select id="getAllMedi` aUrl" resultType="String">
+    <select id="getAllMediaUrl" resultType="String">
         SELECT file_url
         FROM tbl_file
         WHERE file_ref_no= #{roomId}
