@@ -67,6 +67,7 @@ public class BoardController {
             model.addAttribute("user", user);
         }
         model.addAttribute("boardList", pagedBoardList);
+        model.addAttribute("bList", boardList);
         model.addAttribute("pagingBtn", pagingBtn);
         model.addAttribute("category", category);
 

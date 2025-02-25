@@ -101,7 +101,7 @@ public class SocialLoginController {
         } catch (Exception e) {
             e.printStackTrace();
             //model.addAttribute("error", e.getMessage());
-            return "redirect:http://localhost:2000/join";  // 프론트로 리다이렉트
+            return "redirect:http://192.168.0.242:2000/join";  // 프론트로 리다이렉트
         }
     }
 
@@ -121,7 +121,7 @@ public class SocialLoginController {
             return socialLoginService.getReturnPage(userInfo, session, response);
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:http://localhost:2000/join";  // 프론트로 리다이렉트
+            return "redirect:http://192.168.0.242:2000/join";  // 프론트로 리다이렉트
         }
     }
 
@@ -140,7 +140,7 @@ public class SocialLoginController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:http://localhost:2000/join";  // 프론트로 리다이렉트
+            return "redirect:http://192.168.0.242:2000/join";  // 프론트로 리다이렉트
         }
     }
 

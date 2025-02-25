@@ -115,7 +115,7 @@ function saveSelectedProfile(profile) {
 
     axios({
         method: 'post',
-        url: 'http://localhost:2000/dog/saveProfile', // 서버의 정확한 URL
+        url: 'http://192.168.0.242:2000/dog/saveProfile', // 서버의 정확한 URL
         data: JSON.stringify(profile),  // JSON으로 전송
         headers: {
             'Content-Type': 'application/json'

@@ -136,7 +136,7 @@ function updateMapWithDogs(dogs, lat, lng, dogImageUrl1) {
                         ✖
                     </button>
                     <a href="/dog/detail/${dog.dog_id}">
-                        <img src="${profileImg}" width="50" height="50" style="border-radius:50%;">
+                        <img src="${profileImg}" width="50" height="50" style="border-radius:50%;" onerror="this.src='/img/dog_foot2.png';">
                     </a>
                     <br><strong>${dog.dog_name}</strong>
                 </div>

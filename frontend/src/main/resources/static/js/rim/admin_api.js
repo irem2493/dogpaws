@@ -1,7 +1,7 @@
 
 const adminApi = {
     client: axios.create({
-        baseURL: 'http://localhost:8080/api/admin',
+        baseURL: 'http://192.168.0.242:8080/api/admin',
         timeout: 5000,
         withCredentials : true,
         /*    headers: {
@@ -91,7 +91,7 @@ adminApi.client.interceptors.response.use(
 
 function refreshAccessToken() {
     const accessToken = sessionStorage.getItem('accessToken');
-    return axios.post('http://localhost:8080/api/admin/auth/token/verify', null, {
+    return axios.post('http://192.168.0.242:8080/api/admin/auth/token/verify', null, {
         headers: {
             Authorization: `Bearer ${accessToken}`
         },
