@@ -339,7 +339,7 @@ public class SocialLoginService {
             sessionData.setStep1Data(userRequestDto);
             session.setAttribute("joinSession", sessionData);
 
-            return "redirect:http://localhost:2000/socialJoin";  // 프론트로 리다이렉트
+            return "redirect:http://192.168.0.242:2000/socialJoin";  // 프론트로 리다이렉트
         }
         else if(userInfo instanceof User){
             //여기에 토큰 발급하는 로직 필요
@@ -372,7 +372,7 @@ public class SocialLoginService {
 
             // ✅ 프론트엔드로 전달할 사용자 정보
             String redirectUrl = String.format(
-                    "http://localhost:2000/dog/dogProfileSelect?accessToken=%s&username=%s&role=%s&nickname=%s",
+                    "http://192.168.0.242:2000/dog/dogProfileSelect?accessToken=%s&username=%s&role=%s&nickname=%s",
                     accessToken2,
                     user.getUsername(),
                     "ROLE_USER",

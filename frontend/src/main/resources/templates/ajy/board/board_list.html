@@ -33,7 +33,7 @@
             <tbody>
                 <tr th:if="${boardList.size() > 0}" th:each="board, stat : ${boardList}">
                     <input type="hidden" name="boardId" id="boardId" th:value="${board.boardId}"/>
-                    <td th:text="${boardList.size()-stat.index}"></td>
+                    <td th:text="${bList.size() - ((pagingBtn.currentPage - 1) * 10) - stat.index}"></td>
                     <td><a th:href="@{/board/boardDetail/{boardId}/{category}(boardId=${board.boardId}, category=${category})}">
                         [[${board.title}]] <span th:text="|[${board.comment_count}]|" style="color:#898989"></span></a>
                     </td>
