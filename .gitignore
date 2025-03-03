@@ -40,3 +40,5 @@ out/
 frontend/src/main/resources/paws2-6ce51-firebase-adminsdk-fbsvc-*.json
 backend/src/main/resources/paws2-6ce51-firebase-adminsdk-fbsvc-*.json
 docs/
+
+!docs/
